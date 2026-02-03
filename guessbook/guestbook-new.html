@@ -38,6 +38,7 @@
   <script src="updates.js"></script>
   <script src="js/admin-panel.js"></script>
   <script src="js/mod-panel.js"></script>
+  <script src="js/achievement-sync.js"></script>
   
   <style>
     /* Adaptación de temas para Guestbook */
@@ -1183,6 +1184,9 @@
           // Cargar nombre del perfil si está logueado
           this.loadInitialProfileData();
           
+          // 🔗 Configurar sincronización de logros
+          this.setupGuestbookAchievementSync();
+          
           // Actualizar rankings después de cargar la galería
           setTimeout(() => {
             if (this.gallery.allDrawings && this.gallery.allDrawings.length > 0) {
@@ -1676,6 +1680,20 @@
             this.profiles.currentProfile.totalDrawings = (this.profiles.currentProfile.totalDrawings || 0) + 1;
             this.profiles.saveProfile();
           }
+          
+          // 🔗 SINCRONIZACIÓN DE LOGROS - Marcar dibujo creado
+          if (window.guestbookSync) {
+            window.guestbookSync.incrementDrawingCount();
+          }
+          
+          // Disparar evento personalizado para el sistema de logros
+          document.dispatchEvent(new CustomEvent('drawing-saved', {
+            detail: {
+              author: author,
+              category: category,
+              timestamp: Date.now()
+            }
+          }));
           
           // Limpiar fondos y stickers GIF
           this.hideVisualGifBackground();
@@ -2183,6 +2201,81 @@
           console.error('Error:', error);
           this.ui.showNotification('❌ Error al enviar sugerencia', 'error');
         }
+      }
+      
+      // 🔗 Funciones para sincronizar logros con el laboratory
+      setupGuestbookAchievementSync() {
+        // Interceptar clicks en botones de like
+        document.addEventListener('click', (event) => {
+          if (event.target.matches('.like-btn, .btn-like, [data-action="like"]')) {
+            this.handleLikeAction();
+          }
+        });
+        
+        // Interceptar envío de comentarios
+        document.addEventListener('submit', (event) => {
+          if (event.target.matches('.comment-form, [data-form="comment"]')) {
+            this.handleCommentAction();
+          }
+        });
+        
+        // Interceptar cuando se abre un modal de comentarios
+        document.addEventListener('click', (event) => {
+          if (event.target.matches('.comment-btn, .btn-comment, [data-action="comment"]')) {
+            // Esperar un poco para que se abra el modal
+            setTimeout(() => {
+              this.setupCommentFormListeners();
+            }, 500);
+          }
+        });
+      }
+      
+      handleLikeAction() {
+        if (window.guestbookSync) {
+          window.guestbookSync.incrementLikeCount();
+        }
+        
+        // Disparar evento personalizado
+        document.dispatchEvent(new CustomEvent('like-given', {
+          detail: {
+            timestamp: Date.now()
+          }
+        }));
+      }
+      
+      handleCommentAction() {
+        if (window.guestbookSync) {
+          window.guestbookSync.incrementCommentCount();
+        }
+        
+        // Disparar evento personalizado
+        document.dispatchEvent(new CustomEvent('comment-posted', {
+          detail: {
+            timestamp: Date.now()
+          }
+        }));
+      }
+      
+      setupCommentFormListeners() {
+        // Buscar formularios de comentarios en modales
+        const commentForms = document.querySelectorAll('.modal textarea, .comment-textarea');
+        commentForms.forEach(textarea => {
+          if (!textarea.dataset.listenerAdded) {
+            textarea.dataset.listenerAdded = 'true';
+            
+            // Buscar el botón de enviar asociado
+            const submitBtn = textarea.closest('.modal-body, .comment-section')
+              ?.querySelector('button[onclick*="comment"], .comment-submit, .btn-primary');
+            
+            if (submitBtn) {
+              submitBtn.addEventListener('click', () => {
+                if (textarea.value.trim()) {
+                  this.handleCommentAction();
+                }
+              });
+            }
+          }
+        });
       }
       
       processImageForSuggestion(file) {

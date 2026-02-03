@@ -129,7 +129,21 @@ class AchievementSystem {
       'plushie-collector': { name: 'Coleccionista de Peluches', desc: 'Encuentra los 40 peluches escondidos', points: 500, icon: '🧸' },
       'gissel-fan': { name: 'Fan de Gissel', desc: 'Encuentra los 20 peluches de Gissel', points: 250, icon: '💜' },
       'molly-hunter': { name: 'Cazador de Molly', desc: 'Encuentra los 20 peluches de Molly', points: 250, icon: '🔪' },
+      'deadly-player': { name: 'Jugador Mortal', desc: 'Juega Deadly Pursuer', points: 75, icon: '🎮' },
+      'ankaro-explorer': { name: 'Explorador de Ankaro', desc: 'Entra a Project Ankaro', points: 75, icon: '👻' },
+      'mobile-user': { name: 'Usuario Móvil', desc: 'Visita desde dispositivo móvil', points: 20, icon: '📱' },
+      'desktop-power': { name: 'Poder de Escritorio', desc: 'Visita desde PC', points: 15, icon: '🖥️' },
+      'multi-browser': { name: 'Multi-Navegador', desc: 'Usa 3 navegadores diferentes', points: 40, icon: '🌐' },
+      'demo-master': { name: 'Maestro de Demos', desc: 'Prueba 5 demos diferentes', points: 60, icon: '🎮' },
+      'code-reviewer': { name: 'Revisor de Código', desc: 'Ve el código de 10 proyectos', points: 80, icon: '👨‍💻' },
+      'marathon-runner': { name: 'Corredor de Maratón', desc: 'Pasa 30 minutos en el sitio', points: 100, icon: '🏃' },
+      'pwa-user': { name: 'Usuario PWA', desc: 'Usa la app instalada', points: 50, icon: '📱' },
+      'pwa-installer': { name: 'Instalador PWA', desc: 'Instala la aplicación', points: 75, icon: '⬇️' },
+      'github-star': { name: 'Estrella de GitHub', desc: 'Proyecto con 50+ estrellas', points: 100, icon: '⭐' },
+      'github-popular': { name: 'Popular en GitHub', desc: '10+ seguidores', points: 75, icon: '👥' },
       'guestbook-artist': { name: 'Artista del Guestbook', desc: 'Crea 10 dibujos en el guestbook', points: 100, icon: '🎨' },
+      'guestbook-visitor': { name: 'Visitante del Guestbook', desc: 'Visita el guestbook por primera vez', points: 15, icon: '🎨' },
+      'guestbook-master': { name: 'Maestro del Guestbook', desc: 'Crea 10 dibujos en el guestbook', points: 100, icon: '🎨' },
       'social-butterfly': { name: 'Mariposa Social', desc: 'Visita todas las redes sociales', points: 50, icon: '🦋' },
       'deadly-player': { name: 'Jugador Mortal', desc: 'Juega Deadly Pursuer', points: 75, icon: '🎮' },
       'ankaro-explorer': { name: 'Explorador de Ankaro', desc: 'Entra a Project Ankaro', points: 75, icon: '👻' },
@@ -240,51 +254,85 @@ class AchievementSystem {
     };
   }
 
-  // Cargar datos guardados con migración
-  load() {
-    const saved = localStorage.getItem(this.storageKey);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      this.gameData = { ...this.gameData, ...parsed };
+  // Cargar datos desde Firebase
+  async load() {
+    try {
+      // Usar funciones de Firebase desde window
+      const { getPoints, listenToPoints } = window.firebasePoints;
       
-      // Migrar datos antiguos
-      this.migrateData();
+      // Migrar puntos automáticamente
+      const firebasePoints = await getPoints();
+      if (firebasePoints > 0) {
+        this.gameData.points = firebasePoints;
+      }
       
-      // Convertir arrays a Sets
-      this.gameData.themesUsed = new Set(parsed.themesUsed || []);
-      this.gameData.projectsViewed = new Set(parsed.projectsViewed || []);
-      this.gameData.unlockedThemes = new Set(parsed.unlockedThemes || this.gameData.unlockedThemes);
-      this.gameData.unlockedCursors = new Set(parsed.unlockedCursors || ['default']);
-      this.gameData.visitedSocials = new Set(parsed.visitedSocials || []);
-      this.gameData.browsersUsed = new Set(parsed.browsersUsed || []);
-      this.gameData.demosTested = new Set(parsed.demosTested || []);
-      this.gameData.codeViewed = new Set(parsed.codeViewed || []);
-      this.gameData.effectsPurchased = new Set(parsed.effectsPurchased || []);
+      // Escuchar cambios en tiempo real
+      listenToPoints((points) => {
+        this.gameData.points = points;
+        this.updatePointsDisplay();
+      });
       
-      if (parsed.hiddenProgress && parsed.hiddenProgress.easterEggsFound) {
-        this.gameData.hiddenProgress.easterEggsFound = new Set(parsed.hiddenProgress.easterEggsFound);
+      // Cargar otros datos desde localStorage
+      const saved = localStorage.getItem(this.storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.gameData = { ...this.gameData, ...parsed };
+        this.convertArraysToSets(parsed);
+      }
+    } catch (error) {
+      console.warn('Error cargando desde Firebase, usando localStorage:', error);
+      const saved = localStorage.getItem(this.storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.gameData = { ...this.gameData, ...parsed };
+        this.convertArraysToSets(parsed);
       }
     }
     this.checkAchievement('first-visit');
   }
 
-  // Migrar datos de versiones anteriores
-  migrateData() {
-    // Migrar specialEvents a seasonalEvents si existe
-    if (this.gameData.specialEvents && !this.gameData.seasonalEvents) {
-      // Mantener eventos especiales pero agregar estacionales
-      this.gameData.seasonalEvents = this.getDefaultGameData().seasonalEvents;
+  // Guardar datos en Firebase
+  async save() {
+    const toSave = this.prepareDataForSave();
+    try {
+      // Actualizar puntos en Firebase
+      const { updatePoints } = window.firebasePoints;
+      await updatePoints(this.gameData.points);
+    } catch (error) {
+      console.warn('Error guardando puntos en Firebase:', error);
     }
-    
-    // Inicializar hiddenProgress si no existe
-    if (!this.gameData.hiddenProgress) {
-      this.gameData.hiddenProgress = this.getDefaultGameData().hiddenProgress;
+    localStorage.setItem(this.storageKey, JSON.stringify(toSave));
+  }
+
+  getUserId() {
+    return localStorage.getItem('user-id') || 'anonymous-' + Date.now();
+  }
+
+  // Actualizar display de puntos
+  updatePointsDisplay() {
+    const pointsElement = document.getElementById('points-display');
+    if (pointsElement) {
+      pointsElement.textContent = this.gameData.points;
     }
   }
 
-  // Guardar datos con Sets convertidos
-  save() {
-    const toSave = {
+  convertArraysToSets(data) {
+    this.gameData.themesUsed = new Set(data.themesUsed || []);
+    this.gameData.projectsViewed = new Set(data.projectsViewed || []);
+    this.gameData.unlockedThemes = new Set(data.unlockedThemes || this.gameData.unlockedThemes);
+    this.gameData.unlockedCursors = new Set(data.unlockedCursors || ['default']);
+    this.gameData.visitedSocials = new Set(data.visitedSocials || []);
+    this.gameData.browsersUsed = new Set(data.browsersUsed || []);
+    this.gameData.demosTested = new Set(data.demosTested || []);
+    this.gameData.codeViewed = new Set(data.codeViewed || []);
+    this.gameData.effectsPurchased = new Set(data.effectsPurchased || []);
+    if (data.hiddenProgress?.easterEggsFound) {
+      this.gameData.hiddenProgress.easterEggsFound = new Set(data.hiddenProgress.easterEggsFound);
+    }
+  }
+
+  prepareDataForSave() {
+    return {
       ...this.gameData,
       themesUsed: Array.from(this.gameData.themesUsed),
       projectsViewed: Array.from(this.gameData.projectsViewed),
@@ -300,7 +348,6 @@ class AchievementSystem {
         easterEggsFound: Array.from(this.gameData.hiddenProgress.easterEggsFound || [])
       }
     };
-    localStorage.setItem(this.storageKey, JSON.stringify(toSave));
   }
 
   // Agregar puntos
@@ -806,6 +853,9 @@ class AchievementSystem {
     // Check special time-based achievements
     this.checkTimeBasedAchievements();
     
+    // Sincronizar logros del guestbook
+    this.syncGuestbookAchievements();
+    
     // Start session tracking
     this.sessionStart = Date.now();
     this.sessionAchievements = 0;
@@ -878,6 +928,172 @@ class AchievementSystem {
     // Night owl
     if (hour >= 0 && hour < 6) {
       this.checkAchievement('night-owl');
+    }
+  }
+
+  // Detectar logros del guestbook desde el laboratory
+  checkGuestbookAchievements() {
+    // Verificar si el usuario ha visitado el guestbook
+    const guestbookVisited = localStorage.getItem('guestbook-visited');
+    if (guestbookVisited) {
+      this.checkAchievement('guestbook-visitor');
+    }
+
+    // Verificar dibujos creados en el guestbook
+    const guestbookDrawings = this.getGuestbookDrawingsCount();
+    if (guestbookDrawings >= 1) {
+      this.checkAchievement('guestbook-artist');
+    }
+    if (guestbookDrawings >= 10) {
+      this.checkAchievement('guestbook-master');
+    }
+
+    // Verificar comentarios en el guestbook
+    const guestbookComments = this.getGuestbookCommentsCount();
+    if (guestbookComments >= 5) {
+      this.checkAchievement('comment-king');
+    }
+
+    // Verificar likes dados en el guestbook
+    const guestbookLikes = this.getGuestbookLikesCount();
+    if (guestbookLikes >= 20) {
+      this.checkAchievement('like-master');
+    }
+
+    // Verificar si ha usado el perfil del guestbook
+    const hasGuestbookProfile = localStorage.getItem('guestbook-profile');
+    if (hasGuestbookProfile) {
+      this.checkAchievement('social-butterfly');
+    }
+  }
+
+  // Obtener número de dibujos del guestbook
+  getGuestbookDrawingsCount() {
+    try {
+      const profile = JSON.parse(localStorage.getItem('guestbook-profile') || '{}');
+      return profile.totalDrawings || 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  // Obtener número de comentarios del guestbook
+  getGuestbookCommentsCount() {
+    try {
+      const profile = JSON.parse(localStorage.getItem('guestbook-profile') || '{}');
+      return profile.totalComments || 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  // Obtener número de likes del guestbook
+  getGuestbookLikesCount() {
+    try {
+      const profile = JSON.parse(localStorage.getItem('guestbook-profile') || '{}');
+      return profile.totalLikes || 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  // Marcar visita al guestbook
+  markGuestbookVisit() {
+    localStorage.setItem('guestbook-visited', 'true');
+    this.checkAchievement('guestbook-visitor');
+  }
+
+  // Actualizar estadísticas del guestbook desde el laboratory
+  updateGuestbookStats(drawings = 0, comments = 0, likes = 0) {
+    try {
+      const profile = JSON.parse(localStorage.getItem('guestbook-profile') || '{}');
+      profile.totalDrawings = (profile.totalDrawings || 0) + drawings;
+      profile.totalComments = (profile.totalComments || 0) + comments;
+      profile.totalLikes = (profile.totalLikes || 0) + likes;
+      localStorage.setItem('guestbook-profile', JSON.stringify(profile));
+      
+      // Verificar logros después de actualizar
+      this.checkGuestbookAchievements();
+    } catch (error) {
+      console.warn('Error updating guestbook stats:', error);
+    }
+  }
+
+  // Sincronizar logros entre guestbook y laboratory
+  syncGuestbookAchievements() {
+    this.checkGuestbookAchievements();
+    this.checkGameAchievements();
+    this.checkDeviceAchievements();
+    this.checkTimeAchievements();
+    this.checkFirebaseGuestbookData();
+  }
+
+  // Verificar logros de juegos
+  checkGameAchievements() {
+    if (localStorage.getItem('deadly-pursuer-played')) this.checkAchievement('deadly-player');
+    if (localStorage.getItem('ankaro-played')) this.checkAchievement('ankaro-explorer');
+  }
+
+  // Verificar logros de dispositivo
+  checkDeviceAchievements() {
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    if (isMobile) this.checkAchievement('mobile-user');
+    else this.checkAchievement('desktop-power');
+  }
+
+  // Verificar logros de tiempo
+  checkTimeAchievements() {
+    if (this.gameData.timeOnSite >= 1800) this.checkAchievement('marathon-runner');
+  }
+
+  // Verificar datos del guestbook en Firebase
+  async checkFirebaseGuestbookData() {
+    try {
+      // Intentar obtener datos del guestbook desde Firebase
+      const guestbookData = await this.getGuestbookDataFromFirebase();
+      if (guestbookData) {
+        this.processGuestbookFirebaseData(guestbookData);
+      }
+    } catch (error) {
+      console.warn('No se pudo acceder a datos de Firebase del guestbook:', error);
+    }
+  }
+
+  // Obtener datos del guestbook desde Firebase (simulado)
+  async getGuestbookDataFromFirebase() {
+    // Esta función debería conectarse a Firebase para obtener datos del guestbook
+    // Por ahora, verificamos si hay datos locales que indiquen uso del guestbook
+    const localData = {
+      hasDrawings: localStorage.getItem('guestbook-drawings-count') || '0',
+      hasComments: localStorage.getItem('guestbook-comments-count') || '0',
+      hasLikes: localStorage.getItem('guestbook-likes-count') || '0',
+      hasProfile: localStorage.getItem('guestbook-profile') !== null
+    };
+    
+    return localData;
+  }
+
+  // Procesar datos del guestbook desde Firebase
+  processGuestbookFirebaseData(data) {
+    const drawings = parseInt(data.hasDrawings) || 0;
+    const comments = parseInt(data.hasComments) || 0;
+    const likes = parseInt(data.hasLikes) || 0;
+    
+    if (drawings > 0) {
+      this.checkAchievement('guestbook-artist');
+      if (drawings >= 10) this.checkAchievement('guestbook-master');
+    }
+    
+    if (comments >= 5) {
+      this.checkAchievement('comment-king');
+    }
+    
+    if (likes >= 20) {
+      this.checkAchievement('like-master');
+    }
+    
+    if (data.hasProfile) {
+      this.checkAchievement('social-butterfly');
     }
   }
 

@@ -1,26 +1,63 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.3.0",
-  "lastUpdate": "2025-12-04",
+  "version": "2.4.0",
+  "lastUpdate": "2026-02-03",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.3.0",
-    "fecha": "2025-12-04",
+    "numero": "2.4.0",
+    "fecha": "2026-02-03",
     "tipo": "major",
     "estado": "estable",
     "cambios_principales": [
-      "5 nuevos temas premium: Cyberpunk 2077, Retro Synthwave, Glassmorphism, Terminal Hacker, Pastel Kawaii",
-      "Sistema de logros 2.0 con logros ocultos y pistas",
-      "Desafíos diarios y semanales expandidos",
-      "Eventos estacionales automáticos (Halloween, Navidad, etc.)",
-      "Sistema de intercambio de logros entre usuarios"
+      "Migración visual con pantalla de carga animada",
+      "Leaderboard global sincronizado con Firebase",
+      "Sistema de sincronización de logros Guestbook ↔ Laboratory",
+      "Bonus de 25 puntos por registro en leaderboard",
+      "Fallback inteligente a datos locales",
+      "Indicador de sincronización en tiempo real",
+      "Arreglo completo de Giscus y comentarios"
     ]
   },
   
   "updates": [
+    {
+      "version": "2.4.0",
+      "date": "2026-02-03",
+      "title": "🔄 Sistema de Sincronización Global + Migración Visual",
+      "type": "major",
+      "features": [
+        "📱 Migración visual: Pantalla de carga con animación cuando transfiere datos",
+        "🏆 Leaderboard global: Sincronizado con Firebase en tiempo real",
+        "🎁 Bonus por registro: 25 puntos por unirse al leaderboard",
+        "🛡️ Fallback inteligente: Si Firebase falla, usa datos locales",
+        "🔄 Indicador de sincronización: Muestra cuando los datos están sincronizados",
+        "🔗 Sistema de Sincronización de Logros - Guestbook ↔ Laboratory",
+        "💾 Migración automática de datos entre plataformas",
+        "⚡ Sincronización bidireccional en tiempo real",
+        "🌐 Leaderboard global con rankings actualizados",
+        "🎯 Sistema de puntos unificado entre aplicaciones"
+      ],
+      "sync_system": [
+        "🔄 Sincronización automática cada 30 segundos",
+        "📊 Datos compartidos: puntos, logros, rachas, nivel",
+        "🔗 Conexión bidireccional Guestbook ↔ Laboratory",
+        "💾 Backup local automático antes de sincronizar",
+        "🛡️ Fallback a localStorage si Firebase falla",
+        "⚡ Indicadores visuales de estado de sincronización",
+        "🎁 Bonus de bienvenida al registrarse en leaderboard",
+        "🏆 Rankings globales actualizados en tiempo real"
+      ],
+      "fixes": [
+        "✅ Arreglado Giscus y sistema de comentarios",
+        "✅ Migración de datos con animación de carga visual",
+        "✅ Sincronización robusta con manejo de errores",
+        "✅ Interfaz de leaderboard optimizada",
+        "✅ Sistema de puntos unificado y consistente"
+      ]
+    },
     {
       "version": "2.3.0",
       "date": "2025-12-04",
