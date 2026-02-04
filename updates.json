@@ -12,13 +12,14 @@
     "tipo": "major",
     "estado": "estable",
     "cambios_principales": [
-      "Migración visual con pantalla de carga animada",
       "Leaderboard global sincronizado con Firebase",
       "Sistema de sincronización de logros Guestbook ↔ Laboratory",
       "Bonus de 25 puntos por registro en leaderboard",
       "Fallback inteligente a datos locales",
       "Indicador de sincronización en tiempo real",
-      "Arreglo completo de Giscus y comentarios"
+      "Arreglo completo de Giscus y comentarios",
+      "Tutorial interactivo para nuevos usuarios",
+      "2 nuevos logros: Primer Paso y Explorador"
     ]
   },
   
@@ -29,12 +30,15 @@
       "title": "🔄 Sistema de Sincronización Global + Migración Visual",
       "type": "major",
       "features": [
-        "📱 Migración visual: Pantalla de carga con animación cuando transfiere datos",
+        "📱 Migración visual: Pantalla de carga con animación cuando transfiere datos (PENDIENTE)",
         "🏆 Leaderboard global: Sincronizado con Firebase en tiempo real",
         "🎁 Bonus por registro: 25 puntos por unirse al leaderboard",
         "🛡️ Fallback inteligente: Si Firebase falla, usa datos locales",
         "🔄 Indicador de sincronización: Muestra cuando los datos están sincronizados",
         "🔗 Sistema de Sincronización de Logros - Guestbook ↔ Laboratory",
+        "🎓 Tutorial Interactivo: Guía paso a paso para nuevos usuarios",
+        "🏆 Logro 'Primer Paso': Completar el tutorial (50 pts)",
+        "🌟 Logro 'Explorador': Visitar todas las secciones del laboratorio (100 pts)",
         "💾 Migración automática de datos entre plataformas",
         "⚡ Sincronización bidireccional en tiempo real",
         "🌐 Leaderboard global con rankings actualizados",
