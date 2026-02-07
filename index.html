@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>🔬 FenixLaboratory v2.3.0 - Experimentos y Proyectos</title>
+  <title>🔬 FenixLaboratory v2.4.1 - Experimentos y Proyectos</title>
   <meta name="description" content="Portfolio interactivo con juegos multijugador, guestbook artístico y sistema de logros. Deadly Pursuer, Project Ankaro y más." />
   <link rel="icon" type="image/png" href="public/assets/icons/ankush.png">
   
@@ -77,7 +77,7 @@
           </li>
           <li class="nav-item">
             <button id="updates-btn" class="nav-link" aria-label="Ver actualizaciones">
-              <i class="bi bi-arrow-up-circle me-1"></i> v2.3.0
+              <i class="bi bi-arrow-up-circle me-1"></i> v2.4.1
             </button>
           </li>
           <li class="nav-item">
@@ -316,7 +316,13 @@
             </div>
           </div>
         </div>
-        <div class="mb-4" id="special-events-section"></div>
+        <div class="mb-4" id="special-events"></div>
+        <div class="mb-4" id="event-badge-container"></div>
+        <div class="mb-3" style="display: flex; gap: 0.5rem;">
+          <button onclick="toggleAchievementsView('achievements')" id="btn-view-achievements" class="btn btn-outline-neon" style="flex: 1; font-size: 0.8rem; padding: 0.5rem;">🎯 Ver Logros</button>
+          <button onclick="toggleAchievementsView('leaderboard')" id="btn-view-leaderboard" class="btn btn-outline-neon" style="flex: 1; font-size: 0.8rem; padding: 0.5rem;">🏆 Leaderboard</button>
+        </div>
+        <div id="achievements-view">
         <div class="row mb-3">
           <div class="col-md-6">
             <div id="daily-challenges"></div>
@@ -330,9 +336,12 @@
           <h4 style="color: var(--primary); margin-bottom: 1rem;">🎯 Todos los Logros</h4>
           <div id="achievements-list"></div>
         </div>
+        </div>
+        <div id="leaderboard-view" style="display: none;">
         <div class="mb-4">
-          <h4 style="color: var(--primary); margin-bottom: 1rem;">🏆 Leaderboard Local</h4>
+          <h4 style="color: var(--primary); margin-bottom: 1rem;">🏆 Leaderboard Global</h4>
           <div id="leaderboard-display"></div>
+        </div>
         </div>
       </div>
     </div>
@@ -660,8 +669,18 @@
   <div class="nerd-panel" id="name-panel">
     <button class="close-panel" id="close-name-panel">&times;</button>
     <h3>🏆 LEADERBOARD</h3>
-    <p>Ingresa tu nombre para aparecer en el ranking global:</p>
+    <p>Ingresa tu nombre y foto de perfil para aparecer en el ranking global:</p>
     <input type="text" id="name-input" class="search-box" placeholder="Tu nombre" maxlength="20" style="width: 100%; margin-bottom: 1rem;">
+    <div style="margin-bottom: 1rem;">
+      <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">📸 Foto de perfil:</label>
+      <input type="file" id="avatar-file" accept="image/*" style="width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 6px; color: var(--text-primary); cursor: pointer;">
+      <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+        💡 O pega una URL: <input type="url" id="avatar-input" class="search-box" placeholder="https://..." style="width: 100%; margin-top: 0.25rem;">
+      </div>
+    </div>
+    <div id="avatar-preview" style="display: none; text-align: center; margin-bottom: 1rem;">
+      <img id="preview-img" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary);" alt="Preview">
+    </div>
     <div class="btn-group">
       <button class="btn btn-outline-neon" onclick="submitName()">💾 Guardar</button>
       <button class="btn btn-outline-neon" onclick="hideNamePanel()">❌ Cancelar</button>
@@ -712,6 +731,7 @@
   <!-- Firebase CDN -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
   
   <!-- Firebase Scripts -->
@@ -1348,11 +1368,37 @@ async function showCredits() {
         updateWeeklyChallengesDisplay();
         updateBadgesDisplay();
         updateSpecialEventsDisplay();
-        setupAchievements();
+        if (typeof plushieSystem !== 'undefined' && plushieSystem) {
+          plushieSystem.updateEventBadge();
+        }
+        toggleAchievementsView('achievements');
         await updateLeaderboardDisplay();
         
       } catch (error) {
         console.error('Error mostrando logros:', error);
+      }
+    }
+
+    function toggleAchievementsView(view) {
+      const achievementsView = document.getElementById('achievements-view');
+      const leaderboardView = document.getElementById('leaderboard-view');
+      const btnAchievements = document.getElementById('btn-view-achievements');
+      const btnLeaderboard = document.getElementById('btn-view-leaderboard');
+      
+      if (view === 'achievements') {
+        achievementsView.style.display = 'block';
+        leaderboardView.style.display = 'none';
+        btnAchievements.style.background = 'var(--primary)';
+        btnAchievements.style.color = 'white';
+        btnLeaderboard.style.background = '';
+        btnLeaderboard.style.color = '';
+      } else {
+        achievementsView.style.display = 'none';
+        leaderboardView.style.display = 'block';
+        btnLeaderboard.style.background = 'var(--primary)';
+        btnLeaderboard.style.color = 'white';
+        btnAchievements.style.background = '';
+        btnAchievements.style.color = '';
       }
     }
 
@@ -2336,11 +2382,13 @@ async function showCredits() {
       globalData.slice(0, 10).forEach((entry, index) => {
         const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
         const isMe = entry.name === gameData.leaderboardName || entry.userId === getUserId();
+        const avatar = entry.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(entry.name || 'User') + '&background=random&size=128';
         
         html += `
-          <div class="achievement-item ${isMe ? 'unlocked' : ''}" style="margin-bottom: 0.3rem; padding: 0.4rem;">
+          <div class="achievement-item ${isMe ? 'unlocked' : ''}" style="margin-bottom: 0.3rem; padding: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
             <div class="achievement-icon" style="font-size: 0.9rem;">${medal}</div>
-            <div class="achievement-info">
+            <img src="${avatar}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(entry.name || 'User')}&background=random&size=128'" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);" alt="Avatar">
+            <div class="achievement-info" style="flex: 1;">
               <h4 style="font-size: 0.75rem;">${entry.name || 'Anónimo'} ${isMe ? '(Tú)' : ''}</h4>
               <p style="font-size: 0.65rem;">${entry.points} pts</p>
             </div>
@@ -2372,8 +2420,10 @@ async function showCredits() {
       document.getElementById('name-panel').classList.remove('show');
     }
 
-    function submitName() {
+    async function submitName() {
       const nameInput = document.getElementById('name-input');
+      const avatarInput = document.getElementById('avatar-input');
+      const avatarFile = document.getElementById('avatar-file');
       const name = nameInput.value.trim();
       
       if (!name) {
@@ -2381,14 +2431,37 @@ async function showCredits() {
         return;
       }
       
+      let avatar = avatarInput.value.trim();
+      
+      // Si hay archivo, subirlo a Firebase Storage
+      if (avatarFile.files.length > 0) {
+        const file = avatarFile.files[0];
+        if (file.size > 2 * 1024 * 1024) {
+          alert('⚠️ La imagen es muy grande. Máximo 2MB');
+          return;
+        }
+        
+        try {
+          showAchievementNotification({ name: '💾 Subiendo foto...', points: 0 });
+          if (window.firebasePoints && window.firebasePoints.uploadAvatar) {
+            avatar = await window.firebasePoints.uploadAvatar(file);
+          }
+        } catch (error) {
+          alert('❌ Error subiendo foto. Intenta con una URL en su lugar.');
+          return;
+        }
+      }
+      
       gameData.leaderboardName = name;
+      gameData.avatar = avatar || '';
       localStorage.setItem('leaderboardName', name);
+      localStorage.setItem('avatar', avatar);
       saveGameData();
       hideNamePanel();
       
       // Actualizar en Firebase
       if (window.firebasePoints && window.firebasePoints.updateLeaderboard) {
-        window.firebasePoints.updateLeaderboard(name, gameData.points);
+        window.firebasePoints.updateLeaderboard(name, gameData.points, avatar);
       }
       
       // Actualizar leaderboard local y global
@@ -2613,6 +2686,25 @@ async function showCredits() {
       setCursor(gameData.activeCursor);
       await updateLeaderboardDisplay();
       detectDeviceAndBrowser();
+      
+      // Preview de avatar
+      const avatarFile = document.getElementById('avatar-file');
+      const avatarPreview = document.getElementById('avatar-preview');
+      const previewImg = document.getElementById('preview-img');
+      
+      if (avatarFile) {
+        avatarFile.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              previewImg.src = e.target.result;
+              avatarPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
       // Agregar listeners a redes sociales
       document.querySelectorAll('.social-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -2725,7 +2817,7 @@ async function showCredits() {
             throw new Error(`HTTP ${response.status}`);
           }
           const data = await response.json();
-          const currentVersion = '2.2.2';
+          const currentVersion = '2.4.1';
           if (data.version !== currentVersion) {
             console.log('🆕 Nueva versión disponible:', data.version);
             showUpdateNotification(data.version, data.updates[0]);

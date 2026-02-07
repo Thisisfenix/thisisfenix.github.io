@@ -1,15 +1,15 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "lastUpdate": "2026-02-03",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.4.0",
+    "numero": "2.4.1",
     "fecha": "2026-02-03",
-    "tipo": "major",
+    "tipo": "hotfix",
     "estado": "estable",
     "cambios_principales": [
       "Leaderboard global sincronizado con Firebase",
@@ -24,6 +24,32 @@
   },
   
   "updates": [
+    {
+      "version": "2.4.1",
+      "date": "2026-02-03",
+      "title": "🔧 Hotfix - Sistema de Logros",
+      "type": "hotfix",
+      "features": [
+        "✅ Arreglado ID duplicado en special-events",
+        "✅ Eliminada llamada duplicada a setupAchievements()",
+        "✅ Sistema de eventos especiales funciona correctamente",
+        "✅ Lista de logros sin duplicados",
+        "🎯 Botones para alternar entre Logros y Leaderboard",
+        "🏆 Vista separada y personalizable del Leaderboard",
+        "🧸 Badge del evento de plushies visible en panel de logros",
+        "🖼️ Avatares personalizados en el Leaderboard",
+        "📤 Subida directa de fotos a Firebase Storage",
+        "🌐 Soporte para URLs de imágenes externas (Imgur, etc)",
+        "🤖 Fallback automático a avatares generados si no hay foto",
+        "👁️ Preview en tiempo real de la foto antes de guardar",
+        "⚖️ Validación de tamaño máximo 2MB"
+      ],
+      "fixes": [
+        "🐛 Corregido error que causaba que los eventos especiales no se mostraran",
+        "🐛 Corregido error que causaba que los logros aparecieran 2 veces",
+        "🐛 Optimizado el renderizado del panel de logros"
+      ]
+    },
     {
       "version": "2.4.0",
       "date": "2026-02-03",

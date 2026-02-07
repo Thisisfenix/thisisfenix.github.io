@@ -12,6 +12,8 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const storage = firebase.storage();
+const storageRef = storage.ref();
 
 // Generar ID único para usuario
 const getUserId = () => {
@@ -148,12 +150,13 @@ const updatePoints = async (points) => {
 };
 
 // Actualizar leaderboard en Firebase
-const updateLeaderboard = async (name, points) => {
+const updateLeaderboard = async (name, points, avatar = '') => {
   const userId = getUserId();
   try {
     await db.collection('leaderboard').doc(userId).set({
       name,
       points,
+      avatar,
       userId,
       lastUpdate: Date.now()
     });
@@ -162,10 +165,11 @@ const updateLeaderboard = async (name, points) => {
     await db.collection('users').doc(userId).set({
       name,
       points,
+      avatar,
       lastSync: Date.now()
     }, { merge: true });
     
-    console.log('Leaderboard actualizado:', name, points);
+    console.log('Leaderboard actualizado:', name, points, avatar);
   } catch (error) {
     console.error('Error actualizando leaderboard:', error);
   }
@@ -203,4 +207,22 @@ const listenToPoints = (callback) => {
 // Inicializar migración automáticamente
 migratePointsToFirebase();
 
-window.firebasePoints = { getPoints, updatePoints, listenToPoints, updateLeaderboard, getLeaderboard };
+// Subir avatar a Firebase Storage
+const uploadAvatar = async (file) => {
+  const userId = getUserId();
+  const fileExtension = file.name.split('.').pop();
+  const fileName = `avatars/${userId}.${fileExtension}`;
+  const avatarRef = storageRef.child(fileName);
+  
+  try {
+    const snapshot = await avatarRef.put(file);
+    const downloadURL = await snapshot.ref.getDownloadURL();
+    return downloadURL;
+  } catch (error) {
+    console.error('Error subiendo avatar:', error);
+    throw error;
+  }
+};
+
+window.firebasePoints = { getPoints, updatePoints, listenToPoints, updateLeaderboard, getLeaderboard, uploadAvatar };
+window.getUserId = getUserId;
