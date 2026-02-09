@@ -21,3 +21,7 @@ chatbot/worker/.wrangler/
 chatbot/worker/.dev.vars
 chatbot/worker/node_modules/
 chatbot/worker/wrangler.toml
+
+# Admin pages (solo para uso local)
+pending.html
+js/pending.js

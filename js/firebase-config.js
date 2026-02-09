@@ -12,8 +12,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const storage = firebase.storage();
-const storageRef = storage.ref();
 
 // Generar ID único para usuario
 const getUserId = () => {
@@ -207,17 +205,23 @@ const listenToPoints = (callback) => {
 // Inicializar migración automáticamente
 migratePointsToFirebase();
 
-// Subir avatar a Firebase Storage
+// Subir avatar a Cloudinary
 const uploadAvatar = async (file) => {
-  const userId = getUserId();
-  const fileExtension = file.name.split('.').pop();
-  const fileName = `avatars/${userId}.${fileExtension}`;
-  const avatarRef = storageRef.child(fileName);
+  const cloudName = 'dkci24erg';
+  const uploadPreset = 'fenixlab_wiki';
+  
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', uploadPreset);
+  formData.append('folder', 'avatars');
   
   try {
-    const snapshot = await avatarRef.put(file);
-    const downloadURL = await snapshot.ref.getDownloadURL();
-    return downloadURL;
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+    return data.secure_url;
   } catch (error) {
     console.error('Error subiendo avatar:', error);
     throw error;

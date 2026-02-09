@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FenixLab: Archives of Creation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="placeholder/styles.css">
+  <style>
+    @keyframes flip {
+      0%, 100% { transform: rotateX(0deg); }
+      50% { transform: rotateX(180deg); }
+    }
+    .hourglass-loading {
+      animation: flip 1.2s ease-in-out infinite;
+    }
+    .wizard-container {
+      background: linear-gradient(135deg, rgba(var(--primary-rgb, 138,43,226), 0.1), rgba(var(--primary-rgb, 138,43,226), 0.05));
+      border: 2px solid var(--primary);
+      border-radius: 16px;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    @media (min-width: 768px) {
+      .wizard-container { padding: 2rem; }
+    }
+    .wizard-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--bg-dark);
+    }
+    .wizard-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent, #ff00ff));
+      transition: width 0.3s ease;
+      width: 0;
+    }
+    .step-indicators {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      position: relative;
+      gap: 0.5rem;
+    }
+    .step-indicator {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      border: 2px solid var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-weight: bold;
+      transition: all 0.3s ease;
+      z-index: 1;
+      font-size: 0.9rem;
+    }
+    @media (min-width: 768px) {
+      .step-indicators { margin-bottom: 2rem; gap: 0; }
+      .step-indicator { width: 40px; height: 40px; font-size: 1rem; }
+    }
+    .step-indicator.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 0 20px var(--primary);
+    }
+    .step-indicator.completed {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+    .wizard-step {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .wizard-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      flex-direction: column;
+    }
+    @media (min-width: 768px) {
+      .wizard-buttons { flex-direction: row; gap: 1rem; margin-top: 2rem; }
+    }
+    .form-control, .form-select {
+      background: var(--bg-dark) !important;
+      border: 2px solid rgba(var(--primary-rgb, 138,43,226), 0.3) !important;
+      color: var(--text-color) !important;
+      transition: all 0.3s ease;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 15px rgba(var(--primary-rgb, 138,43,226), 0.3) !important;
+    }
+    .form-label {
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-book"></i> Archives of Creation
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showSubmitForm()">
+              <i class="bi bi-plus-circle"></i> Enviar Entrada
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="event.preventDefault(); showView('inicio')">
+              <i class="bi bi-house"></i> Inicio
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#" onclick="event.preventDefault(); showView('personajes')">
+              <i class="bi bi-people"></i> Personajes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="event.preventDefault(); showView('mundos')">
+              <i class="bi bi-globe"></i> Mundos
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <!-- Vista Principal: Grid de Personajes -->
+    <div id="characters-view">
+      <div class="wiki-header">
+        <h1 id="main-title" style="color: var(--text-color, #fff);"><i class="bi bi-people"></i> Personajes</h1>
+        <p id="main-subtitle" style="color: var(--text-secondary, #aaa);">Explora los personajes y mundos de la comunidad</p>
+      </div>
+
+      <div class="search-filter-bar">
+        <input type="text" id="search-box" class="form-control" placeholder="🔍 Buscar...">
+      </div>
+
+      <div id="characters-grid" class="characters-grid"></div>
+    </div>
+
+    <!-- Vista de Detalle del Personaje -->
+    <div id="character-detail" style="display: none;"></div>
+
+    <!-- Formulario de Envío -->
+    <div id="submit-form" style="display: none;">
+      <button class="btn btn-outline-light mb-3" onclick="showAllCharacters()">
+        <i class="bi bi-arrow-left"></i> Volver
+      </button>
+      <div class="wizard-container">
+        <div class="wizard-progress" id="wizard-progress"></div>
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.5rem;"><i class="bi bi-file-earmark-plus"></i> Enviar Nueva Entrada</h2>
+        
+        <style>
+          @media (min-width: 768px) {
+            .wizard-container h2 { font-size: 2rem; margin-bottom: 2rem; }
+            .wizard-step h3 { font-size: 1.75rem; }
+          }
+        </style>
+        
+        <div class="step-indicators">
+          <div class="step-indicator active">1</div>
+          <div class="step-indicator">2</div>
+          <div class="step-indicator">3</div>
+          <div class="step-indicator">4</div>
+          <div class="step-indicator">5</div>
+        </div>
+        
+        <form id="character-form">
+          <!-- Paso 1: Información Básica -->
+          <div class="wizard-step" id="step-1">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.25rem;">📋 Información Básica</h3>
+            <div class="mb-3">
+              <label class="form-label">@ de Discord *</label>
+              <input type="text" class="form-control" name="discord" required placeholder="tu_usuario#1234">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tipo de Entrada *</label>
+              <select class="form-select" name="tipo_entrada" required>
+                <option value="personaje">Personaje</option>
+                <option value="mundo">Mundo/Lore</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tipo de Aporte *</label>
+              <select class="form-select" name="tipo_aporte" id="tipo-aporte" required>
+                <option value="adicion">Adición - Nueva entrada</option>
+                <option value="actualizacion">Actualización - Entrada existente</option>
+              </select>
+            </div>
+            <div class="mb-3" id="entrada-modificar-container" style="display:none;">
+              <label class="form-label">Selecciona tu entrada a modificar *</label>
+              <select class="form-select" name="entrada_modificar" id="entrada-modificar">
+                <option value="">Cargando tus entradas...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Paso 2: Datos del Personaje -->
+          <div class="wizard-step" id="step-2" style="display:none;">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.25rem;">👤 Datos del Personaje</h3>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre *</label>
+                <input type="text" class="form-control" name="nombre" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Aliases/Apodos</label>
+                <input type="text" class="form-control" name="aliases" placeholder="Separados por comas">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Género *</label>
+                <select class="form-select" name="genero" required>
+                  <option value="hombre">Hombre</option>
+                  <option value="mujer">Mujer</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Pronombres</label>
+                <input type="text" class="form-control" name="pronombres" placeholder="He/Him, She/Her...">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Orientación</label>
+                <input type="text" class="form-control" name="orientacion">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Edad</label>
+                <input type="text" class="form-control" name="edad">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" name="fecha_nacimiento">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Estado</label>
+                <select class="form-select" name="estado">
+                  <option value="vivo">Vivo</option>
+                  <option value="muerto">Muerto</option>
+                  <option value="desaparecido">Desaparecido</option>
+                  <option value="desconocido">Desconocido</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Especie</label>
+                <input type="text" class="form-control" name="especie" placeholder="Humano, Alien...">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Altura (m)</label>
+                <input type="text" class="form-control" name="altura" placeholder="1.75">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Color de Ojos</label>
+                <input type="text" class="form-control" name="ojos">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Cabello</label>
+                <input type="text" class="form-control" name="cabello">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Relaciones</label>
+              <textarea class="form-control" name="relaciones" rows="2" placeholder="Nombre (Relación), separados por comas"></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Afiliaciones</label>
+                <input type="text" class="form-control" name="afiliaciones">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Ocupación</label>
+                <input type="text" class="form-control" name="ocupacion">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Voz</label>
+                <input type="text" class="form-control" name="voz" placeholder="Actor de voz">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Apariciones</label>
+              <textarea class="form-control" name="apariciones" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Paso 3: Descripciones -->
+          <div class="wizard-step" id="step-3" style="display:none;">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.25rem;">📝 Descripciones</h3>
+            <div class="mb-3">
+              <label class="form-label">Descripción General *</label>
+              <textarea class="form-control" name="descripcion_general" rows="4" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Apariencia *</label>
+              <textarea class="form-control" name="apariencia" rows="4" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Personalidad *</label>
+              <textarea class="form-control" name="personalidad" rows="4" required></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Le Gusta</label>
+                <textarea class="form-control" name="le_gusta" rows="3" placeholder="Separados por comas"></textarea>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">No Le Gusta</label>
+                <textarea class="form-control" name="no_le_gusta" rows="3" placeholder="Separados por comas"></textarea>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Trivia</label>
+              <textarea class="form-control" name="trivia" rows="3" placeholder="Datos curiosos, separados por comas"></textarea>
+            </div>
+          </div>
+
+          <!-- Paso 4: Opiniones -->
+          <div class="wizard-step" id="step-4" style="display:none;">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.25rem;">⚙️ Estado y Opiniones</h3>
+            <div class="mb-3">
+              <label class="form-label">Estado del Personaje *</label>
+              <select class="form-select" name="estado_personaje" required>
+                <option value="definido">Definido</option>
+                <option value="no-definido">No Definido</option>
+                <option value="wip">Work In Progress</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Opiniones sobre otros personajes</label>
+              <button type="button" class="btn btn-outline-primary w-100 mb-2" onclick="addOpinionField()">
+                <i class="bi bi-plus-circle"></i> Agregar Opinión
+              </button>
+              <div id="opinions-container"></div>
+              <textarea class="form-control" name="opiniones" id="opiniones-hidden" style="display:none;"></textarea>
+            </div>
+          </div>
+
+          <!-- Paso 5: Imágenes -->
+          <div class="wizard-step" id="step-5" style="display:none;">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.25rem;">🖼️ Imágenes</h3>
+            <div class="mb-3">
+              <label class="form-label">Iconos FNF (2-5 imágenes) *</label>
+              <input type="file" class="form-control" name="iconos" multiple accept="image/*" required>
+              <small class="text-muted">Mínimo 2 iconos. Máximo 10 MB por archivo.</small>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Render Principal *</label>
+              <input type="file" class="form-control" name="render" multiple accept="image/*" required>
+              <small class="text-muted">Foto a cuerpo completo transparente. Máximo 5 archivos.</small>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Galería (hasta 10)</label>
+              <input type="file" class="form-control" name="galeria" multiple accept="image/*">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Fanarts (hasta 10)</label>
+              <input type="file" class="form-control" name="fanarts" multiple accept="image/*">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Créditos de Fanarts</label>
+              <textarea class="form-control" name="creditos_fanarts" rows="3" placeholder="Imagen.png - Autor"></textarea>
+            </div>
+            <div class="alert alert-warning">
+              <i class="bi bi-exclamation-triangle"></i> Tu entrada debe estar bien desarrollada y tener coherencia.
+            </div>
+          </div>
+
+          <div class="wizard-buttons">
+            <button type="button" class="btn btn-outline-light" id="prev-btn" onclick="prevStep()" style="display:none;">
+              <i class="bi bi-arrow-left"></i> Anterior
+            </button>
+            <button type="button" class="btn btn-primary" id="next-btn" onclick="nextStep()" style="flex:1;">
+              Siguiente <i class="bi bi-arrow-right"></i>
+            </button>
+            <button type="submit" class="btn btn-success" id="submit-btn" style="display:none; flex:1;">
+              <i class="bi bi-send"></i> Enviar Entrada
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/themes.js"></script>
+  <script src="js/wiki.js"></script>
+  <script src="js/mundos.js"></script>
+  <script src="js/form-toggle.js"></script>
+  <script src="js/opinion-selector.js"></script>
+  <script src="js/form-wizard.js"></script>
+  <script>
+    // Cambiar entre vistas
+    function showView(view) {
+      const title = document.getElementById('main-title');
+      const subtitle = document.getElementById('main-subtitle');
+      const searchBox = document.getElementById('search-box');
+      const grid = document.getElementById('characters-grid');
+      
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      
+      if (view === 'inicio') {
+        document.querySelector('[onclick*="inicio"]').classList.add('active');
+        title.innerHTML = '<i class="bi bi-book"></i> Archives of Creation';
+        subtitle.textContent = 'Explora los personajes y mundos creados por la comunidad';
+        searchBox.style.display = 'none';
+        grid.innerHTML = `
+          <div class="card" style="background: var(--bg-light); border: 1px solid var(--primary); padding: 2rem; text-align: center;">
+            <h3 style="color: var(--primary, #fff); margin-bottom: 1rem;">👋 ¡Bienvenido!</h3>
+            <p style="margin-bottom: 1.5rem; color: var(--text-color, #fff);">Explora todos los personajes y mundos creados por la comunidad.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;">
+              <div class="card" style="padding: 1rem; cursor: pointer;" onclick="showView('personajes')">
+                <i class="bi bi-people" style="font-size: 2rem; color: var(--primary);"></i>
+                <h5 style="margin-top: 0.5rem; color: var(--text-color, #fff);">Personajes</h5>
+                <p style="font-size: 0.9rem; color: var(--text-secondary, #aaa);">Explora los personajes</p>
+              </div>
+              <div class="card" style="padding: 1rem; cursor: pointer;" onclick="showView('mundos')">
+                <i class="bi bi-globe" style="font-size: 2rem; color: var(--primary);"></i>
+                <h5 style="margin-top: 0.5rem; color: var(--text-color, #fff);">Mundos</h5>
+                <p style="font-size: 0.9rem; color: var(--text-secondary, #aaa);">Descubre los mundos</p>
+              </div>
+              <div class="card" style="padding: 1rem; cursor: pointer;" onclick="showSubmitForm()">
+                <i class="bi bi-plus-circle" style="font-size: 2rem; color: var(--primary);"></i>
+                <h5 style="margin-top: 0.5rem; color: var(--text-color, #fff);">Enviar Entrada</h5>
+                <p style="font-size: 0.9rem; color: var(--text-secondary, #aaa);">Añade tu personaje</p>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (view === 'mundos') {
+        document.querySelector('[onclick*="mundos"]').classList.add('active');
+        title.innerHTML = '<i class="bi bi-globe"></i> Mundos y Lore';
+        subtitle.textContent = 'Descubre los mundos de la comunidad';
+        searchBox.style.display = 'block';
+        searchBox.placeholder = '🔍 Buscar mundos...';
+        if (typeof loadMundos === 'function') loadMundos();
+      } else {
+        document.querySelector('[onclick*="personajes"]').classList.add('active');
+        title.innerHTML = '<i class="bi bi-people"></i> Personajes';
+        subtitle.textContent = 'Explora los personajes de la comunidad';
+        searchBox.style.display = 'block';
+        searchBox.placeholder = '🔍 Buscar personajes...';
+        if (typeof loadCharacters === 'function') loadCharacters();
+      }
+    }
+    
+    // Mostrar inicio al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      setupEventListeners();
+      showView('inicio');
+    });
+  </script>
+</body>
+</html>

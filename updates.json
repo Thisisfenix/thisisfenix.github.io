@@ -1,29 +1,75 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.4.1",
-  "lastUpdate": "2026-02-03",
+  "version": "2.4.2",
+  "lastUpdate": "2026-02-04",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.4.1",
-    "fecha": "2026-02-03",
-    "tipo": "hotfix",
+    "numero": "2.4.2",
+    "fecha": "2026-02-04",
+    "tipo": "major",
     "estado": "estable",
     "cambios_principales": [
-      "Leaderboard global sincronizado con Firebase",
-      "Sistema de sincronización de logros Guestbook ↔ Laboratory",
-      "Bonus de 25 puntos por registro en leaderboard",
-      "Fallback inteligente a datos locales",
-      "Indicador de sincronización en tiempo real",
-      "Arreglo completo de Giscus y comentarios",
-      "Tutorial interactivo para nuevos usuarios",
-      "2 nuevos logros: Primer Paso y Explorador"
+      "Nueva Wiki para crear y compartir personajes de la comunidad",
+      "Formulario fácil dividido en 5 pasos con animaciones",
+      "Puedes ver imágenes en grande con un click",
+      "Funciona perfecto en celulares y tablets",
+      "Se adapta solo si creas un personaje o un mundo",
+      "Te avisa si te falta llenar algo importante"
     ]
   },
   
   "updates": [
+    {
+      "version": "2.4.2",
+      "date": "2026-02-04",
+      "title": "📝 Nueva Wiki de Personajes",
+      "type": "major",
+      "features": [
+        "📝 Nueva sección para crear personajes y mundos de tu comunidad",
+        "🎯 Formulario dividido en 5 pasos fáciles de seguir",
+        "✨ Diseño bonito con colores y efectos brillantes",
+        "👉 Avanzas paso a paso, no te pierdes",
+        "📱 Funciona perfecto en celular, tablet y computadora",
+        "🌍 Se adapta solo: si es personaje o mundo cambia los campos",
+        "💬 Puedes dar opiniones sobre otros personajes del catálogo",
+        "🖼️ Las imágenes se abren en grande con animación suave",
+        "⏳ Pantalla de carga con relojito animado mientras esperas",
+        "✅ Te avisa si te falta algo antes de continuar",
+        "📊 Barra de progreso para saber en qué paso vas",
+        "☁️ Tus imágenes se guardan en la nube (Firebase y Cloudinary)",
+        "👥 Un admin revisa y aprueba las entradas antes de publicar",
+        "📖 Vista de detalle con pestañas para ver toda la info organizada",
+        "📸 Puedes subir iconos, renders, galería y fanarts"
+      ],
+      "como_funciona": [
+        "📋 Paso 1: Pones tu Discord y eliges si es personaje o mundo",
+        "👤 Paso 2: Nombre, edad, género y datos básicos",
+        "📝 Paso 3: Describes cómo es, su personalidad y gustos",
+        "💬 Paso 4: Opiniones sobre otros personajes (solo si es personaje)",
+        "🖼️ Paso 5: Subes las imágenes de tu personaje",
+        "✅ El formulario solo te pide lo que necesitas según el tipo",
+        "📱 En celular los botones se acomodan en vertical para que sea más fácil"
+      ],
+      "mejoras_movil": [
+        "📱 Márgenes más pequeños en celular para aprovechar la pantalla",
+        "🔘 Indicadores de paso más chicos en celular",
+        "📝 Títulos más pequeños para que quepa todo",
+        "🔽 Botones uno abajo del otro en celular",
+        "📏 Todo se acomoda solo según tu pantalla",
+        "✨ Funciona suave al tocar en pantallas táctiles"
+      ],
+      "fixes": [
+        "🐛 Arreglado: Ya no te pide campos que están ocultos",
+        "🎨 Quitado: El borde brillante raro de las imágenes",
+        "⏳ Mejorado: El reloj de arena ahora gira como en Windows antiguo",
+        "🔄 Arreglado: Si es mundo, se salta el paso de opiniones automáticamente",
+        "✅ Mejorado: Te marca en rojo lo que falta llenar",
+        "📱 Arreglado: Todo funciona bien en cualquier dispositivo"
+      ]
+    },
     {
       "version": "2.4.1",
       "date": "2026-02-03",
