@@ -56,14 +56,16 @@ async function loadUserEntries() {
   if (!discordInput || !discordInput.value || !select) return;
   
   try {
-    const [approved, pending] = await Promise.all([
+    const [approved, pending, rejected] = await Promise.all([
       wikiDb.collection('characters').where('discord', '==', discordInput.value).get(),
-      wikiDb.collection('pending_characters').where('discord', '==', discordInput.value).get()
+      wikiDb.collection('pending_characters').where('discord', '==', discordInput.value).get(),
+      wikiDb.collection('rejected_characters').where('discord', '==', discordInput.value).get()
     ]);
     
     const entries = [
       ...approved.docs.map(doc => ({ id: doc.id, ...doc.data(), status: 'approved' })),
-      ...pending.docs.map(doc => ({ id: doc.id, ...doc.data(), status: doc.data().status || 'pending' }))
+      ...pending.docs.map(doc => ({ id: doc.id, ...doc.data(), status: 'pending' })),
+      ...rejected.docs.map(doc => ({ id: doc.id, ...doc.data(), status: 'rejected' }))
     ].sort((a, b) => a.nombre.localeCompare(b.nombre));
     
     if (entries.length === 0) {
@@ -72,9 +74,21 @@ async function loadUserEntries() {
     }
     
     select.innerHTML = '<option value="">Selecciona una entrada</option>' +
-      entries.map(entry => 
-        `<option value="${entry.id}">${entry.nombre} ${entry.status === 'pending' ? '(Pendiente)' : ''}</option>`
-      ).join('');
+      entries.map(entry => {
+        const icon = entry.status === 'approved' ? '✅' : entry.status === 'pending' ? '⏳' : '❌';
+        const text = entry.status === 'approved' ? 'Aprobado' : entry.status === 'pending' ? 'Pendiente' : 'Rechazado';
+        return `<option value="${entry.id}" data-status="${entry.status}">${icon} ${entry.nombre} (${text})</option>`;
+      }).join('');
+    
+    select.addEventListener('change', async (e) => {
+      const option = e.target.options[e.target.selectedIndex];
+      if (option.getAttribute('data-status') === 'rejected') {
+        const doc = await wikiDb.collection('rejected_characters').doc(e.target.value).get();
+        if (doc.exists) {
+          alert('❌ Esta entrada fue rechazada\n\nRazón: ' + (doc.data().rejectionReason || 'No especificada'));
+        }
+      }
+    });
   } catch (error) {
     console.error('Error:', error);
   }
@@ -349,8 +363,7 @@ function showSubmitForm() {
 async function handleFormSubmit(e) {
   e.preventDefault();
   
-  // Verificar que bcrypt esté cargado
-  if (typeof bcrypt === 'undefined') {
+  if (typeof secureHash === 'undefined') {
     alert('❌ Error: Sistema de seguridad no cargado. Recarga la página.');
     return;
   }
@@ -397,7 +410,7 @@ async function handleFormSubmit(e) {
       }
       
       const entryData = entryDoc.data();
-      const isValid = await bcrypt.compare(password, entryData.passwordHash);
+      const isValid = await secureHash.compare(password, entryData.passwordHash);
       
       if (!isValid) {
         alert('❌ Contraseña incorrecta');
@@ -435,8 +448,7 @@ async function handleFormSubmit(e) {
     // Hashear contraseña solo en nuevas entradas
     if (tipoAporte === 'adicion') {
       submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Cifrando contraseña...';
-      const salt = await bcrypt.genSalt(12);
-      characterData.passwordHash = await bcrypt.hash(password, salt);
+      characterData.passwordHash = await secureHash.hash(password);
       characterData.status = 'pending';
       await wikiDb.collection('pending_characters').add(characterData);
       alert('✅ ¡Entrada enviada! Espera aprobación.\n\n⚠️ GUARDA TU CONTRASEÑA: La necesitarás para editar.');
