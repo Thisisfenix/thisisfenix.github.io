@@ -175,7 +175,7 @@ async function showCharacterDetail(id) {
         <button class="tab-btn" onclick="switchWikiTab(event, 'opiniones')" style="background: none; border: none; color: var(--text-secondary); font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 0.5rem 1rem;">Opiniones</button>
       </div>
       
-      <div style="display: grid; grid-template-columns: 1fr 400px; gap: 2rem;">
+      <div class="character-detail-grid" style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
         <div>
           <div class="tab-content" id="wiki-tab-info">
             ${char.descripcion_general ? `
@@ -273,6 +273,12 @@ async function showCharacterDetail(id) {
           </div>
         </div>
       </div>
+      
+      <style>
+        @media (min-width: 992px) {
+          .character-detail-grid { grid-template-columns: 1fr 400px !important; }
+        }
+      </style>
     </div>
   `;
   
@@ -336,11 +342,18 @@ function showSubmitForm() {
   document.getElementById('character-detail').style.display = 'none';
   document.getElementById('submit-form').style.display = 'block';
   if (typeof initFormWizard === 'function') initFormWizard();
+  if (typeof startAutosave === 'function') startAutosave();
   window.scrollTo(0, 0);
 }
 
 async function handleFormSubmit(e) {
   e.preventDefault();
+  
+  // Verificar que bcrypt esté cargado
+  if (typeof bcrypt === 'undefined') {
+    alert('❌ Error: Sistema de seguridad no cargado. Recarga la página.');
+    return;
+  }
   
   const form = e.target;
   const formData = new FormData(form);
@@ -435,6 +448,7 @@ async function handleFormSubmit(e) {
       alert('✅ ¡Actualización enviada! Espera aprobación.');
     }
     
+    if (typeof clearFormProgress === 'function') clearFormProgress();
     form.reset();
     showAllCharacters();
     

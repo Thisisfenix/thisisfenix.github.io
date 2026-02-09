@@ -309,7 +309,11 @@
             </div>
             <div class="mb-3">
               <label class="form-label">Relaciones</label>
-              <textarea class="form-control" name="relaciones" rows="2" placeholder="Nombre (Relación), separados por comas"></textarea>
+              <button type="button" class="btn btn-outline-primary w-100 mb-2" onclick="addRelationField()">
+                <i class="bi bi-plus-circle"></i> Agregar Relación
+              </button>
+              <div id="relations-container"></div>
+              <textarea class="form-control" name="relaciones" id="relaciones-hidden" style="display:none;"></textarea>
             </div>
             <div class="row">
               <div class="col-md-4 mb-3">
@@ -327,7 +331,11 @@
             </div>
             <div class="mb-3">
               <label class="form-label">Apariciones</label>
-              <textarea class="form-control" name="apariciones" rows="2"></textarea>
+              <button type="button" class="btn btn-outline-primary w-100 mb-2" onclick="addAppearanceField()">
+                <i class="bi bi-plus-circle"></i> Agregar Aparición
+              </button>
+              <div id="appearances-container"></div>
+              <textarea class="form-control" name="apariciones" id="apariciones-hidden" style="display:none;"></textarea>
             </div>
           </div>
 
@@ -474,6 +482,9 @@
   <script src="js/mundos.js"></script>
   <script src="js/form-toggle.js"></script>
   <script src="js/opinion-selector.js"></script>
+  <script src="js/relation-selector.js"></script>
+  <script src="js/appearance-selector.js"></script>
+  <script src="js/form-autosave.js"></script>
   <script src="js/form-wizard.js"></script>
   <script>
     // Mostrar modal de ayuda de contraseña
