@@ -2418,6 +2418,21 @@ async function showCredits() {
     function hideNamePanel() {
       document.getElementById('panel-overlay').classList.remove('show');
       document.getElementById('name-panel').classList.remove('show');
+      
+      // Mostrar mensaje si no se registró
+      if (!gameData.leaderboardName) {
+        setTimeout(() => {
+          const msg = document.createElement('div');
+          msg.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--bg-dark);border:2px solid var(--primary);padding:1rem;border-radius:8px;z-index:9999;max-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.5);';
+          msg.innerHTML = `
+            <p style="margin:0 0 0.5rem;color:var(--text-primary);font-size:0.85rem;">💡 ¿Quieres registrarte después?</p>
+            <button onclick="showAchievements();toggleAchievementsView('leaderboard');this.parentElement.remove()" class="btn btn-outline-neon" style="width:100%;font-size:0.75rem;padding:0.4rem;">🏆 Ir a Leaderboard</button>
+            <button onclick="this.parentElement.remove()" style="background:transparent;border:none;color:var(--text-secondary);font-size:0.7rem;width:100%;margin-top:0.25rem;cursor:pointer;">Cerrar</button>
+          `;
+          document.body.appendChild(msg);
+          setTimeout(() => msg.remove(), 10000);
+        }, 500);
+      }
     }
 
     async function submitName() {
