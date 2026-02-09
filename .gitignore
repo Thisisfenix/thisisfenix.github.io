@@ -25,3 +25,6 @@ chatbot/worker/wrangler.toml
 # Admin pages (solo para uso local)
 pending.html
 js/pending.js
+
+# Documentation interna (no subir a GitHub)
+WIKI_PASSWORD_SYSTEM.md

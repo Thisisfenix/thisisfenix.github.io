@@ -22,11 +22,18 @@ function setupEventListeners() {
   if (tipoAporte) {
     tipoAporte.addEventListener('change', async (e) => {
       const container = document.getElementById('entrada-modificar-container');
+      const passwordLabel = document.getElementById('password-label');
+      const passwordHint = document.getElementById('password-hint');
+      
       if (e.target.value === 'actualizacion') {
         container.style.display = 'block';
+        passwordLabel.textContent = 'Contraseña de la Entrada *';
+        passwordHint.textContent = 'Ingresa la contraseña que usaste al crear esta entrada';
         await loadUserEntries();
       } else {
         container.style.display = 'none';
+        passwordLabel.textContent = 'Contraseña de Seguridad *';
+        passwordHint.textContent = 'Guarda esta contraseña, la necesitarás para editar tu entrada';
       }
     });
   }
@@ -49,18 +56,24 @@ async function loadUserEntries() {
   if (!discordInput || !discordInput.value || !select) return;
   
   try {
-    const snapshot = await wikiDb.collection('characters')
-      .where('discord', '==', discordInput.value)
-      .get();
+    const [approved, pending] = await Promise.all([
+      wikiDb.collection('characters').where('discord', '==', discordInput.value).get(),
+      wikiDb.collection('pending_characters').where('discord', '==', discordInput.value).get()
+    ]);
     
-    if (snapshot.empty) {
+    const entries = [
+      ...approved.docs.map(doc => ({ id: doc.id, ...doc.data(), status: 'approved' })),
+      ...pending.docs.map(doc => ({ id: doc.id, ...doc.data(), status: doc.data().status || 'pending' }))
+    ].sort((a, b) => a.nombre.localeCompare(b.nombre));
+    
+    if (entries.length === 0) {
       select.innerHTML = '<option value="">No tienes entradas</option>';
       return;
     }
     
     select.innerHTML = '<option value="">Selecciona una entrada</option>' +
-      snapshot.docs.map(doc => 
-        `<option value="${doc.id}">${doc.data().nombre}</option>`
+      entries.map(entry => 
+        `<option value="${entry.id}">${entry.nombre} ${entry.status === 'pending' ? '(Pendiente)' : ''}</option>`
       ).join('');
   } catch (error) {
     console.error('Error:', error);
@@ -332,20 +345,65 @@ async function handleFormSubmit(e) {
   const form = e.target;
   const formData = new FormData(form);
   const submitBtn = form.querySelector('button[type="submit"]');
+  const tipoAporte = formData.get('tipo_aporte');
+  const password = formData.get('password');
+  
+  if (!password || password.length < 8) {
+    alert('❌ La contraseña debe tener al menos 8 caracteres');
+    return;
+  }
   
   submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Subiendo...';
+  submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
   
   try {
+    // Si es actualización, verificar contraseña
+    if (tipoAporte === 'actualizacion') {
+      const entryId = formData.get('entrada_modificar');
+      if (!entryId) {
+        alert('❌ Selecciona una entrada para actualizar');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-send"></i> Enviar Entrada';
+        return;
+      }
+      
+      // Buscar en ambas colecciones
+      let entryDoc = await wikiDb.collection('characters').doc(entryId).get();
+      let collection = 'characters';
+      
+      if (!entryDoc.exists) {
+        entryDoc = await wikiDb.collection('pending_characters').doc(entryId).get();
+        collection = 'pending_characters';
+      }
+      
+      if (!entryDoc.exists) {
+        alert('❌ Entrada no encontrada');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-send"></i> Enviar Entrada';
+        return;
+      }
+      
+      const entryData = entryDoc.data();
+      const isValid = await bcrypt.compare(password, entryData.passwordHash);
+      
+      if (!isValid) {
+        alert('❌ Contraseña incorrecta');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-send"></i> Enviar Entrada';
+        return;
+      }
+    }
+    
     const characterData = {};
     
-    // Solo guardar campos de texto, no archivos
     for (let [key, value] of formData.entries()) {
       if (value instanceof File) continue;
+      if (key === 'password') continue;
       if (value) characterData[key] = value;
     }
     
-    // Subir imágenes a Cloudinary
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Subiendo imágenes...';
+    
     const iconos = await uploadFiles(formData.getAll('iconos'), 'iconos');
     const renders = await uploadFiles(formData.getAll('render'), 'renders');
     const galeria = await uploadFiles(formData.getAll('galeria'), 'galeria');
@@ -356,15 +414,27 @@ async function handleFormSubmit(e) {
     characterData.galeria = galeria;
     characterData.fanarts = fanarts;
     characterData.timestamp = firebase.firestore.FieldValue.serverTimestamp();
-    characterData.status = 'pending';
     
     if (characterData.opiniones) {
       characterData.opiniones_parsed = parseOpiniones(characterData.opiniones);
     }
     
-    await wikiDb.collection('pending_characters').add(characterData);
+    // Hashear contraseña solo en nuevas entradas
+    if (tipoAporte === 'adicion') {
+      submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Cifrando contraseña...';
+      const salt = await bcrypt.genSalt(12);
+      characterData.passwordHash = await bcrypt.hash(password, salt);
+      characterData.status = 'pending';
+      await wikiDb.collection('pending_characters').add(characterData);
+      alert('✅ ¡Entrada enviada! Espera aprobación.\n\n⚠️ GUARDA TU CONTRASEÑA: La necesitarás para editar.');
+    } else {
+      // Actualización: mantener el hash existente
+      const entryId = formData.get('entrada_modificar');
+      characterData.status = 'pending';
+      await wikiDb.collection('pending_characters').add(characterData);
+      alert('✅ ¡Actualización enviada! Espera aprobación.');
+    }
     
-    alert('✅ ¡Entrada enviada! Espera aprobación.');
     form.reset();
     showAllCharacters();
     
