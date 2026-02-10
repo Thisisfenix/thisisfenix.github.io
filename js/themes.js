@@ -2,7 +2,7 @@
 
 function setTheme(theme) {
   const body = document.body;
-  const themes = ['light-theme', 'neon-theme', 'cyberpunk-theme', 'matrix-theme', 'synthwave-theme', 'ocean-theme', 'forest-theme', 'sunset-theme', 'christmas-theme', 'halloween-theme', 'valentine-theme', 'easter-theme', 'summer-theme', 'autumn-theme', 'funkyatlas-theme', 'funkyatlas-christmas-theme', 'galaxy-theme', 'gold-theme', 'rainbow-theme', 'diamond-theme', 'custom-theme', 'vaporwave-theme', 'hacker-theme', 'neon-city-theme', 'space-theme', 'fire-theme', 'ice-theme', 'toxic-theme', 'royal-theme', 'steampunk-theme', 'hologram-theme', 'legendary-theme', 'plushie-rain-theme'];
+  const themes = ['light-theme', 'neon-theme', 'cyberpunk-theme', 'matrix-theme', 'synthwave-theme', 'ocean-theme', 'forest-theme', 'sunset-theme', 'christmas-theme', 'halloween-theme', 'valentine-theme', 'easter-theme', 'summer-theme', 'autumn-theme', 'funkyatlas-theme', 'funkyatlas-christmas-theme', 'galaxy-theme', 'gold-theme', 'rainbow-theme', 'diamond-theme', 'custom-theme', 'vaporwave-theme', 'hacker-theme', 'neon-city-theme', 'space-theme', 'fire-theme', 'ice-theme', 'toxic-theme', 'royal-theme', 'steampunk-theme', 'hologram-theme', 'legendary-theme', 'plushie-rain-theme', 'valentines-love-theme'];
   
   themes.forEach(t => body.classList.remove(t));
   
@@ -71,6 +71,12 @@ function setTheme(theme) {
     removePlushieRain();
   }
   
+  if (theme === 'valentines-love') {
+    createValentineRain();
+  } else {
+    removeValentineRain();
+  }
+  
   if (theme !== 'matrix') {
     removeMatrixRain();
   }
@@ -123,6 +129,28 @@ function createPlushieRain() {
     plushie.style.width = (Math.random() * 20 + 30) + 'px';
     plushie.style.height = plushie.style.width;
     document.body.appendChild(plushie);
+  }
+}
+
+function removeValentineRain() {
+  document.querySelectorAll('.falling-valentine').forEach(v => v.remove());
+}
+
+function createValentineRain() {
+  removeValentineRain();
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const valentineCount = isMobile ? 10 : 30;
+  
+  for (let i = 0; i < valentineCount; i++) {
+    const valentine = document.createElement('img');
+    valentine.className = 'falling-valentine';
+    valentine.src = 'placeholder/AnkushCat.png';
+    valentine.style.left = Math.random() * 100 + '%';
+    valentine.style.animation = `plushieFall ${Math.random() * 4 + 6}s linear infinite`;
+    valentine.style.animationDelay = Math.random() * 5 + 's';
+    valentine.style.width = (Math.random() * 20 + 30) + 'px';
+    valentine.style.height = valentine.style.width;
+    document.body.appendChild(valentine);
   }
 }
 

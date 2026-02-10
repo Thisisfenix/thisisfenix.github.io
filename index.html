@@ -85,6 +85,11 @@
               🧸 <span id="plushie-progress" style="font-weight: bold;">0/40</span>
             </button>
           </li>
+          <li class="nav-item">
+            <button id="cupid-btn" class="nav-link" aria-label="Cupid's Arrow Game">
+              🎹 <span id="cupid-score" style="font-weight: bold;">0</span>
+            </button>
+          </li>
         </ul>
       </div>
     </div>
@@ -622,6 +627,12 @@
         <div class="theme-name">🧸 Plushie Rain</div>
         <div class="theme-cost">Evento Exclusivo</div>
       </div>
+
+      <div class="theme-card premium-theme" data-theme="valentines-love" data-cost="0">
+        <div class="theme-preview preview-valentines-love"></div>
+        <div class="theme-name">💘 Valentine's Love</div>
+        <div class="theme-cost">Evento Exclusivo</div>
+      </div>
     </div>
 
     <div class="theme-category">🎨 Editor Avanzado</div>
@@ -768,6 +779,7 @@
   <!-- Scripts -->
   <script src="js/achievements.js"></script>
   <script src="js/plushie-system.js"></script>
+  <script src="js/cupid-arrow-game.js"></script>
   <script src="js/repos.js"></script>
   <script src="js/themes.js"></script>
   <script>
@@ -2306,6 +2318,12 @@ async function showCredits() {
             gameData.points = Math.max(gameData.points, syncData.gameData.points);
             gameData.streak = Math.max(gameData.streak, syncData.gameData.streak);
             
+            // Sincronizar con achievementSystem
+            if (window.achievementSystem) {
+              achievementSystem.gameData.points = gameData.points;
+              achievementSystem.gameData.streak = gameData.streak;
+            }
+            
             // Merge achievements
             Object.keys(syncData.gameData.achievements).forEach(key => {
               if (syncData.gameData.achievements[key]) {
@@ -2723,6 +2741,15 @@ async function showCredits() {
       setupParallax();
       setupPageTransitions();
       setupAchievements();
+      
+      // Desbloquear temas de eventos completados
+      if (localStorage.getItem('plushie-theme-unlocked') === 'true') {
+        gameData.unlockedThemes.add('plushie-rain');
+      }
+      if (localStorage.getItem('valentine-theme-unlocked') === 'true') {
+        gameData.unlockedThemes.add('valentines-love');
+      }
+      
       updatePremiumThemes();
       updateSeasonalIndicator();
       updateCursorShop();

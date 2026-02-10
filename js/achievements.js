@@ -129,6 +129,7 @@ class AchievementSystem {
       'plushie-collector': { name: 'Coleccionista de Peluches', desc: 'Encuentra los 40 peluches escondidos', points: 500, icon: '🧸' },
       'gissel-fan': { name: 'Fan de Gissel', desc: 'Encuentra los 20 peluches de Gissel', points: 250, icon: '💜' },
       'molly-hunter': { name: 'Cazador de Molly', desc: 'Encuentra los 20 peluches de Molly', points: 250, icon: '🔪' },
+      'cupid-master': { name: 'Maestro de Cupido', desc: 'Consigue 500 puntos en Cupid\'s Arrow Game', points: 300, icon: '🏹' },
       'deadly-player': { name: 'Jugador Mortal', desc: 'Juega Deadly Pursuer', points: 75, icon: '🎮' },
       'ankaro-explorer': { name: 'Explorador de Ankaro', desc: 'Entra a Project Ankaro', points: 75, icon: '👻' },
       'mobile-user': { name: 'Usuario Móvil', desc: 'Visita desde dispositivo móvil', points: 20, icon: '📱' },
