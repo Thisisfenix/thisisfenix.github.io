@@ -1,29 +1,57 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.4.2",
-  "lastUpdate": "2026-02-04",
+  "version": "2.4.3",
+  "lastUpdate": "2026-02-05",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.4.2",
-    "fecha": "2026-02-04",
-    "tipo": "major",
+    "numero": "2.4.3",
+    "fecha": "2026-02-05",
+    "tipo": "minor",
     "estado": "estable",
     "cambios_principales": [
-      "Nueva Wiki para crear y compartir personajes de la comunidad",
-      "Formulario fácil dividido en 5 pasos con animaciones",
-      "Puedes ver imágenes en grande con un click",
-      "Funciona perfecto en celulares y tablets",
-      "Se adapta solo si creas un personaje o un mundo",
-      "Te avisa si te falta llenar algo importante"
+      "Juego Cupid's Arrow con leaderboard global",
+      "Hall of Fame con pedestales para top 3",
+      "Tema Valentine's Love se desbloquea por evento",
+      "Fechas del evento visibles en el modal",
+      "Arreglos de bugs y mejoras visuales"
     ]
   },
   
   "updates": [
     {
-      "version": "2.4.2",
+      "version": "2.4.3",
+      "date": "2026-02-05",
+      "title": "🎯 Cupid's Arrow Game + Leaderboard Global",
+      "type": "minor",
+      "features": [
+        "🎯 Nuevo minijuego Cupid's Arrow para San Valentín (10 feb - 1 mar 2026)",
+        "🏆 Hall of Fame con pedestales para top 3 jugadores",
+        "🥇🥈🥉 Pedestales con alturas diferentes según posición",
+        "📅 Fechas del evento visibles en el modal principal",
+        "🔥 Sistema de leaderboard global con Firebase",
+        "💾 Guarda nombre, puntuación y fecha de completado",
+        "⏱️ Orden cronológico - quien completa primero queda primero",
+        "🎮 Atrapa flechas doradas (+10 pts), evita las negras (-10 pts)",
+        "🎉 Desbloquea tema Valentine's Love al llegar a 500 puntos",
+        "💡 Modal separado para Hall of Fame sin saturar el panel",
+        "📊 Top 10 completo con lista detallada",
+        "⭐ Botón especial para guardar en Hall of Fame",
+        "🔄 Sistema de sincronización con Firestore"
+      ],
+      "fixes": [
+        "🐛 Arreglado: Modal principal ya no se satura con el leaderboard",
+        "🐛 Arreglado: Fechas del evento ahora visibles en el modal",
+        "🐛 Arreglado: Tema Valentine's Love ahora dice 'Evento Exclusivo' en vez de puntos",
+        "🐛 Arreglado: Tema Plushie Rain también dice 'Evento Exclusivo'",
+        "🎨 Mejorado: Diseño de pedestales más visual y atractivo",
+        "📱 Mejorado: Responsive design para móviles",
+        "⚡ Optimizado: Carga más rápida del leaderboard"
+      ]
+    },
+    {
       "date": "2026-02-04",
       "title": "📝 Nueva Wiki de Personajes",
       "type": "major",
