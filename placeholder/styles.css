@@ -1562,6 +1562,13 @@
       font-size: 2rem;
       z-index: 10;
     }
+    .premium-theme.owned::before {
+      display: none !important;
+    }
+    .premium-theme.owned {
+      opacity: 1 !important;
+      cursor: pointer !important;
+    }
     .theme-cost {
       position: absolute;
       bottom: 5px;

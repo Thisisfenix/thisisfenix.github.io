@@ -572,6 +572,9 @@ class AchievementSystem {
       this.gameData.points -= cost;
       this.gameData.unlockedThemes.add(theme);
       
+      // Registrar compra
+      localStorage.setItem(`purchased_${theme}`, Date.now().toString());
+      
       if (Object.keys(this.premiumThemes).every(t => this.gameData.unlockedThemes.has(t))) {
         this.checkAchievement('premium-collector');
       }
@@ -579,7 +582,7 @@ class AchievementSystem {
         this.checkAchievement('big-spender');
       }
       
-      this.showNotification({ name: `Tema ${this.premiumThemes[theme].name} desbloqueado!`, points: 0, icon: '🎨' });
+      this.showNotification({ name: `Tema ${this.premiumThemes[theme]?.name || theme} desbloqueado!`, points: 0, icon: '🎨' });
       this.save();
       return true;
     }

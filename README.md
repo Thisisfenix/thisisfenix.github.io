@@ -16,13 +16,6 @@ Básicamente es donde pongo todos mis proyectos de GitHub para que no se vean ta
   - Nuevo killer Vortex con habilidades telequinéticas
   - Survivors: Gissel, iA777, Angel, Iris
   - Música LMS personalizada por personaje
-  
-- **Project Ankaro** - Juego 3D de horror multijugador
-  - Hasta 8 jugadores simultáneos
-  - Sistema de voz en tiempo real con PeerJS
-  - Controles para PC, móvil y gamepad
-  - Lobby 3D con spawn points personalizados
-  - Mecánicas de supervivencia y exploración
 
 ### 🎨 Guestbook Interactivo v2.0.9
 - 50+ herramientas de dibujo profesionales
@@ -87,7 +80,6 @@ Si quieres cambiar colores o algo, está todo en el CSS. Los colores principales
 - GitHub API para traer los repos
 - Firebase para el guestbook
 - Supabase para el multijugador
-- Three.js para los gráficos 3D
 - Algunas librerías de iconos
 - GitHub Pages para hosting
 
@@ -97,7 +89,6 @@ Si quieres cambiar colores o algo, está todo en el CSS. Los colores principales
 - [ ] Torneos semanales
 - [ ] Minijuegos (Snake, Tetris)
 - [ ] Más personajes en Deadly Pursuer
-- [ ] Más mapas en Project Ankaro
 - [ ] Sistema de clanes
 
 ## 👨💻 Yo

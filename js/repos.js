@@ -23,24 +23,6 @@ function displayRepos(repos, page = 1) {
   const container = document.getElementById('repos-container');
   container.innerHTML = '';
 
-  // Project Ankaro card
-  if (page === 1) {
-    const ankaroCard = document.createElement('div');
-    ankaroCard.className = 'card';
-    ankaroCard.style.border = '2px solid var(--primary)';
-    ankaroCard.innerHTML = `
-      <div class="card-img-top" style="background: linear-gradient(135deg, #1a1a2e, #16213e); height: 180px; display: flex; align-items: center; justify-content: center; font-size: 4rem;">🎮</div>
-      <div class="card-body">
-        <h3 class="card-title">Project Ankaro</h3>
-        <p class="card-text">Juego multijugador 3D de horror con voz en tiempo real, mecánicas de supervivencia y soporte para móvil/gamepad.</p>
-        <div class="btn-group">
-          <a href="Projectankaro/index.html" class="btn btn-outline-neon"><i class="bi bi-joystick me-1"></i> Jugar</a>
-        </div>
-      </div>
-    `;
-    container.appendChild(ankaroCard);
-  }
-
   const startIndex = (page - 1) * reposPerPage;
   const endIndex = startIndex + reposPerPage;
   const paginatedRepos = repos.slice(startIndex, endIndex);

@@ -164,7 +164,7 @@ function removeMatrixRain() {
 }
 
 function applyCustomTheme() {
-  const colors = gameData.customColors;
+  const colors = achievementSystem.gameData.customColors;
   document.documentElement.style.setProperty('--custom-bg', colors.bg);
   document.documentElement.style.setProperty('--custom-bg-light', colors.bg + '33');
   document.documentElement.style.setProperty('--custom-text', colors.text);
@@ -175,10 +175,10 @@ function applyCustomTheme() {
 
 function showCustomColors() {
   document.getElementById('custom-colors').style.display = 'block';
-  document.getElementById('bg-color').value = gameData.customColors.bg;
-  document.getElementById('text-color').value = gameData.customColors.text;
-  document.getElementById('primary-color').value = gameData.customColors.primary;
-  document.getElementById('secondary-color').value = gameData.customColors.secondary;
+  document.getElementById('bg-color').value = achievementSystem.gameData.customColors.bg;
+  document.getElementById('text-color').value = achievementSystem.gameData.customColors.text;
+  document.getElementById('primary-color').value = achievementSystem.gameData.customColors.primary;
+  document.getElementById('secondary-color').value = achievementSystem.gameData.customColors.secondary;
 }
 
 function loadTheme() {
@@ -250,13 +250,35 @@ function hideThemePanel() {
 }
 
 function updatePremiumThemes() {
+  if (!window.achievementSystem) return;
+  
+  const premiumThemes = ['galaxy', 'gold', 'rainbow', 'diamond', 'legendary', 'vaporwave', 'hacker', 'neon-city', 'space', 'fire', 'ice', 'toxic', 'royal', 'steampunk', 'hologram'];
+  
+  // Limpiar temas que no tienen registro de compra
+  premiumThemes.forEach(theme => {
+    if (achievementSystem.gameData.unlockedThemes.has(theme)) {
+      const purchaseRecord = localStorage.getItem(`purchased_${theme}`);
+      if (!purchaseRecord) {
+        achievementSystem.gameData.unlockedThemes.delete(theme);
+      }
+    }
+  });
+  achievementSystem.save();
+  
+  // Actualizar UI de todas las tarjetas
   document.querySelectorAll('.premium-theme').forEach(card => {
     const theme = card.dataset.theme;
-    const isUnlocked = gameData.unlockedThemes.has(theme);
+    const isUnlocked = achievementSystem.gameData.unlockedThemes.has(theme);
     
     if (isUnlocked) {
       card.classList.remove('locked');
       card.classList.add('owned');
+      
+      // Cambiar texto del badge a "Obtenido"
+      const badge = card.querySelector('.points-badge');
+      if (badge) {
+        badge.innerHTML = 'Obtenido';
+      }
     } else {
       card.classList.add('locked');
       card.classList.remove('owned');
@@ -294,6 +316,22 @@ function updateSeasonalIndicator() {
 
 function buyTheme(theme, cost) {
   if (window.achievementSystem) {
+    const result = achievementSystem.buyTheme(theme, cost);
+    if (result) {
+      updatePointsDisplay();
+      updatePremiumThemes();
+    }
+    return result;
+  }
+  return false;
+}
+
+async function buyThemeAsync(theme, cost) {
+  if (window.achievementSystem && window.firebasePoints) {
+    // Obtener puntos actualizados desde Firebase
+    const firebasePoints = await window.firebasePoints.getPoints();
+    achievementSystem.gameData.points = firebasePoints;
+    
     const result = achievementSystem.buyTheme(theme, cost);
     if (result) {
       updatePointsDisplay();
@@ -353,39 +391,63 @@ function initThemeListeners() {
   document.getElementById('theme-overlay').addEventListener('click', hideThemePanel);
   
   document.querySelectorAll('.theme-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      const theme = e.target.closest('.theme-card').dataset.theme;
-      const cost = parseInt(card.dataset.cost);
+    card.addEventListener('click', async (e) => {
+      const clickedCard = e.target.closest('.theme-card');
+      if (!clickedCard) return;
       
-      if (card.classList.contains('premium-theme') && !gameData.unlockedThemes.has(theme)) {
-        if (buyTheme(theme, cost)) {
-          setTheme(theme);
-          hideThemePanel();
-          if (theme === 'custom') showCustomColors();
-        } else {
-          alert(`Necesitas ${cost} puntos para desbloquear este tema. Tienes ${gameData.points} puntos.`);
+      const theme = clickedCard.dataset.theme;
+      const cost = parseInt(clickedCard.dataset.cost) || 0;
+      const isPremium = clickedCard.classList.contains('premium-theme');
+      
+      // Sincronizar puntos desde Firebase si está disponible
+      if (window.firebasePoints && window.achievementSystem) {
+        const firebasePoints = await window.firebasePoints.getPoints();
+        achievementSystem.gameData.points = firebasePoints;
+        updatePointsDisplay();
+      }
+      
+      // Verificar si necesita comprar el tema
+      const isUnlocked = window.achievementSystem ? achievementSystem.gameData.unlockedThemes.has(theme) : false;
+      
+      if (isPremium && !isUnlocked && window.achievementSystem) {
+        // Intentar comprar
+        if (!achievementSystem.buyTheme(theme, cost)) {
+          alert(`Necesitas ${cost} puntos para desbloquear este tema. Tienes ${achievementSystem.gameData.points} puntos.`);
           return;
         }
-      } else {
-        setTheme(theme);
-        hideThemePanel();
-        if (theme === 'custom') showCustomColors();
+        
+        // Actualizar UI inmediatamente
+        clickedCard.classList.remove('locked');
+        clickedCard.classList.add('owned');
+        
+        // Cambiar texto del badge a "Obtenido"
+        const badge = clickedCard.querySelector('.points-badge');
+        if (badge) {
+          badge.innerHTML = 'Obtenido';
+        }
+        
+        updatePointsDisplay();
+        updatePremiumThemes();
       }
+      
+      setTheme(theme);
+      hideThemePanel();
+      if (theme === 'custom') showCustomColors();
       
       localStorage.setItem('last-theme-change', new Date().toDateString());
       
-      gameData.themesUsed.add(theme);
-      gameData.themeChangeCount++;
+      achievementSystem.gameData.themesUsed.add(theme);
+      achievementSystem.gameData.themeChangeCount++;
       updateChallenge('change-theme');
       updateWeeklyChallenge('theme-explorer');
       updateBadgeProgress('theme-master', 1);
       updateBadgeProgress('customization', 1);
       
-      if (gameData.themesUsed.size === 1) checkAchievement('theme-explorer');
-      if (gameData.themesUsed.size >= 5) checkAchievement('theme-collector');
-      if (gameData.themeChangeCount >= 20) checkAchievement('theme-addict');
+      if (achievementSystem.gameData.themesUsed.size === 1) achievementSystem.checkAchievement('theme-explorer');
+      if (achievementSystem.gameData.themesUsed.size >= 5) achievementSystem.checkAchievement('theme-collector');
+      if (achievementSystem.gameData.themeChangeCount >= 20) achievementSystem.checkAchievement('theme-addict');
       if (theme === 'funkyatlas' || theme === 'funkyatlas-christmas') {
-        checkAchievement('funky-fan');
+        achievementSystem.checkAchievement('funky-fan');
         const creditsPanel = document.createElement('div');
         creditsPanel.style.cssText = 'position: fixed; bottom: 20px; left: 20px; background: linear-gradient(135deg, rgba(43,16,85,0.95), rgba(117,151,222,0.95)); padding: 1rem; border-radius: 12px; border: 2px solid #ff4444; z-index: 9999; max-width: 250px; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0,0,0,0.4);';
         creditsPanel.innerHTML = '<div style="color: white; font-size: 0.9rem;"><strong style="color: #ff4444;">🎨 Tema FunkyAtlas</strong><br><span style="font-size: 0.8rem;">Creado por <a href="https://funkyatlas.abelitogamer.com/" target="_blank" style="color: #7597de; text-decoration: none;">AbelitoGamer</a></span></div>';
@@ -393,31 +455,40 @@ function initThemeListeners() {
         setTimeout(() => creditsPanel.remove(), 5000);
       }
       if (theme === 'legendary') {
-        checkAchievement('legendary-hunter');
+        achievementSystem.checkAchievement('legendary-hunter');
       }
       
-      const allAchievements = Object.keys(achievements);
-      const completedAchievements = allAchievements.filter(id => gameData.achievements[id]);
+      const allAchievements = Object.keys(achievementSystem.achievements);
+      const completedAchievements = allAchievements.filter(id => achievementSystem.gameData.achievements[id]);
       if (completedAchievements.length === allAchievements.length - 1) {
-        checkAchievement('perfectionist');
+        achievementSystem.checkAchievement('perfectionist');
       }
       
-      saveGameData();
+      achievementSystem.save();
     });
   });
   
   const applyCustomBtn = document.getElementById('apply-custom');
   if (applyCustomBtn) {
     applyCustomBtn.addEventListener('click', () => {
-      gameData.customColors.bg = document.getElementById('bg-color').value;
-      gameData.customColors.text = document.getElementById('text-color').value;
-      gameData.customColors.primary = document.getElementById('primary-color').value;
-      gameData.customColors.secondary = document.getElementById('secondary-color').value;
+      achievementSystem.gameData.customColors.bg = document.getElementById('bg-color').value;
+      achievementSystem.gameData.customColors.text = document.getElementById('text-color').value;
+      achievementSystem.gameData.customColors.primary = document.getElementById('primary-color').value;
+      achievementSystem.gameData.customColors.secondary = document.getElementById('secondary-color').value;
       
       applyCustomTheme();
-      saveGameData();
+      achievementSystem.save();
       
       showAchievementNotification({ name: 'Colores personalizados aplicados!', points: 0 });
     });
   }
+}
+
+// Inicializar temas premium cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(updatePremiumThemes, 100);
+  });
+} else {
+  setTimeout(updatePremiumThemes, 100);
 }
