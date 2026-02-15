@@ -9,6 +9,7 @@ class CupidArrowGame {
     this.arrows = [];
     this.spawnInterval = null;
     this.speedMultiplier = 1;
+    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
     this.leaderboard = [];
     this.init();
     this.loadLeaderboard();
@@ -239,18 +240,18 @@ class CupidArrowGame {
     document.body.appendChild(gameContainer);
     document.querySelector('.cupid-panel')?.remove();
 
-    this.spawnInterval = setInterval(() => this.spawnArrow(), 1000 / this.speedMultiplier);
+    this.spawnInterval = setInterval(() => this.spawnArrow(), this.isMobile ? 1500 : 1000);
     
     setTimeout(() => {
-      this.speedMultiplier = 1.5;
+      this.speedMultiplier = this.isMobile ? 1.2 : 1.5;
       clearInterval(this.spawnInterval);
-      this.spawnInterval = setInterval(() => this.spawnArrow(), 1000 / this.speedMultiplier);
+      this.spawnInterval = setInterval(() => this.spawnArrow(), this.isMobile ? 1200 : (1000 / this.speedMultiplier));
     }, 10000);
 
     setTimeout(() => {
-      this.speedMultiplier = 2;
+      this.speedMultiplier = this.isMobile ? 1.5 : 2;
       clearInterval(this.spawnInterval);
-      this.spawnInterval = setInterval(() => this.spawnArrow(), 1000 / this.speedMultiplier);
+      this.spawnInterval = setInterval(() => this.spawnArrow(), this.isMobile ? 1000 : (1000 / this.speedMultiplier));
     }, 20000);
   }
 
@@ -264,31 +265,74 @@ class CupidArrowGame {
     arrow.dataset.type = isGolden ? 'golden' : 'black';
     
     const size = 40;
-    const startX = Math.random() * (window.innerWidth - size);
     
-    arrow.style.cssText = `
-      position: absolute;
-      left: ${startX}px;
-      top: -50px;
-      font-size: 2rem;
-      cursor: pointer;
-      transition: transform 0.2s;
-      animation: arrowFall ${4 / this.speedMultiplier}s linear;
-    `;
+    if (this.isMobile) {
+      // Móvil: aparecer en posición aleatoria y desaparecer
+      const startX = Math.random() * (window.innerWidth - size);
+      const startY = Math.random() * (window.innerHeight - 200) + 100;
+      
+      arrow.style.cssText = `
+        position: absolute;
+        left: ${startX}px;
+        top: ${startY}px;
+        font-size: 3rem;
+        cursor: pointer;
+        animation: arrowPulse 0.5s ease-in-out;
+        transform: scale(0);
+      `;
+      
+      setTimeout(() => {
+        arrow.style.transform = 'scale(1)';
+        arrow.style.transition = 'transform 0.3s ease-out';
+      }, 50);
+      
+      arrow.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        this.catchArrow(arrow, isGolden);
+      });
+      
+      container.appendChild(arrow);
+      this.arrows.push(arrow);
+
+      setTimeout(() => {
+        if (arrow.parentElement) {
+          arrow.style.transform = 'scale(0)';
+          setTimeout(() => {
+            arrow.remove();
+            this.arrows = this.arrows.filter(a => a !== arrow);
+          }, 300);
+        }
+      }, 2000);
+      
+    } else {
+      // Desktop: caer desde arriba
+      const startX = Math.random() * (window.innerWidth - size);
+      
+      arrow.style.cssText = `
+        position: absolute;
+        left: ${startX}px;
+        top: -50px;
+        font-size: 2rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        animation: arrowFall 4s linear;
+        will-change: transform;
+      `;
+      
+      arrow.addEventListener('click', () => this.catchArrow(arrow, isGolden));
+      
+      container.appendChild(arrow);
+      this.arrows.push(arrow);
+
+      setTimeout(() => {
+        if (arrow.parentElement) {
+          arrow.remove();
+          this.arrows = this.arrows.filter(a => a !== arrow);
+        }
+      }, 4000);
+    }
     
     arrow.textContent = isGolden ? '💛' : '🖤';
-    
-    arrow.addEventListener('click', () => this.catchArrow(arrow, isGolden));
-    
-    container.appendChild(arrow);
-    this.arrows.push(arrow);
-
-    setTimeout(() => {
-      if (arrow.parentElement) {
-        arrow.remove();
-        this.arrows = this.arrows.filter(a => a !== arrow);
-      }
-    }, 4000 / this.speedMultiplier);
   }
 
   catchArrow(arrow, isGolden) {
@@ -414,6 +458,11 @@ cupidStyles.textContent = `
   @keyframes arrowFall {
     from { transform: translateY(0) rotate(0deg); }
     to { transform: translateY(calc(100vh + 100px)) rotate(360deg); }
+  }
+  @keyframes arrowPulse {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
   }
   @keyframes arrowCatch {
     0% { transform: scale(1); opacity: 1; }

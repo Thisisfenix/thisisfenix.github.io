@@ -1,26 +1,55 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.4.3",
-  "lastUpdate": "2026-02-05",
+  "version": "2.4.4",
+  "lastUpdate": "2026-02-15",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.4.3",
-    "fecha": "2026-02-05",
+    "numero": "2.4.4",
+    "fecha": "2026-02-15",
     "tipo": "minor",
     "estado": "estable",
     "cambios_principales": [
-      "Juego Cupid's Arrow con leaderboard global",
-      "Hall of Fame con pedestales para top 3",
-      "Tema Valentine's Love se desbloquea por evento",
-      "Fechas del evento visibles en el modal",
-      "Arreglos de bugs y mejoras visuales"
+      "Ahora puedes abrir y cerrar secciones en Créditos con un click",
+      "Los personajes se ven mejor (sin zoom raro ni barras de scroll)",
+      "Reorganizamos el panel de créditos para que sea más fácil de leer",
+      "El juego de Cupido ahora funciona diferente en celular (más fácil de jugar)",
+      "Todo se ve más bonito y es más fácil de usar"
     ]
   },
   
   "updates": [
+    {
+      "version": "2.4.4",
+      "date": "2026-02-15",
+      "title": "🎨 Panel de Créditos Más Fácil de Usar",
+      "type": "minor",
+      "features": [
+        "📂 Ahora puedes hacer click en los títulos para abrir/cerrar secciones",
+        "✨ Las secciones se abren y cierran con animaciones suaves",
+        "🔄 Las flechitas giran cuando abres una sección (se ve cool)",
+        "📱 Los personajes ahora se ven del tamaño correcto",
+        "🚫 Ya no hay barras de scroll molestas en los personajes",
+        "📍 Movimos la sección de personajes a un mejor lugar",
+        "🎯 Puedes abrir/cerrar casi todas las secciones (excepto Desarrollador)",
+        "💫 Todo se mueve más suave y bonito",
+        "🎮 Cupid's Arrow Game ahora funciona diferente en celular:",
+        "  📱 En celular: Los corazones aparecen en lugares random y tienes que tocarlos rápido",
+        "  💻 En PC: Los corazones caen desde arriba como antes",
+        "  ⏱️ En celular duran 2 segundos antes de desaparecer",
+        "  👆 Corazones más grandes en celular para que sea más fácil tocarlos"
+      ],
+      "fixes": [
+        "🐛 Arreglado: Los personajes ya no se ven con zoom raro",
+        "🐛 Arreglado: Ya no aparece la barra de scroll fea",
+        "🎨 Mejorado: Ahora es más fácil encontrar lo que buscas",
+        "⚡ Optimizado: Las animaciones se ven más fluidas",
+        "📱 Arreglado: El juego de Cupido ya no va súper rápido en celular",
+        "🎮 Mejorado: Ahora es mucho más fácil jugar desde el celular"
+      ]
+    },
     {
       "version": "2.4.3",
       "date": "2026-02-05",
@@ -52,6 +81,7 @@
       ]
     },
     {
+      "version": "2.4.2",
       "date": "2026-02-04",
       "title": "📝 Nueva Wiki de Personajes",
       "type": "major",

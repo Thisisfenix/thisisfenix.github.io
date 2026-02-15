@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "update-manifest": "node generate-manifest.js"
+  },
   "dependencies": {
     "firebase": "^12.8.0"
   }
