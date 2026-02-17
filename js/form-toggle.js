@@ -20,6 +20,35 @@ function toggleFormFields() {
     
     document.getElementById('step-4')?.style.setProperty('display', 'none', 'important');
     
+    // Ocultar campos de imágenes de personajes
+    const iconosField = document.querySelector('input[name="iconos"]');
+    const renderField = document.querySelector('input[name="render"]');
+    const fanartsField = document.querySelector('input[name="fanarts"]');
+    const creditosField = document.querySelector('textarea[name="creditos_fanarts"]');
+    
+    if (iconosField) {
+      const container = iconosField.closest('.mb-3');
+      if (container) container.style.display = 'none';
+      iconosField.removeAttribute('required');
+    }
+    if (renderField) {
+      const container = renderField.closest('.mb-3');
+      if (container) container.style.display = 'none';
+      renderField.removeAttribute('required');
+    }
+    if (fanartsField) {
+      const container = fanartsField.closest('.mb-3');
+      if (container) container.style.display = 'none';
+    }
+    if (creditosField) {
+      const container = creditosField.closest('.mb-3');
+      if (container) container.style.display = 'none';
+    }
+    
+    // Cambiar título del paso 5
+    const step5Title = document.querySelector('#step-5 h3');
+    if (step5Title) step5Title.innerHTML = '🖼️ Imágenes del Mundo';
+    
     const step2Title = document.querySelector('#step-2 h3');
     if (step2Title) step2Title.innerHTML = '🌍 Información del Mundo';
     
@@ -35,8 +64,17 @@ function toggleFormFields() {
       if (el.id !== 'entrada-modificar-container') el.style.display = '';
     });
     
+    // Restaurar campos requeridos
+    const iconosField = document.querySelector('input[name="iconos"]');
+    const renderField = document.querySelector('input[name="render"]');
+    if (iconosField) iconosField.setAttribute('required', '');
+    if (renderField) renderField.setAttribute('required', '');
+    
     const step4 = document.getElementById('step-4');
     if (step4) step4.style.removeProperty('display');
+    
+    const step5Title = document.querySelector('#step-5 h3');
+    if (step5Title) step5Title.innerHTML = '🖼️ Imágenes';
     
     const step2Title = document.querySelector('#step-2 h3');
     if (step2Title) step2Title.innerHTML = '👤 Datos del Personaje';

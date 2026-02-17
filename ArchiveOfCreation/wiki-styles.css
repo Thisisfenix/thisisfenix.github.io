@@ -1,0 +1,495 @@
+/* ========================================
+   ARCHIVE OF CREATION - ESTILOS PROPIOS
+   ======================================== */
+
+:root {
+  --wiki-primary: #8b5cf6;
+  --wiki-secondary: #ec4899;
+  --wiki-accent: #06b6d4;
+  --wiki-bg-dark: #0f0f23;
+  --wiki-bg-card: #1a1a35;
+  --wiki-text: #e2e8f0;
+  --wiki-text-dim: #94a3b8;
+}
+
+/* Reset y Base */
+body {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a35 100%);
+  color: var(--wiki-text);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Navbar Estilo Grimorio */
+.navbar {
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 2px solid var(--wiki-primary);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--wiki-primary), var(--wiki-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
+.nav-link {
+  color: var(--wiki-text) !important;
+  font-weight: 500;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--wiki-primary);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 80%;
+}
+
+.nav-link.active {
+  color: var(--wiki-primary) !important;
+}
+
+/* Header de Wiki */
+.wiki-header {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  margin-bottom: 2rem;
+}
+
+.wiki-header h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--wiki-primary), var(--wiki-secondary), var(--wiki-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.wiki-header p {
+  color: var(--wiki-text-dim);
+  font-size: 1.1rem;
+}
+
+/* Barra de Búsqueda */
+.search-filter-bar {
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+}
+
+.search-filter-bar input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: var(--wiki-bg-card);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 50px;
+  color: var(--wiki-text);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-filter-bar input:focus {
+  outline: none;
+  border-color: var(--wiki-primary);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+.search-filter-bar input::placeholder {
+  color: var(--wiki-text-dim);
+}
+
+/* Grid de Personajes */
+.characters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+/* Override cuando contiene welcome cards */
+.characters-grid:has(.welcome-cards) {
+  display: block;
+  padding: 0;
+}
+
+/* Cards de Personajes */
+.character-card {
+  background: var(--wiki-bg-card);
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+}
+
+.character-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--wiki-primary), var(--wiki-secondary), var(--wiki-accent));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.character-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--wiki-primary);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.4);
+}
+
+.character-card:hover::before {
+  opacity: 1;
+}
+
+.character-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+}
+
+.character-info {
+  padding: 1.5rem;
+}
+
+.character-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--wiki-primary);
+  margin-bottom: 0.5rem;
+}
+
+.character-desc {
+  color: var(--wiki-text-dim);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.character-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.character-tag {
+  padding: 0.25rem 0.75rem;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: var(--wiki-primary);
+  font-weight: 600;
+}
+
+/* Botones */
+.btn-outline-light {
+  border: 2px solid var(--wiki-primary);
+  color: var(--wiki-primary);
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background: var(--wiki-primary);
+  color: white;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+}
+
+/* Wizard Container */
+.wizard-container {
+  background: var(--wiki-bg-card);
+  border: 2px solid var(--wiki-primary);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+}
+
+.wizard-container h2 {
+  background: linear-gradient(135deg, var(--wiki-primary), var(--wiki-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Step Indicators */
+.step-indicators {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.step-indicators::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(139, 92, 246, 0.2);
+  z-index: 0;
+}
+
+.step-indicator {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--wiki-bg-dark);
+  border: 3px solid rgba(139, 92, 246, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--wiki-text-dim);
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.step-indicator.active {
+  background: linear-gradient(135deg, var(--wiki-primary), var(--wiki-secondary));
+  border-color: var(--wiki-primary);
+  color: white;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+  transform: scale(1.1);
+}
+
+.step-indicator.completed {
+  background: var(--wiki-primary);
+  border-color: var(--wiki-primary);
+  color: white;
+}
+
+/* Forms */
+.form-control,
+.form-select {
+  background: var(--wiki-bg-dark) !important;
+  border: 2px solid rgba(139, 92, 246, 0.3) !important;
+  color: var(--wiki-text) !important;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--wiki-primary) !important;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3) !important;
+}
+
+.form-label {
+  color: var(--wiki-primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Wizard Buttons */
+.wizard-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.wizard-buttons .btn {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--wiki-primary), var(--wiki-secondary));
+  border: none;
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+}
+
+/* Modal */
+.modal-content {
+  background: var(--wiki-bg-card);
+  border: 2px solid var(--wiki-primary);
+  border-radius: 20px;
+}
+
+.modal-header {
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.modal-title {
+  background: linear-gradient(135deg, var(--wiki-primary), var(--wiki-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .wiki-header h1 {
+    font-size: 2rem;
+  }
+
+  .characters-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .wizard-container {
+    padding: 1.5rem;
+  }
+
+  .step-indicator {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .wizard-buttons {
+    flex-direction: column;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.character-card {
+  animation: fadeInUp 0.6s ease backwards;
+}
+
+.character-card:nth-child(1) { animation-delay: 0.1s; }
+.character-card:nth-child(2) { animation-delay: 0.2s; }
+.character-card:nth-child(3) { animation-delay: 0.3s; }
+.character-card:nth-child(4) { animation-delay: 0.4s; }
+.character-card:nth-child(5) { animation-delay: 0.5s; }
+.character-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Efectos de Fondo */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Welcome Container */
+.welcome-container {
+  background: var(--wiki-bg-card);
+  border: 2px solid var(--wiki-primary);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+}
+
+/* Welcome Cards */
+.welcome-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.welcome-card {
+  background: rgba(139, 92, 246, 0.05);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome-card:hover {
+  border-color: var(--wiki-primary);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.welcome-card i {
+  font-size: 4rem;
+  color: var(--wiki-primary);
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-card h5 {
+  color: var(--wiki-text);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.welcome-card p {
+  font-size: 1rem;
+  color: var(--wiki-text-dim);
+  margin: 0;
+}
+
+@media (max-width: 992px) {
+  .welcome-cards {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+  }
+  
+  .welcome-container {
+    padding: 2rem 1.5rem;
+  }
+}
