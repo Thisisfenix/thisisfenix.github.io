@@ -399,6 +399,23 @@ function initThemeListeners() {
       const cost = parseInt(clickedCard.dataset.cost) || 0;
       const isPremium = clickedCard.classList.contains('premium-theme');
       
+      // Verificar temas de eventos especiales
+      if (theme === 'plushie-rain') {
+        const plushieUnlocked = localStorage.getItem('plushie-theme-unlocked') === 'true';
+        if (!plushieUnlocked) {
+          alert('🧸 Este tema se desbloquea completando el evento de Plushies (40/40 peluches).\n\n📅 Evento: 2 dic 2025 - 1 ene 2026');
+          return;
+        }
+      }
+      
+      if (theme === 'valentines-love') {
+        const valentineUnlocked = localStorage.getItem('valentine-theme-unlocked') === 'true';
+        if (!valentineUnlocked) {
+          alert('💕 Este tema se desbloquea completando el evento de San Valentín.\n\n📅 Evento: 14 feb 2026');
+          return;
+        }
+      }
+      
       // Sincronizar puntos desde Firebase si está disponible
       if (window.firebasePoints && window.achievementSystem) {
         const firebasePoints = await window.firebasePoints.getPoints();

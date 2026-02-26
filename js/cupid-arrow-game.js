@@ -195,7 +195,7 @@ class CupidArrowGame {
           </button>
         ` : ''}
 
-        <button onclick="localStorage.removeItem('cupid-score'); localStorage.removeItem('cupid-highscore'); location.reload();" style="width: 100%; padding: 0.75rem; background: var(--bg-light); color: var(--text-color); border: 2px solid #ff1493; border-radius: 8px; cursor: pointer;">
+        <button onclick="localStorage.removeItem('cupid-score'); localStorage.removeItem('cupid-highscore'); localStorage.removeItem('valentine-theme-unlocked'); location.reload();" style="width: 100%; padding: 0.75rem; background: var(--bg-light); color: var(--text-color); border: 2px solid #ff1493; border-radius: 8px; cursor: pointer;">
           🔄 Reiniciar Progreso
         </button>
       </div>
