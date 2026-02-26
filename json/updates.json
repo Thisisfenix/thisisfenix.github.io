@@ -1,26 +1,50 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.4.4",
-  "lastUpdate": "2026-02-15",
+  "version": "2.5.0",
+  "lastUpdate": "2026-02-16",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.4.4",
-    "fecha": "2026-02-15",
-    "tipo": "minor",
+    "numero": "2.5.0",
+    "fecha": "2026-02-16",
+    "tipo": "major",
     "estado": "estable",
     "cambios_principales": [
-      "Ahora puedes abrir y cerrar secciones en Créditos con un click",
-      "Los personajes se ven mejor (sin zoom raro ni barras de scroll)",
-      "Reorganizamos el panel de créditos para que sea más fácil de leer",
-      "El juego de Cupido ahora funciona diferente en celular (más fácil de jugar)",
-      "Todo se ve más bonito y es más fácil de usar"
+      "Nueva sección de Experimentos con su propia página",
+      "Ahora puedes ver todos los experimentos en un solo lugar",
+      "Deadly Pursuer, Wiki, Chatbot y Archive of Creation organizados",
+      "El Guestbook se quedó en la página principal",
+      "Todo más fácil de encontrar y usar"
     ]
   },
   
   "updates": [
+    {
+      "version": "2.5.0",
+      "date": "2026-02-16",
+      "title": "🧪 Nueva Sección de Experimentos",
+      "type": "major",
+      "features": [
+        "🧪 Ahora los experimentos tienen su propia página (como Créditos y Updates)",
+        "🎮 Deadly Pursuer - Juego multijugador con hasta 8 jugadores",
+        "📖 Wiki de Deadly Pursuer - Guía completa de personajes y habilidades",
+        "🤖 Chatbot IA - Asistente virtual inteligente",
+        "📝 Archive of Creation - Wiki colaborativa de personajes",
+        "🎨 El Guestbook se quedó en la página principal (más fácil de encontrar)",
+        "📌 Botón 'Experimentos' en el menú principal",
+        "📦 Todo organizado en tarjetas bonitas (2 columnas)",
+        "📱 Funciona perfecto en celular y computadora",
+        "✨ Cada experimento tiene su descripción y características"
+      ],
+      "fixes": [
+        "🔧 Arreglado: El botón de Experimentos ahora funciona correctamente",
+        "🎯 Mejorado: Navegación más clara entre secciones",
+        "📱 Optimizado: Mejor experiencia en dispositivos móviles",
+        "✨ Mejorado: Diseño más limpio y organizado"
+      ]
+    },
     {
       "version": "2.4.4",
       "date": "2026-02-15",

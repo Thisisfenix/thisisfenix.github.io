@@ -1,0 +1,15 @@
+name = "fenix-chatbot"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# KV para guardar conversaciones
+[[kv_namespaces]]
+binding = "CHAT_HISTORY"
+id = "bfd31140dd4b4e9e93225b3770776ebc"
+
+# Variables de entorno (configura en Cloudflare Dashboard)
+# [env.production]
+# vars = { ENVIRONMENT = "production" }
+
+# Para usar OpenAI u otra API, agrega tu key en Cloudflare Dashboard:
+# wrangler secret put GROQ_API_KEY

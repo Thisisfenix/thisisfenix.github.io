@@ -71,12 +71,20 @@ function displayRepos(repos, page = 1) {
     btnCode.href = repo.html_url;
     btnCode.target = '_blank';
     btnCode.innerHTML = '<i class="bi bi-code me-1"></i> Código';
+    btnCode.onclick = (e) => {
+      e.stopPropagation();
+      if (typeof trackCodeView === 'function') trackCodeView(repo.name);
+    };
 
     const btnDemo = document.createElement('a');
     btnDemo.className = 'btn btn-outline-neon';
     btnDemo.href = `https://${user}.github.io/${repo.name}`;
     btnDemo.target = '_blank';
     btnDemo.innerHTML = '<i class="bi bi-box-arrow-up-right me-1"></i> Demo';
+    btnDemo.onclick = (e) => {
+      e.stopPropagation();
+      if (typeof trackDemo === 'function') trackDemo(repo.name);
+    };
 
     btnGroup.appendChild(btnCode);
     btnGroup.appendChild(btnDemo);
@@ -89,29 +97,6 @@ function displayRepos(repos, page = 1) {
     card.appendChild(img);
     card.appendChild(body);
     container.appendChild(card);
-    
-    // Tracking para logros
-    card.addEventListener('click', () => {
-      if (typeof gameData !== 'undefined') {
-        gameData.projectsViewed.add(repo.name);
-        if (typeof updateWeeklyChallenge === 'function') updateWeeklyChallenge('project-master');
-        if (typeof updateBadgeProgress === 'function') {
-          updateBadgeProgress('explorer', 1);
-          updateBadgeProgress('developer', 1);
-        }
-        if (gameData.projectsViewed.size >= 5 && typeof checkAchievement === 'function') {
-          checkAchievement('project-hunter');
-        }
-        if (typeof saveGameData === 'function') saveGameData();
-      }
-    });
-    
-    btnCode.addEventListener('click', () => {
-      if (typeof trackCodeView === 'function') trackCodeView(repo.name);
-    });
-    btnDemo.addEventListener('click', () => {
-      if (typeof trackDemo === 'function') trackDemo(repo.name);
-    });
   });
 
   // Añadir card de "Próximamente" al final

@@ -213,6 +213,8 @@
       display: flex;
       gap: 0.75rem;
       justify-content: center;
+      position: relative;
+      z-index: 10;
     }
     .btn-outline-neon {
       background: transparent;
@@ -222,6 +224,9 @@
       border-radius: 4px;
       padding: 0.5rem 1.25rem;
       font-size: 0.85rem;
+      position: relative;
+      z-index: 10;
+      pointer-events: auto;
     }
     .btn-outline-neon:hover {
       background: var(--primary);
@@ -2235,3 +2240,101 @@
       from { transform: translateY(-100px) rotate(0deg); opacity: 1; }
       to { transform: translateY(calc(100vh + 100px)) rotate(360deg); opacity: 0.8; }
     }
+
+/* Estilos para el nuevo diseño de actualizaciones */
+.version-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.version-card:hover {
+  background: var(--bg-dark) !important;
+  transform: translateX(5px);
+}
+
+.version-card.active {
+  background: var(--bg-dark) !important;
+  border-left-width: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+}
+
+#version-details::-webkit-scrollbar,
+#versions-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+#version-details::-webkit-scrollbar-track,
+#versions-list::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+  border-radius: 4px;
+}
+
+#version-details::-webkit-scrollbar-thumb,
+#versions-list::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  #updates-section .container > div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  #versions-list {
+    max-height: 200px !important;
+    margin-bottom: 1rem;
+  }
+  
+  #version-details {
+    max-height: none !important;
+  }
+}
+
+.version-card {
+  position: relative;
+}
+
+.version-card:hover {
+  background: rgba(255, 107, 53, 0.1) !important;
+  transform: translateX(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.version-card.active {
+  background: rgba(255, 107, 53, 0.15) !important;
+  border-left-width: 5px !important;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+.version-card.active::before {
+  content: '▶';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 0.8rem;
+}
+
+#version-details::-webkit-scrollbar-thumb:hover,
+#versions-list::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+@media (max-width: 968px) {
+  #updates-section .container > div > div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
+  #versions-list {
+    max-height: 250px !important;
+    position: relative !important;
+    top: 0 !important;
+  }
+  
+  #version-details {
+    min-height: 300px !important;
+  }
+}

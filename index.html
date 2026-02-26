@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="public/assets/icons/ankush.png">
   
   <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="json/manifest.json">
   <meta name="theme-color" content="#ff6b35">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -56,7 +56,9 @@
             <a class="nav-link" href="#guestbook"><i class="bi bi-palette me-1"></i> Guestbook</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#deadly-pursuer"><i class="bi bi-controller me-1"></i> Deadly Pursuer</a>
+            <button id="experimentos-btn" class="nav-link" aria-label="Ver experimentos">
+              <i class="bi bi-flask me-1"></i> Experimentos
+            </button>
           </li>
           <li class="nav-item">
             <button id="credits-btn" class="nav-link" aria-label="Ver créditos">
@@ -207,7 +209,6 @@
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="card" style="text-align: center; padding: 2rem; position: relative; overflow: hidden;">
-          <!-- Imagen de preview como fondo -->
           <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('guessbook/Preview-GuestBook.png'); background-size: cover; background-position: center; opacity: 0.1; z-index: 0;"></div>
           
           <div class="card-body" style="position: relative; z-index: 1;">
@@ -232,65 +233,99 @@
       </div>
     </div>
   </section>
-
-  <section id="wiki" class="container">
-    <h2>📝 WIKI DE PERSONAJES</h2>
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card" style="text-align: center; padding: 2rem; position: relative; overflow: hidden;">
-          <div class="card-body" style="position: relative; z-index: 1;">
-            <h3 class="card-title">📝 FenixLab: Archives of Creation</h3>
-            <p class="card-text">
-              Wiki colaborativa para personajes y mundos de la comunidad. Sistema completo con 
-              formulario por pasos, galerías y sistema de opiniones.
-            </p>
-            <div class="features-list" style="margin: 1.5rem 0; text-align: left;">
-              <div>🎭 <strong>Formulario Wizard</strong> - 5 pasos con animaciones fade</div>
-              <div>👥 <strong>Personajes & Mundos</strong> - Sistema adaptativo según tipo</div>
-              <div>🖼️ <strong>Galerías Completas</strong> - Iconos, renders, fanarts</div>
-              <div>💬 <strong>Sistema de Opiniones</strong> - Selector dinámico de personajes</div>
-              <div>📱 <strong>Mobile First</strong> - Optimizado para todos los dispositivos</div>
-              <div>🔥 <strong>Firebase & Cloudinary</strong> - Almacenamiento en la nube</div>
-            </div>
-            <a href="wiki.html" class="btn btn-neon" style="position: relative; z-index: 2;">
-              <i class="bi bi-book me-2"></i>Abrir Wiki
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="deadly-pursuer" class="container">
-    <h2>🎮 DEADLY PURSUER</h2>
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card deadly-pursuer-card" style="text-align: center; padding: 2rem; position: relative; overflow: hidden; background: #0a0a0a !important; border: 2px solid #ff0000 !important;">
-          <!-- Imagen de preview como fondo -->
-          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('public/assets/loading-screen.png'); background-size: cover; background-position: center; opacity: 0.05; z-index: 0; filter: grayscale(100%) contrast(200%);"></div>
-          
-          <div class="card-body" style="position: relative; z-index: 1;">
-            <h3 class="card-title" style="color: #ff0000 !important; text-shadow: 0 0 10px #ff0000;">⚠️ DEADLY PURSUER - ACCESO RESTRINGIDO</h3>
-            <p class="card-text" style="color: #ff4444 !important;">
-              ⚠️ ADVERTENCIA: Este juego contiene elementos perturbadores.<br>
-              Una vez que entres, no podrás salir hasta completar la experiencia.
-            </p>
-            <div class="features-list" style="margin: 1.5rem 0; text-align: left; color: #ff6666 !important;">
-              <div>💀 <strong style="color: #ff0000;">SUPERVIVENCIA EXTREMA</strong> - Sin garantías de salida</div>
-              <div>🔴 <strong style="color: #ff0000;">EXPERIENCIA INMERSIVA</strong> - Realidad alterada</div>
-              <div>⚠️ <strong style="color: #ff0000;">ACCESO ÚNICO</strong> - Una sola oportunidad</div>
-              <div>🚫 <strong style="color: #ff0000;">SIN RETORNO</strong> - El juego te elige</div>
-            </div>
-            <button onclick="showDeadlyPursuerWarning()" class="btn" style="background: #ff0000 !important; color: white !important; border: 2px solid #ff0000 !important; position: relative; z-index: 2; box-shadow: 0 0 20px #ff0000;">
-              <i class="bi bi-exclamation-triangle me-2"></i>ACCEDER BAJO TU PROPIO RIESGO
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
   </div>
   
+  <div class="credits-section" id="experimentos-section">
+    <div class="container">
+      <h2 class="text-center mb-4">🧪 EXPERIMENTOS</h2>
+      <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">Proyectos experimentales y juegos del laboratorio</p>
+      
+      <div class="row">
+        <!-- Deadly Pursuer -->
+        <div class="col-md-6 mb-4">
+          <div class="card deadly-pursuer-card" style="text-align: center; padding: 1.5rem; position: relative; overflow: hidden; background: #0a0a0a !important; border: 2px solid #ff0000 !important; height: 100%;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('Experimentos/public/assets/loading-screen.png'); background-size: cover; background-position: center; opacity: 0.05; z-index: 0; filter: grayscale(100%) contrast(200%);"></div>
+            
+            <div class="card-body" style="position: relative; z-index: 1;">
+              <h3 class="card-title" style="color: #ff0000 !important; text-shadow: 0 0 10px #ff0000; font-size: 1.3rem;">⚠️ DEADLY PURSUER</h3>
+              <p class="card-text" style="color: #ff4444 !important; font-size: 0.9rem;">
+                Juego multijugador online con Discord Friends (hasta 8 jugadores)
+              </p>
+              <div class="features-list" style="margin: 1rem 0; text-align: left; color: #ff6666 !important; font-size: 0.85rem;">
+                <div>💀 <strong style="color: #ff0000;">4 Personajes únicos</strong></div>
+                <div>🔴 <strong style="color: #ff0000;">Sistema Rage Mode</strong></div>
+                <div>🎮 <strong style="color: #ff0000;">Soporte gamepad</strong></div>
+              </div>
+              <button onclick="showDeadlyPursuerWarning()" class="btn" style="background: #ff0000 !important; color: white !important; border: 2px solid #ff0000 !important; position: relative; z-index: 2; box-shadow: 0 0 20px #ff0000; font-size: 0.9rem; padding: 0.5rem 1rem;">
+                <i class="bi bi-exclamation-triangle me-2"></i>JUGAR
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wiki Deadly Pursuer -->
+        <div class="col-md-6 mb-4">
+          <div class="card" style="text-align: center; padding: 1.5rem; height: 100%;">
+            <div class="card-body">
+              <h3 class="card-title" style="font-size: 1.3rem;">📖 Wiki Deadly Pursuer</h3>
+              <p class="card-text" style="font-size: 0.9rem;">
+                Guía completa de personajes, habilidades y estrategias del juego
+              </p>
+              <div class="features-list" style="margin: 1rem 0; text-align: left; font-size: 0.85rem;">
+                <div>👥 <strong>Perfiles de personajes</strong></div>
+                <div>⚡ <strong>Guía de habilidades</strong></div>
+                <div>📊 <strong>Estadísticas y tips</strong></div>
+              </div>
+              <a href="Experimentos/deadlypusuirwiki/index.html" class="btn btn-neon" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                <i class="bi bi-book me-2"></i>Ver Wiki
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chatbot -->
+        <div class="col-md-6 mb-4">
+          <div class="card" style="text-align: center; padding: 1.5rem; height: 100%;">
+            <div class="card-body">
+              <h3 class="card-title" style="font-size: 1.3rem;">🤖 Chatbot IA</h3>
+              <p class="card-text" style="font-size: 0.9rem;">
+                Asistente virtual inteligente para responder tus preguntas
+              </p>
+              <div class="features-list" style="margin: 1rem 0; text-align: left; font-size: 0.85rem;">
+                <div>💬 <strong>Conversación natural</strong></div>
+                <div>🧠 <strong>Inteligencia artificial</strong></div>
+                <div>⚡ <strong>Respuestas rápidas</strong></div>
+              </div>
+              <a href="Experimentos/chatbot/chatbot.html" class="btn btn-neon" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                <i class="bi bi-chat-dots me-2"></i>Abrir Chatbot
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Archive of Creation -->
+        <div class="col-md-6 mb-4">
+          <div class="card" style="text-align: center; padding: 1.5rem; height: 100%;">
+            <div class="card-body">
+              <h3 class="card-title" style="font-size: 1.3rem;">📝 Archive of Creation</h3>
+              <p class="card-text" style="font-size: 0.9rem;">
+                Wiki colaborativa para personajes y mundos de la comunidad
+              </p>
+              <div class="features-list" style="margin: 1rem 0; text-align: left; font-size: 0.85rem;">
+                <div>🎭 <strong>Formulario por pasos</strong></div>
+                <div>🖼️ <strong>Galerías completas</strong></div>
+                <div>🔥 <strong>Firebase & Cloudinary</strong></div>
+              </div>
+              <a href="Experimentos/ArchiveOfCreation/wiki.html" class="btn btn-neon" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                <i class="bi bi-archive me-2"></i>Abrir Archive
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="credits-section" id="credits-section">
     <div class="container">
       <h2 class="text-center mb-4">CRÉDITOS</h2>
@@ -827,7 +862,7 @@
     
     function finalizeEntry() {
       closeDeadlyWarning();
-      window.open('public/index.html', '_blank');
+      window.open('Experimentos/public/index.html', '_blank');
     }
     
     // Manejo de errores global optimizado
@@ -1196,8 +1231,8 @@ async function showCredits() {
       creditsSection.style.display = 'block';
     }
     const [creditsResponse, updatesResponse] = await Promise.all([
-      fetch('credits.json'),
-      fetch('updates.json')
+      fetch('json/credits.json'),
+      fetch('json/updates.json')
     ]);
     const credits = await creditsResponse.json();
     const updates = await updatesResponse.json();
@@ -1428,6 +1463,7 @@ async function showCredits() {
       const creditsSection = document.getElementById('credits-section');
       const updatesSection = document.getElementById('updates-section');
       const achievementsSection = document.getElementById('achievements-section');
+      const experimentosSection = document.getElementById('experimentos-section');
       
       if (mainContent) mainContent.classList.add('hidden');
       if (creditsSection) {
@@ -1441,6 +1477,19 @@ async function showCredits() {
       if (achievementsSection) {
         achievementsSection.classList.remove('active');
         achievementsSection.style.display = 'none';
+      }
+      if (experimentosSection) {
+        experimentosSection.classList.remove('active');
+        experimentosSection.style.display = 'none';
+      }
+    }
+    
+    function showExperimentos() {
+      hideAllSections();
+      const experimentosSection = document.getElementById('experimentos-section');
+      if (experimentosSection) {
+        experimentosSection.classList.add('active');
+        experimentosSection.style.display = 'block';
       }
     }
     
@@ -1514,70 +1563,46 @@ async function showCredits() {
           updatesSection.style.display = 'block';
         }
         
-        const response = await fetch('updates.json');
+        const response = await fetch('json/updates.json');
         const data = await response.json();
         
-        let html = `<div class="mb-3"><div class="points-badge" style="background: var(--primary);">Versión Actual: ${data.version}</div></div>`;
+        let html = `
+          <div class="mb-3 text-center"><div class="points-badge" style="background: var(--primary); display: inline-block;">Versión Actual: ${data.version}</div></div>
+          <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem; align-items: start;">
+            <div id="versions-list" style="background: var(--bg-dark); border-radius: 12px; padding: 1.5rem; max-height: 600px; overflow-y: auto; position: sticky; top: 100px;">
+              <h5 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1rem; text-align: center;">📝 Versiones</h5>
+        `;
         
-        // Todas las versiones en tarjetas
-        html += '<h4 style="color: var(--primary); margin-bottom: 1rem;">📝 Historial de Versiones</h4>';
-        html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">';
-        data.updates.forEach(update => {
+        data.updates.forEach((update, index) => {
           const typeColor = update.type === 'major' ? '#22c55e' : update.type === 'release' ? '#3b82f6' : update.type === 'new' ? '#ff6b35' : update.type === 'deprecated' ? '#dc2626' : '#6b7280';
           const isDeprecated = update.status === 'discarded';
           html += `
-            <div class="credit-item" style="margin-bottom: 0; border: 2px solid ${typeColor}; border-radius: 12px; padding: 1.5rem; background: var(--bg-dark); ${isDeprecated ? 'opacity: 0.7; filter: grayscale(50%);' : ''}">
-              <div class="credit-key" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <span style="background: ${typeColor}; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold; color: white;">${update.type.toUpperCase()}</span>
-                  <span style="font-size: 0.8rem; color: var(--text-secondary);">${update.date}</span>
-                </div>
-                <span style="font-size: 1.2rem; font-weight: bold;">v${update.version}</span>
+            <div class="version-card ${index === 0 ? 'active' : ''}" onclick="showVersionDetails(${index})" data-index="${index}" style="padding: 1rem; margin-bottom: 0.75rem; border-radius: 10px; cursor: pointer; border-left: 4px solid ${typeColor}; background: var(--bg-light); transition: all 0.3s; ${isDeprecated ? 'opacity: 0.6;' : ''}">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div style="font-weight: bold; font-size: 1rem; color: var(--text-primary);">v${update.version}</div>
+                <span style="background: ${typeColor}; padding: 0.2rem 0.5rem; border-radius: 12px; color: white; font-size: 0.65rem; font-weight: bold;">${update.type.toUpperCase()}</span>
               </div>
-              <h5 style="color: ${typeColor}; margin-bottom: 1rem; font-size: 1.1rem;">${update.title}</h5>
-              <ul class="credit-list" style="margin-bottom: 1rem;">
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">${update.date}</div>
+            </div>
           `;
-          
-          update.features?.forEach(feature => {
-            html += `<li style="font-size: 0.8rem;">${feature}</li>`;
-          });
-          
-          if (update.fixes?.length) {
-            update.fixes.forEach(fix => {
-              html += `<li style="font-size: 0.8rem; color: #fbbf24;">${fix}</li>`;
-            });
-          }
-          
-          html += '</ul>';
-          
-          // Agregar howToInstall si existe
-          if (update.howToInstall?.length) {
-            html += '<h5 style="color: var(--secondary); margin: 1rem 0 0.5rem; font-size: 0.9rem;">📱 Cómo Instalar PWA:</h5><ul class="credit-list">';
-            update.howToInstall.forEach(instruction => {
-              html += `<li style="font-size: 0.8rem; color: #06b6d4;">${instruction}</li>`;
-            });
-            html += '</ul>';
-          }
-          
-          // Agregar autoUpdate si existe
-          if (update.autoUpdate?.length) {
-            html += '<h5 style="color: var(--secondary); margin: 1rem 0 0.5rem; font-size: 0.9rem;">🔄 Actualizaciones Automáticas:</h5><ul class="credit-list">';
-            update.autoUpdate.forEach(info => {
-              html += `<li style="font-size: 0.8rem; color: #10b981;">${info}</li>`;
-            });
-            html += '</ul>';
-          }
-          
-          html += '</div>';
         });
-        html += '</div>'; // Cerrar grid
         
-        // Roadmap
+        html += `
+            </div>
+            <div id="version-details" style="background: var(--bg-dark); border-radius: 12px; padding: 2rem; min-height: 400px;">
+        `;
+        
+        const firstUpdate = data.updates[0];
+        html += generateVersionDetails(firstUpdate);
+        
+        html += '</div></div>';
+        
         if (data.roadmap?.length) {
-          html += '<h4 style="color: var(--primary); margin-bottom: 1rem; margin-top: 2rem;">🗺️ Próximas Funciones</h4>';
+          html += '<h4 style="color: var(--primary); margin: 2rem 0 1rem;">🗺️ Próximas Funciones</h4>';
+          html += '<div style="display: grid; gap: 1rem;">';
           data.roadmap.forEach(item => {
             html += `
-              <div class="credit-item" style="margin-bottom: 1rem; opacity: 0.8;">
+              <div class="credit-item" style="margin-bottom: 0; opacity: 0.8;">
                 <div class="credit-key">${item.title}</div>
                 <ul class="credit-list">
             `;
@@ -1586,14 +1611,76 @@ async function showCredits() {
             });
             html += '</ul></div>';
           });
+          html += '</div>';
         }
         
         const updatesViewer = document.getElementById('updates-viewer');
-        if (updatesViewer) updatesViewer.innerHTML = html;
+        if (updatesViewer) {
+          updatesViewer.innerHTML = html;
+          window.updatesData = data;
+        }
       } catch (error) {
         const updatesViewer = document.getElementById('updates-viewer');
         if (updatesViewer) updatesViewer.innerHTML = '<p style="color: var(--text-secondary);">Error al cargar updates.json: ' + error.message + '</p>';
       }
+    }
+
+    function generateVersionDetails(update) {
+      const typeColor = update.type === 'major' ? '#22c55e' : update.type === 'release' ? '#3b82f6' : update.type === 'new' ? '#ff6b35' : update.type === 'deprecated' ? '#dc2626' : '#6b7280';
+      let html = `
+        <div style="border-bottom: 2px solid ${typeColor}; padding-bottom: 1.5rem; margin-bottom: 2rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+            <h3 style="color: ${typeColor}; margin: 0; font-size: 2rem;">v${update.version}</h3>
+            <span style="background: ${typeColor}; padding: 0.5rem 1.25rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white;">${update.type.toUpperCase()}</span>
+          </div>
+          <p style="color: var(--text-secondary); margin: 0.5rem 0; font-size: 0.9rem;">📅 ${update.date}</p>
+          <h4 style="color: var(--text-primary); margin: 1rem 0 0; font-size: 1.3rem;">${update.title}</h4>
+        </div>
+      `;
+      
+      if (update.features?.length) {
+        html += '<div style="margin-bottom: 2rem;"><h5 style="color: var(--secondary); font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><span>✨</span> Características</h5><ul class="credit-list" style="display: grid; gap: 0.75rem;">';
+        update.features.forEach(feature => {
+          html += `<li style="font-size: 0.95rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px; border-left: 3px solid var(--secondary);">${feature}</li>`;
+        });
+        html += '</ul></div>';
+      }
+      
+      if (update.fixes?.length) {
+        html += '<div style="margin-bottom: 2rem;"><h5 style="color: #fbbf24; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><span>🔧</span> Correcciones</h5><ul class="credit-list" style="display: grid; gap: 0.75rem;">';
+        update.fixes.forEach(fix => {
+          html += `<li style="font-size: 0.95rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px; border-left: 3px solid #fbbf24; color: var(--text-primary);">${fix}</li>`;
+        });
+        html += '</ul></div>';
+      }
+      
+      if (update.howToInstall?.length) {
+        html += '<div style="margin-bottom: 2rem;"><h5 style="color: #06b6d4; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><span>📱</span> Cómo Instalar PWA</h5><ul class="credit-list" style="display: grid; gap: 0.75rem;">';
+        update.howToInstall.forEach(instruction => {
+          html += `<li style="font-size: 0.95rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px; border-left: 3px solid #06b6d4; color: var(--text-primary);">${instruction}</li>`;
+        });
+        html += '</ul></div>';
+      }
+      
+      if (update.autoUpdate?.length) {
+        html += '<div style="margin-bottom: 2rem;"><h5 style="color: #10b981; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><span>🔄</span> Actualizaciones Automáticas</h5><ul class="credit-list" style="display: grid; gap: 0.75rem;">';
+        update.autoUpdate.forEach(info => {
+          html += `<li style="font-size: 0.95rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px; border-left: 3px solid #10b981; color: var(--text-primary);">${info}</li>`;
+        });
+        html += '</ul></div>';
+      }
+      
+      return html;
+    }
+
+    function showVersionDetails(index) {
+      if (!window.updatesData) return;
+      
+      document.querySelectorAll('.version-card').forEach(card => card.classList.remove('active'));
+      document.querySelector(`.version-card[data-index="${index}"]`).classList.add('active');
+      
+      const update = window.updatesData.updates[index];
+      document.getElementById('version-details').innerHTML = generateVersionDetails(update);
     }
 
     function loadGameData() {
@@ -2791,7 +2878,7 @@ async function showCredits() {
     document.addEventListener('DOMContentLoaded', async () => {
       // Cargar versión desde updates.json
       try {
-        const response = await fetch('updates.json');
+        const response = await fetch('json/updates.json');
         const data = await response.json();
         const versionSpan = document.getElementById('version-number');
         if (versionSpan) versionSpan.textContent = 'v' + data.version;
@@ -2956,7 +3043,7 @@ async function showCredits() {
       };
       async function checkForUpdates() {
         try {
-          const response = await fetch('./updates.json?t=' + Date.now());
+          const response = await fetch('./json/updates.json?t=' + Date.now());
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
           }
@@ -3139,6 +3226,10 @@ async function showCredits() {
       function hideCreditsPanel() {
         document.getElementById('credits-mini-panel').classList.remove('show');
       }
+      const experimentosBtn = document.getElementById('experimentos-btn');
+      if (experimentosBtn) {
+        experimentosBtn.addEventListener('click', showExperimentos);
+      }
       document.getElementById('credits-btn').addEventListener('click', showCredits);
       document.getElementById('nerd-btn').addEventListener('click', showNerdPanel);
       document.getElementById('close-panel').addEventListener('click', hideNerdPanel);
@@ -3152,7 +3243,7 @@ async function showCredits() {
       
       // Animación para enlaces de navegación
       document.querySelectorAll('.nav-link').forEach(link => {
-        if (link.id !== 'theme-panel-btn' && link.id !== 'credits-btn' && link.id !== 'updates-btn' && link.id !== 'achievements-btn') {
+        if (link.id !== 'theme-panel-btn' && link.id !== 'credits-btn' && link.id !== 'updates-btn' && link.id !== 'achievements-btn' && link.id !== 'experimentos-btn') {
           link.addEventListener('click', (e) => {
             e.preventDefault();
             const target = e.target.closest('.nav-link');
