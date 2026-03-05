@@ -633,6 +633,60 @@
     </button>
   </div>
   
+  <!-- Modal de Salas Colaborativas -->
+  <div class="modal fade" id="collabRoomsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" style="background: var(--bg-dark); border: 2px solid var(--primary);">
+        <div class="modal-header" style="border-bottom: 1px solid var(--primary);">
+          <h5 class="modal-title" style="color: var(--primary);">🎮 Salas Colaborativas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Crear Nueva Sala -->
+          <div class="card mb-3" style="background: var(--bg-light); border: 1px solid var(--primary);">
+            <div class="card-header" style="background: linear-gradient(45deg, #28a745, #20c997); color: white;">
+              <h6 class="mb-0">➕ Crear Nueva Sala</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <input type="text" id="newRoomName" class="form-control form-control-sm" placeholder="Nombre de la sala" maxlength="30">
+                </div>
+                <div class="col-md-3">
+                  <select id="newRoomMaxUsers" class="form-select form-select-sm">
+                    <option value="2">2 usuarios</option>
+                    <option value="3">3 usuarios</option>
+                    <option value="4" selected>4 usuarios</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <button id="createRoomBtn" class="btn btn-success btn-sm w-100">🚀 Crear</button>
+                </div>
+              </div>
+              <small class="text-muted d-block mt-2">💡 Límite: 10 salas activas | Máx: 4 usuarios/sala</small>
+            </div>
+          </div>
+
+          <!-- Lista de Salas -->
+          <div class="card" style="background: var(--bg-light); border: 1px solid var(--primary);">
+            <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, var(--primary), #ff8c42); color: white;">
+              <h6 class="mb-0">🏠 Salas Disponibles</h6>
+              <button id="refreshRoomsBtn" class="btn btn-sm btn-light">🔄</button>
+            </div>
+            <div class="card-body p-2">
+              <div id="roomsList" style="max-height: 300px; overflow-y: auto;">
+                <div class="text-center text-muted py-3">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                  <p class="mb-0 mt-2">Cargando salas...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="container py-4">
     <div class="version-toggle" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
       <a href="guestbook-old.html" class="btn btn-outline-warning btn-sm">
@@ -1167,6 +1221,7 @@
     import { VipStore } from './js/vip-store.js';
     import { FriendsSystem } from './js/friends-system.js';
     import { CollaborativeDrawing } from './js/collaborative-draw.js';
+    import { onSnapshot, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
     
     class GuestbookApp {
       constructor() {
@@ -2677,15 +2732,6 @@
       
       // Sistema de dibujo colaborativo
       async startCollaborativeSession() {
-        const collabBtn = document.getElementById('collabBtn');
-        const collabText = document.getElementById('collabText');
-        const collabLoader = document.getElementById('collabLoader');
-        
-        if (!collabBtn || !collabText || !collabLoader) {
-          console.error('Elementos del botón colaborativo no encontrados');
-          return;
-        }
-        
         // Verificar que esté logueado
         if (!this.profiles || !this.profiles.isLoggedIn()) {
           this.ui.showNotification('⚠️ Debes iniciar sesión para dibujar colaborativamente', 'warning');
@@ -2693,106 +2739,225 @@
           return;
         }
         
+        // Abrir modal de salas
+        const modal = new bootstrap.Modal(document.getElementById('collabRoomsModal'));
+        modal.show();
+        
+        // Cargar lista de salas
+        this.loadRoomsList();
+        
+        // Configurar eventos del modal
+        this.setupRoomsModalEvents();
+      }
+      
+      setupRoomsModalEvents() {
+        const createBtn = document.getElementById('createRoomBtn');
+        const refreshBtn = document.getElementById('refreshRoomsBtn');
+        
+        if (createBtn && !createBtn.dataset.listenerAdded) {
+          createBtn.dataset.listenerAdded = 'true';
+          createBtn.onclick = () => this.createNewRoom();
+        }
+        
+        if (refreshBtn && !refreshBtn.dataset.listenerAdded) {
+          refreshBtn.dataset.listenerAdded = 'true';
+          refreshBtn.onclick = () => this.loadRoomsList();
+        }
+      }
+      
+      async createNewRoom() {
+        const roomName = document.getElementById('newRoomName').value.trim();
+        const maxUsers = parseInt(document.getElementById('newRoomMaxUsers').value);
         const username = this.profiles.currentProfile.username;
         
-        collabBtn.disabled = true;
-        collabText.style.display = 'none';
-        collabLoader.style.display = 'inline';
+        if (!roomName) {
+          this.ui.showNotification('⚠️ Escribe un nombre para la sala', 'warning');
+          return;
+        }
         
         try {
-          this.ui.showNotification('🔍 Buscando pareja para dibujar... (30s)', 'info');
+          const result = await this.collabDraw.createRoom(username, roomName, maxUsers);
           
-          const result = await this.collabDraw.findPartner(username);
+          // Cerrar modal
+          bootstrap.Modal.getInstance(document.getElementById('collabRoomsModal')).hide();
           
-          collabText.style.display = 'inline';
-          collabLoader.style.display = 'none';
-          collabBtn.disabled = false;
-          
-          this.ui.showNotification(`✅ Conectado con ${result.partner}!`, 'success');
-          
-          // Iniciar sesión colaborativa
+          this.ui.showNotification(`✅ Sala "${roomName}" creada!`, 'success');
           this.setupCollaborativeCanvas(result);
           
         } catch (error) {
-          console.error('Error en sesión colaborativa:', error);
+          console.error('Error creando sala:', error);
+          this.ui.showNotification('❌ ' + error.message, 'error');
+        }
+      }
+      
+      async loadRoomsList() {
+        const roomsList = document.getElementById('roomsList');
+        roomsList.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div></div>';
+        
+        try {
+          const rooms = await this.collabDraw.getAvailableRooms();
           
-          let errorMsg = '❌ Error al conectar';
-          if (error.message && error.message.includes('Timeout')) {
-            errorMsg = '⏰ No se encontró pareja. Inténtalo de nuevo';
+          if (rooms.length === 0) {
+            roomsList.innerHTML = '<div class="text-center text-muted py-3">No hay salas disponibles. ¡Crea una!</div>';
+            return;
           }
           
-          this.ui.showNotification(errorMsg, 'error');
+          roomsList.innerHTML = rooms.map(room => `
+            <div class="d-flex justify-content-between align-items-center p-2 mb-2" style="background: rgba(255,255,255,0.05); border-radius: 6px; border-left: 3px solid var(--primary);">
+              <div>
+                <strong style="color: var(--primary);">${room.roomName || 'Sala #' + room.roomNumber}</strong>
+                <div class="small text-muted">👥 ${room.users.length}/${room.maxUsers} usuarios</div>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="window.guestbookApp.joinSpecificRoom('${room.id}')">
+                🚪 Unirse
+              </button>
+            </div>
+          `).join('');
           
-          if (collabBtn) collabBtn.disabled = false;
-          if (collabText) collabText.style.display = 'inline';
-          if (collabLoader) collabLoader.style.display = 'none';
+        } catch (error) {
+          console.error('Error cargando salas:', error);
+          roomsList.innerHTML = '<div class="text-center text-danger py-3">Error cargando salas</div>';
+        }
+      }
+      
+      async joinSpecificRoom(sessionId) {
+        const username = this.profiles.currentProfile.username;
+        
+        try {
+          const result = await this.collabDraw.joinRoom(sessionId, username);
+          
+          // Cerrar modal
+          bootstrap.Modal.getInstance(document.getElementById('collabRoomsModal')).hide();
+          
+          this.ui.showNotification(`✅ Unido a sala!`, 'success');
+          this.setupCollaborativeCanvas(result);
+          
+        } catch (error) {
+          console.error('Error uniéndose a sala:', error);
+          this.ui.showNotification('❌ ' + error.message, 'error');
         }
       }
       
       setupCollaborativeCanvas(sessionInfo) {
-        // Cambiar UI para modo colaborativo
         const collabBtn = document.getElementById('collabBtn');
-        collabBtn.innerHTML = `👥 Con ${sessionInfo.partner} | ❌ Salir`;
+        const roomNum = sessionInfo.roomNumber || '?';
+        const userCount = sessionInfo.userCount || 1;
+        
+        collabBtn.innerHTML = `🎮 Sala #${roomNum} (👥${userCount}/8) | ❌ Salir`;
         collabBtn.className = 'btn btn-danger btn-sm';
         
-        // Cambiar evento del botón para salir
-        collabBtn.onclick = () => this.endCollaborativeSession(sessionInfo.partner);
+        collabBtn.onclick = () => this.endCollaborativeSession();
         
-        // Escuchar cambios en el canvas compartido
+        // Escuchar cambios en usuarios y canvas
         this.collabDraw.listenToCanvas((canvasData) => {
           this.syncCollaborativeCanvas(canvasData);
         });
         
-        // Interceptar eventos de dibujo para enviarlos
+        // Escuchar cambios en usuarios
+        this.listenToRoomUsers(sessionInfo.sessionId);
+        
         this.setupCollaborativeDrawing();
       }
       
+      listenToRoomUsers(sessionId) {
+        onSnapshot(doc(this.collabDraw.db, 'dibujos', sessionId), (doc) => {
+          if (doc.exists()) {
+            const data = doc.data();
+            const users = data.users || [];
+            const collabBtn = document.getElementById('collabBtn');
+            if (collabBtn) {
+              const roomNum = data.roomNumber || '?';
+              collabBtn.innerHTML = `🎮 Sala #${roomNum} (👥${users.length}/8) | ❌ Salir`;
+            }
+          }
+        });
+      }
+      
       setupCollaborativeDrawing() {
-        const originalMouseDown = this.canvas.canvas.onmousedown;
-        const originalMouseMove = this.canvas.canvas.onmousemove;
-        const originalMouseUp = this.canvas.canvas.onmouseup;
+        const canvas = this.canvas.canvas;
+        const originalMouseDown = canvas.onmousedown;
+        const originalMouseMove = canvas.onmousemove;
+        const originalMouseUp = canvas.onmouseup;
         
         let isDrawing = false;
         let lastX = 0;
         let lastY = 0;
         
-        this.canvas.canvas.onmousedown = (e) => {
-          isDrawing = true;
-          const rect = this.canvas.canvas.getBoundingClientRect();
-          lastX = e.clientX - rect.left;
-          lastY = e.clientY - rect.top;
-          
-          if (originalMouseDown) originalMouseDown.call(this.canvas.canvas, e);
+        // Función para obtener coordenadas (mouse o touch)
+        const getCoords = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          return {
+            x: (clientX - rect.left) * (canvas.width / rect.width),
+            y: (clientY - rect.top) * (canvas.height / rect.height)
+          };
         };
         
-        this.canvas.canvas.onmousemove = (e) => {
+        // Mouse events
+        canvas.onmousedown = (e) => {
+          isDrawing = true;
+          const coords = getCoords(e);
+          lastX = coords.x;
+          lastY = coords.y;
+          if (originalMouseDown) originalMouseDown.call(canvas, e);
+        };
+        
+        canvas.onmousemove = (e) => {
           if (!isDrawing) return;
+          const coords = getCoords(e);
           
-          const rect = this.canvas.canvas.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          
-          // Enviar trazo al servidor
           this.collabDraw.sendStroke({
             tool: this.currentTool || 'brush',
             color: this.canvas.currentColor || '#000000',
             size: this.canvas.currentSize || 3,
             fromX: lastX,
             fromY: lastY,
-            toX: x,
-            toY: y
+            toX: coords.x,
+            toY: coords.y
           });
           
-          lastX = x;
-          lastY = y;
-          
-          if (originalMouseMove) originalMouseMove.call(this.canvas.canvas, e);
+          lastX = coords.x;
+          lastY = coords.y;
+          if (originalMouseMove) originalMouseMove.call(canvas, e);
         };
         
-        this.canvas.canvas.onmouseup = (e) => {
+        canvas.onmouseup = (e) => {
           isDrawing = false;
-          if (originalMouseUp) originalMouseUp.call(this.canvas.canvas, e);
+          if (originalMouseUp) originalMouseUp.call(canvas, e);
         };
+        
+        // Touch events para móvil
+        canvas.addEventListener('touchstart', (e) => {
+          if (this.currentTool === 'stickerMove') return;
+          isDrawing = true;
+          const coords = getCoords(e);
+          lastX = coords.x;
+          lastY = coords.y;
+        }, { passive: false });
+        
+        canvas.addEventListener('touchmove', (e) => {
+          if (this.currentTool === 'stickerMove' || !isDrawing) return;
+          e.preventDefault();
+          const coords = getCoords(e);
+          
+          this.collabDraw.sendStroke({
+            tool: this.currentTool || 'brush',
+            color: this.canvas.currentColor || '#000000',
+            size: this.canvas.currentSize || 3,
+            fromX: lastX,
+            fromY: lastY,
+            toX: coords.x,
+            toY: coords.y
+          });
+          
+          lastX = coords.x;
+          lastY = coords.y;
+        }, { passive: false });
+        
+        canvas.addEventListener('touchend', () => {
+          isDrawing = false;
+        }, { passive: false });
       }
       
       syncCollaborativeCanvas(canvasData) {
@@ -2820,8 +2985,8 @@
         ctx.stroke();
       }
       
-      async endCollaborativeSession(partnerName) {
-        if (!confirm(`¿Salir de la sesión con ${partnerName}?`)) return;
+      async endCollaborativeSession() {
+        if (!confirm(`¿Salir de la sala colaborativa?`)) return;
         
         const username = this.profiles?.currentProfile?.username || 'Anónimo';
         await this.collabDraw.leaveSession(username);

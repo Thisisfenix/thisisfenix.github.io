@@ -5,91 +5,210 @@ export class CollaborativeDrawing {
   constructor(firebaseManager) {
     this.db = firebaseManager.db;
     this.currentSession = null;
-    this.partnerId = null;
+    this.partners = []; // Múltiples usuarios
     this.isSearching = false;
     this.sessionListener = null;
     this.strokeBuffer = [];
     this.lastSendTime = 0;
-    this.sendInterval = 200; // Enviar cada 200ms máximo
+    this.sendInterval = 300;
+    this.maxRooms = 10; // Máximo 10 salas para ahorrar costos
+    this.maxUsersPerRoom = 4; // Máximo 4 usuarios por sala
   }
 
-  // Buscar pareja para dibujar
+  // Obtener salas disponibles
+  async getAvailableRooms() {
+    try {
+      const q = query(
+        collection(this.db, 'dibujos'),
+        where('isCollabSession', '==', true),
+        where('status', '==', 'active')
+      );
+      
+      const snapshot = await getDocs(q);
+      const recentTime = Date.now() - 300000; // Últimos 5 minutos
+      
+      return snapshot.docs
+        .filter(doc => {
+          const data = doc.data();
+          const users = data.users || [];
+          return data.timestamp > recentTime && users.length < this.maxUsersPerRoom;
+        })
+        .map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            users: data.users || [],
+            roomNumber: data.roomNumber || 1,
+            timestamp: data.timestamp
+          };
+        });
+    } catch (error) {
+      console.error('Error obteniendo salas:', error);
+      return [];
+    }
+  }
+
+  // Crear sala personalizada
+  async createRoom(username, roomName, maxUsers) {
+    try {
+      const activeSessions = await this.getActiveSessions();
+      if (activeSessions >= this.maxRooms) {
+        throw new Error('Límite de salas alcanzado');
+      }
+      
+      const roomNumber = activeSessions + 1;
+      const sessionRef = await addDoc(collection(this.db, 'dibujos'), {
+        isCollabSession: true,
+        users: [username],
+        status: 'active',
+        timestamp: Date.now(),
+        createdAt: Date.now(),
+        domain: 'thisisfenix.github.io',
+        autor: username,
+        titulo: roomName || `Sala #${roomNumber}`,
+        imagenData: '',
+        roomNumber: roomNumber,
+        maxUsers: Math.min(maxUsers || 4, this.maxUsersPerRoom),
+        canvas: { strokes: [] }
+      });
+      
+      return {
+        sessionId: sessionRef.id,
+        roomNumber: roomNumber
+      };
+    } catch (error) {
+      console.error('Error creando sala:', error);
+      throw error;
+    }
+  }
+  
+  // Unirse a sala específica
+  async joinRoom(sessionId, username) {
+    try {
+      const sessionRef = doc(this.db, 'dibujos', sessionId);
+      const sessionDoc = await getDoc(sessionRef);
+      
+      if (!sessionDoc.exists()) {
+        throw new Error('Sala no encontrada');
+      }
+      
+      const data = sessionDoc.data();
+      const users = data.users || [];
+      const maxUsers = data.maxUsers || this.maxUsersPerRoom;
+      
+      if (users.length >= maxUsers) {
+        throw new Error('Sala llena');
+      }
+      
+      if (users.includes(username)) {
+        throw new Error('Ya estás en esta sala');
+      }
+      
+      const updatedUsers = [...users, username];
+      await updateDoc(sessionRef, {
+        users: updatedUsers,
+        lastJoin: Date.now()
+      });
+      
+      this.currentSession = sessionId;
+      this.partners = users;
+      
+      return {
+        sessionId: sessionId,
+        partners: users,
+        userCount: updatedUsers.length,
+        roomNumber: data.roomNumber,
+        maxUsers: maxUsers
+      };
+    } catch (error) {
+      console.error('Error uniéndose a sala:', error);
+      throw error;
+    }
+  }
   async findPartner(username) {
     try {
       this.isSearching = true;
       
-      // Buscar sesiones disponibles (query simple sin índice)
-      const q = query(
-        collection(this.db, 'dibujos'),
-        where('isCollabSession', '==', true),
-        where('status', '==', 'waiting')
-      );
+      const availableRooms = await this.getAvailableRooms();
       
-      const snapshot = await getDocs(q);
-      
-      // Filtrar sesiones recientes (últimos 30 segundos)
-      const recentTime = Date.now() - 30000;
-      const recentSessions = snapshot.docs.filter(doc => {
-        const data = doc.data();
-        return data.timestamp > recentTime;
-      });
-      
-      if (recentSessions.length > 0) {
-        // Unirse a sesión existente
-        const sessionDoc = recentSessions[0];
-        const sessionData = sessionDoc.data();
+      if (availableRooms.length > 0) {
+        // Unirse a sala existente
+        const room = availableRooms[0];
+        const updatedUsers = [...room.users, username];
         
-        await updateDoc(doc(this.db, 'dibujos', sessionDoc.id), {
-          user2: username,
-          status: 'active',
-          startedAt: Date.now()
+        await updateDoc(doc(this.db, 'dibujos', room.id), {
+          users: updatedUsers,
+          lastJoin: Date.now()
         });
         
-        this.currentSession = sessionDoc.id;
-        this.partnerId = sessionData.user1;
-        return { sessionId: sessionDoc.id, partner: sessionData.user1, role: 'user2' };
+        this.currentSession = room.id;
+        this.partners = room.users;
+        
+        return { 
+          sessionId: room.id, 
+          partners: room.users,
+          userCount: updatedUsers.length,
+          roomNumber: room.roomNumber 
+        };
       } else {
-        // Crear nueva sesión
+        // Verificar límite de salas
+        const activeSessions = await this.getActiveSessions();
+        if (activeSessions >= this.maxRooms) {
+          throw new Error('Límite de salas alcanzado. Intenta más tarde.');
+        }
+        
+        // Crear nueva sala
+        const roomNumber = activeSessions + 1;
         const sessionRef = await addDoc(collection(this.db, 'dibujos'), {
           isCollabSession: true,
-          user1: username,
-          user2: null,
-          status: 'waiting',
+          users: [username],
+          status: 'active',
           timestamp: Date.now(),
           createdAt: Date.now(),
           domain: 'thisisfenix.github.io',
           autor: username,
-          titulo: 'Sesión Colaborativa',
+          titulo: `Sala #${roomNumber} (${this.maxUsersPerRoom} max)`,
           imagenData: '',
+          roomNumber: roomNumber,
           canvas: { strokes: [] }
         });
         
         this.currentSession = sessionRef.id;
+        this.partners = [];
         
-        // Esperar a que alguien se una (timeout 30 segundos)
-        return new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            unsubscribe();
-            this.cancelSearch();
-            reject(new Error('Timeout: No se encontró pareja'));
-          }, 30000);
-          
-          const unsubscribe = onSnapshot(doc(this.db, 'dibujos', sessionRef.id), (doc) => {
-            const data = doc.data();
-            if (data && data.status === 'active' && data.user2) {
-              clearTimeout(timeout);
-              this.partnerId = data.user2;
-              unsubscribe();
-              resolve({ sessionId: sessionRef.id, partner: data.user2, role: 'user1' });
-            }
-          });
-        });
+        return { 
+          sessionId: sessionRef.id, 
+          partners: [],
+          userCount: 1,
+          roomNumber: roomNumber
+        };
       }
     } catch (error) {
-      console.error('Error buscando pareja:', error);
+      console.error('Error buscando sala:', error);
       throw error;
     } finally {
       this.isSearching = false;
+    }
+  }
+
+  // Obtener número de sesiones activas
+  async getActiveSessions() {
+    try {
+      const q = query(
+        collection(this.db, 'dibujos'),
+        where('isCollabSession', '==', true)
+      );
+      
+      const snapshot = await getDocs(q);
+      const recentTime = Date.now() - 60000; // Último minuto
+      
+      return snapshot.docs.filter(doc => {
+        const data = doc.data();
+        return data.timestamp > recentTime;
+      }).length;
+    } catch (error) {
+      console.error('Error contando sesiones:', error);
+      return 0;
     }
   }
 
@@ -120,9 +239,9 @@ export class CollaborativeDrawing {
       
       if (sessionDoc.exists()) {
         const currentStrokes = sessionDoc.data().canvas?.strokes || [];
-        // Solo mantener los últimos 50 trazos para evitar documentos grandes
+        // Solo mantener los últimos 30 trazos para reducir tamaño
         const allStrokes = [...currentStrokes, ...strokesToSend.map(s => ({ ...s, timestamp: Date.now() }))];
-        const limitedStrokes = allStrokes.slice(-50);
+        const limitedStrokes = allStrokes.slice(-30);
         
         await updateDoc(sessionRef, {
           'canvas.strokes': limitedStrokes,
@@ -160,12 +279,30 @@ export class CollaborativeDrawing {
         this.sessionListener();
       }
       
-      // Limpiar buffer
       this.strokeBuffer = [];
       
-      await deleteDoc(doc(this.db, 'dibujos', this.currentSession));
+      // Remover usuario de la sala
+      const sessionRef = doc(this.db, 'dibujos', this.currentSession);
+      const sessionDoc = await getDoc(sessionRef);
+      
+      if (sessionDoc.exists()) {
+        const users = sessionDoc.data().users || [];
+        const updatedUsers = users.filter(u => u !== username);
+        
+        if (updatedUsers.length === 0) {
+          // Si no quedan usuarios, eliminar sala
+          await deleteDoc(sessionRef);
+        } else {
+          // Actualizar lista de usuarios
+          await updateDoc(sessionRef, {
+            users: updatedUsers,
+            lastLeave: Date.now()
+          });
+        }
+      }
+      
       this.currentSession = null;
-      this.partnerId = null;
+      this.partners = [];
     } catch (error) {
       console.error('Error saliendo de sesión:', error);
     }
