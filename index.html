@@ -2664,15 +2664,24 @@ async function showCredits() {
       }
       
       gameData.leaderboardName = name;
-      gameData.avatar = avatar || '';
+      
+      // Solo actualizar avatar si hay uno nuevo, sino mantener el anterior
+      if (avatar && avatar.trim() !== '') {
+        gameData.avatar = avatar;
+        localStorage.setItem('avatar', avatar);
+      } else if (!gameData.avatar) {
+        gameData.avatar = '';
+        localStorage.setItem('avatar', '');
+      }
+      
       localStorage.setItem('leaderboardName', name);
-      localStorage.setItem('avatar', avatar);
       saveGameData();
       hideNamePanel();
       
       // Actualizar en Firebase
       if (window.firebasePoints && window.firebasePoints.updateLeaderboard) {
-        window.firebasePoints.updateLeaderboard(name, gameData.points, avatar);
+        const avatarToSend = avatar && avatar.trim() !== '' ? avatar : gameData.avatar;
+        window.firebasePoints.updateLeaderboard(name, gameData.points, avatarToSend);
       }
       
       // Actualizar leaderboard local y global

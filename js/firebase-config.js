@@ -30,7 +30,6 @@ const migratePointsToFirebase = async () => {
   
   if (localPoints > 0) {
     try {
-      // Mostrar pantalla de carga
       showMigrationLoader();
       
       await db.collection('users').doc(userId).set({ 
@@ -42,16 +41,27 @@ const migratePointsToFirebase = async () => {
       localStorage.removeItem('points');
       console.log('Puntos migrados a Firebase:', localPoints);
       
-      // Ocultar pantalla de carga
       hideMigrationLoader();
-      
-      // Mostrar notificación de éxito
       showMigrationSuccess(localPoints);
       
     } catch (error) {
       console.error('Error migrando puntos:', error);
       hideMigrationLoader();
     }
+  }
+  
+  // Sincronizar avatar desde Firebase si existe
+  try {
+    const doc = await db.collection('leaderboard').doc(userId).get();
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.avatar && data.avatar.trim() !== '') {
+        localStorage.setItem('avatar', data.avatar);
+        console.log('Avatar sincronizado desde Firebase');
+      }
+    }
+  } catch (error) {
+    console.warn('No se pudo sincronizar avatar:', error);
   }
 };
 
@@ -129,13 +139,33 @@ const updatePoints = async (points) => {
       lastSync: Date.now()
     };
     
-    // Agregar nombre si existe
     const leaderboardName = localStorage.getItem('leaderboardName');
+    const avatar = localStorage.getItem('avatar');
+    
     if (leaderboardName) {
       userData.name = leaderboardName;
     }
     
+    if (avatar && avatar.trim() !== '') {
+      userData.avatar = avatar;
+    }
+    
     await db.collection('users').doc(userId).set(userData, { merge: true });
+    
+    if (leaderboardName) {
+      const leaderboardData = {
+        name: leaderboardName,
+        points,
+        userId,
+        lastUpdate: Date.now()
+      };
+      
+      if (avatar && avatar.trim() !== '') {
+        leaderboardData.avatar = avatar;
+      }
+      
+      await db.collection('leaderboard').doc(userId).set(leaderboardData, { merge: true });
+    }
     const syncIndicator = document.getElementById('sync-indicator');
     if (syncIndicator) {
       syncIndicator.style.opacity = '1';
@@ -151,21 +181,30 @@ const updatePoints = async (points) => {
 const updateLeaderboard = async (name, points, avatar = '') => {
   const userId = getUserId();
   try {
-    await db.collection('leaderboard').doc(userId).set({
+    const leaderboardData = {
       name,
       points,
-      avatar,
       userId,
       lastUpdate: Date.now()
-    });
+    };
     
-    // También actualizar en el documento del usuario
-    await db.collection('users').doc(userId).set({
+    if (avatar && avatar.trim() !== '') {
+      leaderboardData.avatar = avatar;
+    }
+    
+    await db.collection('leaderboard').doc(userId).set(leaderboardData);
+    
+    const userData = {
       name,
       points,
-      avatar,
       lastSync: Date.now()
-    }, { merge: true });
+    };
+    
+    if (avatar && avatar.trim() !== '') {
+      userData.avatar = avatar;
+    }
+    
+    await db.collection('users').doc(userId).set(userData, { merge: true });
     
     console.log('Leaderboard actualizado:', name, points, avatar);
   } catch (error) {

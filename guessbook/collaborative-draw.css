@@ -1,0 +1,162 @@
+/* Estilos para Dibujo Colaborativo */
+
+/* Indicador de sesión activa */
+.collab-active {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+  z-index: 1000;
+  animation: pulse-collab 2s ease-in-out infinite;
+  font-weight: bold;
+}
+
+@keyframes pulse-collab {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(40, 167, 69, 0.8);
+  }
+}
+
+/* Cursor del compañero */
+.partner-cursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 107, 53, 0.7);
+  border: 2px solid white;
+  pointer-events: none;
+  z-index: 1000;
+  transition: all 0.1s ease;
+}
+
+.partner-cursor::after {
+  content: attr(data-partner);
+  position: absolute;
+  top: -25px;
+  left: 25px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Botón de colaborar con animación */
+#collabBtn {
+  position: relative;
+  overflow: hidden;
+}
+
+#collabBtn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+#collabBtn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Loader de búsqueda */
+#collabLoader {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Notificación de conexión */
+.collab-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 30px 50px;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  text-align: center;
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Canvas en modo colaborativo */
+.canvas-collab-mode {
+  border: 3px solid #28a745 !important;
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.5) !important;
+}
+
+/* Indicador de actividad del compañero */
+.partner-activity {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  background: rgba(40, 167, 69, 0.9);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 1000;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+  .collab-active {
+    top: 60px;
+    right: 10px;
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+  
+  .partner-cursor {
+    width: 15px;
+    height: 15px;
+  }
+  
+  .partner-cursor::after {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+  
+  .collab-notification {
+    padding: 20px 30px;
+    font-size: 14px;
+  }
+}

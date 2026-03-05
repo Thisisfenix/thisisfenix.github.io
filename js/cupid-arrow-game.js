@@ -190,9 +190,17 @@ class CupidArrowGame {
         </button>
 
         ${this.score >= 500 && !this.leaderboard.some(e => e.score === this.score) ? `
-          <button onclick="cupidGame.saveToLeaderboard(); cupidGame.showPanel();" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #ffd700, #ff1493); color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 0.5rem; font-weight: bold;">
-            ⭐ Guardar en Hall of Fame
-          </button>
+          ${localStorage.getItem('leaderboardName') ? `
+            <button onclick="cupidGame.saveToLeaderboard(); cupidGame.showPanel();" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #ffd700, #ff1493); color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 0.5rem; font-weight: bold;">
+              ⭐ Guardar en Hall of Fame
+            </button>
+          ` : `
+            <div style="background: rgba(255,20,147,0.1); padding: 1rem; border-radius: 8px; border: 2px solid #ff1493; margin-bottom: 0.5rem; text-align: center;">
+              <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🔒</div>
+              <div style="color: #ff1493; font-weight: bold; margin-bottom: 0.5rem;">Hall of Fame Bloqueado</div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary);">Necesitas estar registrado en el Leaderboard Global de FenixLaboratory para aparecer en el Hall of Fame</div>
+            </div>
+          `}
         ` : ''}
 
         <button onclick="localStorage.removeItem('cupid-score'); localStorage.removeItem('cupid-highscore'); localStorage.removeItem('valentine-theme-unlocked'); location.reload();" style="width: 100%; padding: 0.75rem; background: var(--bg-light); color: var(--text-color); border: 2px solid #ff1493; border-radius: 8px; cursor: pointer;">
