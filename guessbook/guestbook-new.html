@@ -2963,13 +2963,21 @@
       syncCollaborativeCanvas(canvasData) {
         if (!canvasData || !canvasData.strokes) return;
         
-        // Dibujar los últimos trazos del compañero
-        const strokes = canvasData.strokes;
-        const lastStroke = strokes[strokes.length - 1];
+        // Inicializar lastSyncTime si no existe
+        if (!this.lastSyncTime) this.lastSyncTime = 0;
         
-        if (lastStroke && lastStroke.timestamp > (this.lastSyncTime || 0)) {
-          this.drawStroke(lastStroke);
-          this.lastSyncTime = lastStroke.timestamp;
+        // Dibujar TODOS los trazos nuevos desde el último sync
+        const strokes = canvasData.strokes;
+        const newStrokes = strokes.filter(s => s.timestamp > this.lastSyncTime);
+        
+        if (newStrokes.length > 0) {
+          // Dibujar cada trazo nuevo
+          newStrokes.forEach(stroke => {
+            this.drawStroke(stroke);
+          });
+          
+          // Actualizar timestamp al último trazo procesado
+          this.lastSyncTime = newStrokes[newStrokes.length - 1].timestamp;
         }
       }
       
@@ -3361,6 +3369,16 @@
         }
       }, { passive: true });
     }
+    
+    // Limpiar usuario de sala colaborativa al cerrar/recargar página
+    window.addEventListener('beforeunload', async () => {
+      if (window.guestbookApp && window.guestbookApp.collabDraw && window.guestbookApp.profiles) {
+        const username = window.guestbookApp.profiles.currentProfile?.username;
+        if (username) {
+          await window.guestbookApp.collabDraw.cleanupOnUnload(username);
+        }
+      }
+    });
   </script>
 </body>
 </html>

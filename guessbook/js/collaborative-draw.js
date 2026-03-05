@@ -10,7 +10,7 @@ export class CollaborativeDrawing {
     this.sessionListener = null;
     this.strokeBuffer = [];
     this.lastSendTime = 0;
-    this.sendInterval = 300;
+    this.sendInterval = 50; // Reducido a 50ms para trazos más fluidos
     this.maxRooms = 10; // Máximo 10 salas para ahorrar costos
     this.maxUsersPerRoom = 4; // Máximo 4 usuarios por sala
   }
@@ -31,7 +31,8 @@ export class CollaborativeDrawing {
         .filter(doc => {
           const data = doc.data();
           const users = data.users || [];
-          return data.timestamp > recentTime && users.length < this.maxUsersPerRoom;
+          const maxUsers = data.maxUsers || this.maxUsersPerRoom;
+          return data.timestamp > recentTime && users.length < maxUsers;
         })
         .map(doc => {
           const data = doc.data();
@@ -39,6 +40,8 @@ export class CollaborativeDrawing {
             id: doc.id,
             users: data.users || [],
             roomNumber: data.roomNumber || 1,
+            maxUsers: data.maxUsers || this.maxUsersPerRoom,
+            roomName: data.titulo || `Sala #${data.roomNumber}`,
             timestamp: data.timestamp
           };
         });
@@ -93,15 +96,17 @@ export class CollaborativeDrawing {
       }
       
       const data = sessionDoc.data();
-      const users = data.users || [];
+      let users = data.users || [];
       const maxUsers = data.maxUsers || this.maxUsersPerRoom;
       
-      if (users.length >= maxUsers) {
-        throw new Error('Sala llena');
+      // Si el usuario ya está, removerlo primero (por si recargó la página)
+      if (users.includes(username)) {
+        users = users.filter(u => u !== username);
       }
       
-      if (users.includes(username)) {
-        throw new Error('Ya estás en esta sala');
+      // Verificar si hay espacio
+      if (users.length >= maxUsers) {
+        throw new Error('Sala llena');
       }
       
       const updatedUsers = [...users, username];
@@ -212,16 +217,16 @@ export class CollaborativeDrawing {
     }
   }
 
-  // Enviar trazo al canvas compartido (con throttling)
+  // Enviar trazo al canvas compartido (con throttling optimizado)
   async sendStroke(strokeData) {
     if (!this.currentSession) return;
     
     // Agregar al buffer
     this.strokeBuffer.push(strokeData);
     
-    // Solo enviar si han pasado 200ms desde el último envío
+    // Solo enviar si han pasado 100ms desde el último envío
     const now = Date.now();
-    if (now - this.lastSendTime < this.sendInterval) {
+    if (now - this.lastSendTime < 100) {
       return; // Esperar
     }
     
@@ -239,9 +244,11 @@ export class CollaborativeDrawing {
       
       if (sessionDoc.exists()) {
         const currentStrokes = sessionDoc.data().canvas?.strokes || [];
-        // Solo mantener los últimos 30 trazos para reducir tamaño
-        const allStrokes = [...currentStrokes, ...strokesToSend.map(s => ({ ...s, timestamp: Date.now() }))];
-        const limitedStrokes = allStrokes.slice(-30);
+        // Agregar todos los trazos del buffer con timestamp
+        const newStrokes = strokesToSend.map(s => ({ ...s, timestamp: Date.now() }));
+        const allStrokes = [...currentStrokes, ...newStrokes];
+        // Mantener los últimos 100 trazos
+        const limitedStrokes = allStrokes.slice(-100);
         
         await updateDoc(sessionRef, {
           'canvas.strokes': limitedStrokes,
@@ -250,8 +257,6 @@ export class CollaborativeDrawing {
       }
     } catch (error) {
       console.error('Error enviando trazos:', error);
-      // Reintroducir trazos al buffer si falla
-      this.strokeBuffer = [...strokesToSend, ...this.strokeBuffer];
     }
   }
 
@@ -305,6 +310,29 @@ export class CollaborativeDrawing {
       this.partners = [];
     } catch (error) {
       console.error('Error saliendo de sesión:', error);
+    }
+  }
+  
+  // Limpiar usuario al cerrar/recargar página
+  async cleanupOnUnload(username) {
+    if (!this.currentSession) return;
+    
+    try {
+      const sessionRef = doc(this.db, 'dibujos', this.currentSession);
+      const sessionDoc = await getDoc(sessionRef);
+      
+      if (sessionDoc.exists()) {
+        const users = sessionDoc.data().users || [];
+        const updatedUsers = users.filter(u => u !== username);
+        
+        if (updatedUsers.length === 0) {
+          await deleteDoc(sessionRef);
+        } else {
+          await updateDoc(sessionRef, { users: updatedUsers });
+        }
+      }
+    } catch (error) {
+      console.error('Error en cleanup:', error);
     }
   }
 
