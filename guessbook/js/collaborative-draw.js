@@ -8,6 +8,9 @@ export class CollaborativeDrawing {
     this.partnerId = null;
     this.isSearching = false;
     this.sessionListener = null;
+    this.strokeBuffer = [];
+    this.lastSendTime = 0;
+    this.sendInterval = 200; // Enviar cada 200ms máximo
   }
 
   // Buscar pareja para dibujar
@@ -90,9 +93,26 @@ export class CollaborativeDrawing {
     }
   }
 
-  // Enviar trazo al canvas compartido
+  // Enviar trazo al canvas compartido (con throttling)
   async sendStroke(strokeData) {
     if (!this.currentSession) return;
+    
+    // Agregar al buffer
+    this.strokeBuffer.push(strokeData);
+    
+    // Solo enviar si han pasado 200ms desde el último envío
+    const now = Date.now();
+    if (now - this.lastSendTime < this.sendInterval) {
+      return; // Esperar
+    }
+    
+    this.lastSendTime = now;
+    
+    // Enviar todos los trazos del buffer
+    if (this.strokeBuffer.length === 0) return;
+    
+    const strokesToSend = [...this.strokeBuffer];
+    this.strokeBuffer = [];
     
     try {
       const sessionRef = doc(this.db, 'dibujos', this.currentSession);
@@ -100,12 +120,19 @@ export class CollaborativeDrawing {
       
       if (sessionDoc.exists()) {
         const currentStrokes = sessionDoc.data().canvas?.strokes || [];
+        // Solo mantener los últimos 50 trazos para evitar documentos grandes
+        const allStrokes = [...currentStrokes, ...strokesToSend.map(s => ({ ...s, timestamp: Date.now() }))];
+        const limitedStrokes = allStrokes.slice(-50);
+        
         await updateDoc(sessionRef, {
-          'canvas.strokes': [...currentStrokes, { ...strokeData, timestamp: Date.now() }]
+          'canvas.strokes': limitedStrokes,
+          lastUpdate: Date.now()
         });
       }
     } catch (error) {
-      console.error('Error enviando trazo:', error);
+      console.error('Error enviando trazos:', error);
+      // Reintroducir trazos al buffer si falla
+      this.strokeBuffer = [...strokesToSend, ...this.strokeBuffer];
     }
   }
 
@@ -132,6 +159,9 @@ export class CollaborativeDrawing {
       if (this.sessionListener) {
         this.sessionListener();
       }
+      
+      // Limpiar buffer
+      this.strokeBuffer = [];
       
       await deleteDoc(doc(this.db, 'dibujos', this.currentSession));
       this.currentSession = null;

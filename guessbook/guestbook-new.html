@@ -2681,6 +2681,11 @@
         const collabText = document.getElementById('collabText');
         const collabLoader = document.getElementById('collabLoader');
         
+        if (!collabBtn || !collabText || !collabLoader) {
+          console.error('Elementos del botón colaborativo no encontrados');
+          return;
+        }
+        
         // Verificar que esté logueado
         if (!this.profiles || !this.profiles.isLoggedIn()) {
           this.ui.showNotification('⚠️ Debes iniciar sesión para dibujar colaborativamente', 'warning');
@@ -2717,9 +2722,10 @@
           }
           
           this.ui.showNotification(errorMsg, 'error');
-          collabBtn.disabled = false;
-          collabText.style.display = 'inline';
-          collabLoader.style.display = 'none';
+          
+          if (collabBtn) collabBtn.disabled = false;
+          if (collabText) collabText.style.display = 'inline';
+          if (collabLoader) collabLoader.style.display = 'none';
         }
       }
       
