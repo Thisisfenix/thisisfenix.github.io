@@ -36,6 +36,58 @@
   <link rel="stylesheet" href="placeholder/styles.css">
 </head>
 <body>
+
+  <!-- Pantalla de despedida y redirección -->
+  <div id="farewell-screen" style="
+    position: fixed; inset: 0; z-index: 99999;
+    background: #0a0a0a;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    text-align: center; padding: 2rem;
+  ">
+    <div style="max-width: 600px;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🧪</div>
+      <h1 style="color: #00f0ff; font-size: 2rem; margin-bottom: 1rem; text-shadow: 0 0 20px #00f0ff;">
+        FenixLaboratory
+      </h1>
+      <p style="color: #ccc; font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem;">
+        Fue un proyecto increíble, lleno de experimentos, ideas raras y mucho trabajo.<br>
+        Pero todo tiene su momento de descanso, y este es el de FenixLaboratory.<br><br>
+        <span style="color: #aaa; font-size: 0.95rem;">
+          Gracias por haber pasado por aquí. Lo que se construyó aquí siempre va a valer. 🙏
+        </span>
+      </p>
+      <p style="color: #888; font-size: 0.9rem; margin-bottom: 0.5rem;">
+        Redirigiendo al Guestbook en...
+      </p>
+      <div id="countdown" style="
+        font-size: 3.5rem; font-weight: bold;
+        color: #00f0ff; text-shadow: 0 0 30px #00f0ff;
+        margin-bottom: 1.5rem;
+      ">10</div>
+      <a href="guessbook/guestbook-new.html" style="
+        color: #00f0ff; font-size: 0.85rem;
+        text-decoration: underline; opacity: 0.6;
+      ">Ir ahora →</a>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var count = 10;
+      var el = document.getElementById('countdown');
+      var interval = setInterval(function() {
+        count--;
+        el.textContent = count;
+        if (count <= 0) {
+          clearInterval(interval);
+          window.location.href = 'guessbook/guestbook-new.html';
+        }
+      }, 1000);
+    })();
+  </script>
+
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
