@@ -9,10 +9,9 @@
   <link rel="icon" type="image/png" href="public/assets/icons/ankush.png">
   
   <!-- PWA -->
-  <link rel="manifest" href="json/manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff6b35">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="favicon.svg">
   
   <!-- Social Media -->
@@ -27,67 +26,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap"
     rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <!-- Custom Styles -->
   <link rel="stylesheet" href="placeholder/styles.css">
 </head>
 <body>
-
-  <!-- Pantalla de despedida y redirección -->
-  <div id="farewell-screen" style="
-    position: fixed; inset: 0; z-index: 99999;
-    background: #0a0a0a;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
-    text-align: center; padding: 2rem;
-  ">
-    <div style="max-width: 600px;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🧪</div>
-      <h1 style="color: #00f0ff; font-size: 2rem; margin-bottom: 1rem; text-shadow: 0 0 20px #00f0ff;">
-        FenixLaboratory
-      </h1>
-      <p style="color: #ccc; font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem;">
-        Fue un proyecto increíble, lleno de experimentos, ideas raras y mucho trabajo.<br>
-        Pero todo tiene su momento de descanso, y este es el de FenixLaboratory.<br><br>
-        <span style="color: #aaa; font-size: 0.95rem;">
-          Gracias por haber pasado por aquí. Lo que se construyó aquí siempre va a valer. 🙏
-        </span>
-      </p>
-      <p style="color: #888; font-size: 0.9rem; margin-bottom: 0.5rem;">
-        Redirigiendo al Guestbook en...
-      </p>
-      <div id="countdown" style="
-        font-size: 3.5rem; font-weight: bold;
-        color: #00f0ff; text-shadow: 0 0 30px #00f0ff;
-        margin-bottom: 1.5rem;
-      ">10</div>
-      <a href="guessbook/guestbook-new.html" style="
-        color: #00f0ff; font-size: 0.85rem;
-        text-decoration: underline; opacity: 0.6;
-      ">Ir ahora →</a>
-    </div>
-  </div>
-
-  <script>
-    (function() {
-      var count = 10;
-      var el = document.getElementById('countdown');
-      var interval = setInterval(function() {
-        count--;
-        el.textContent = count;
-        if (count <= 0) {
-          clearInterval(interval);
-          window.location.href = 'guessbook/guestbook-new.html';
-        }
-      }, 1000);
-    })();
-  </script>
-
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
@@ -1281,6 +1224,18 @@ async function showCredits() {
     if (creditsSection) {
       creditsSection.classList.add('active');
       creditsSection.style.display = 'block';
+    }
+
+    // Cargar Font Awesome solo cuando se necesita (sección de créditos)
+    if (!document.getElementById('font-awesome-css')) {
+      const fa = document.createElement('link');
+      fa.id = 'font-awesome-css';
+      fa.rel = 'stylesheet';
+      fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
+      fa.integrity = 'sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==';
+      fa.crossOrigin = 'anonymous';
+      fa.referrerPolicy = 'no-referrer';
+      document.head.appendChild(fa);
     }
     const [creditsResponse, updatesResponse] = await Promise.all([
       fetch('json/credits.json'),
