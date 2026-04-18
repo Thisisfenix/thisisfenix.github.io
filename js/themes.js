@@ -2,7 +2,7 @@
 
 function setTheme(theme) {
   const body = document.body;
-  const themes = ['light-theme', 'neon-theme', 'cyberpunk-theme', 'matrix-theme', 'synthwave-theme', 'ocean-theme', 'forest-theme', 'sunset-theme', 'christmas-theme', 'halloween-theme', 'valentine-theme', 'easter-theme', 'summer-theme', 'autumn-theme', 'funkyatlas-theme', 'funkyatlas-christmas-theme', 'galaxy-theme', 'gold-theme', 'rainbow-theme', 'diamond-theme', 'custom-theme', 'vaporwave-theme', 'hacker-theme', 'neon-city-theme', 'space-theme', 'fire-theme', 'ice-theme', 'toxic-theme', 'royal-theme', 'steampunk-theme', 'hologram-theme', 'legendary-theme', 'plushie-rain-theme', 'valentines-love-theme'];
+  const themes = ['light-theme', 'neon-theme', 'cyberpunk-theme', 'matrix-theme', 'synthwave-theme', 'ocean-theme', 'forest-theme', 'sunset-theme', 'christmas-theme', 'halloween-theme', 'valentine-theme', 'easter-theme', 'summer-theme', 'autumn-theme', 'funkyatlas-theme', 'funkyatlas-christmas-theme', 'galaxy-theme', 'gold-theme', 'rainbow-theme', 'diamond-theme', 'custom-theme', 'vaporwave-theme', 'hacker-theme', 'neon-city-theme', 'space-theme', 'fire-theme', 'ice-theme', 'toxic-theme', 'royal-theme', 'steampunk-theme', 'hologram-theme', 'legendary-theme', 'plushie-rain-theme', 'valentines-love-theme', 'pastel-kawaii-theme'];
   
   themes.forEach(t => body.classList.remove(t));
   
@@ -477,8 +477,24 @@ function initThemeListeners() {
           updatePremiumThemes();
           updatePointsDisplay();
         }, 50);
+        
+        // NO aplicar el tema automáticamente, solo desbloquearlo
+        // El usuario puede aplicarlo manualmente si quiere
+        hideThemePanel();
+        
+        // Mostrar notificación de que se desbloqueó
+        if (window.achievementSystem) {
+          achievementSystem.showNotification({
+            name: `Tema ${theme} desbloqueado!`,
+            points: 0,
+            icon: '🎨'
+          });
+        }
+        
+        return; // Salir sin aplicar el tema
       }
       
+      // Solo aplicar el tema si ya está desbloqueado o es gratuito
       setTheme(theme);
       hideThemePanel();
       if (theme === 'custom') showCustomColors();
