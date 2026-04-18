@@ -258,28 +258,34 @@ class AchievementSystem {
   // Cargar datos desde Firebase
   async load() {
     try {
-      // Usar funciones de Firebase desde window
-      const { getPoints, listenToPoints } = window.firebasePoints;
-      
-      // Migrar puntos automáticamente
-      const firebasePoints = await getPoints();
-      if (firebasePoints > 0) {
-        this.gameData.points = firebasePoints;
-      }
-      
-      // Escuchar cambios en tiempo real
-      listenToPoints((points) => {
-        this.gameData.points = points;
-        this.updatePointsDisplay();
-      });
-      
-      // Cargar otros datos desde localStorage
+      // Cargar datos desde localStorage PRIMERO (fuente de verdad)
       const saved = localStorage.getItem(this.storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         this.gameData = { ...this.gameData, ...parsed };
-        this.convertArraysToSets(parsed);
+        this.convertArraysToSets(this.gameData);
       }
+      
+      // Obtener puntos de Firebase solo para comparar
+      if (window.firebasePoints) {
+        const { getPoints } = window.firebasePoints;
+        const firebasePoints = await getPoints();
+        
+        // Solo usar Firebase si tiene MÁS puntos (nunca menos)
+        if (firebasePoints > this.gameData.points) {
+          console.log(`📥 Firebase tiene más puntos: ${this.gameData.points} → ${firebasePoints}`);
+          this.gameData.points = firebasePoints;
+        } else {
+          console.log(`💾 Usando puntos de localStorage: ${this.gameData.points} (Firebase: ${firebasePoints})`);
+          // Actualizar Firebase con los puntos correctos de localStorage
+          if (this.gameData.points > firebasePoints) {
+            console.log(`📤 Actualizando Firebase con puntos correctos: ${this.gameData.points}`);
+            await window.firebasePoints.updatePoints(this.gameData.points);
+          }
+        }
+      }
+      
+      this.updatePointsDisplay();
     } catch (error) {
       console.warn('Error cargando desde Firebase, usando localStorage:', error);
       const saved = localStorage.getItem(this.storageKey);
@@ -295,14 +301,29 @@ class AchievementSystem {
   // Guardar datos en Firebase
   async save() {
     const toSave = this.prepareDataForSave();
-    try {
-      // Actualizar puntos en Firebase
-      const { updatePoints } = window.firebasePoints;
-      await updatePoints(this.gameData.points);
-    } catch (error) {
-      console.warn('Error guardando puntos en Firebase:', error);
-    }
+    
+    // Guardar primero en localStorage (fuente de verdad)
     localStorage.setItem(this.storageKey, JSON.stringify(toSave));
+    
+    try {
+      // Actualizar Firebase con los datos de localStorage
+      if (window.firebasePoints) {
+        console.log(`📤 Guardando puntos en Firebase: ${this.gameData.points}`);
+        await window.firebasePoints.updatePoints(this.gameData.points);
+      }
+      
+      // Guardar temas desbloqueados en Firebase
+      if (window.firebaseThemes) {
+        await window.firebaseThemes.syncUnlockedThemes(toSave.unlockedThemes);
+      }
+      
+      // Guardar logros en Firebase
+      if (window.firebaseAchievements) {
+        await window.firebaseAchievements.syncAchievements(toSave.achievements);
+      }
+    } catch (error) {
+      console.warn('Error guardando en Firebase:', error);
+    }
   }
 
   getUserId() {

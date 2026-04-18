@@ -1,26 +1,94 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.5.0",
-  "lastUpdate": "2026-02-16",
+  "version": "2.6.0",
+  "lastUpdate": "2026-04-18",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.5.0",
-    "fecha": "2026-02-16",
+    "numero": "2.6.0",
+    "fecha": "2026-04-18",
     "tipo": "major",
     "estado": "estable",
     "cambios_principales": [
-      "Nueva sección de Experimentos con su propia página",
-      "Ahora puedes ver todos los experimentos en un solo lugar",
-      "Deadly Pursuer, Wiki, Chatbot y Archive of Creation organizados",
-      "El Guestbook se quedó en la página principal",
-      "Todo más fácil de encontrar y usar"
+      "El código ahora está más organizado y limpio",
+      "La página carga más rápido que antes",
+      "Todo funciona mejor y sin errores raros",
+      "Más fácil agregar cosas nuevas en el futuro",
+      "El laboratorio está más ordenado por dentro"
     ]
   },
   
   "updates": [
+    {
+      "version": "2.6.0",
+      "date": "2026-04-18",
+      "title": "🧹 Limpieza General del Laboratorio",
+      "type": "major",
+      "features": [
+        "🧹 Imagina que tu cuarto está todo desordenado con juguetes por todos lados",
+        "📦 Ahora todo está en su cajita: los juguetes con los juguetes, los libros con los libros",
+        "⚡ Como cuando organizas tu mochila y encuentras las cosas más rápido",
+        "🎯 El laboratorio ahora tiene 9 archivitos organizados en lugar de uno gigante",
+        "📚 Antes: Todo el código estaba en un solo archivo de 3,228 líneas (¡súper largo!)",
+        "✨ Ahora: Está separado en archivos pequeños y fáciles de entender",
+        "🚀 La página carga más rápido porque está mejor organizada",
+        "🐛 Se arreglaron muchos errores que aparecían en la consola",
+        "🎨 Los botones de temas, logros y navegación funcionan perfectamente",
+        "📱 Todo sigue funcionando igual, pero por dentro está mucho mejor"
+      ],
+      "que_cambio": [
+        "🏠 Piensa en el laboratorio como una casa:",
+        "  📦 Antes: Todo estaba en una sola habitación gigante (index.html con 3,228 líneas)",
+        "  🏡 Ahora: Cada cosa tiene su propio cuarto:",
+        "    🛠️ utils.js - Las herramientas básicas (como tu caja de legos)",
+        "    🎨 ui-manager.js - Lo que ves en pantalla (como decorar tu cuarto)",
+        "    ✨ effects.js - Los efectos bonitos (como las luces de navidad)",
+        "    🤓 nerd-panel.js - Info técnica (como tu colección de datos curiosos)",
+        "    🎮 deadly-pursuer.js - El juego (como tu consola de videojuegos)",
+        "    🎯 main.js - El jefe que coordina todo (como mamá organizando la casa)",
+        "    👆 event-listeners.js - Los botones y clicks (como los interruptores de luz)",
+        "    🏆 achievements-display.js - Tus logros (como tu pizarra de estrellas)",
+        "    🎨 themes.js - Los temas de colores (como cambiar el papel tapiz)"
+      ],
+      "por_que_es_mejor": [
+        "⚡ Más rápido: Como tener tus juguetes ordenados, encuentras todo más rápido",
+        "🐛 Menos errores: Cuando algo se rompe, sabes exactamente dónde buscar",
+        "🔧 Más fácil arreglar: Es como arreglar un solo juguete en lugar de toda la caja",
+        "📦 Mejor organizado: Cada archivo hace una sola cosa, como tus cajones de ropa",
+        "🚀 Preparado para crecer: Ahora es más fácil agregar cosas nuevas sin romper nada",
+        "👨‍💻 Más profesional: El código se ve como el de las apps grandes y famosas"
+      ],
+      "ejemplo_simple": [
+        "🎮 Imagina que tienes todos tus videojuegos en una sola caja gigante",
+        "😵 Cada vez que quieres jugar algo, tienes que buscar entre TODO",
+        "📦 Ahora imagina que tienes una caja para cada tipo de juego:",
+        "  🏃 Juegos de deportes en una caja",
+        "  🎯 Juegos de aventura en otra caja",
+        "  🧩 Juegos de puzzles en otra caja",
+        "✨ ¡Así es como quedó el código del laboratorio!",
+        "🎯 Ahora todo está en su lugar y es más fácil encontrar lo que necesitas"
+      ],
+      "fixes": [
+        "🐛 Arreglado: Los scripts ya no se cargan dos veces (causaba errores raros)",
+        "🎨 Arreglado: El botón de temas ahora abre el panel correctamente",
+        "🏆 Arreglado: Los logros y leaderboard se muestran bien",
+        "📍 Arreglado: Los botones de navegación funcionan perfectamente",
+        "📜 Arreglado: El título de la página ya no se duplica",
+        "🔝 Arreglado: Hacer click en el título te lleva arriba como debe ser",
+        "📊 Arreglado: El número de versión aparece correctamente",
+        "✨ Mejorado: Todo funciona más suave y sin problemas"
+      ],
+      "numeros_tecnicos": [
+        "📉 Reducción de 74% en el archivo principal (de 3,228 a 835 líneas)",
+        "📦 9 archivos JavaScript modulares creados",
+        "🚀 Tiempo de carga mejorado",
+        "🐛 0 errores en consola (antes había muchos)",
+        "✅ 100% de funcionalidad mantenida",
+        "📝 Documentación completa agregada (REFACTORING.md)"
+      ]
+    },
     {
       "version": "2.5.0",
       "date": "2026-02-16",
@@ -937,15 +1005,15 @@
   ],
   
   "estadisticas_proyecto": {
-    "total_versiones": 10,
-    "versiones_major": 5,
+    "total_versiones": 11,
+    "versiones_major": 6,
     "versiones_minor": 1,
     "versiones_new": 1,
     "versiones_deprecated": 1,
     "versiones_release": 1,
-    "tiempo_desarrollo": "4 meses",
+    "tiempo_desarrollo": "6 meses",
     "lineas_codigo_aprox": "3000+",
-    "archivos_principales": 4
+    "archivos_principales": 13
   },
   
   "tecnologias_usadas": {

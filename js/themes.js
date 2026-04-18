@@ -242,6 +242,12 @@ function showSeasonalNotification(theme) {
 function showThemePanel() {
   document.getElementById('theme-overlay').classList.add('show');
   document.getElementById('theme-panel').classList.add('show');
+  
+  // Actualizar estado de temas premium cada vez que se abre el panel
+  setTimeout(() => {
+    updatePremiumThemes();
+    updateSeasonalIndicator();
+  }, 50);
 }
 
 function hideThemePanel() {
@@ -252,38 +258,71 @@ function hideThemePanel() {
 function updatePremiumThemes() {
   if (!window.achievementSystem) return;
   
-  const premiumThemes = ['galaxy', 'gold', 'rainbow', 'diamond', 'legendary', 'vaporwave', 'hacker', 'neon-city', 'space', 'fire', 'ice', 'toxic', 'royal', 'steampunk', 'hologram'];
-  
-  // Limpiar temas que no tienen registro de compra
-  premiumThemes.forEach(theme => {
-    if (achievementSystem.gameData.unlockedThemes.has(theme)) {
-      const purchaseRecord = localStorage.getItem(`purchased_${theme}`);
-      if (!purchaseRecord) {
-        achievementSystem.gameData.unlockedThemes.delete(theme);
-      }
-    }
-  });
-  achievementSystem.save();
-  
-  // Actualizar UI de todas las tarjetas
+  // Actualizar UI de todas las tarjetas premium
   document.querySelectorAll('.premium-theme').forEach(card => {
     const theme = card.dataset.theme;
     const isUnlocked = achievementSystem.gameData.unlockedThemes.has(theme);
     
     if (isUnlocked) {
+      // Tema desbloqueado
       card.classList.remove('locked');
       card.classList.add('owned');
       
       // Cambiar texto del badge a "Obtenido"
       const badge = card.querySelector('.points-badge');
       if (badge) {
-        badge.innerHTML = 'Obtenido';
+        badge.innerHTML = '✅ Obtenido';
+        badge.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+      }
+      
+      // Remover el overlay de bloqueo si existe
+      const lockOverlay = card.querySelector('.lock-overlay');
+      if (lockOverlay) {
+        lockOverlay.remove();
       }
     } else {
+      // Tema bloqueado
       card.classList.add('locked');
       card.classList.remove('owned');
+      
+      // Restaurar el costo en el badge
+      const cost = parseInt(card.dataset.cost) || 0;
+      const badge = card.querySelector('.points-badge');
+      if (badge) {
+        badge.innerHTML = `${cost} pts`;
+        badge.style.background = '';
+      }
     }
   });
+  
+  // Actualizar temas de eventos especiales
+  const plushieCard = document.querySelector('[data-theme="plushie-rain"]');
+  if (plushieCard) {
+    const plushieUnlocked = localStorage.getItem('plushie-theme-unlocked') === 'true';
+    const badge = plushieCard.querySelector('.points-badge');
+    if (badge) {
+      badge.innerHTML = plushieUnlocked ? '✅ Obtenido' : 'Evento Exclusivo';
+      if (plushieUnlocked) {
+        badge.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+        plushieCard.classList.remove('locked');
+        plushieCard.classList.add('owned');
+      }
+    }
+  }
+  
+  const valentineCard = document.querySelector('[data-theme="valentines-love"]');
+  if (valentineCard) {
+    const valentineUnlocked = localStorage.getItem('valentine-theme-unlocked') === 'true';
+    const badge = valentineCard.querySelector('.points-badge');
+    if (badge) {
+      badge.innerHTML = valentineUnlocked ? '✅ Obtenido' : 'Evento Exclusivo';
+      if (valentineUnlocked) {
+        badge.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+        valentineCard.classList.remove('locked');
+        valentineCard.classList.add('owned');
+      }
+    }
+  }
 }
 
 function updateSeasonalIndicator() {
@@ -433,18 +472,11 @@ function initThemeListeners() {
           return;
         }
         
-        // Actualizar UI inmediatamente
-        clickedCard.classList.remove('locked');
-        clickedCard.classList.add('owned');
-        
-        // Cambiar texto del badge a "Obtenido"
-        const badge = clickedCard.querySelector('.points-badge');
-        if (badge) {
-          badge.innerHTML = 'Obtenido';
-        }
-        
-        updatePointsDisplay();
-        updatePremiumThemes();
+        // Actualizar UI inmediatamente después de la compra
+        setTimeout(() => {
+          updatePremiumThemes();
+          updatePointsDisplay();
+        }, 50);
       }
       
       setTheme(theme);
@@ -502,10 +534,121 @@ function initThemeListeners() {
 }
 
 // Inicializar temas premium cuando el DOM esté listo
+function initPremiumThemes() {
+  // Esperar a que achievementSystem esté disponible
+  if (!window.achievementSystem) {
+    setTimeout(initPremiumThemes, 100);
+    return;
+  }
+  
+  // Cargar temas desde Firebase primero
+  if (window.firebaseThemes) {
+    window.firebaseThemes.loadThemesFromFirebase().then(() => {
+      updatePremiumThemes();
+      console.log('✅ Temas premium inicializados desde Firebase');
+      console.log('📊 Temas desbloqueados:', Array.from(achievementSystem.gameData.unlockedThemes));
+    });
+  } else {
+    updatePremiumThemes();
+    console.log('✅ Temas premium inicializados (solo localStorage)');
+    console.log('📊 Temas desbloqueados:', Array.from(achievementSystem.gameData.unlockedThemes));
+  }
+}
+
+// Función de debug para verificar estado de temas
+window.debugThemes = function() {
+  if (!window.achievementSystem) {
+    console.log('❌ achievementSystem no disponible');
+    return;
+  }
+  
+  console.log('=== DEBUG TEMAS ===');
+  console.log('💰 Puntos actuales:', achievementSystem.gameData.points);
+  console.log('🎨 Temas desbloqueados:', Array.from(achievementSystem.gameData.unlockedThemes));
+  
+  // Verificar Firebase
+  if (window.firebaseThemes) {
+    window.firebaseThemes.getUnlockedThemes().then(firebaseThemes => {
+      console.log('☁️ Temas en Firebase:', firebaseThemes);
+    });
+  } else {
+    console.log('⚠️ Firebase no disponible');
+  }
+  
+  document.querySelectorAll('.premium-theme').forEach(card => {
+    const theme = card.dataset.theme;
+    const cost = card.dataset.cost;
+    const isUnlocked = achievementSystem.gameData.unlockedThemes.has(theme);
+    const hasLocked = card.classList.contains('locked');
+    const hasOwned = card.classList.contains('owned');
+    
+    console.log(`${theme}:`, {
+      costo: cost,
+      desbloqueado: isUnlocked,
+      clasesBloqueado: hasLocked,
+      clasesObtenido: hasOwned,
+      estado: isUnlocked ? '✅ OK' : '🔒 Bloqueado'
+    });
+  });
+  
+  console.log('===================');
+}
+
+// Función para forzar sincronización manual
+window.syncThemesToFirebase = async function() {
+  if (!window.achievementSystem || !window.firebaseThemes) {
+    console.log('❌ Sistema no disponible');
+    return;
+  }
+  
+  const themes = Array.from(achievementSystem.gameData.unlockedThemes);
+  console.log('🔄 Sincronizando temas a Firebase:', themes);
+  
+  await window.firebaseThemes.syncUnlockedThemes(themes);
+  console.log('✅ Sincronización completada');
+}
+
+// Función para ver estado de migración
+window.checkMigrationStatus = function() {
+  if (!window.firebaseThemes) {
+    console.log('❌ Firebase no disponible');
+    return;
+  }
+  
+  const status = window.firebaseThemes.checkMigrationStatus();
+  console.log('=== ESTADO DE MIGRACIÓN ===');
+  console.log('📦 Versión:', status.version);
+  console.log('💰 Puntos migrados:', status.points ? '✅' : '❌');
+  console.log('🎨 Temas migrados:', status.themes ? '✅' : '❌');
+  console.log('🏆 Logros migrados:', status.achievements ? '✅' : '❌');
+  console.log('===========================');
+  
+  return status;
+}
+
+// Función para resetear migraciones (solo para debug)
+window.resetMigrations = function() {
+  const confirm = prompt('⚠️ Esto reseteará el estado de migración. Escribe "RESET" para confirmar:');
+  if (confirm === 'RESET') {
+    localStorage.removeItem('migration-status');
+    console.log('✅ Estado de migración reseteado. Recarga la página.');
+  } else {
+    console.log('❌ Operación cancelada');
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPremiumThemes);
+} else {
+  initPremiumThemes();
+}
+
+
+// Inicializar listeners de temas cuando el DOM esté listo
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(updatePremiumThemes, 100);
+    initThemeListeners();
   });
 } else {
-  setTimeout(updatePremiumThemes, 100);
+  initThemeListeners();
 }
