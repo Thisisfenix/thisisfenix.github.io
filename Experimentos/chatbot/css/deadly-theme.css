@@ -1,0 +1,336 @@
+/* 🎮 DEADLY PURSUER THEME - EFECTOS ESPECIALES */
+/* Tema completamente personalizado con efectos únicos */
+
+/* ===== EFECTOS DE PARTÍCULAS DE FONDO ===== */
+.chat-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  animation: particleFloat 20s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(5px) rotate(-1deg); }
+}
+
+/* ===== EFECTOS DE PERSONAJES ===== */
+.character-Angel .header-avatar {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  border-color: var(--angel-color);
+}
+
+.character-Gissel .header-avatar {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+  border-color: var(--gissel-color);
+}
+
+.character-iA777 .header-avatar {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+  border-color: var(--ia777-color);
+}
+
+.character-Iris .header-avatar {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  border-color: var(--iris-color);
+}
+
+.character-Luna .header-avatar {
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+  border-color: var(--luna-color);
+}
+
+.character-Molly .header-avatar {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+  border-color: var(--molly-color);
+}
+
+/* ===== EFECTOS DE MENSAJES POR PERSONAJE ===== */
+.character-Angel .message.bot {
+  border-left: 3px solid var(--angel-color);
+}
+
+.character-Gissel .message.bot {
+  border-left: 3px solid var(--gissel-color);
+}
+
+.character-iA777 .message.bot {
+  border-left: 3px solid var(--ia777-color);
+}
+
+.character-Iris .message.bot {
+  border-left: 3px solid var(--iris-color);
+}
+
+.character-Luna .message.bot {
+  border-left: 3px solid var(--luna-color);
+}
+
+.character-Molly .message.bot {
+  border-left: 3px solid var(--molly-color);
+}
+
+/* ===== EFECTOS DE HOVER MEJORADOS ===== */
+.message:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--shadow-lg);
+}
+
+.message.user:hover {
+  box-shadow: 0 8px 25px rgba(45, 27, 105, 0.4);
+}
+
+.message.bot:hover {
+  box-shadow: 0 8px 25px rgba(26, 35, 50, 0.4);
+}
+
+/* ===== EFECTOS DE ESCRITURA MEJORADOS ===== */
+.message.typing {
+  background: var(--bot-message-bg);
+  animation: typingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes typingPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+/* ===== EFECTOS DE BOTONES MEJORADOS ===== */
+#sendButton {
+  background: var(--gradient-accent);
+  border: none;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+#sendButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+  border-radius: 50%;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+#sendButton:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: var(--shadow-md), var(--neon-blue);
+}
+
+#sendButton:hover::before {
+  opacity: 1;
+}
+
+#sendButton:active {
+  transform: scale(0.95) rotate(15deg);
+}
+
+/* ===== EFECTOS DE INPUT MEJORADOS ===== */
+#messageInput {
+  background: var(--accent-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 22px;
+  flex: 1;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+#messageInput:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), var(--shadow-glow);
+  transform: scale(1.01);
+}
+
+#messageInput::placeholder {
+  color: var(--text-secondary);
+}
+
+/* ===== EFECTOS DE SIDEBAR MEJORADOS ===== */
+.mini-sidebar {
+  background: var(--secondary-bg);
+  backdrop-filter: blur(15px);
+  border-right: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+.sidebar {
+  background: var(--secondary-bg);
+  backdrop-filter: blur(15px);
+  border-right: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ===== EFECTOS DE SCROLL PERSONALIZADOS ===== */
+.messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 10px;
+  box-shadow: var(--shadow-glow);
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--neon-blue);
+}
+
+/* ===== EFECTOS DE MODAL MEJORADOS ===== */
+.modal {
+  backdrop-filter: blur(10px);
+  background: rgba(10, 10, 15, 0.9);
+}
+
+.modal-content {
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  backdrop-filter: blur(20px);
+}
+
+/* ===== EFECTOS DE TOAST MEJORADOS ===== */
+.toast {
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+.toast.success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(5, 150, 105, 0.9) 100%);
+  border-color: var(--molly-color);
+}
+
+.toast.error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%);
+  border-color: var(--angel-color);
+}
+
+.toast.info {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+  border-color: var(--accent-color);
+}
+
+/* ===== EFECTOS RESPONSIVE MEJORADOS ===== */
+@media (max-width: 768px) {
+  .chat-container::after {
+    opacity: 0.5;
+  }
+  
+  .message:hover {
+    transform: none;
+  }
+  
+  #sendButton:hover {
+    transform: scale(1.05);
+  }
+  
+  .image-upload-btn:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* ===== EFECTOS DE CARGA DE IMAGEN ===== */
+.image-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ===== MEJORAS PARA MENSAJES LARGOS ===== */
+.message span {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+.message p {
+  margin: 0;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Asegurar que las imágenes en mensajes no rompan el layout */
+.message img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 8px 0;
+  display: block;
+}
+
+/* Mejorar la legibilidad de texto largo - SIN RESTRICCIONES DE ALTURA */
+.message {
+  text-align: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  /* IMPORTANTE: Asegurar que no hay límites de altura */
+  height: auto !important;
+  max-height: none !important;
+  min-height: auto !important;
+}
+
+/* Espaciado mejorado para párrafos largos */
+.message br {
+  line-height: 1.8;
+}
+
+/* Asegurar que el contenido no se desborde HORIZONTALMENTE */
+.message * {
+  max-width: 100%;
+  box-sizing: border-box;
+  /* NO limitar altura */
+  height: auto;
+  max-height: none;
+}

@@ -1,0 +1,515 @@
+/* 🚀 UX IMPROVEMENTS - Parte 2 del Redesign */
+/* Mejoras de experiencia de usuario y microinteracciones */
+
+/* ===== INDICADOR DE ESCRITURA MEJORADO ===== */
+.typing-indicator {
+  padding: 12px 16px;
+}
+
+.typing-indicator span {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+@keyframes typing {
+  0%, 60%, 100% { 
+    transform: translateY(0); 
+    opacity: 0.6;
+    background: rgba(255, 255, 255, 0.6);
+  }
+  30% { 
+    transform: translateY(-12px); 
+    opacity: 1;
+    background: rgba(0, 168, 132, 0.8);
+  }
+}
+
+/* ===== TOOLTIPS MEJORADOS ===== */
+[title] {
+  position: relative;
+}
+
+[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #202c33;
+  color: #e9edef;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: tooltipFadeIn 0.2s ease-out;
+  pointer-events: none;
+}
+
+[title]:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  border: 6px solid transparent;
+  border-top-color: #202c33;
+  z-index: 1000;
+  animation: tooltipFadeIn 0.2s ease-out;
+  pointer-events: none;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+/* ===== SKELETON LOADING ===== */
+.skeleton {
+  background: linear-gradient(90deg, #1f2c34 25%, #2a3942 50%, #1f2c34 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ===== BADGE DE NOTIFICACIONES ===== */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #f15c6d, #ff6b7a);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(241, 92, 109, 0.4);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(241, 92, 109, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(241, 92, 109, 0.6);
+  }
+}
+
+/* ===== ESTADO DE CONEXIÓN ===== */
+.connection-status {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #202c33;
+  color: #e9edef;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  z-index: 1000;
+  animation: slideInUp 0.3s ease-out;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.connection-status.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.connection-status.online::before {
+  content: '🟢';
+}
+
+.connection-status.offline::before {
+  content: '🔴';
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: transparent;
+  z-index: 10000;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #00a884, #06cf9c, #00a884);
+  background-size: 200% 100%;
+  animation: progressBar 2s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(0, 168, 132, 0.5);
+}
+
+@keyframes progressBar {
+  0% {
+    width: 0%;
+    background-position: 0% 0;
+  }
+  50% {
+    width: 70%;
+    background-position: 100% 0;
+  }
+  100% {
+    width: 100%;
+    background-position: 200% 0;
+  }
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #8696a0;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+  animation: float 3s ease-in-out infinite;
+}
+
+.empty-state-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #e9edef;
+  margin-bottom: 10px;
+}
+
+.empty-state-desc {
+  font-size: 0.9rem;
+  max-width: 300px;
+}
+
+/* ===== RIPPLE EFFECT ===== */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* ===== DRAG AND DROP ZONE ===== */
+.drop-zone {
+  border: 2px dashed #2a3942;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  transition: all 0.3s;
+  background: rgba(31, 44, 52, 0.5);
+}
+
+.drop-zone.drag-over {
+  border-color: #00a884;
+  background: rgba(0, 168, 132, 0.1);
+  transform: scale(1.02);
+}
+
+.drop-zone-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  opacity: 0.6;
+}
+
+.drop-zone-text {
+  color: #8696a0;
+  font-size: 0.95rem;
+}
+
+/* ===== CONTEXT MENU ===== */
+.context-menu {
+  position: fixed;
+  background: #202c33;
+  border: 1px solid #2a3942;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding: 8px 0;
+  min-width: 180px;
+  z-index: 10000;
+  animation: contextMenuFadeIn 0.15s ease-out;
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.context-menu-item {
+  padding: 10px 16px;
+  color: #e9edef;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.context-menu-item:hover {
+  background: #2a3942;
+}
+
+.context-menu-item.danger {
+  color: #f15c6d;
+}
+
+.context-menu-item.danger:hover {
+  background: rgba(241, 92, 109, 0.1);
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: #2a3942;
+  margin: 4px 0;
+}
+
+/* ===== TOAST NOTIFICATIONS ===== */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #202c33;
+  color: #e9edef;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.success {
+  border-left: 4px solid #00a884;
+}
+
+.toast.error {
+  border-left: 4px solid #f15c6d;
+}
+
+.toast.info {
+  border-left: 4px solid #53bdeb;
+}
+
+/* ===== QUICK ACTIONS ===== */
+.quick-actions {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+}
+
+.quick-action-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00a884, #06cf9c);
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 168, 132, 0.3);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-action-btn:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 6px 24px rgba(0, 168, 132, 0.5);
+}
+
+.quick-action-btn:active {
+  transform: scale(0.95) rotate(90deg);
+}
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+  position: relative;
+  margin: 12px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 40px 10px 15px;
+  background: #2a3942;
+  border: none;
+  border-radius: 20px;
+  color: #e9edef;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.search-input:focus {
+  background: #2f3d46;
+  box-shadow: 0 0 0 2px rgba(0, 168, 132, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8696a0;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+/* ===== CHIPS / TAGS ===== */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #2a3942;
+  color: #e9edef;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.chip:hover {
+  background: #2f3d46;
+  transform: translateY(-1px);
+}
+
+.chip.active {
+  background: linear-gradient(135deg, #00a884, #06cf9c);
+  color: white;
+}
+
+/* ===== AVATAR GROUP ===== */
+.avatar-group {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-group .chat-avatar {
+  margin-left: -12px;
+  border: 2px solid #202c33;
+  transition: all 0.3s;
+}
+
+.avatar-group .chat-avatar:first-child {
+  margin-left: 0;
+}
+
+.avatar-group .chat-avatar:hover {
+  transform: scale(1.2) translateY(-4px);
+  z-index: 10;
+}
+
+/* ===== MOBILE OPTIMIZATIONS ===== */
+@media (max-width: 768px) {
+  .quick-actions {
+    bottom: 70px;
+    right: 15px;
+  }
+  
+  .quick-action-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+  }
+  
+  .toast {
+    max-width: 90%;
+    font-size: 0.85rem;
+  }
+  
+  [title]:hover::after,
+  [title]:hover::before {
+    display: none;
+  }
+}
+
+/* ===== DARK MODE ENHANCEMENTS ===== */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: linear-gradient(90deg, #0f1419 25%, #1a2329 50%, #0f1419 75%);
+  }
+}

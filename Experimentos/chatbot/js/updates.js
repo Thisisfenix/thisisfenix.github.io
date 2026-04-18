@@ -1,6 +1,33 @@
 // Updates del chatbot
 const UPDATES = [
   {
+    version: 'v2.0',
+    title: 'Redesign Visual Completo',
+    emoji: '🎨',
+    features: [
+      'Redesign visual completo con CSS modular',
+      'Glassmorphism en sidebars y paneles',
+      'Gradientes modernos en botones y mensajes',
+      'Sistema de sombras dinámicas (3 niveles)',
+      'Animaciones suaves en todas las interacciones',
+      'Micro-animaciones y feedback visual mejorado',
+      'Tooltips automáticos en elementos',
+      'Skeleton loading para mejor UX',
+      'Toast notifications (success, error, info)',
+      'Progress bar animado',
+      'Context menu personalizado',
+      'Chips/Tags para categorías',
+      'Empty states con iconos animados',
+      'CSS extraído del HTML (39KB total)',
+      'Mejor organización del código',
+      'Performance optimizado (60fps)',
+      'Responsive mejorado para móviles',
+      'Efectos glow en elementos importantes',
+      'Backdrop blur en modales',
+      'Animaciones de entrada slide-in'
+    ]
+  },
+  {
     version: 'v1.1.1',
     title: 'IA Artística y Relaciones Evolutivas',
     emoji: '🎨',
@@ -74,13 +101,18 @@ function getUpdatesHTML() {
     <div class="message bot">
       🎉 <strong>Bienvenido al canal de Updates</strong><br><br>
       Aquí encontrarás todas las actualizaciones del chatbot.<br><br>
-      💡 <strong>Prueba la nueva función:</strong><br>
+      💡 <strong>Novedades v2.0:</strong><br>
+      ✨ Nuevo diseño visual moderno<br>
+      🎨 Animaciones suaves y glassmorphism<br>
+      🚀 Mejor performance y UX<br><br>
+      <strong>Prueba las funciones de IA:</strong><br>
       "Angel, dibuja una batalla épica"<br>
       "Gissel, crea una imagen de ti cantando"
     </div>
   `;
 
-  UPDATES.forEach(update => {
+  // Invertir el orden para que los más nuevos aparezcan primero (arriba)
+  UPDATES.slice().reverse().forEach(update => {
     html += `
       <div class="message bot">
         ${update.emoji} <strong>${update.version} - ${update.title}</strong><br><br>

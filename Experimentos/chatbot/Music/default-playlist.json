@@ -1,0 +1,26 @@
+{
+  "name": "Playlist por Defecto",
+  "description": "Música ambiente para el chat",
+  "tracks": [
+    {
+      "id": "button-harmony",
+      "title": "Button Harmony",
+      "artist": "FenixLab",
+      "file": "Music/Button Harmony.mp3",
+      "duration": "4:42"
+    },
+    {
+      "id": "cinnamon-interface",
+      "title": "Cinnamon Interface", 
+      "artist": "FenixLab",
+      "file": "Music/Cinnamon Interface.mp3",
+      "duration": "4:08"
+    }
+  ],
+  "settings": {
+    "autoplay": false,
+    "loop": true,
+    "shuffle": false,
+    "volume": 0.3
+  }
+}

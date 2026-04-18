@@ -79,20 +79,35 @@ export default {
         // Enviar a Discord (usando secret)
         const DISCORD_WEBHOOK = env.DISCORD_WEBHOOK;
         
+        // Determinar color según la razón
+        const colorMap = {
+          'Contenido ofensivo': 15548997, // Rojo
+          'Información incorrecta': 16776960, // Amarillo
+          'Comportamiento inapropiado': 16744272, // Naranja
+          'Error técnico': 3447003, // Azul
+          'Otro': 10070709 // Gris
+        };
+        const embedColor = colorMap[report.reason] || 15548997;
+        
         await fetch(DISCORD_WEBHOOK, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            content: `🚨 **NUEVO REPORTE** 🚨\n**Razón:** ${report.reason}\n**Usuario Discord:** ${report.discord || 'No proporcionado'}`,
             embeds: [{
-              title: '🚩 Nuevo Reporte',
-              color: 15548997,
+              title: '📋 Detalles del Reporte',
+              color: embedColor,
               fields: [
-                { name: '👤 Personaje', value: report.character, inline: true },
-                { name: '📅 Fecha', value: new Date(report.timestamp).toLocaleString('es'), inline: true },
-                { name: '💬 Mensaje reportado', value: report.message.substring(0, 1000) },
-                { name: '❓ Razón', value: report.reason },
-                { name: '🆔 User ID', value: report.userId }
+                { name: '👤 Personaje', value: report.character || 'Desconocido', inline: true },
+                { name: '🆔 User ID', value: `\`${report.userId}\``, inline: true },
+                { name: '📅 Fecha', value: new Date(report.timestamp).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }), inline: true },
+                { name: '💬 Mensaje reportado', value: report.message ? (report.message.length > 1000 ? report.message.substring(0, 1000) + '...' : report.message) : 'Sin mensaje', inline: false },
+                { name: '📝 Detalles adicionales', value: report.details || 'Sin detalles adicionales', inline: false },
+                { name: '🌐 Navegador', value: report.userAgent ? report.userAgent.substring(0, 200) : 'Desconocido', inline: false }
               ],
+              footer: {
+                text: `Reporte desde: ${report.url || 'Deadly Pursuer Chat'}`
+              },
               timestamp: report.timestamp
             }]
           })
@@ -280,6 +295,12 @@ async function generateResponse(message, character, env, image = null, customPer
 
 ${trustInfo}
 
+IMPORTANTE: Tienes la capacidad de generar imágenes. Cuando el usuario te pida dibujar, crear una imagen, o generar algo visual, responde de forma entusiasta y describe lo que vas a crear. El sistema generará automáticamente la imagen basada en tu descripción.
+
+Ejemplo:
+Usuario: "Dibuja una batalla épica"
+Tú: "¡Claro! Voy a crear una batalla épica para ti. Imagina un campo de batalla con guerreros enfrentándose bajo un cielo tormentoso, con relámpagos iluminando la escena..."
+
 Libertad creativa: Puedes ser espontáneo, crear situaciones, hacer preguntas interesantes, contar anécdotas, o iniciar temas nuevos. No te limites solo a responder - puedes liderar la conversación. Sé natural, divertido y auténtico.
 
 Contexto: Mantén coherencia con conversaciones previas y desarrolla la relación naturalmente.`
@@ -318,7 +339,7 @@ Contexto: Mantén coherencia con conversaciones previas y desarrolla la relació
         body: JSON.stringify({
           model,
           messages: contextMessages,
-          max_tokens: image ? 1024 : (customPersonality ? 400 : getMaxTokens(character)),
+          max_tokens: image ? 1024 : (customPersonality ? 1200 : getMaxTokens(character)),
           temperature: customPersonality ? 1.0 : getTemperature(character)
         })
       });
@@ -379,14 +400,14 @@ function getTemperature(character) {
 function getMaxTokens(character) {
   // Longitud de respuestas (más tokens = más libertad para expresarse)
   const tokens = {
-    Angel: 400,    // Más espacio para desarrollar ideas
-    Gissel: 450,   // Mucho espacio para ser detallada y creativa
-    iA777: 380,    // Espacio para humor y referencias técnicas
-    Iris: 400,     // Espacio para expresar emociones
-    Luna: 420,     // Espacio para abrirse cuando gana confianza
-    Molly: 380     // Espacio para reflexiones profundas
+    Angel: 1200,    // Mucho más espacio para desarrollar ideas y proteger
+    Gissel: 1500,   // Máximo espacio para ser detallada, creativa y dramática
+    iA777: 1100,    // Más espacio para humor, referencias técnicas y análisis
+    Iris: 1300,     // Más espacio para expresar emociones y determinación
+    Luna: 1400,     // Más espacio para abrirse cuando gana confianza
+    Molly: 1200     // Más espacio para reflexiones profundas y sabiduría
   };
-  return tokens[character] || 400;
+  return tokens[character] || 1200;
 }
 
 function generateId() {

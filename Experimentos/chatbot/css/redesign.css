@@ -1,0 +1,555 @@
+/* 🎨 DEADLY PURSUER CHAT - TEMA PROPIO v3.0 */
+/* Tema completamente personalizado inspirado en el universo Deadly Pursuer */
+
+/* ===== VARIABLES DE TEMA DEADLY PURSUER ===== */
+:root {
+  /* Colores principales - Tema oscuro futurista */
+  --primary-bg: #0a0a0f;
+  --secondary-bg: #151520;
+  --accent-bg: #1e1e2e;
+  --message-bg: #252535;
+  --user-message-bg: #2d1b69;
+  --bot-message-bg: #1a2332;
+  --text-primary: #f0f0f5;
+  --text-secondary: #9ca3af;
+  --accent-color: #6366f1;
+  --accent-hover: #7c3aed;
+  --border-color: #374151;
+  --shadow-color: rgba(99, 102, 241, 0.2);
+  
+  /* Colores de personajes */
+  --angel-color: #ef4444;
+  --gissel-color: #f59e0b;
+  --ia777-color: #06b6d4;
+  --iris-color: #8b5cf6;
+  --luna-color: #ec4899;
+  --molly-color: #10b981;
+  
+  /* Gradientes temáticos */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-secondary: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+  --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-dark: linear-gradient(135deg, #0a0a0f 0%, #151520 100%);
+  
+  /* Efectos de neón */
+  --neon-blue: 0 0 20px rgba(99, 102, 241, 0.5);
+  --neon-purple: 0 0 20px rgba(139, 92, 246, 0.5);
+  --neon-pink: 0 0 20px rgba(236, 72, 153, 0.5);
+  
+  /* Sombras mejoradas */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  
+  /* Transiciones suaves */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease;
+  --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ===== SCROLLBAR MEJORADO ===== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3942 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #2a3942;
+  border-radius: 10px;
+  transition: var(--transition);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #8696a0;
+}
+
+/* ===== LOADING SCREEN MEJORADO ===== */
+.loading-screen {
+  background: linear-gradient(135deg, #0d1418 0%, #111b21 100%);
+}
+
+.loading-logo {
+  filter: drop-shadow(var(--shadow-glow));
+  animation: pulse 1.5s ease-in-out infinite, float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.loading-spinner {
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== SIDEBAR MEJORADO ===== */
+.sidebar {
+  box-shadow: var(--shadow-md);
+  background: rgba(17, 27, 33, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-header {
+  background: var(--gradient-dark);
+  box-shadow: var(--shadow-sm);
+  font-size: 1.1rem;
+  letter-spacing: 0.3px;
+}
+
+/* ===== CHAT ITEMS CON ANIMACIONES ===== */
+.chat-item {
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: var(--gradient-primary);
+  transform: scaleY(0);
+  transition: transform var(--transition);
+}
+
+.chat-item:hover::before {
+  transform: scaleY(1);
+}
+
+.chat-item:hover {
+  background: #2a3942;
+  transform: translateX(4px);
+}
+
+.chat-item.active {
+  background: #2a3942;
+  box-shadow: inset 3px 0 0 #00a884;
+}
+
+.chat-avatar {
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.chat-item:hover .chat-avatar {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== MINI SIDEBAR MEJORADO ===== */
+.mini-sidebar {
+  box-shadow: var(--shadow-md);
+  background: rgba(32, 44, 51, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.mini-sidebar-btn {
+  position: relative;
+  transition: all var(--transition);
+}
+
+.mini-sidebar-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: -1;
+}
+
+.mini-sidebar-btn:hover::after {
+  opacity: 0.15;
+}
+
+.mini-sidebar-btn.active::after {
+  opacity: 0.2;
+}
+
+.mini-sidebar-btn:hover {
+  transform: scale(1.1);
+}
+
+.profile-pic {
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+
+.profile-pic:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ===== CHAT HEADER MEJORADO ===== */
+.chat-header {
+  background: var(--gradient-dark);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+}
+
+.header-avatar {
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+
+.header-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #00a884;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 8px #00a884;
+}
+
+/* ===== MENSAJES MEJORADOS ===== */
+.chat-messages {
+  background: #0b141a;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(0, 168, 132, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(83, 189, 235, 0.03) 0%, transparent 50%),
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.01) 10px, rgba(255,255,255,.01) 20px);
+}
+
+.message {
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+
+.message:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.message.user {
+  background: linear-gradient(135deg, #005c4b 0%, #00755e 100%);
+}
+
+.message.bot {
+  background: var(--gradient-dark);
+}
+
+.message-time {
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.message:hover .message-time {
+  opacity: 1;
+}
+
+/* ===== BOTONES MEJORADOS ===== */
+.chat-input button {
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+
+.chat-input button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-glow);
+}
+
+.chat-input button:active {
+  transform: scale(0.95);
+}
+
+.image-upload-btn {
+  transition: all var(--transition);
+}
+
+.image-upload-btn:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* ===== INPUT MEJORADO ===== */
+.chat-input input[type="text"] {
+  transition: all var(--transition);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-input input[type="text"]:focus {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(0, 168, 132, 0.2);
+  background: #2f3d46;
+}
+
+/* ===== ACHIEVEMENTS MEJORADO ===== */
+.achievements-sidebar {
+  box-shadow: var(--shadow-lg);
+  background: rgba(26, 35, 41, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.achievement-card {
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.achievement-card:hover {
+  transform: translateX(-4px);
+  box-shadow: var(--shadow-md);
+  border-left-width: 6px;
+}
+
+.achievement-card.locked {
+  filter: grayscale(0.5);
+}
+
+/* ===== MODALES MEJORADOS ===== */
+.modal, .terms-modal, .achievements-modal {
+  backdrop-filter: blur(8px);
+}
+
+.modal-content, .terms-content, .achievements-content {
+  box-shadow: var(--shadow-lg);
+  border: 1px solid #2a3942;
+  animation: modalSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ===== BOTONES DE CONFIGURACIÓN ===== */
+.setting-btn {
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+  font-weight: 500;
+}
+
+.setting-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.setting-btn:active {
+  transform: translateY(0);
+}
+
+.setting-btn.danger:hover {
+  box-shadow: 0 4px 16px rgba(241, 92, 109, 0.3);
+}
+
+/* ===== CHECKBOX MEJORADO ===== */
+.checkbox-item {
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.checkbox-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== NOTIFICACIONES DE LOGROS ===== */
+.achievement-notification {
+  animation: achievementSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: var(--shadow-lg);
+}
+
+@keyframes achievementSlideIn {
+  from {
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== MOBILE MENU BUTTON ===== */
+.mobile-menu-btn {
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+.mobile-menu-btn:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: var(--shadow-lg);
+}
+
+.mobile-menu-btn:active {
+  transform: scale(0.95) rotate(90deg);
+}
+
+/* ===== IMAGEN MODAL ===== */
+.image-modal img {
+  animation: imageZoomIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes imageZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== CUSTOM CHARACTERS ===== */
+.custom-char-item {
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.custom-char-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+  background: #2f3d46;
+}
+
+.custom-char-avatar {
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+
+.custom-char-item:hover .custom-char-avatar {
+  transform: scale(1.1);
+}
+
+/* ===== COMING SOON BADGE ===== */
+.coming-soon {
+  animation: pulse 2s ease-in-out infinite, glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 2px 8px rgba(0, 168, 132, 0.4); }
+  50% { box-shadow: 0 2px 12px rgba(0, 168, 132, 0.6); }
+}
+
+/* ===== REPORT BUTTON ===== */
+.report-btn {
+  transition: all var(--transition);
+}
+
+.report-btn:hover {
+  transform: scale(1.2);
+  filter: drop-shadow(0 2px 4px rgba(241, 92, 109, 0.5));
+}
+
+/* ===== RETRO LINK ===== */
+.retro-link a {
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+}
+
+.retro-link a:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ===== ANIMACIONES DE ENTRADA ===== */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.chat-item {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.message.user {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.message.bot {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+/* ===== ACCESIBILIDAD ===== */
+.chat-item:focus,
+.mini-sidebar-btn:focus,
+.setting-btn:focus {
+  outline: 2px solid #00a884;
+  outline-offset: 2px;
+}
+
+/* ===== RESPONSIVE MEJORADO ===== */
+@media (max-width: 768px) {
+  .message {
+    max-width: 90%;
+  }
+  
+  .chat-item:hover {
+    transform: translateX(2px);
+  }
+  
+  .achievement-card:hover {
+    transform: translateX(-2px);
+  }
+  
+  .mini-sidebar-btn:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* ===== PERFORMANCE ===== */
+.chat-messages,
+.chat-list,
+.achievements-list {
+  will-change: scroll-position;
+}
+
+.message,
+.chat-item,
+.achievement-card {
+  will-change: transform;
+}
