@@ -1,28 +1,56 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.6.0",
-  "lastUpdate": "2026-04-18",
+  "version": "2.6.1",
+  "lastUpdate": "2026-04-25",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.6.0",
-    "fecha": "2026-04-18",
-    "tipo": "major",
+    "numero": "2.6.1",
+    "fecha": "2026-04-25",
+    "tipo": "minor",
     "estado": "estable",
     "cambios_principales": [
-      "El código ahora está más organizado y limpio",
-      "La página carga más rápido que antes",
-      "Todo funciona mejor y sin errores raros",
-      "Más fácil agregar cosas nuevas en el futuro",
-      "El laboratorio está más ordenado por dentro"
+      "Rework visual del Hero — nuevo layout split con card de código",
+      "Sección Experimentos rediseñada con Bento Grid asimétrico",
+      "Navbar con dropdown de Stats (Logros, Plushies, Cupid)",
+      "Footer mejorado con links rápidos y versión del sitio",
+      "Section headers con línea decorativa animada",
+      "Scroll reveal suave en cards y secciones",
+      "Fuente exclusiva MilkyNice para temas FunkyAtlas y Christmas",
+      "Sistema de música con playlist personalizable en el Chatbot",
+      "Aviso de bienvenida al rediseño del Chatbot (una sola vez)",
+      "CSS del Chatbot reorganizado en carpeta dedicada"
     ]
   },
   
   "updates": [
     {
-      "version": "2.6.0",
+      "version": "2.6.1",
+      "date": "2026-04-25",
+      "title": "🎨 Lavado de Cara del Laboratorio",
+      "type": "minor",
+      "features": [
+        "🦸 La página de inicio tiene un diseño nuevo y más moderno",
+        "📊 Ahora puedes ver cuántos proyectos hay directo en la pantalla principal",
+        "🧩 Los experimentos se ven mejor organizados — Deadly Pursuer tiene más protagonismo",
+        "📋 El menú de arriba está más limpio, los stats están en un botoncito desplegable",
+        "🦶 El pie de página ahora tiene links rápidos y muestra la versión del sitio",
+        "✨ Los títulos de cada sección tienen una línea de color debajo",
+        "🎞️ Las tarjetas aparecen con una animación suave al hacer scroll",
+        "🔤 Los temas FunkyAtlas y Christmas ahora usan una fuente especial (MilkyNice)",
+        "🎵 El Chatbot tiene reproductor de música — puedes subir tus propias canciones",
+        "🎉 El Chatbot muestra un aviso de bienvenida la primera vez que entras al rediseño"
+      ],
+      "fixes": [
+        "🐛 El texto del hero ya no se borraba al cargar la página",
+        "🐛 Los títulos de sección ya no se iban para la derecha",
+        "🐛 Las tarjetas de proyectos ya no desaparecían al hacer scroll",
+        "🐛 Los colores de los temas ya no se rompían en la sección de Experimentos"
+      ]
+    },
+    {
       "date": "2026-04-18",
       "title": "🧹 Limpieza General del Laboratorio",
       "type": "major",

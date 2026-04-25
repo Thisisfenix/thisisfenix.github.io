@@ -381,6 +381,11 @@
       if (versionSpan) {
         versionSpan.textContent = 'v' + data.version;
       }
+      // Sincronizar versión en el footer
+      const footerVersion = document.getElementById('footer-version');
+      if (footerVersion) {
+        footerVersion.textContent = 'v' + data.version;
+      }
       
       // Establecer título una sola vez
       const newTitle = `🔬 FenixLaboratory v${data.version} - Experimentos y Proyectos`;

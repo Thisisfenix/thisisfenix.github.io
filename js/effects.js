@@ -35,15 +35,40 @@ class EffectsManager {
   typeWriterEffect() {
     const title = document.getElementById('typewriter');
     if (!title) return;
-    
-    const text = "THISISFENIX LABORATORY";
-    let i = 0;
 
-    title.textContent = '';
+    // Líneas del nuevo hero split
+    const line1 = 'THISISFENIX';
+    const line2 = 'LABORATORY';
+
+    // Limpiar y reconstruir estructura
+    title.innerHTML = '';
+
+    const span1 = document.createElement('span');
+    const br    = document.createElement('br');
+    const span2 = document.createElement('span');
+    span2.className = 'hero-accent';
+
+    title.appendChild(span1);
+    title.appendChild(br);
+    title.appendChild(span2);
+
+    let i = 0;
+    const fullText = line1 + '|' + line2; // separador interno
 
     const type = () => {
-      if (i < text.length) {
-        title.textContent = text.substring(0, i + 1);
+      if (i < fullText.length) {
+        const ch = fullText[i];
+        if (ch === '|') {
+          // pausa breve entre líneas
+          i++;
+          setTimeout(type, 200);
+          return;
+        }
+        if (i < line1.length) {
+          span1.textContent = fullText.substring(0, i + 1);
+        } else {
+          span2.textContent = line2.substring(0, i - line1.length);
+        }
         i++;
         setTimeout(type, 80);
       }
@@ -217,6 +242,34 @@ class EffectsManager {
     // Efectos críticos inmediatos
     this.createParticles();
     this.typeWriterEffect();
+    this.initScrollReveal();
+  }
+
+  // Scroll reveal con IntersectionObserver
+  initScrollReveal() {
+    // Excluir: hero, skeleton cards, cards dentro del repos-container (se generan dinámicamente)
+    const targets = document.querySelectorAll(
+      '.bento-cell, #guestbook .card, section h2:not(.hero *), .filters, .section-subtitle'
+    );
+
+    targets.forEach((el, i) => {
+      el.classList.add('reveal');
+      // Escalonar celdas del bento
+      if (el.classList.contains('bento-cell')) {
+        el.style.transitionDelay = `${(i % 4) * 80}ms`;
+      }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    targets.forEach(el => observer.observe(el));
   }
 }
 

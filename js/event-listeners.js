@@ -8,7 +8,38 @@
     setupNavigationAnimations();
     setupAvatarPreview();
     setupSpecialButtons();
+    setupStatsDropdown();
   });
+
+  // ── Stats Dropdown ──
+  function setupStatsDropdown() {
+    const item   = document.getElementById('nav-stats-item');
+    const btn    = document.getElementById('nav-stats-btn');
+    if (!item || !btn) return;
+
+    // Toggle al hacer click en el trigger
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = item.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+    });
+
+    // Cerrar al hacer click fuera
+    document.addEventListener('click', (e) => {
+      if (!item.contains(e.target)) {
+        item.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Cerrar con Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        item.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
   // Filtros de proyectos
   function setupFilterListeners() {

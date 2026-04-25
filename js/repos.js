@@ -222,6 +222,9 @@ async function fetchRepos() {
         allRepos = data;
         filteredRepos = data;
         displayRepos(data);
+        // Actualizar contador del hero
+        const heroRepos = document.getElementById('hero-repos');
+        if (heroRepos) heroRepos.textContent = data.length + '+';
         return;
       }
     }
@@ -240,6 +243,10 @@ async function fetchRepos() {
     allRepos = repos;
     filteredRepos = repos;
     displayRepos(repos);
+
+    // Actualizar contador del hero
+    const heroRepos = document.getElementById('hero-repos');
+    if (heroRepos) heroRepos.textContent = repos.length + '+';
 
   } catch (error) {
     console.error('Error al cargar repositorios:', error);

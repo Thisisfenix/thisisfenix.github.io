@@ -28,3 +28,6 @@ js/pending.js
 
 # Documentation interna (no subir a GitHub)
 WIKI_PASSWORD_SYSTEM.md
+
+# Backups locales (no subir al repo)
+backups/
