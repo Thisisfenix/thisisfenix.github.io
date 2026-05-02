@@ -1,82 +1,101 @@
-# Molly - La Furia Desatada
+# Molly Anderson Smith - La Superviviente Agresiva
 
 ## 🎯 Habilidades
 
-### Molly Charge (Q)
-- **Cooldown:** 15 segundos
-- **Efecto:** Carga devastadora hacia adelante
-- **Uso:** Cierre de distancia y daño
+### 👊 Uppercut (Q)
+- **Cooldown:** TBD
+- **Tipo:** Ataque cuerpo a cuerpo
+- **Efecto:** Golpe ascendente que stunea al killer
+- **Descripción:** Molly se levanta un poco al golpear, lanzando un uppercut devastador que stunea al killer temporalmente.
+- **Uso:** Defensa y escape en situaciones críticas
 
-### Cookie (E)
-- **Cooldown:** 20 segundos
-- **Efecto:** Lanza una galleta especial
-- **Uso:** Ataque a distancia
+### 🍪 Comer Galleta (E)
+- **Cooldown:** TBD
+- **Curación:** X cantidad de HP
+- **Tipo:** Curación personal
+- **Descripción:** Molly come una galleta que le restaura salud.
+- **Uso:** Auto-curación durante la partida
 
-### Uppercut (R)
-- **Cooldown:** 25 segundos
-- **Efecto:** Golpe ascendente poderoso
-- **Uso:** Ataque devastador de alto daño
+### ⚡ Habilidad en Desarrollo (R)
+- **Estado:** 🚧 En Desarrollo
+- **Opciones consideradas:**
+  - **Carga:** Empuja al killer, dándole inmunidad en el proceso (no cuenta como stun)
+  - **Bloqueo:** Habilidad defensiva
+  - **Boost de Velocidad:** Aumento temporal de velocidad
+- **Descripción:** Esta habilidad está siendo desarrollada y será definida próximamente.
+
+## 🌟 Pasivas
+
+> 🚧 **Work in Progress**
+> 
+> Las pasivas de Molly están siendo desarrolladas y serán añadidas próximamente.
 
 ## 📖 Historia
 
-**Molly – La Novia Perdida**
-
-Molly entró al bosque después de su boda con Abelito. El día más feliz de su vida se transformó en el inicio de su tormento. El bosque suele buscar almas con emociones intensas, y la felicidad absoluta es un manjar que no desaprovecha.
-
-Fue absorbida sin que nadie lo notara, y desde ese momento vaga dentro del purgatorio intentando entender qué pasó con su vida perfecta.
-
-Ahora es conocida por su estilo de juego agresivo y directo. No necesita trucos ni sigilo - su fuerza bruta es suficiente para dominar el campo de batalla y aterrorizar a los survivors.
+> 🚧 **Work in Progress**
+> 
+> La historia de Molly Anderson Smith está siendo desarrollada y será añadida próximamente.
 
 ## 🎮 Estrategias de Juego
 
 ### Como Molly:
-- **Molly Charge** para escape rápido o rescates
-- **Cookie** para distraer killers a distancia
-- **Uppercut** como último recurso defensivo
-- Usa tu velocidad natural para kiting
+- **Uppercut defensivo:** Usa el uppercut cuando el killer esté cerca para stunear y escapar
+- **Gestión de galletas:** Come galletas estratégicamente para mantener tu HP alto
+- **Juego agresivo:** Molly es una survivor de confrontación, no temas enfrentar al killer
+- **Timing perfecto:** El uppercut requiere buen timing para maximizar el stun
 
 ### Builds Recomendados:
-- **Speed Demon:** Maximizar velocidad y movilidad
-- **Aggressive Support:** Rescates arriesgados con Charge
-- **Hit and Run:** Cookie + escape rápido
+- **Tanque Agresivo:** Maximiza el uso de galletas para aguantar más hits
+- **Peleadora:** Enfócate en dominar el uppercut para stunear constantemente
+- **Híbrido:** Balance entre curación y ataque
 
 ## 💡 Tips Avanzados
 
-### Gestión de Habilidades:
-- **Molly Charge** atraviesa obstáculos pequeños
-- **Cookie** puede interrumpir habilidades de killers
-- **Uppercut** tiene frames de invencibilidad
-- Combina velocidad natural con habilidades
-
 ### Mecánicas Especiales:
-- Tu velocidad base es superior a otros survivors
-- Molly Charge puede salvar aliados derribados
-- Cookie tiene efecto de ralentización en killers
-- Uppercut puede cancelar algunas habilidades enemigas
+- **Uppercut con elevación:** Molly se levanta ligeramente al golpear, lo que puede ayudar a esquivar algunos ataques bajos
+- **Gestión de recursos:** Las galletas son limitadas, úsalas sabiamente
+- **No es stun tradicional:** Si la tercera habilidad es carga, recuerda que da inmunidad pero no cuenta como stun
+- **Survivor agresiva:** Molly es única porque puede confrontar directamente a los killers
 
-### Combos Efectivos:
-1. **Cookie** → **Molly Charge** → escape
-2. **Molly Charge** → rescate → **Uppercut** defensivo
-3. **Uppercut** → **Cookie** → reposicionamiento
+### Interacciones Únicas:
+- **Uppercut timing:** Practica el timing para stunear justo antes de que el killer ataque
+- **Galletas en combate:** Puedes comer galletas mientras te persiguen si tienes espacio
+- **Presión psicológica:** Los killers deben respetar tu uppercut, dándote ventaja en loops
+- **Salvamentos:** Usa uppercut para salvar compañeros que están siendo perseguidos
+
+### Combos Potenciales:
+1. **Uppercut** → escapar mientras el killer está stuneado
+2. **Comer Galleta** → **Uppercut** → tanquear un hit extra
+3. **Habilidad R** (cuando se defina) → **Uppercut** → combo devastador
+4. Bait el ataque del killer → **Uppercut** → **Comer Galleta** si es necesario
 
 ## 🗺️ Mejores Mapas
-- **Abandoned Factory:** Espacios abiertos para Charge
-- **Discord Server:** Balance perfecto para su estilo
-- **Haunted Mansion:** Pasillos para escape rápido
+
+> 🚧 **Work in Progress**
+> 
+> Los mejores mapas para Molly están siendo analizados y serán añadidos próximamente.
 
 ## ⚔️ Matchups
 
-### Vs 2019X:
-- **Problema:** Su stealth puede sorprenderte
-- **Estrategia:** Usa tu velocidad para mantener distancia
-- **Tip:** Molly Charge puede interrumpir You Can't Run
+### Vs Killers:
+- **2019X:** Tu uppercut puede interrumpir sus ataques sorpresa
+- **iA666:** Usa uppercut para contrarrestar sus combos agresivos
+- **MissX:** El uppercut puede stunearla incluso durante su Modo Vuelo
+- **Peace:** Timing del uppercut es crucial contra sus habilidades
 
-### Vs Vortex:
-- **Fortaleza:** Tu velocidad natural puede igualar su movilidad
-- **Táctica:** Cookie para ralentizarlo después de Phantom Orb
-- **Tip:** Uppercut puede cancelar Warp Strike con timing perfecto
+### Vs Otros Survivors:
+> 🚧 **Work in Progress**
+> 
+> Las sinergias con otros survivors están siendo desarrolladas y serán añadidas próximamente.
 
-### Vs iA666:
-- **Ventaja:** Tu velocidad supera sus protocolos de caza
-- **Estrategia:** Molly Charge para escape rápido
-- **Tip:** Cookie puede interferir con sus sistemas
+## 🎭 Relaciones
+
+### Clay:
+- **Relación:** Mascota
+- **Descripción:** Compañero fiel de Molly
+
+### Otros:
+- **Roberta:** Rival
+- **Chris:** Empleado
+- **Katniss:** Empleado
+- **Meiden:** Rival

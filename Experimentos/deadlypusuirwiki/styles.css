@@ -1,31 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
+    /* Dark theme colors */
     --bg-primary: #0a0a0a;
     --bg-secondary: #111111;
     --bg-tertiary: #1a1a1a;
     --bg-card: #161616;
     --bg-hover: #1f1f1f;
     
+    /* Text colors */
     --text-primary: #ffffff;
     --text-secondary: #b3b3b3;
     --text-muted: #666666;
     
-    --accent-red: #dc2626;
-    --accent-red-hover: #ef4444;
-    --accent-green: #16a34a;
-    --accent-green-hover: #22c55e;
-    --accent-blue: #2563eb;
-    --accent-purple: #7c3aed;
+    /* Accent colors - More vibrant for Deadly Pursuer theme */
+    --accent-red: #ff0000;
+    --accent-red-hover: #ff3333;
+    --accent-red-glow: rgba(255, 0, 0, 0.3);
+    --accent-green: #00ff00;
+    --accent-blue: #00d4ff;
+    --accent-purple: #8b00ff;
     
+    /* Borders */
     --border-primary: #2a2a2a;
     --border-secondary: #333333;
+    --border-accent: #ff0000;
     
+    /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.8);
+    --shadow-red: 0 0 20px var(--accent-red-glow);
     
+    /* Border radius */
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 12px;
@@ -45,6 +53,28 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
+}
+
+/* Animated background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 0, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 0, 255, 0.05) 0%, transparent 50%);
+    z-index: -1;
+    animation: bgPulse 10s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes bgPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
 }
 
 /* Header */
@@ -53,55 +83,59 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-primary);
-    padding: 1rem 0;
+    border-bottom: 2px solid var(--border-accent);
+    padding: 1.5rem 0;
     z-index: 1000;
-    height: 80px;
-    box-shadow: var(--shadow-lg);
+    height: 90px;
+    box-shadow: var(--shadow-red);
 }
 
 .header-content {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 2rem;
     text-align: center;
 }
 
 .header-content h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 800;
     margin-bottom: 0.25rem;
     background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-purple) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    letter-spacing: -0.02em;
 }
 
 .header-content p {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
-    font-weight: 400;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 /* Sidebar */
 .fixed-sidebar {
     position: fixed;
     left: 0;
-    top: 80px;
-    width: 280px;
-    height: calc(100vh - 80px);
-    background: var(--bg-secondary);
-    border-right: 1px solid var(--border-primary);
+    top: 90px;
+    width: 300px;
+    height: calc(100vh - 90px);
+    background: rgba(17, 17, 17, 0.95);
+    backdrop-filter: blur(10px);
+    border-right: 2px solid var(--border-primary);
     padding: 2rem 0;
     overflow-y: auto;
     z-index: 999;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg);
 }
 
 .fixed-sidebar::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 .fixed-sidebar::-webkit-scrollbar-track {
@@ -109,24 +143,28 @@ body {
 }
 
 .fixed-sidebar::-webkit-scrollbar-thumb {
-    background: var(--border-secondary);
-    border-radius: 3px;
+    background: var(--border-accent);
+    border-radius: 4px;
+}
+
+.fixed-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-red-hover);
 }
 
 .nav-section {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     padding: 0 1.5rem;
 }
 
 .nav-section h3 {
     font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-muted);
+    font-weight: 700;
+    color: var(--accent-red);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border-primary);
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-accent);
 }
 
 .nav-section ul {
@@ -134,32 +172,36 @@ body {
 }
 
 .nav-section li {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
 }
 
 .nav-section a {
     display: flex;
     align-items: center;
-    padding: 0.75rem 1rem;
+    padding: 0.875rem 1.25rem;
     color: var(--text-secondary);
     text-decoration: none;
     border-radius: var(--radius-md);
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     position: relative;
+    border: 1px solid transparent;
 }
 
 .nav-section a:hover {
     background: var(--bg-hover);
     color: var(--text-primary);
-    transform: translateX(2px);
+    transform: translateX(4px);
+    border-color: var(--border-secondary);
 }
 
 .nav-section a.active {
-    background: var(--accent-red);
-    color: white;
-    box-shadow: var(--shadow-sm);
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(139, 0, 255, 0.1));
+    color: var(--accent-red);
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-red);
+    font-weight: 600;
 }
 
 .nav-section a.active::before {
@@ -168,16 +210,17 @@ body {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 3px;
-    background: white;
+    width: 4px;
+    background: var(--accent-red);
     border-radius: 0 2px 2px 0;
+    pointer-events: none;
 }
 
 /* Content */
 .content {
-    margin-left: 280px;
-    margin-top: 80px;
-    min-height: calc(100vh - 80px);
+    margin-left: 300px;
+    margin-top: 90px;
+    min-height: calc(100vh - 90px);
     background: var(--bg-primary);
 }
 
@@ -207,6 +250,7 @@ body {
     right: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+    pointer-events: none;
 }
 
 .wiki-intro h2 {
@@ -284,6 +328,7 @@ body {
     height: 2px;
     background: linear-gradient(90deg, var(--accent-red), var(--accent-purple));
     border-radius: 1px;
+    pointer-events: none;
 }
 
 /* Character Grid */
@@ -316,6 +361,7 @@ body {
     background: linear-gradient(90deg, var(--accent-red), var(--accent-purple));
     transform: scaleX(0);
     transition: transform 0.3s ease;
+    pointer-events: none;
 }
 
 .character-card:hover {
@@ -366,10 +412,23 @@ body {
     border: 1px solid rgba(220, 38, 38, 0.2);
 }
 
+.role.boss {
+    background: rgba(139, 0, 255, 0.15);
+    color: var(--accent-purple);
+    border: 2px solid rgba(139, 0, 255, 0.3);
+    box-shadow: 0 0 10px rgba(139, 0, 255, 0.2);
+}
+
 .role.survivor {
     background: rgba(22, 163, 74, 0.1);
     color: var(--accent-green);
     border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.role.npc {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-blue);
+    border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 /* Character Profile */
@@ -395,6 +454,10 @@ body {
     margin: 0 0 2rem 2rem;
     height: fit-content;
     text-align: center;
+}
+
+.markdown-content {
+    overflow: auto; /* Para que respete el float */
 }
 
 
@@ -551,6 +614,7 @@ body {
     right: 0;
     height: 3px;
     background: linear-gradient(90deg, var(--accent-red), var(--accent-purple));
+    pointer-events: none;
 }
 
 .character-header img {
@@ -581,6 +645,7 @@ body {
     padding: 2rem;
     line-height: 1.7;
     font-size: 0.95rem;
+    overflow: auto; /* Para que respete el float */
 }
 
 .markdown-content h1 {
@@ -590,6 +655,7 @@ body {
     margin-bottom: 1.5rem;
     padding-bottom: 0.75rem;
     border-bottom: 2px solid var(--border-primary);
+    clear: none; /* No limpiar el float */
 }
 
 .markdown-content h2 {
@@ -598,6 +664,7 @@ body {
     color: var(--text-primary);
     margin: 2rem 0 1rem 0;
     position: relative;
+    clear: left; /* Limpiar float solo a la izquierda para que empiece debajo del infobox si es necesario */
 }
 
 .markdown-content h2::before {
@@ -610,6 +677,7 @@ body {
     height: 1.5rem;
     background: var(--accent-red);
     border-radius: 2px;
+    pointer-events: none;
 }
 
 .markdown-content h3 {
@@ -617,6 +685,25 @@ body {
     font-weight: 600;
     color: var(--text-primary);
     margin: 1.5rem 0 0.75rem 0;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(147, 51, 234, 0.1));
+    border-left: 4px solid var(--accent-red);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    clear: none; /* No limpiar el float para que se ajuste al lado del infobox */
+    overflow: hidden; /* Para contener el contenido */
+}
+
+.markdown-content h3:hover {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(147, 51, 234, 0.15));
+    transform: translateX(5px);
+}
+
+.markdown-content h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-red);
+    margin: 1rem 0 0.5rem 0;
 }
 
 .markdown-content p {
@@ -631,6 +718,11 @@ body {
 
 .markdown-content li {
     margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.markdown-content li strong {
+    color: var(--accent-red);
 }
 
 .markdown-content strong {
@@ -656,10 +748,83 @@ body {
     border-radius: 0 var(--radius-md) var(--radius-md) 0;
     font-style: italic;
     color: var(--text-secondary);
+    clear: none; /* No limpiar el float */
+    overflow: hidden; /* Para contener el contenido */
 }
 
 .markdown-content blockquote p {
     margin: 0;
+}
+
+/* Killer Ability Cards - Special styling for abilities */
+.markdown-content h3 + ul {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.5rem;
+    margin: 0.5rem 0 1.5rem 0;
+    list-style: none;
+    clear: none; /* No limpiar el float */
+    overflow: hidden; /* Para contener el contenido */
+}
+
+.markdown-content h3 + ul li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-primary);
+    display: flex;
+    align-items: flex-start;
+}
+
+.markdown-content h3 + ul li:last-child {
+    border-bottom: none;
+}
+
+.markdown-content h3 + ul li::before {
+    content: '▸';
+    color: var(--accent-red);
+    font-weight: bold;
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+}
+
+/* Passive abilities styling */
+.markdown-content h2:has(+ h3) {
+    margin-top: 3rem;
+}
+
+/* Stats display in abilities */
+.markdown-content li strong:first-child {
+    display: inline-block;
+    min-width: 120px;
+    color: var(--accent-purple);
+}
+
+/* Special emoji headers */
+.markdown-content h2:first-of-type {
+    font-size: 1.8rem;
+    text-align: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(147, 51, 234, 0.1));
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border-primary);
+    margin-bottom: 2rem;
+    clear: left; /* Limpiar float para que empiece debajo del infobox */
+    overflow: hidden; /* Para contener el contenido */
+}
+
+/* Divider between sections */
+.markdown-content h2 + h3 {
+    margin-top: 1rem;
+}
+
+/* Highlight damage numbers */
+.markdown-content li:has(strong:contains("Daño")),
+.markdown-content li:has(strong:contains("Cooldown")),
+.markdown-content li:has(strong:contains("Radio")) {
+    background: rgba(220, 38, 38, 0.03);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    margin: 0.25rem 0;
 }
 
 /* Loading */
@@ -728,6 +893,12 @@ body {
         padding: 1rem;
     }
     
+    .character-infobox {
+        float: none;
+        width: 100%;
+        margin: 0 0 2rem 0;
+    }
+    
     .character-sidebar {
         position: static;
     }
@@ -744,5 +915,389 @@ body {
     
     .markdown-content {
         padding: 1.5rem;
+    }
+}
+
+
+/* ===================================================================
+   GAMEPLAY PAGE - Modern Documentation Style
+   =================================================================== */
+
+.gameplay-page {
+    padding: 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+}
+
+.gameplay-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--border-accent);
+}
+
+.gameplay-header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-red), var(--accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.gameplay-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.gameplay-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+/* Section Styling */
+.gameplay-section {
+    background: var(--bg-card);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    transition: all 0.3s ease;
+}
+
+.gameplay-section:hover {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-red);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-primary);
+}
+
+.section-icon {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(139, 0, 255, 0.1));
+    border: 2px solid var(--border-accent);
+    border-radius: var(--radius-md);
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.section-content {
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.section-content p {
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+}
+
+/* Role Cards */
+.role-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.role-card {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.role-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.survivor-card {
+    border-color: rgba(0, 255, 0, 0.3);
+}
+
+.survivor-card:hover {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+.killer-card {
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.killer-card:hover {
+    border-color: var(--accent-red);
+    box-shadow: var(--shadow-red);
+}
+
+.role-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.role-icon {
+    font-size: 2rem;
+}
+
+.role-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.role-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.role-card li {
+    padding: 0.75rem 0;
+    padding-left: 2rem;
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.role-card li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent-red);
+    font-weight: bold;
+}
+
+.survivor-card li::before {
+    color: var(--accent-green);
+}
+
+/* Controls Grid */
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.control-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+}
+
+.control-item:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-2px);
+}
+
+.control-item kbd {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-dark);
+    border: 2px solid var(--border-accent);
+    border-radius: var(--radius-sm);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-red);
+    box-shadow: 0 4px 0 var(--border-secondary);
+    min-width: 80px;
+    text-align: center;
+}
+
+.control-item span {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Mechanic List */
+.mechanic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.mechanic-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+}
+
+.mechanic-item:hover {
+    border-color: var(--border-accent);
+    transform: translateX(4px);
+}
+
+.mechanic-icon {
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(139, 0, 255, 0.1));
+    border: 2px solid var(--border-accent);
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+}
+
+.mechanic-info h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.mechanic-info p {
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Tips Section */
+.tips-section {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(139, 0, 255, 0.05));
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.tip-card {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.tip-card:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-red);
+}
+
+.tip-emoji {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.tip-card p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.tip-card strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .gameplay-page {
+        padding: 2rem 1.5rem;
+    }
+    
+    .gameplay-header h1 {
+        font-size: 2rem;
+    }
+    
+    .gameplay-subtitle {
+        font-size: 1rem;
+    }
+    
+    .gameplay-section {
+        padding: 1.5rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .section-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .role-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .controls-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .control-item {
+        padding: 1rem;
+    }
+    
+    .control-item kbd {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        min-width: 60px;
+    }
+    
+    .mechanic-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
     }
 }

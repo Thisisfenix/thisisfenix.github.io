@@ -2,7 +2,11 @@ class DeadlyPursuerWiki {
     constructor() {
         this.characters = {
             '2019x': { name: '2019X', role: 'killer', icon: '../public/assets/icons/2019XNormalIcon.png' },
-            'vortex': { name: 'Vortex', role: 'killer', icon: '../public/assets/icons/VortexNormalIcon.png' },
+            'bfmp4': { name: 'Bfmp4', role: 'npc', icon: '../public/assets/icons/Bfmp4Icon.png' },
+            'ia666': { name: 'iA666', role: 'killer', icon: 'Assets/images/IA666.png' },
+            'missx': { name: 'MissX', role: 'killer', icon: '../public/assets/icons/MissXNormalIcon.png' },
+            'peace': { name: 'Peace', role: 'killer', icon: '../public/assets/icons/PeaceNormalIcon.png' },
+            'abelitogamer': { name: 'AbelitoGamer', role: 'boss', icon: 'Assets/images/AbelitoInactiveIcon.png' },
             'molly': { name: 'Molly', role: 'survivor', icon: '../public/assets/icons/MollyNormalIcon.png' },
             'gissel': { name: 'Gissel', role: 'survivor', icon: '../public/assets/icons/GisselInactiveIcon.png' },
             'ia777': { name: 'iA777', role: 'survivor', icon: '../public/assets/icons/IA777NormalIcon.png' },
@@ -10,7 +14,9 @@ class DeadlyPursuerWiki {
             'iris': { name: 'Iris', role: 'survivor', icon: '../public/assets/icons/IrisNormalIcon.png' },
             'allison': { name: 'Allison', role: 'survivor', icon: '../public/assets/icons/AllisonNormalIcon.png' },
             'luna': { name: 'Luna', role: 'survivor', icon: '../public/assets/icons/LunaNormalIcon.png' },
-            'ia666': { name: 'iA666', role: 'killer', icon: '../public/assets/icons/IA666NormalIcon.png' }
+            'valem': { name: 'Valem', role: 'survivor', icon: '../public/assets/icons/ValemNormalIcon.png' },
+            'anna': { name: 'Anna Moonred', role: 'survivor', icon: '../public/assets/icons/AnnaNormalIcon.png' },
+            'ankush': { name: 'Ankush Moonred', role: 'survivor', icon: 'Assets/images/AnkusHNormalIcon.png' }
         };
         this.init();
     }
@@ -25,7 +31,9 @@ class DeadlyPursuerWiki {
 
     generateNavigation() {
         const killersNav = document.getElementById('killers-nav');
+        const bossesNav = document.getElementById('bosses-nav');
         const survivorsNav = document.getElementById('survivors-nav');
+        const npcsNav = document.getElementById('npcs-nav');
         
         Object.entries(this.characters).forEach(([id, char]) => {
             const li = document.createElement('li');
@@ -37,6 +45,10 @@ class DeadlyPursuerWiki {
             
             if (char.role === 'killer') {
                 killersNav.appendChild(li);
+            } else if (char.role === 'boss') {
+                bossesNav.appendChild(li);
+            } else if (char.role === 'npc') {
+                npcsNav.appendChild(li);
             } else {
                 survivorsNav.appendChild(li);
             }
@@ -51,10 +63,15 @@ class DeadlyPursuerWiki {
             card.className = 'character-card';
             card.setAttribute('data-character', id);
             
+            let roleLabel = 'Survivor';
+            if (char.role === 'killer') roleLabel = 'Killer';
+            if (char.role === 'boss') roleLabel = 'Boss';
+            if (char.role === 'npc') roleLabel = 'NPC';
+            
             card.innerHTML = `
                 <img src="${char.icon}" alt="${char.name}">
                 <h4>${char.name}</h4>
-                <span class="role ${char.role}">${char.role === 'killer' ? 'Killer' : 'Survivor'}</span>
+                <span class="role ${char.role}">${roleLabel}</span>
             `;
             
             grid.appendChild(card);
@@ -65,7 +82,9 @@ class DeadlyPursuerWiki {
         const stats = document.getElementById('intro-stats');
         const total = Object.keys(this.characters).length;
         const killers = Object.values(this.characters).filter(c => c.role === 'killer').length;
+        const bosses = Object.values(this.characters).filter(c => c.role === 'boss').length;
         const survivors = Object.values(this.characters).filter(c => c.role === 'survivor').length;
+        const npcs = Object.values(this.characters).filter(c => c.role === 'npc').length;
         
         stats.innerHTML = `
             <div class="stat-item">
@@ -77,8 +96,16 @@ class DeadlyPursuerWiki {
                 <span class="stat-label">Killers</span>
             </div>
             <div class="stat-item">
+                <span class="stat-number">${bosses}</span>
+                <span class="stat-label">Bosses</span>
+            </div>
+            <div class="stat-item">
                 <span class="stat-number">${survivors}</span>
                 <span class="stat-label">Survivors</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${npcs}</span>
+                <span class="stat-label">NPCs</span>
             </div>
         `;
     }
@@ -94,13 +121,44 @@ class DeadlyPursuerWiki {
         }
     }
 
+    // Function to check if content should be hidden (Work in Progress)
+    isWorkInProgress(characterId) {
+        // Lista de personajes que están en Work in Progress
+        const wipCharacters = [
+            '2019x', 'gissel',
+            'angel', 'allison',
+            'peace', 'valem', 'anna', 'ankush'
+        ];
+        const wipPages = ['gameplay', 'tips'];
+        
+        return wipCharacters.includes(characterId) || wipPages.includes(characterId);
+    }
+
+    getWorkInProgressContent(name) {
+        return `# ${name}
+
+## 🚧 Work in Progress
+
+Esta página está siendo actualizada con nueva información. Vuelve pronto para ver el contenido completo sobre este personaje.
+
+---
+
+**Estado:** En desarrollo  
+**Última actualización:** Pendiente`;
+    }
+
     setupEventListeners() {
         document.querySelectorAll('[data-character]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const character = e.target.dataset.character;
+                const character = e.currentTarget.dataset.character;
                 this.showCharacter(character);
-                this.updateActiveNav(e.target);
+                
+                // Update active state in sidebar
+                const sidebarLink = document.querySelector(`.nav-section a[data-character="${character}"]`);
+                if (sidebarLink) {
+                    this.updateActiveNav(sidebarLink);
+                }
             });
         });
 
@@ -117,6 +175,12 @@ class DeadlyPursuerWiki {
             card.addEventListener('click', (e) => {
                 const character = e.currentTarget.dataset.character;
                 this.showCharacter(character);
+                
+                // Update active state in sidebar
+                const sidebarLink = document.querySelector(`.nav-section a[data-character="${character}"]`);
+                if (sidebarLink) {
+                    this.updateActiveNav(sidebarLink);
+                }
             });
         });
     }
@@ -215,24 +279,6 @@ class DeadlyPursuerWiki {
                 hair: 'Crema con manchas grises oscuro',
                 voice: 'N/A'
             },
-            'vortex': {
-                fullName: 'ERROR',
-                aliases: ['ERROR'],
-                gender: 'ERROR',
-                pronouns: 'ERROR',
-                orientation: 'ERROR',
-                relationships: ['ERROR'],
-                affiliation: 'ERROR',
-                occupation: 'ERROR',
-                age: 'ERROR',
-                birthday: 'ERROR',
-                status: 'ERROR',
-                species: 'ERROR',
-                height: 'ERROR',
-                eyes: 'ERROR',
-                hair: 'ERROR',
-                voice: 'ERROR'
-            },
             '2019x': {
                 fullName: 'ERROR',
                 aliases: ['ERROR'],
@@ -286,6 +332,132 @@ class DeadlyPursuerWiki {
                 eyes: 'N/A',
                 hair: 'N/A',
                 voice: 'N/A'
+            },
+            'missx': {
+                fullName: 'MissX',
+                aliases: ['La Entidad Glitcheada', 'X'],
+                gender: 'Mujer',
+                pronouns: 'She/Her',
+                orientation: 'N/A',
+                relationships: ['Desconocido'],
+                affiliation: 'Entidad del Glitch',
+                occupation: 'Killer',
+                age: 'Desconocido',
+                birthday: 'Desconocido',
+                status: 'Activa',
+                species: 'Entidad Digital',
+                height: 'Variable',
+                eyes: 'Rojos brillantes',
+                hair: 'N/A',
+                voice: 'Distorsionada/Glitcheada'
+            },
+            'peace': {
+                fullName: 'Peace',
+                aliases: ['TBD'],
+                gender: 'TBD',
+                pronouns: 'TBD',
+                orientation: 'TBD',
+                relationships: ['TBD'],
+                affiliation: 'TBD',
+                occupation: 'TBD',
+                age: 'TBD',
+                birthday: 'TBD',
+                status: 'TBD',
+                species: 'TBD',
+                height: 'TBD',
+                eyes: 'TBD',
+                hair: 'TBD',
+                voice: 'TBD'
+            },
+            'valem': {
+                fullName: 'Valem',
+                aliases: ['TBD'],
+                gender: 'TBD',
+                pronouns: 'TBD',
+                orientation: 'TBD',
+                relationships: ['TBD'],
+                affiliation: 'TBD',
+                occupation: 'TBD',
+                age: 'TBD',
+                birthday: 'TBD',
+                status: 'TBD',
+                species: 'TBD',
+                height: 'TBD',
+                eyes: 'TBD',
+                hair: 'TBD',
+                voice: 'TBD'
+            },
+            'anna': {
+                fullName: 'Anna Moonred',
+                aliases: ['TBD'],
+                gender: 'TBD',
+                pronouns: 'TBD',
+                orientation: 'TBD',
+                relationships: ['TBD'],
+                affiliation: 'TBD',
+                occupation: 'TBD',
+                age: 'TBD',
+                birthday: 'TBD',
+                status: 'TBD',
+                species: 'TBD',
+                height: 'TBD',
+                eyes: 'TBD',
+                hair: 'TBD',
+                voice: 'TBD'
+            },
+            'abelitogamer': {
+                fullName: 'Abelito',
+                aliases: ['AbelitoGamer'],
+                gender: 'Hombre',
+                pronouns: 'He/Him (preferidos, pero acepta cualquiera)',
+                orientation: 'Pansexual',
+                relationships: ['Merry (Amiga)', 'Owen (Amigo)', 'Noel (Amigo & Ex-pareja)', 'Evie (Ex-pareja)'],
+                affiliation: 'TrueStudios',
+                occupation: 'Programador',
+                age: '22',
+                birthday: '31/01/2003',
+                status: 'Vivo',
+                species: 'Humano',
+                height: '1.60m',
+                eyes: 'Cafés',
+                hair: 'Verde Vibrante (Natural: Negro)',
+                voice: 'La de su creador lol'
+            },
+            'ankush': {
+                fullName: 'Ankush Moonred',
+                aliases: ['TBD'],
+                gender: 'TBD',
+                pronouns: 'TBD',
+                orientation: 'TBD',
+                relationships: ['TBD'],
+                affiliation: 'TBD',
+                occupation: 'TBD',
+                age: 'TBD',
+                birthday: 'TBD',
+                status: 'TBD',
+                species: 'TBD',
+                height: 'TBD',
+                eyes: 'TBD',
+                hair: 'TBD',
+                voice: 'TBD'
+            },
+            'bfmp4': {
+                fullName: 'Bfmp4',
+                aliases: ['El Dealer', 'Vendedor de la Tienda'],
+                gender: 'TBD',
+                pronouns: 'TBD',
+                orientation: 'N/A',
+                relationships: ['Todos los jugadores (Clientes)'],
+                affiliation: 'La Tienda',
+                occupation: 'Dealer / Vendedor',
+                age: 'Desconocido',
+                birthday: 'Desconocido',
+                status: 'Activo',
+                species: 'TBD',
+                height: 'TBD',
+                eyes: 'TBD',
+                hair: 'TBD',
+                voice: 'TBD'
             }
         };
         return characterData[characterId] || {};
@@ -298,7 +470,14 @@ class DeadlyPursuerWiki {
         const content = document.getElementById('character-content');
         content.innerHTML = '<div class="loading">Cargando...</div>';
 
-        const markdown = await this.loadMarkdownFile(characterId);
+        // Check if this character is Work in Progress
+        let markdown;
+        if (this.isWorkInProgress(characterId)) {
+            markdown = this.getWorkInProgressContent(character.name);
+        } else {
+            markdown = await this.loadMarkdownFile(characterId);
+        }
+        
         const charInfo = this.getCharacterInfo(characterId);
         
         const infoBoxContent = charInfo.fullName ? `
@@ -456,50 +635,354 @@ class DeadlyPursuerWiki {
             return;
         }
         
+        // Special handling for gameplay page
+        if (pageId === 'gameplay') {
+            this.showGameplayPage();
+            window.history.pushState({page: pageId}, '', `#${pageId}`);
+            return;
+        }
+        
         content.innerHTML = '<div class="loading">Cargando...</div>';
-        const markdown = await this.loadMarkdownFile(pageId);
+        
+        // Check if this page is Work in Progress
+        let markdown;
+        if (this.isWorkInProgress(pageId)) {
+            const pageTitles = {
+                'tips': 'Tips & Trucos'
+            };
+            markdown = this.getWorkInProgressContent(pageTitles[pageId] || pageId);
+        } else {
+            markdown = await this.loadMarkdownFile(pageId);
+        }
+        
         content.innerHTML = `<div class="markdown-content">${marked.parse(markdown)}</div>`;
         
         window.history.pushState({page: pageId}, '', `#${pageId}`);
     }
 
+    showGameplayPage() {
+        const content = document.getElementById('character-content');
+        
+        content.innerHTML = `
+            <div class="gameplay-page">
+                <div class="gameplay-header">
+                    <h1>🎮 Mecánicas del Juego</h1>
+                    <p class="gameplay-subtitle">Guía completa sobre cómo jugar Deadly Pursuit</p>
+                </div>
+
+                <div class="gameplay-content">
+                    <!-- Objetivo del Juego -->
+                    <section class="gameplay-section">
+                        <div class="section-header">
+                            <span class="section-icon">🎯</span>
+                            <h2>Objetivo del Juego</h2>
+                        </div>
+                        <div class="section-content">
+                            <p>Deadly Pursuit es un juego de supervivencia asimétrico donde los jugadores asumen el rol de <strong>Survivors</strong> o <strong>Killers</strong>.</p>
+                            
+                            <div class="role-cards">
+                                <div class="role-card survivor-card">
+                                    <div class="role-card-header">
+                                        <span class="role-icon">🏃</span>
+                                        <h3>Survivors</h3>
+                                    </div>
+                                    <ul>
+                                        <li>Sobrevivir y escapar del mapa antes de ser eliminados</li>
+                                        <li>Encontrar y atravesar anillos de escape para salir</li>
+                                        <li>Trabajar en equipo para sobrevivir</li>
+                                        <li>Usar habilidades únicas para ventaja</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="role-card killer-card">
+                                    <div class="role-card-header">
+                                        <span class="role-icon">🔪</span>
+                                        <h3>Killers</h3>
+                                    </div>
+                                    <ul>
+                                        <li>Eliminar a todos los Survivors</li>
+                                        <li>Usar habilidades especiales para cazar</li>
+                                        <li>Controlar el mapa estratégicamente</li>
+                                        <li>Impedir que los Survivors escapen por los anillos</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Controles Básicos -->
+                    <section class="gameplay-section">
+                        <div class="section-header">
+                            <span class="section-icon">🎮</span>
+                            <h2>Controles</h2>
+                        </div>
+                        <div class="section-content">
+                            <p style="text-align: center; margin-bottom: 1.5rem; color: var(--text-secondary);">
+                                Deadly Pursuit está disponible en <strong>PC</strong>, <strong>Móviles</strong> y <strong>Consolas</strong>
+                            </p>
+                            
+                            <h3 style="font-size: 1.1rem; margin: 1.5rem 0 1rem 0; color: var(--accent-red);">💻 PC (Teclado y Mouse)</h3>
+                            <div class="controls-grid">
+                                <div class="control-item">
+                                    <kbd>W A S D</kbd>
+                                    <span>Movimiento</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Shift</kbd>
+                                    <span>Correr</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>E</kbd>
+                                    <span>Interactuar</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Q</kbd>
+                                    <span>Habilidad</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Space</kbd>
+                                    <span>Acción Especial</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Tab</kbd>
+                                    <span>Scoreboard</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Mouse</kbd>
+                                    <span>Cámara</span>
+                                </div>
+                            </div>
+                            
+                            <h3 style="font-size: 1.1rem; margin: 1.5rem 0 1rem 0; color: var(--accent-red);">📱 Móviles (Touch)</h3>
+                            <div class="controls-grid">
+                                <div class="control-item">
+                                    <kbd>Joystick</kbd>
+                                    <span>Movimiento</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Botón Sprint</kbd>
+                                    <span>Correr</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Botón E</kbd>
+                                    <span>Interactuar</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Botón Q</kbd>
+                                    <span>Habilidad</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Deslizar</kbd>
+                                    <span>Cámara</span>
+                                </div>
+                            </div>
+                            
+                            <h3 style="font-size: 1.1rem; margin: 1.5rem 0 1rem 0; color: var(--accent-red);">🎮 Consolas (Gamepad)</h3>
+                            <div class="controls-grid">
+                                <div class="control-item">
+                                    <kbd>Stick Izq.</kbd>
+                                    <span>Movimiento</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Stick Der.</kbd>
+                                    <span>Cámara</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>A / X</kbd>
+                                    <span>Interactuar</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>B / O</kbd>
+                                    <span>Habilidad</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>LB / L1</kbd>
+                                    <span>Correr</span>
+                                </div>
+                                <div class="control-item">
+                                    <kbd>Start</kbd>
+                                    <span>Scoreboard</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Mecánicas de Survivors -->
+                    <section class="gameplay-section">
+                        <div class="section-header">
+                            <span class="section-icon">🏃</span>
+                            <h2>Mecánicas de Survivors</h2>
+                        </div>
+                        <div class="section-content">
+                            <div class="mechanic-list">
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">🔦</div>
+                                    <div class="mechanic-info">
+                                        <h4>Visibilidad</h4>
+                                        <p>Mantente en las sombras para evitar ser detectado. La luz te hace más visible.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">🌀</div>
+                                    <div class="mechanic-info">
+                                        <h4>Anillos de Escape</h4>
+                                        <p>Encuentra y atraviesa los anillos de escape distribuidos por el mapa para escapar y ganar.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">💊</div>
+                                    <div class="mechanic-info">
+                                        <h4>Curación</h4>
+                                        <p><strong>🚧 Work in Progress:</strong> El sistema de curación está siendo desarrollado y será añadido próximamente.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">✨</div>
+                                    <div class="mechanic-info">
+                                        <h4>Habilidades Únicas</h4>
+                                        <p>Cada Survivor tiene habilidades especiales que pueden ayudarte a sobrevivir y escapar.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Mecánicas de Killers -->
+                    <section class="gameplay-section">
+                        <div class="section-header">
+                            <span class="section-icon">🔪</span>
+                            <h2>Mecánicas de Killers</h2>
+                        </div>
+                        <div class="section-content">
+                            <div class="mechanic-list">
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">👁️</div>
+                                    <div class="mechanic-info">
+                                        <h4>Detección</h4>
+                                        <p>Usa tus sentidos mejorados para rastrear a los Survivors por sonidos y pistas visuales.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">⚔️</div>
+                                    <div class="mechanic-info">
+                                        <h4>Ataque</h4>
+                                        <p>Golpea a los Survivors para herirlos. Dos golpes son necesarios para eliminarlos.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">✨</div>
+                                    <div class="mechanic-info">
+                                        <h4>Habilidad Especial</h4>
+                                        <p>Cada Killer tiene una habilidad única que define su estilo de juego.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">🎯</div>
+                                    <div class="mechanic-info">
+                                        <h4>Control de Mapa</h4>
+                                        <p>Patrulla áreas clave y predice los movimientos de los Survivors.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tips Rápidos -->
+                    <section class="gameplay-section tips-section">
+                        <div class="section-header">
+                            <span class="section-icon">💡</span>
+                            <h2>Tips Rápidos</h2>
+                        </div>
+                        <div class="section-content">
+                            <div class="tips-grid">
+                                <div class="tip-card">
+                                    <span class="tip-emoji">🤝</span>
+                                    <p><strong>Trabaja en equipo</strong> - La cooperación es clave para la supervivencia</p>
+                                </div>
+                                <div class="tip-card">
+                                    <span class="tip-emoji">🎧</span>
+                                    <p><strong>Usa auriculares</strong> - El audio es crucial para detectar peligros</p>
+                                </div>
+                                <div class="tip-card">
+                                    <span class="tip-emoji">🌀</span>
+                                    <p><strong>Busca los anillos</strong> - Localiza los anillos de escape para tener rutas de salida</p>
+                                </div>
+                                <div class="tip-card">
+                                    <span class="tip-emoji">⏱️</span>
+                                    <p><strong>Sobrevive</strong> - No hay objetivos que completar, solo escapa por los anillos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        `;
+    }
+
     showHome() {
         const content = document.getElementById('character-content');
+        const total = Object.keys(this.characters).length;
+        const killers = Object.values(this.characters).filter(c => c.role === 'killer').length;
+        const bosses = Object.values(this.characters).filter(c => c.role === 'boss').length;
+        const survivors = Object.values(this.characters).filter(c => c.role === 'survivor').length;
+        const npcs = Object.values(this.characters).filter(c => c.role === 'npc').length;
+        
         content.innerHTML = `
             <div class="welcome-screen">
                 <div class="wiki-intro">
-                    <h2>🎮 Deadly Pursuer Wiki</h2>
+                    <h2>🎮 Deadly Pursuit Wiki</h2>
                     <p class="intro-subtitle">La guía definitiva para dominar el juego</p>
                     
                     <div class="intro-stats">
                         <div class="stat-item">
-                            <span class="stat-number">8</span>
+                            <span class="stat-number">${total}</span>
                             <span class="stat-label">Personajes</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">2</span>
+                            <span class="stat-number">${killers}</span>
                             <span class="stat-label">Killers</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">6</span>
+                            <span class="stat-number">${bosses}</span>
+                            <span class="stat-label">Bosses</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${survivors}</span>
                             <span class="stat-label">Survivors</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${npcs}</span>
+                            <span class="stat-label">NPCs</span>
                         </div>
                     </div>
                     
                     <div class="intro-description">
-                        <p>Explora las habilidades únicas de cada personaje, aprende estrategias avanzadas y domina las mecánicas del juego. Esta wiki contiene toda la información que necesitas para convertirte en un maestro de Deadly Pursuer.</p>
+                        <p>Explora las habilidades únicas de cada personaje, aprende estrategias avanzadas y domina las mecánicas del juego. Esta wiki contiene toda la información que necesitas para convertirte en un maestro de Deadly Pursuit.</p>
                     </div>
                 </div>
                 
                 <h3 class="characters-title">🎭 Selecciona un Personaje</h3>
                 <div class="character-grid">
-                    ${Object.entries(this.characters).map(([id, char]) => `
-                        <div class="character-card" data-character="${id}">
-                            <img src="${char.icon}" alt="${char.name}">
-                            <h4>${char.name}</h4>
-                            <span class="role ${char.role}">${char.role === 'killer' ? 'Killer' : 'Survivor'}</span>
-                        </div>
-                    `).join('')}
+                    ${Object.entries(this.characters).map(([id, char]) => {
+                        let roleLabel = 'Survivor';
+                        if (char.role === 'killer') roleLabel = 'Killer';
+                        if (char.role === 'boss') roleLabel = 'Boss';
+                        if (char.role === 'npc') roleLabel = 'NPC';
+                        
+                        return `
+                            <div class="character-card" data-character="${id}">
+                                <img src="${char.icon}" alt="${char.name}">
+                                <h4>${char.name}</h4>
+                                <span class="role ${char.role}">${roleLabel}</span>
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `;
@@ -509,8 +992,25 @@ class DeadlyPursuerWiki {
             card.addEventListener('click', (e) => {
                 const character = e.currentTarget.dataset.character;
                 this.showCharacter(character);
+                
+                // Update active state in sidebar
+                const sidebarLink = document.querySelector(`.nav-section a[data-character="${character}"]`);
+                if (sidebarLink) {
+                    this.updateActiveNav(sidebarLink);
+                }
             });
         });
+        
+        // Clear active state from all nav links
+        document.querySelectorAll('.nav-section a').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Set home link as active
+        const homeLink = document.querySelector('[data-page="home"]');
+        if (homeLink) {
+            homeLink.classList.add('active');
+        }
         
         window.history.pushState({page: 'home'}, '', '#');
     }
@@ -528,7 +1028,11 @@ class DeadlyPursuerWiki {
             this.showCharacter(hash);
             const navLink = document.querySelector(`[data-character="${hash}"]`);
             if (navLink) this.updateActiveNav(navLink);
-        } else if (hash && ['gameplay', 'tips'].includes(hash)) {
+        } else if (hash === 'gameplay') {
+            this.showGameplayPage();
+            const navLink = document.querySelector(`[data-page="gameplay"]`);
+            if (navLink) this.updateActiveNav(navLink);
+        } else if (hash && ['tips'].includes(hash)) {
             this.showPage(hash);
             const navLink = document.querySelector(`[data-page="${hash}"]`);
             if (navLink) this.updateActiveNav(navLink);
@@ -538,7 +1042,11 @@ class DeadlyPursuerWiki {
             if (e.state?.character) {
                 this.showCharacter(e.state.character);
             } else if (e.state?.page) {
-                this.showPage(e.state.page);
+                if (e.state.page === 'gameplay') {
+                    this.showGameplayPage();
+                } else {
+                    this.showPage(e.state.page);
+                }
             }
         });
     }
