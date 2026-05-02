@@ -327,77 +327,93 @@
       <h2 class="text-center mb-2">🧪 EXPERIMENTOS</h2>
       <p class="section-subtitle">Proyectos experimentales y juegos del laboratorio</p>
 
-      <div class="bento-grid">
+      <div class="exp-showcase">
 
-        <!-- Deadly Pursuer — celda grande -->
-        <div class="bento-cell bento-featured deadly-pursuer-card">
-          <div class="bento-bg" style="background-image: url('Experimentos/public/assets/loading-screen.png');"></div>
-          <div class="bento-content">
-            <div class="bento-tag bento-tag-danger">⚠️ MULTIJUGADOR</div>
-            <h3 class="bento-title bento-title-danger">DEADLY PURSUER</h3>
-            <p class="bento-desc bento-desc-danger">Juego multijugador online con Discord Friends — hasta 8 jugadores</p>
-            <ul class="bento-features bento-features-danger">
-              <li>💀 4 Personajes únicos</li>
-              <li>🔴 Sistema Rage Mode</li>
-              <li>🎮 Soporte gamepad</li>
-            </ul>
-            <button onclick="showDeadlyPursuerWarning()" class="btn bento-btn-danger">
-              <i class="bi bi-exclamation-triangle me-2"></i>JUGAR
-            </button>
+        <!-- Deadly Pursuer — featured horizontal -->
+        <div class="exp-card exp-featured deadly-pursuer-card">
+          <div class="exp-bg" style="background-image: url('Experimentos/public/assets/loading-screen.png');"></div>
+          <div class="exp-featured-inner">
+            <div class="exp-featured-text">
+              <span class="exp-label exp-label-danger">⚠️ MULTIJUGADOR</span>
+              <h3 class="exp-title exp-title-danger">DEADLY PURSUER</h3>
+              <p class="exp-desc exp-desc-danger">Juego multijugador online con Discord Friends — hasta 8 jugadores. Elige tu personaje, activa el Rage Mode y sobrevive.</p>
+              <div class="exp-pills">
+                <span class="exp-pill exp-pill-danger">💀 4 Personajes</span>
+                <span class="exp-pill exp-pill-danger">🔴 Rage Mode</span>
+                <span class="exp-pill exp-pill-danger">🎮 Gamepad</span>
+                <span class="exp-pill exp-pill-danger">👥 8 jugadores</span>
+              </div>
+              <button onclick="showDeadlyPursuerWarning()" class="exp-btn exp-btn-danger">
+                <i class="bi bi-exclamation-triangle me-1"></i> JUGAR AHORA
+              </button>
+            </div>
+            <div class="exp-featured-icons">
+              <img src="Experimentos/public/assets/icons/AngelNormalIcon.png"  class="exp-char-icon" alt="Angel">
+              <img src="Experimentos/public/assets/icons/LunaNormalIcon.png"   class="exp-char-icon" alt="Luna">
+              <img src="Experimentos/public/assets/icons/MollyNormalIcon.png"  class="exp-char-icon" alt="Molly">
+              <img src="Experimentos/public/assets/icons/IA777NormalIcon.png"  class="exp-char-icon" alt="IA777">
+            </div>
           </div>
         </div>
 
-        <!-- Wiki -->
-        <div class="bento-cell">
-          <div class="bento-content">
-            <div class="bento-icon">📖</div>
-            <h3 class="bento-title">Wiki Deadly Pursuer</h3>
-            <p class="bento-desc">Guía completa de personajes, habilidades y estrategias</p>
-            <ul class="bento-features">
-              <li>👥 Perfiles de personajes</li>
-              <li>⚡ Guía de habilidades</li>
-              <li>📊 Estadísticas y tips</li>
-            </ul>
-            <a href="Experimentos/deadlypusuirwiki/index.html" class="btn btn-neon bento-btn">
-              <i class="bi bi-book me-2"></i>Ver Wiki
+        <!-- Grid de los demás -->
+        <div class="exp-grid">
+
+          <!-- Wiki -->
+          <div class="exp-card exp-mini" style="--exp-accent: #3b82f6;">
+            <div class="exp-mini-icon">📖</div>
+            <div class="exp-mini-body">
+              <span class="exp-label" style="background: rgba(59,130,246,0.12); color: #3b82f6; border-color: rgba(59,130,246,0.3);">WIKI</span>
+              <h3 class="exp-title">Wiki Deadly Pursuer</h3>
+              <p class="exp-desc">Guía completa de personajes, habilidades y estrategias del juego.</p>
+              <div class="exp-pills">
+                <span class="exp-pill">👥 Personajes</span>
+                <span class="exp-pill">⚡ Habilidades</span>
+                <span class="exp-pill">📊 Tips</span>
+              </div>
+            </div>
+            <a href="Experimentos/deadlypusuirwiki/index.html" class="exp-btn exp-btn-mini">
+              <i class="bi bi-book me-1"></i> Ver Wiki
             </a>
           </div>
-        </div>
 
-        <!-- Chatbot -->
-        <div class="bento-cell">
-          <div class="bento-content">
-            <div class="bento-icon">🤖</div>
-            <h3 class="bento-title">Chatbot IA</h3>
-            <p class="bento-desc">Asistente virtual con personajes de Deadly Pursuer</p>
-            <ul class="bento-features">
-              <li>💬 Conversación natural</li>
-              <li>🧠 Llama 3.3 70B</li>
-              <li>⚡ Respuestas rápidas</li>
-            </ul>
-            <a href="Experimentos/chatbot/chatbot.html" class="btn btn-neon bento-btn">
-              <i class="bi bi-chat-dots me-2"></i>Abrir Chatbot
+          <!-- Chatbot -->
+          <div class="exp-card exp-mini" style="--exp-accent: #10b981;">
+            <div class="exp-mini-icon">🤖</div>
+            <div class="exp-mini-body">
+              <span class="exp-label" style="background: rgba(16,185,129,0.12); color: #10b981; border-color: rgba(16,185,129,0.3);">IA</span>
+              <h3 class="exp-title">Chatbot IA</h3>
+              <p class="exp-desc">Chatea con los personajes de Deadly Pursuer usando inteligencia artificial.</p>
+              <div class="exp-pills">
+                <span class="exp-pill">💬 Conversación</span>
+                <span class="exp-pill">🧠 Llama 3.3</span>
+                <span class="exp-pill">🎵 Música</span>
+              </div>
+            </div>
+            <a href="Experimentos/chatbot/chatbot.html" class="exp-btn exp-btn-mini">
+              <i class="bi bi-chat-dots me-1"></i> Abrir Chatbot
             </a>
           </div>
-        </div>
 
-        <!-- Archive of Creation -->
-        <div class="bento-cell">
-          <div class="bento-content">
-            <div class="bento-icon">📝</div>
-            <h3 class="bento-title">Archive of Creation</h3>
-            <p class="bento-desc">Wiki colaborativa para personajes y mundos de la comunidad</p>
-            <ul class="bento-features">
-              <li>🎭 Formulario por pasos</li>
-              <li>🖼️ Galerías completas</li>
-              <li>🔥 Firebase & Cloudinary</li>
-            </ul>
-            <a href="Experimentos/ArchiveOfCreation/wiki.html" class="btn btn-neon bento-btn">
-              <i class="bi bi-archive me-2"></i>Abrir Archive
+          <!-- Archive of Creation -->
+          <div class="exp-card exp-mini" style="--exp-accent: #a855f7;">
+            <div class="exp-mini-icon">📝</div>
+            <div class="exp-mini-body">
+              <span class="exp-label" style="background: rgba(168,85,247,0.12); color: #a855f7; border-color: rgba(168,85,247,0.3);">WIKI</span>
+              <h3 class="exp-title">Archive of Creation</h3>
+              <p class="exp-desc">Wiki colaborativa para personajes y mundos de la comunidad.</p>
+              <div class="exp-pills">
+                <span class="exp-pill">🎭 Personajes</span>
+                <span class="exp-pill">🖼️ Galerías</span>
+                <span class="exp-pill">🔥 Firebase</span>
+              </div>
+            </div>
+            <a href="Experimentos/ArchiveOfCreation/wiki.html" class="exp-btn exp-btn-mini">
+              <i class="bi bi-archive me-1"></i> Abrir Archive
             </a>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
   </div>
@@ -501,300 +517,355 @@
   
   <div class="panel-overlay" id="theme-overlay"></div>
   <div class="theme-panel" id="theme-panel">
-    <button class="close-panel" id="close-theme-panel">&times;</button>
-    <h3>🎨 SELECTOR DE TEMAS</h3>
+    <div class="theme-panel-header">
+      <div class="theme-panel-title">
+        <span class="theme-panel-icon">🎨</span>
+        <h3>Selector de Temas</h3>
+      </div>
+      <button class="close-panel" id="close-theme-panel" aria-label="Cerrar panel">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
     
-    <div class="theme-category">🌟 Clásicos</div>
-    <div class="theme-grid">
-      <div class="theme-card" data-theme="dark">
-        <div class="theme-preview preview-dark"></div>
-        <div class="theme-name">Oscuro</div>
-      </div>
-      <div class="theme-card" data-theme="light">
-        <div class="theme-preview preview-light"></div>
-        <div class="theme-name">Claro</div>
-      </div>
-      <div class="theme-card" data-theme="neon">
-        <div class="theme-preview preview-neon"></div>
-        <div class="theme-name">Neón</div>
-      </div>
-      <div class="theme-card" data-theme="funkyatlas">
-        <div class="theme-preview preview-funkyatlas"></div>
-        <div class="theme-name">FunkyAtlas</div>
-      </div>
-      <div class="theme-card seasonal-theme" data-theme="funkyatlas-christmas">
-        <div class="theme-preview preview-funkyatlas-christmas"></div>
-        <div class="theme-name">FunkyAtlas Xmas</div>
-      </div>
-    </div>
-
-    <div class="theme-category">🚀 Futuristas</div>
-    <div class="theme-grid">
-      <div class="theme-card" data-theme="cyberpunk">
-        <div class="theme-preview preview-cyberpunk"></div>
-        <div class="theme-name">Cyberpunk</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="cyberpunk2077" data-cost="800">
-        <div class="theme-preview preview-cyberpunk2077"></div>
-        <div class="theme-name">Cyberpunk 2077</div>
-        <div class="theme-cost">800 pts</div>
-      </div>
-      <div class="theme-card" data-theme="matrix">
-        <div class="theme-preview preview-matrix"></div>
-        <div class="theme-name">Matrix</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="terminal-hacker" data-cost="600">
-        <div class="theme-preview preview-terminal-hacker"></div>
-        <div class="theme-name">Terminal Hacker</div>
-        <div class="theme-cost">600 pts</div>
-      </div>
-      <div class="theme-card" data-theme="synthwave">
-        <div class="theme-preview preview-synthwave"></div>
-        <div class="theme-name">Synthwave</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="retro-synthwave" data-cost="700">
-        <div class="theme-preview preview-retro-synthwave"></div>
-        <div class="theme-name">Retro Synthwave</div>
-        <div class="theme-cost">700 pts</div>
-      </div>
-    </div>
-
-    <div class="theme-category">🌍 Naturales</div>
-    <div class="theme-grid">
-      <div class="theme-card" data-theme="ocean">
-        <div class="theme-preview preview-ocean"></div>
-        <div class="theme-name">Océano</div>
-      </div>
-      <div class="theme-card" data-theme="forest">
-        <div class="theme-preview preview-forest"></div>
-        <div class="theme-name">Bosque</div>
-      </div>
-      <div class="theme-card" data-theme="sunset">
-        <div class="theme-preview preview-sunset"></div>
-        <div class="theme-name">Atardecer</div>
-      </div>
-    </div>
-
-    <div class="theme-category">🎄 Épocas Especiales <span class="seasonal-indicator" id="seasonal-indicator"></span></div>
-    <div class="mb-2">
-      <label class="d-flex align-items-center" style="font-size: 0.8rem; color: var(--text-secondary);">
-        <input type="checkbox" id="auto-seasonal" checked style="margin-right: 0.5rem;">
-        Cambiar tema automáticamente por fechas especiales
-      </label>
-    </div>
-    <div class="mb-2">
-      <label class="d-flex align-items-center" style="font-size: 0.8rem; color: var(--text-secondary);">
-        <input type="checkbox" id="push-notifications" checked style="margin-right: 0.5rem;">
-        Notificaciones de racha diaria
-      </label>
-    </div>
-    <div class="mb-2">
-      <label class="d-flex align-items-center" style="font-size: 0.8rem; color: var(--text-secondary);">
-        <input type="checkbox" id="auto-day-night" style="margin-right: 0.5rem;">
-        Modo automático día/noche
-      </label>
-    </div>
-    <div class="theme-grid">
-      <div class="theme-card seasonal-theme" data-theme="christmas">
-        <div class="theme-preview preview-christmas"></div>
-        <div class="theme-name">Navidad</div>
-      </div>
-      <div class="theme-card seasonal-theme" data-theme="halloween">
-        <div class="theme-preview preview-halloween"></div>
-        <div class="theme-name">Halloween</div>
-      </div>
-      <div class="theme-card seasonal-theme" data-theme="valentine">
-        <div class="theme-preview preview-valentine"></div>
-        <div class="theme-name">San Valentín</div>
-      </div>
-      <div class="theme-card seasonal-theme" data-theme="easter">
-        <div class="theme-preview preview-easter"></div>
-        <div class="theme-name">Pascua</div>
-      </div>
-    </div>
-
-    <div class="theme-category">🌤️ Estaciones</div>
-    <div class="theme-grid">
-      <div class="theme-card" data-theme="summer">
-        <div class="theme-preview preview-summer"></div>
-        <div class="theme-name">Verano</div>
-      </div>
-      <div class="theme-card" data-theme="autumn">
-        <div class="theme-preview preview-autumn"></div>
-        <div class="theme-name">Otoño</div>
-      </div>
-    </div>
-
-    <div class="theme-category">💰 Temas Premium</div>
-    <div class="theme-grid">
-      <div class="theme-card premium-theme" data-theme="galaxy" data-cost="100">
-        <div class="theme-preview preview-galaxy"></div>
-        <div class="theme-name">Galaxia</div>
-        <div class="theme-cost">100 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="gold" data-cost="150">
-        <div class="theme-preview preview-gold"></div>
-        <div class="theme-name">Oro</div>
-        <div class="theme-cost">150 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="rainbow" data-cost="200">
-        <div class="theme-preview preview-rainbow"></div>
-        <div class="theme-name">Arcoíris</div>
-        <div class="theme-cost">200 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="diamond" data-cost="300">
-        <div class="theme-preview preview-diamond"></div>
-        <div class="theme-name">Diamante</div>
-        <div class="theme-cost">300 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="glassmorphism" data-cost="900">
-        <div class="theme-preview preview-glassmorphism"></div>
-        <div class="theme-name">Glassmorphism</div>
-        <div class="theme-cost">900 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="pastel-kawaii" data-cost="500">
-        <div class="theme-preview preview-pastel-kawaii"></div>
-        <div class="theme-name">Pastel Kawaii</div>
-        <div class="theme-cost">500 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="custom" data-cost="500">
-        <div class="theme-preview preview-custom" id="custom-preview"></div>
-        <div class="theme-name">Custom</div>
-        <div class="theme-cost">500 pts</div>
-      </div>
-    </div>
-
-    <div class="theme-category">🔥 Temas Épicos</div>
-    <div class="theme-grid">
-      <div class="theme-card premium-theme" data-theme="vaporwave" data-cost="400">
-        <div class="theme-preview preview-vaporwave"></div>
-        <div class="theme-name">Vaporwave</div>
-        <div class="theme-cost">400 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="hacker" data-cost="500">
-        <div class="theme-preview preview-hacker"></div>
-        <div class="theme-name">Hacker Elite</div>
-        <div class="theme-cost">500 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="neon-city" data-cost="600">
-        <div class="theme-preview preview-neon-city"></div>
-        <div class="theme-name">Ciudad Neón</div>
-        <div class="theme-cost">600 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="space" data-cost="700">
-        <div class="theme-preview preview-space"></div>
-        <div class="theme-name">Espacio</div>
-        <div class="theme-cost">700 pts</div>
-      </div>
-    </div>
-
-    <div class="theme-category">⚡ Temas Extremos</div>
-    <div class="theme-grid">
-      <div class="theme-card premium-theme" data-theme="fire" data-cost="800">
-        <div class="theme-preview preview-fire"></div>
-        <div class="theme-name">Fuego</div>
-        <div class="theme-cost">800 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="ice" data-cost="900">
-        <div class="theme-preview preview-ice"></div>
-        <div class="theme-name">Hielo</div>
-        <div class="theme-cost">900 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="toxic" data-cost="1000">
-        <div class="theme-preview preview-toxic"></div>
-        <div class="theme-name">Tóxico</div>
-        <div class="theme-cost">1000 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="royal" data-cost="1200">
-        <div class="theme-preview preview-royal"></div>
-        <div class="theme-name">Realeza</div>
-        <div class="theme-cost">1200 pts</div>
-      </div>
-    </div>
-
-    <div class="theme-category">👑 Temas Legendarios</div>
-    <div class="theme-grid">
-      <div class="theme-card premium-theme" data-theme="steampunk" data-cost="1500">
-        <div class="theme-preview preview-steampunk"></div>
-        <div class="theme-name">Steampunk</div>
-        <div class="theme-cost">1500 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="hologram" data-cost="2000">
-        <div class="theme-preview preview-hologram"></div>
-        <div class="theme-name">Holograma</div>
-        <div class="theme-cost">2000 pts</div>
-      </div>
-      <div class="theme-card premium-theme" data-theme="legendary" data-cost="5000">
-        <div class="theme-preview preview-legendary"></div>
-        <div class="theme-name">🏆 LEGENDARIO</div>
-        <div class="theme-cost">5000 pts</div>
-      </div>
-    </div>
-
-    <div class="theme-category">🎁 Temas Especiales</div>
-    <div class="theme-grid">
-      <div class="theme-card premium-theme" data-theme="plushie-rain" data-cost="0">
-        <div class="theme-preview preview-plushie-rain"></div>
-        <div class="theme-name">🧸 Plushie Rain</div>
-        <div class="theme-cost">Evento Exclusivo</div>
+    <div class="theme-panel-body">
+      <!-- Puntos disponibles -->
+      <div class="theme-points-display">
+        <div class="points-info">
+          <span class="points-icon">💰</span>
+          <div class="points-text">
+            <span class="points-label">Puntos Disponibles</span>
+            <span class="points-value" id="theme-points-display">0</span>
+          </div>
+        </div>
       </div>
 
-      <div class="theme-card premium-theme" data-theme="valentines-love" data-cost="0">
-        <div class="theme-preview preview-valentines-love"></div>
-        <div class="theme-name">💘 Valentine's Love</div>
-        <div class="theme-cost">Evento Exclusivo</div>
-      </div>
-    </div>
-
-    <div class="theme-category">🎨 Editor Avanzado</div>
-    <div class="theme-editor" id="theme-editor" style="display: none;">
-      <div class="editor-grid">
-        <div class="editor-section">
-          <h5>🎨 Colores Base</h5>
-          <div class="color-picker-grid">
-            <div class="color-picker-item">
-              <label>Fondo Principal:</label>
-              <input type="color" id="editor-bg" value="#1a1a1a">
+      <!-- Clásicos -->
+      <div class="theme-section">
+        <div class="theme-category">
+          <span class="category-icon">🌟</span>
+          <span class="category-name">Clásicos</span>
+          <span class="category-badge">Gratis</span>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-card" data-theme="dark">
+            <div class="theme-preview preview-dark"></div>
+            <div class="theme-info">
+              <div class="theme-name">Oscuro</div>
+              <div class="theme-status">✓ Gratis</div>
             </div>
-            <div class="color-picker-item">
-              <label>Fondo Secundario:</label>
-              <input type="color" id="editor-bg-light" value="#2d2d2d">
+          </div>
+          <div class="theme-card" data-theme="light">
+            <div class="theme-preview preview-light"></div>
+            <div class="theme-info">
+              <div class="theme-name">Claro</div>
+              <div class="theme-status">✓ Gratis</div>
             </div>
-            <div class="color-picker-item">
-              <label>Texto Principal:</label>
-              <input type="color" id="editor-text" value="#f0f0f0">
+          </div>
+          <div class="theme-card" data-theme="neon">
+            <div class="theme-preview preview-neon"></div>
+            <div class="theme-info">
+              <div class="theme-name">Neón</div>
+              <div class="theme-status">✓ Gratis</div>
             </div>
-            <div class="color-picker-item">
-              <label>Texto Secundario:</label>
-              <input type="color" id="editor-text-sec" value="#b0b0b0">
+          </div>
+          <div class="theme-card" data-theme="funkyatlas">
+            <div class="theme-preview preview-funkyatlas"></div>
+            <div class="theme-info">
+              <div class="theme-name">FunkyAtlas</div>
+              <div class="theme-status">✓ Gratis</div>
             </div>
-            <div class="color-picker-item">
-              <label>Color Primario:</label>
-              <input type="color" id="editor-primary" value="#ff6b35">
-            </div>
-            <div class="color-picker-item">
-              <label>Color Secundario:</label>
-              <input type="color" id="editor-secondary" value="#f7931e">
+          </div>
+          <div class="theme-card seasonal-theme" data-theme="funkyatlas-christmas">
+            <div class="theme-preview preview-funkyatlas-christmas"></div>
+            <div class="theme-info">
+              <div class="theme-name">FunkyAtlas Xmas</div>
+              <div class="theme-status">🎄 Especial</div>
             </div>
           </div>
         </div>
-        <div class="editor-section">
-          <h5>✨ Efectos</h5>
-          <label><input type="checkbox" id="editor-shadows"> Sombras</label><br>
-          <label><input type="checkbox" id="editor-gradients"> Gradientes</label><br>
-          <label><input type="checkbox" id="editor-animations"> Animaciones</label><br>
-          <label><input type="range" id="editor-opacity" min="0.1" max="1" step="0.1" value="0.8"> Opacidad BG</label>
+      </div>
+
+      <!-- Futuristas -->
+      <div class="theme-section">
+        <div class="theme-category">
+          <span class="category-icon">🚀</span>
+          <span class="category-name">Futuristas</span>
+          <span class="category-badge">Mixto</span>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-card" data-theme="cyberpunk">
+            <div class="theme-preview preview-cyberpunk"></div>
+            <div class="theme-info">
+              <div class="theme-name">Cyberpunk</div>
+              <div class="theme-status">✓ Gratis</div>
+            </div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="cyberpunk2077" data-cost="800">
+            <div class="theme-preview preview-cyberpunk2077"></div>
+            <div class="theme-info">
+              <div class="theme-name">Cyberpunk 2077</div>
+              <div class="theme-cost">💎 800 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card" data-theme="matrix">
+            <div class="theme-preview preview-matrix"></div>
+            <div class="theme-info">
+              <div class="theme-name">Matrix</div>
+              <div class="theme-status">✓ Gratis</div>
+            </div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="terminal-hacker" data-cost="600">
+            <div class="theme-preview preview-terminal-hacker"></div>
+            <div class="theme-info">
+              <div class="theme-name">Terminal Hacker</div>
+              <div class="theme-cost">💎 600 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card" data-theme="synthwave">
+            <div class="theme-preview preview-synthwave"></div>
+            <div class="theme-info">
+              <div class="theme-name">Synthwave</div>
+              <div class="theme-status">✓ Gratis</div>
+            </div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="retro-synthwave" data-cost="700">
+            <div class="theme-preview preview-retro-synthwave"></div>
+            <div class="theme-info">
+              <div class="theme-name">Retro Synthwave</div>
+              <div class="theme-cost">💎 700 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
         </div>
       </div>
-      <div class="editor-actions">
-        <button class="btn btn-outline-neon" id="preview-theme">👁️ Vista Previa</button>
-        <button class="btn btn-outline-neon" id="save-custom-theme">💾 Guardar Tema</button>
-        <button class="btn btn-outline-neon" id="reset-editor">🔄 Resetear</button>
+
+      <!-- Naturales -->
+      <div class="theme-section">
+        <div class="theme-category">
+          <span class="category-icon">🌍</span>
+          <span class="category-name">Naturales</span>
+          <span class="category-badge">Gratis</span>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-card" data-theme="ocean">
+            <div class="theme-preview preview-ocean"></div>
+            <div class="theme-info">
+              <div class="theme-name">Océano</div>
+              <div class="theme-status">✓ Gratis</div>
+            </div>
+          </div>
+          <div class="theme-card" data-theme="forest">
+            <div class="theme-preview preview-forest"></div>
+            <div class="theme-info">
+              <div class="theme-name">Bosque</div>
+              <div class="theme-status">✓ Gratis</div>
+            </div>
+          </div>
+          <div class="theme-card" data-theme="sunset">
+            <div class="theme-preview preview-sunset"></div>
+            <div class="theme-info">
+              <div class="theme-name">Atardecer</div>
+              <div class="theme-status">✓ Gratis</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Épocas Especiales -->
+      <div class="theme-section">
+        <div class="theme-category">
+          <span class="category-icon">🎄</span>
+          <span class="category-name">Épocas Especiales</span>
+          <span class="seasonal-indicator" id="seasonal-indicator"></span>
+        </div>
+        <div class="theme-settings">
+          <label class="theme-setting-item">
+            <input type="checkbox" id="auto-seasonal" checked>
+            <span class="setting-icon">🔄</span>
+            <span class="setting-text">Cambiar tema automáticamente por fechas especiales</span>
+          </label>
+          <label class="theme-setting-item">
+            <input type="checkbox" id="push-notifications" checked>
+            <span class="setting-icon">🔔</span>
+            <span class="setting-text">Notificaciones de racha diaria</span>
+          </label>
+          <label class="theme-setting-item">
+            <input type="checkbox" id="auto-day-night">
+            <span class="setting-icon">🌓</span>
+            <span class="setting-text">Modo automático día/noche</span>
+          </label>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-card seasonal-theme" data-theme="christmas">
+            <div class="theme-preview preview-christmas"></div>
+            <div class="theme-info">
+              <div class="theme-name">Navidad</div>
+              <div class="theme-status">🎄 Especial</div>
+            </div>
+          </div>
+          <div class="theme-card seasonal-theme" data-theme="halloween">
+            <div class="theme-preview preview-halloween"></div>
+            <div class="theme-info">
+              <div class="theme-name">Halloween</div>
+              <div class="theme-status">🎃 Especial</div>
+            </div>
+          </div>
+          <div class="theme-card seasonal-theme" data-theme="valentine">
+            <div class="theme-preview preview-valentine"></div>
+            <div class="theme-info">
+              <div class="theme-name">San Valentín</div>
+              <div class="theme-status">💝 Especial</div>
+            </div>
+          </div>
+          <div class="theme-card seasonal-theme" data-theme="easter">
+            <div class="theme-preview preview-easter"></div>
+            <div class="theme-info">
+              <div class="theme-name">Pascua</div>
+              <div class="theme-status">🐰 Especial</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estaciones -->
+      <div class="theme-section">
+        <div class="theme-category">
+          <span class="category-icon">🌤️</span>
+          <span class="category-name">Estaciones</span>
+          <span class="category-badge">Gratis</span>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-card" data-theme="summer">
+            <div class="theme-preview preview-summer"></div>
+            <div class="theme-info">
+              <div class="theme-name">Verano</div>
+              <div class="theme-status">✓ Gratis</div>
+            </div>
+          </div>
+          <div class="theme-card" data-theme="autumn">
+            <div class="theme-preview preview-autumn"></div>
+            <div class="theme-info">
+              <div class="theme-name">Otoño</div>
+              <div class="theme-status">✓ Gratis</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Temas Premium -->
+      <div class="theme-section">
+        <div class="theme-category">
+          <span class="category-icon">💰</span>
+          <span class="category-name">Temas Premium</span>
+          <span class="category-badge premium">Premium</span>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-card premium-theme" data-theme="galaxy" data-cost="100">
+            <div class="theme-preview preview-galaxy"></div>
+            <div class="theme-info">
+              <div class="theme-name">Galaxia</div>
+              <div class="theme-cost">💎 100 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="gold" data-cost="150">
+            <div class="theme-preview preview-gold"></div>
+            <div class="theme-info">
+              <div class="theme-name">Oro</div>
+              <div class="theme-cost">💎 150 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="rainbow" data-cost="200">
+            <div class="theme-preview preview-rainbow"></div>
+            <div class="theme-info">
+              <div class="theme-name">Arcoíris</div>
+              <div class="theme-cost">💎 200 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="diamond" data-cost="300">
+            <div class="theme-preview preview-diamond"></div>
+            <div class="theme-info">
+              <div class="theme-name">Diamante</div>
+              <div class="theme-cost">💎 300 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="glassmorphism" data-cost="900">
+            <div class="theme-preview preview-glassmorphism"></div>
+            <div class="theme-info">
+              <div class="theme-name">Glassmorphism</div>
+              <div class="theme-cost">💎 900 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="pastel-kawaii" data-cost="500">
+            <div class="theme-preview preview-pastel-kawaii"></div>
+            <div class="theme-info">
+              <div class="theme-name">Pastel Kawaii</div>
+              <div class="theme-cost">💎 500 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="custom" data-cost="500">
+            <div class="theme-preview preview-custom" id="custom-preview"></div>
+            <div class="theme-info">
+              <div class="theme-name">Custom</div>
+              <div class="theme-cost">💎 500 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Temas Épicos -->
+      <div class="theme-section">
+        <div class="theme-category">
+          <span class="category-icon">🔥</span>
+          <span class="category-name">Temas Épicos</span>
+          <span class="category-badge epic">Épico</span>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-card premium-theme" data-theme="vaporwave" data-cost="400">
+            <div class="theme-preview preview-vaporwave"></div>
+            <div class="theme-info">
+              <div class="theme-name">Vaporwave</div>
+              <div class="theme-cost">💎 400 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="hacker" data-cost="500">
+            <div class="theme-preview preview-hacker"></div>
+            <div class="theme-info">
+              <div class="theme-name">Hacker Elite</div>
+              <div class="theme-cost">💎 500 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="neon-city" data-cost="600">
+            <div class="theme-preview preview-neon-city"></div>
+            <div class="theme-info">
+              <div class="theme-name">Ciudad Neón</div>
+              <div class="theme-cost">💎 600 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+          <div class="theme-card premium-theme" data-theme="space" data-cost="700">
+            <div class="theme-preview preview-space"></div>
+            <div class="theme-info">
+              <div class="theme-name">Espacio</div>
+              <div class="theme-cost">💎 700 pts</div>
+            </div>
+            <div class="theme-lock">🔒</div>
+          </div>
+        </div>
       </div>
     </div>
-    <button class="btn btn-outline-neon" id="toggle-editor" style="width: 100%; margin-top: 1rem;">🎨 Abrir Editor Avanzado</button>
   </div>
- 
+  
   <div class="parallax-bg" id="parallax-bg"></div>
 
   <div class="credits-mini-panel" id="credits-mini-panel">
@@ -803,7 +874,6 @@
     <p>Creado por <a href="https://funkyatlas.abelitogamer.com/" target="_blank">AbelitoGamer</a></p>
     <p>Sitio: <a href="https://funkyatlas.abelitogamer.com/" target="_blank">FunkyAtlas</a></p>
   </div>
-
 
   <!-- Notificación de logro -->
   <div class="achievement-notification" id="achievement-notification">
@@ -873,7 +943,7 @@
       <div class="footer-meta">
         <span class="footer-version" id="footer-version"></span>
         <span class="footer-sep">·</span>
-        <span>© 2025 <a href="https://github.com/thisisfenix" target="_blank" rel="noopener">ThisIsFenix</a></span>
+        <span>© <span id="current-year"></span> <a href="https://github.com/thisisfenix" target="_blank" rel="noopener">ThisIsFenix</a></span>
       </div>
     </div>
   </footer>

@@ -5,11 +5,63 @@ const user = 'thisisfenix';
 let allRepos = [];
 let filteredRepos = [];
 let currentPage = 1;
-const reposPerPage = 4;
+const reposPerPage = 6; // Aumentado de 4 a 6 para mejor visualización
 
 // Cache para repos
 const CACHE_KEY = 'fenix-repos-cache';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+// Cache para detección de páginas
+const PAGES_CACHE_KEY = 'fenix-pages-detection';
+const PAGES_CACHE_DURATION = 10 * 60 * 1000; // 10 minutos
+
+// Función para verificar si un repo tiene archivos web (HTML, CSS, JS)
+async function hasWebFiles(repoName) {
+  try {
+    // Si es el repo actual (thisisfenix.github.io o FenixLaboratory), obviamente tiene página web
+    const currentRepoNames = ['thisisfenix.github.io', 'FenixLaboratory'];
+    if (currentRepoNames.some(name => repoName.toLowerCase() === name.toLowerCase())) {
+      return true; // Estamos literalmente en esta página web lol
+    }
+
+    // Verificar cache primero
+    const cached = localStorage.getItem(PAGES_CACHE_KEY);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < PAGES_CACHE_DURATION && data[repoName] !== undefined) {
+        return data[repoName];
+      }
+    }
+
+    // Buscar archivos HTML, CSS o JS en el repo
+    const response = await fetch(`https://api.github.com/repos/${user}/${repoName}/contents`);
+    if (!response.ok) return false;
+
+    const files = await response.json();
+    
+    // Verificar si hay archivos web
+    const hasWebContent = files.some(file => {
+      const fileName = file.name.toLowerCase();
+      return fileName.endsWith('.html') || 
+             fileName.endsWith('.css') || 
+             fileName.endsWith('.js') ||
+             fileName === 'index.html';
+    });
+
+    // Guardar en cache
+    const cacheData = cached ? JSON.parse(cached).data : {};
+    cacheData[repoName] = hasWebContent;
+    localStorage.setItem(PAGES_CACHE_KEY, JSON.stringify({
+      data: cacheData,
+      timestamp: Date.now()
+    }));
+
+    return hasWebContent;
+  } catch (error) {
+    console.warn(`No se pudo verificar archivos web para ${repoName}:`, error);
+    return false; // Por defecto no mostrar demo si hay error
+  }
+}
 
 function loadImage(imgElement, localSrc, remoteSrc, placeholderSrc) {
   imgElement.src = localSrc;
@@ -19,7 +71,7 @@ function loadImage(imgElement, localSrc, remoteSrc, placeholderSrc) {
   };
 }
 
-function displayRepos(repos, page = 1) {
+async function displayRepos(repos, page = 1) {
   const container = document.getElementById('repos-container');
   container.innerHTML = '';
 
@@ -27,7 +79,8 @@ function displayRepos(repos, page = 1) {
   const endIndex = startIndex + reposPerPage;
   const paginatedRepos = repos.slice(startIndex, endIndex);
 
-  paginatedRepos.forEach(repo => {
+  // Crear todas las cards primero
+  const cardPromises = paginatedRepos.map(async (repo) => {
     const card = document.createElement('div');
     card.className = 'card';
     card.setAttribute('tabindex', '0');
@@ -76,18 +129,43 @@ function displayRepos(repos, page = 1) {
       if (typeof trackCodeView === 'function') trackCodeView(repo.name);
     };
 
-    const btnDemo = document.createElement('a');
-    btnDemo.className = 'btn btn-outline-neon';
-    btnDemo.href = `https://${user}.github.io/${repo.name}`;
-    btnDemo.target = '_blank';
-    btnDemo.innerHTML = '<i class="bi bi-box-arrow-up-right me-1"></i> Demo';
-    btnDemo.onclick = (e) => {
-      e.stopPropagation();
-      if (typeof trackDemo === 'function') trackDemo(repo.name);
-    };
-
     btnGroup.appendChild(btnCode);
-    btnGroup.appendChild(btnDemo);
+
+    // Verificar si tiene archivos web de forma asíncrona
+    const hasWeb = await hasWebFiles(repo.name);
+    
+    // Verificar si es el repo actual
+    const currentRepoNames = ['thisisfenix.github.io', 'FenixLaboratory'];
+    const isCurrentRepo = currentRepoNames.some(name => repo.name.toLowerCase() === name.toLowerCase());
+    
+    if (hasWeb) {
+      if (isCurrentRepo) {
+        // Si es el repo actual, mostrar indicador especial
+        const currentPage = document.createElement('span');
+        currentPage.className = 'btn btn-outline-neon';
+        currentPage.style.cssText = 'background: rgba(var(--primary-rgb, 255,107,53), 0.15); cursor: default; border-color: var(--primary);';
+        currentPage.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Estás aquí';
+        btnGroup.appendChild(currentPage);
+      } else {
+        const btnDemo = document.createElement('a');
+        btnDemo.className = 'btn btn-outline-neon';
+        btnDemo.href = `https://${user}.github.io/${repo.name}`;
+        btnDemo.target = '_blank';
+        btnDemo.innerHTML = '<i class="bi bi-box-arrow-up-right me-1"></i> Demo';
+        btnDemo.onclick = (e) => {
+          e.stopPropagation();
+          if (typeof trackDemo === 'function') trackDemo(repo.name);
+        };
+        btnGroup.appendChild(btnDemo);
+      }
+    } else {
+      // Agregar indicador de que no tiene demo
+      const noDemo = document.createElement('span');
+      noDemo.className = 'btn btn-outline-neon';
+      noDemo.style.cssText = 'opacity: 0.5; cursor: not-allowed; pointer-events: none;';
+      noDemo.innerHTML = '<i class="bi bi-x-circle me-1"></i> Sin Demo';
+      btnGroup.appendChild(noDemo);
+    }
 
     body.appendChild(title);
     body.appendChild(timeline);
@@ -96,8 +174,13 @@ function displayRepos(repos, page = 1) {
 
     card.appendChild(img);
     card.appendChild(body);
-    container.appendChild(card);
+    
+    return card;
   });
+
+  // Esperar a que todas las cards se creen
+  const cards = await Promise.all(cardPromises);
+  cards.forEach(card => container.appendChild(card));
 
   // Añadir card de "Próximamente" al final
   const comingSoonCard = document.createElement('div');
@@ -148,17 +231,50 @@ function updatePagination(totalRepos, currentPage) {
 
   let paginationHTML = '';
 
+  // Botón anterior
   if (currentPage > 1) {
-    paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage - 1})">Anterior</button>`;
+    paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage - 1})" aria-label="Página anterior">
+      <i class="bi bi-chevron-left"></i> Anterior
+    </button>`;
   }
 
-  for (let i = 1; i <= totalPages; i++) {
+  // Mostrar páginas con límite inteligente
+  const maxVisiblePages = 5;
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+  // Ajustar si estamos cerca del final
+  if (endPage - startPage < maxVisiblePages - 1) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+
+  // Primera página si no está visible
+  if (startPage > 1) {
+    paginationHTML += `<button class="page-btn" onclick="changePage(1)">1</button>`;
+    if (startPage > 2) {
+      paginationHTML += `<span class="page-ellipsis">...</span>`;
+    }
+  }
+
+  // Páginas visibles
+  for (let i = startPage; i <= endPage; i++) {
     const activeClass = i === currentPage ? 'active' : '';
-    paginationHTML += `<button class="page-btn ${activeClass}" onclick="changePage(${i})">${i}</button>`;
+    paginationHTML += `<button class="page-btn ${activeClass}" onclick="changePage(${i})" aria-label="Página ${i}" ${i === currentPage ? 'aria-current="page"' : ''}>${i}</button>`;
   }
 
+  // Última página si no está visible
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      paginationHTML += `<span class="page-ellipsis">...</span>`;
+    }
+    paginationHTML += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+  }
+
+  // Botón siguiente
   if (currentPage < totalPages) {
-    paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage + 1})">Siguiente</button>`;
+    paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage + 1})" aria-label="Página siguiente">
+      Siguiente <i class="bi bi-chevron-right"></i>
+    </button>`;
   }
 
   pagination.innerHTML = paginationHTML;

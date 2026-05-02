@@ -1,31 +1,62 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.6.1",
-  "lastUpdate": "2026-04-25",
+  "version": "2.6.2",
+  "lastUpdate": "2026-05-02",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
   
   "info_version_actual": {
-    "numero": "2.6.1",
-    "fecha": "2026-04-25",
+    "numero": "2.6.2",
+    "fecha": "2026-05-02",
     "tipo": "minor",
     "estado": "estable",
     "cambios_principales": [
-      "Rework visual del Hero — nuevo layout split con card de código",
-      "Sección Experimentos rediseñada con Bento Grid asimétrico",
-      "Navbar con dropdown de Stats (Logros, Plushies, Cupid)",
-      "Footer mejorado con links rápidos y versión del sitio",
-      "Section headers con línea decorativa animada",
-      "Scroll reveal suave en cards y secciones",
-      "Fuente exclusiva MilkyNice para temas FunkyAtlas y Christmas",
-      "Sistema de música con playlist personalizable en el Chatbot",
-      "Aviso de bienvenida al rediseño del Chatbot (una sola vez)",
-      "CSS del Chatbot reorganizado en carpeta dedicada"
+      "Los botones de experimentos ahora se ven bien (ya no son invisibles)",
+      "La página detecta automáticamente qué proyectos tienen página web",
+      "Ahora ves 6 proyectos por página en lugar de 4",
+      "La paginación es más inteligente cuando hay muchos proyectos",
+      "La página se reconoce a sí misma y dice 'Estás aquí'"
     ]
   },
   
   "updates": [
+    {
+      "version": "2.6.2",
+      "date": "2026-05-02",
+      "title": "🎨 Botones Más Bonitos y Páginas Más Inteligentes",
+      "type": "minor",
+      "features": [
+        "🎨 Los botones de experimentos ahora se ven bien:",
+        "  🔴 El botón rojo de Deadly Pursuer ya no es invisible",
+        "  📚 Los botones de Wiki, Chatbot y Archive tienen colores que se ven",
+        "  ✨ Cuando pasas el mouse por encima, los botones se elevan y brillan",
+        "🔍 La página ahora es más inteligente con los proyectos:",
+        "  ✅ Solo te muestra el botón 'Demo' si el proyecto tiene página web",
+        "  ❌ Si no tiene página, te dice 'Sin Demo' para que no te confundas",
+        "  💾 Recuerda qué proyectos tienen página para no tener que revisar cada vez",
+        "📄 Ahora ves más proyectos por página:",
+        "  📊 Antes veías 4 proyectos, ahora ves 6",
+        "  🔢 Si hay muchas páginas, solo muestra las más importantes",
+        "  ⬅️➡️ Botones de 'Anterior' y 'Siguiente' con flechitas",
+        "� La página se reconoce a sí misma:",
+        "  ✓ En lugar de 'Demo', dice 'Estás aquí' cuando es esta página",
+        "  🚀 Ya no hace cosas innecesarias para verificar su propia página"
+      ],
+      "que_significa": [
+        "🎨 Imagina que tenías botones rojos con letras rojas (no se veían)",
+        "✨ Ahora son botones blancos con letras rojas (se ven perfecto)",
+        "🔍 La página revisa si un proyecto tiene página web antes de mostrarte el botón",
+        "� Es como cuando en Netflix ves más películas por pantalla",
+        "🏠 La página ya no se pregunta a sí misma 'oye, ¿tengo página web?' jajaja"
+      ],
+      "fixes": [
+        "🐛 Los botones de experimentos ya no son invisibles",
+        "🐛 Ya no te muestra botones de 'Demo' que no funcionan",
+        "🐛 La paginación ya no muestra 20 botones cuando hay muchos proyectos",
+        "🎨 Todo se ve más bonito y es más fácil de usar"
+      ]
+    },
     {
       "version": "2.6.1",
       "date": "2026-04-25",
@@ -51,6 +82,7 @@
       ]
     },
     {
+      "version": "2.6.0",
       "date": "2026-04-18",
       "title": "🧹 Limpieza General del Laboratorio",
       "type": "major",

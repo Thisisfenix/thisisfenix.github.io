@@ -34,6 +34,9 @@
   document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 FenixLaboratory inicializando...');
     
+    // Actualizar año automáticamente en el footer
+    updateCurrentYear();
+    
     // Verificar elementos requeridos
     const requiredElements = [
       'main-content', 'credits-section', 'updates-section',
@@ -60,6 +63,14 @@
 
     console.log('✅ FenixLaboratory inicializado correctamente');
   });
+
+  // Actualizar año automáticamente
+  function updateCurrentYear() {
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+      yearElement.textContent = new Date().getFullYear();
+    }
+  }
 
   // Sistemas críticos (cargan inmediatamente)
   function initializeCriticalSystems() {

@@ -158,163 +158,106 @@ class UIManager {
   }
 
   renderCredits(credits, updates) {
-    let html = `
-      <div class="credit-header">
-        <div class="credit-badge">🏆 ${updates.version}</div>
-        <h3>${credits["que es esto wey"]}</h3>
-        <p>${credits.descripcion}</p>
-        <div class="status-badge">${credits.estado} • ${credits.hosting}</div>
-      </div>
-    `;
-    
-    // Información del desarrollador
-    if (credits.el_wey_que_hizo_esto) {
-      const dev = credits.el_wey_que_hizo_esto;
-      html += `
-        <div class="credit-section">
-          <h4>👨‍💻 Desarrollador</h4>
-          <div class="credit-item">
-            <div class="developer-info">
-              <img src="${dev.foto_perfil}" alt="${dev.quien_soy}" style="width: 60px; height: 60px; border-radius: 50%; float: left; margin-right: 1rem; object-fit: cover;">
-              <div>
-                <strong>${dev.quien_soy}</strong><br>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0;">${dev.descripcion_personal}</p>
-                <div class="social-links">
-      `;
-      if (dev.redes) {
-        Object.entries(dev.redes).forEach(([platform, url]) => {
-          const icon = platform === 'github' ? 'fab fa-github' : 
-                      platform === 'twitter' ? 'fab fa-twitter' : 
-                      platform === 'tiktok' ? 'fab fa-tiktok' : 'fas fa-link';
-          html += `<a href="${url}" target="_blank" class="social-link"><i class="${icon}"></i> ${platform}</a>`;
-        });
-      }
-      html += `</div></div><div style="clear: both;"></div></div></div></div>`;
-    }
-    
-    // Sección de OCs
-    html += this.renderOCSection();
-    
-    // Características
-    if (credits.que_hace) {
-      html += `
-        <div class="credit-section">
-          <h4 onclick="window.uiManager.toggleSection('features')" style="cursor:pointer;user-select:none;">
-            ✨ Características <span id="arrow-features" style="float:right;transition:transform 0.3s;">▼</span>
-          </h4>
-          <div id="content-features" class="features-grid" style="transition:max-height 0.3s ease,opacity 0.3s ease;overflow:hidden;">
-      `;
-      credits.que_hace.forEach(feature => {
-        html += `<div class="feature-item">• ${feature}</div>`;
-      });
-      html += `</div></div>`;
-    }
-    
-    // Resto de secciones...
-    html += this.renderCreditsOtherSections(credits);
-    
-    document.getElementById('json-viewer').innerHTML = html;
-  }
+    const dev = credits.el_wey_que_hizo_esto;
+    const tech = credits.creditos?.tecnologias;
+    const insp = credits.creditos?.inspiracion;
 
-  renderOCSection() {
-    return `
-      <div class="credit-section">
-        <h4 onclick="window.uiManager.toggleSection('ocs')" style="cursor:pointer;user-select:none;">
-          🎨 Mis Personajes Originales <span id="arrow-ocs" style="float:right;transition:transform 0.3s;">▼</span>
-        </h4>
-        <div id="content-ocs" style="transition:max-height 0.3s ease,opacity 0.3s ease;overflow:hidden;">
-          <div style="text-align: center; margin-bottom: 1rem;">
-            <button onclick="window.uiManager.loadOC('ankush')" class="btn btn-outline-neon" style="margin: 0.25rem;">Ankush</button>
-            <button onclick="window.uiManager.loadOC('anna')" class="btn btn-outline-neon" style="margin: 0.25rem;">Anna Moonred</button>
-          </div>
-          <div id="oc-container" style="width: 100%; height: 600px; border-radius: 8px; overflow: hidden; border: 2px solid var(--primary); background: var(--bg-dark);"></div>
+    const allTech = [
+      ...(tech?.frontend || []),
+      ...(tech?.frameworks || []),
+      ...(tech?.apis || []),
+      tech?.hosting,
+      tech?.pwa
+    ].filter(Boolean);
+
+    const html = `
+      <!-- Perfil centrado -->
+      <div class="cr-profile">
+        <div class="cr-profile-glow"></div>
+        <img src="${dev.foto_perfil}" alt="${dev.quien_soy}" class="cr-profile-avatar">
+        <span class="cr-profile-badge">v${updates.version} • ${credits.estado}</span>
+        <h2 class="cr-profile-name">${dev.quien_soy}</h2>
+        <p class="cr-profile-bio">${dev.descripcion_personal}</p>
+        <div class="cr-profile-socials">
+          ${dev.redes?.github  ? `<a href="${dev.redes.github}"  target="_blank" class="cr-social"><i class="bi bi-github"></i><span>GitHub</span></a>` : ''}
+          ${dev.redes?.twitter ? `<a href="${dev.redes.twitter}" target="_blank" class="cr-social"><i class="bi bi-twitter-x"></i><span>Twitter</span></a>` : ''}
+          ${dev.redes?.tiktok  ? `<a href="${dev.redes.tiktok}"  target="_blank" class="cr-social"><i class="bi bi-tiktok"></i><span>TikTok</span></a>` : ''}
         </div>
       </div>
-    `;
-  }
 
-  renderCreditsOtherSections(credits) {
-    let html = '';
-    
-    // Créditos especiales
-    if (credits.creditos) {
-      html += `<div class="credit-section"><h4 onclick="window.uiManager.toggleSection('credits')" style="cursor:pointer;user-select:none;">🙏 Créditos <span id="arrow-credits" style="float:right;transition:transform 0.3s;">▼</span></h4><div id="content-credits" style="transition:max-height 0.3s ease,opacity 0.3s ease;overflow:hidden;">`;
-      
-      if (credits.creditos.inspiracion) {
-        const insp = credits.creditos.inspiracion;
-        html += `
-          <div class="credit-item">
-            <div class="credit-key">Inspiración:</div>
-            <div class="credit-value">
-              <img src="${insp.imagen}" alt="${insp.autor}" style="width: 60px; height: 60px; border-radius: 50%; float: left; margin-right: 1rem; object-fit: cover;">
-              <div>
-                <strong>${insp.autor}</strong><br>
-                ${insp.texto}<br>
-                <a href="${insp.url}" target="_blank" class="credit-link">Ver sitio original</a>
+      <!-- Línea de tiempo / secciones verticales -->
+      <div class="cr-timeline">
+
+        <!-- Inspiración -->
+        <div class="cr-tl-item">
+          <div class="cr-tl-dot">💡</div>
+          <div class="cr-tl-content">
+            <h4 class="cr-tl-title">Inspiración</h4>
+            <div class="cr-insp-card">
+              <img src="${insp?.imagen}" alt="${insp?.autor}" class="cr-insp-img">
+              <div class="cr-insp-body">
+                <strong class="cr-insp-name">${insp?.autor}</strong>
+                <p class="cr-insp-text">${insp?.texto}</p>
+                <a href="${insp?.url}" target="_blank" class="cr-insp-link">Ver sitio →</a>
               </div>
-              <div style="clear: both;"></div>
             </div>
           </div>
-        `;
-      }
-      
-      if (credits.creditos.tecnologias) {
-        const tech = credits.creditos.tecnologias;
-        html += `
-          <div class="credit-item">
-            <div class="credit-key">Tecnologías:</div>
-            <div class="credit-value">
-              <strong>Frontend:</strong> ${tech.frontend.join(', ')}<br>
-              <strong>Frameworks:</strong> ${tech.frameworks.join(', ')}<br>
-              <strong>APIs:</strong> ${tech.apis.join(', ')}<br>
-              <strong>Hosting:</strong> ${tech.hosting}<br>
-              <strong>PWA:</strong> ${tech.pwa}<br>
-              <strong>Fuentes:</strong> ${tech.fuentes}
-            </div>
-          </div>
-        `;
-      }
+        </div>
 
-      if (credits.creditos.testing) {
-        html += `<div class="credit-item"><div class="credit-key">Testing:</div><div class="credit-value">${credits.creditos.testing}</div></div>`;
-      }
-      
-      html += `</div></div>`;
-    }
-    
-    // Legal, bugs, planes futuros, mensaje final...
-    if (credits.legal_stuff) {
-      html += `
-        <div class="credit-section">
-          <h4 onclick="window.uiManager.toggleSection('legal')" style="cursor:pointer;user-select:none;">
-            ⚖️ Legal <span id="arrow-legal" style="float:right;transition:transform 0.3s;">▼</span>
-          </h4>
-          <div id="content-legal" style="transition:max-height 0.3s ease,opacity 0.3s ease;overflow:hidden;">
-            <div class="credit-item">
-              <div class="credit-key">Licencia:</div>
-              <div class="credit-value">${credits.legal_stuff.licencia}</div>
+        <!-- OCs -->
+        <div class="cr-tl-item">
+          <div class="cr-tl-dot">🎨</div>
+          <div class="cr-tl-content">
+            <h4 class="cr-tl-title">Mis Personajes Originales</h4>
+            <div class="cr-oc-tabs">
+              <button onclick="window.uiManager.loadOC('ankush')" class="cr-oc-tab active" id="tab-ankush">Ankush</button>
+              <button onclick="window.uiManager.loadOC('anna')"   class="cr-oc-tab"        id="tab-anna">Anna Moonred</button>
             </div>
-            <div class="credit-item">
-              <div class="credit-key">Disclaimer:</div>
-              <div class="credit-value">${credits.legal_stuff.disclaimer}</div>
+            <div id="oc-container" class="cr-oc-frame"></div>
+          </div>
+        </div>
+
+        <!-- Planes futuros -->
+        <div class="cr-tl-item">
+          <div class="cr-tl-dot">🚀</div>
+          <div class="cr-tl-content">
+            <h4 class="cr-tl-title">Planes futuros</h4>
+            <div class="cr-plans">
+              ${(credits.planes_a_futuro || []).map(p => `<div class="cr-plan-item">${p}</div>`).join('')}
             </div>
           </div>
         </div>
-      `;
-    }
-    
-    if (credits.mensaje_final) {
-      html += `
-        <div class="credit-section final-message">
-          <div class="message-box">
-            <i class="fas fa-heart"></i>
-            <p>${credits.mensaje_final}</p>
+
+        <!-- Bugs & Legal -->
+        <div class="cr-tl-item">
+          <div class="cr-tl-dot">⚖️</div>
+          <div class="cr-tl-content">
+            <h4 class="cr-tl-title">Estado & Legal</h4>
+            <div class="cr-legal-row">
+              <span>Bugs graves</span>
+              <span class="cr-legal-ok">✅ ${credits.bugs?.bugs_graves}</span>
+            </div>
+            <div class="cr-legal-row">
+              <span>Filosofía</span>
+              <em>${credits.bugs?.features_no_planeadas}</em>
+            </div>
+            <div class="cr-legal-row">
+              <span>Licencia</span>
+              <span class="cr-license">${credits.legal_stuff?.licencia}</span>
+            </div>
+            <p class="cr-disclaimer">${credits.legal_stuff?.disclaimer}</p>
           </div>
         </div>
-      `;
-    }
-    
-    return html;
+
+      </div>
+
+      <!-- Mensaje final -->
+      <div class="cr-farewell">
+        <p class="cr-farewell-text">${credits.mensaje_final}</p>
+      </div>
+    `;
+
+    document.getElementById('json-viewer').innerHTML = html;
   }
 
   toggleSection(id) {
@@ -341,6 +284,11 @@ class UIManager {
       'anna': 'https://funkyatlas.abelitogamer.com/FunkyerPlaza/FunkyerPlaza.html#Personajes/Fenix/AnnaMoonred.md'
     };
     
+    // Actualizar tab activo
+    document.querySelectorAll('.cr-oc-tab').forEach(t => t.classList.remove('active'));
+    const activeTab = document.getElementById('tab-' + character);
+    if (activeTab) activeTab.classList.add('active');
+
     const container = document.getElementById('oc-container');
     if (container) {
       container.innerHTML = '';
@@ -380,38 +328,54 @@ class UIManager {
 
   renderUpdates(data) {
     let html = `
-      <div class="mb-3 text-center">
-        <div class="points-badge" style="background: var(--primary); display: inline-block;">
-          Versión Actual: ${data.version}
+      <div class="updates-header" style="text-align: center; margin-bottom: 2.5rem;">
+        <div class="version-badge-large" style="display: inline-flex; align-items: center; gap: 1rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 1rem 2rem; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+          <span style="font-size: 2.5rem;">🚀</span>
+          <div style="text-align: left;">
+            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.8); font-weight: 500;">Versión Actual</div>
+            <div style="font-size: 1.8rem; color: white; font-weight: 700; line-height: 1;">v${data.version}</div>
+          </div>
         </div>
+        <p style="color: var(--text-secondary); margin-top: 1rem; font-size: 0.9rem;">
+          Última actualización: ${data.lastUpdate}
+        </p>
       </div>
-      <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem; align-items: start;">
-        <div id="versions-list" style="background: var(--bg-dark); border-radius: 12px; padding: 1.5rem; max-height: 600px; overflow-y: auto; position: sticky; top: 100px;">
-          <h5 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1rem; text-align: center;">📝 Versiones</h5>
+      
+      <div class="updates-layout" style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem; align-items: start;">
+        <!-- Sidebar de versiones -->
+        <div id="versions-list" class="versions-sidebar" style="background: var(--bg-dark); border-radius: 16px; padding: 1.5rem; max-height: 650px; overflow-y: auto; position: sticky; top: 100px; border: 1px solid rgba(var(--primary-rgb, 255,107,53), 0.15);">
+          <h5 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.1rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <span>📝</span> Historial de Versiones
+          </h5>
     `;
     
     data.updates.forEach((update, index) => {
       const typeColor = this.getUpdateTypeColor(update.type);
+      const typeIcon = this.getUpdateTypeIcon(update.type);
       const isDeprecated = update.status === 'discarded';
       html += `
         <div class="version-card ${index === 0 ? 'active' : ''}" 
              onclick="window.uiManager.showVersionDetails(${index})" 
              data-index="${index}" 
-             style="padding: 1rem; margin-bottom: 0.75rem; border-radius: 10px; cursor: pointer; border-left: 4px solid ${typeColor}; background: var(--bg-light); transition: all 0.3s; ${isDeprecated ? 'opacity: 0.6;' : ''}">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-            <div style="font-weight: bold; font-size: 1rem; color: var(--text-primary);">v${update.version}</div>
-            <span style="background: ${typeColor}; padding: 0.2rem 0.5rem; border-radius: 12px; color: white; font-size: 0.65rem; font-weight: bold;">
-              ${update.type.toUpperCase()}
+             style="padding: 1rem; margin-bottom: 0.75rem; border-radius: 12px; cursor: pointer; border: 2px solid ${index === 0 ? typeColor : 'transparent'}; background: ${index === 0 ? 'rgba(var(--primary-rgb, 255,107,53), 0.08)' : 'var(--bg-light)'}; transition: all 0.3s; ${isDeprecated ? 'opacity: 0.6;' : ''} position: relative; overflow: hidden;">
+          <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: ${typeColor};"></div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-left: 0.5rem;">
+            <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-primary);">v${update.version}</div>
+            <span style="background: ${typeColor}; padding: 0.25rem 0.6rem; border-radius: 12px; color: white; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+              ${typeIcon} ${update.type.toUpperCase()}
             </span>
           </div>
-          <div style="font-size: 0.75rem; color: var(--text-secondary);">${update.date}</div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); padding-left: 0.5rem;">📅 ${update.date}</div>
+          ${index === 0 ? '<div style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 1.2rem;">✨</div>' : ''}
         </div>
       `;
     });
     
     html += `
         </div>
-        <div id="version-details" style="background: var(--bg-dark); border-radius: 12px; padding: 2rem; min-height: 400px;">
+        
+        <!-- Panel de detalles -->
+        <div id="version-details" class="version-details-panel" style="background: var(--bg-dark); border-radius: 16px; padding: 2.5rem; min-height: 500px; border: 1px solid rgba(var(--primary-rgb, 255,107,53), 0.15); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
     `;
     
     const firstUpdate = data.updates[0];
@@ -419,31 +383,108 @@ class UIManager {
     
     html += '</div></div>';
     
+    // Roadmap section
     if (data.roadmap?.length) {
-      html += '<h4 style="color: var(--primary); margin: 2rem 0 1rem;">🗺️ Próximas Funciones</h4>';
-      html += '<div style="display: grid; gap: 1rem;">';
+      html += `
+        <div class="roadmap-section" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(var(--primary-rgb, 255,107,53), 0.2);">
+          <h4 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <span style="font-size: 2rem;">🗺️</span> Próximas Funciones
+          </h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      `;
       data.roadmap.forEach(item => {
         html += `
-          <div class="credit-item" style="margin-bottom: 0; opacity: 0.8;">
-            <div class="credit-key">${item.title}</div>
-            <ul class="credit-list">
+          <div class="roadmap-card" style="background: var(--bg-dark); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(var(--primary-rgb, 255,107,53), 0.15); transition: all 0.3s;">
+            <h5 style="color: var(--secondary); margin-bottom: 1rem; font-size: 1.1rem;">${item.title}</h5>
+            <ul class="credit-list" style="margin: 0; padding-left: 1.2rem;">
         `;
         item.features.forEach(feature => {
-          html += `<li style="font-size: 0.8rem;">${feature}</li>`;
+          html += `<li style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${feature}</li>`;
         });
         html += '</ul></div>';
       });
-      html += '</div>';
+      html += '</div></div>';
     }
     
     document.getElementById('updates-viewer').innerHTML = html;
+    
+    // Agregar estilos hover dinámicos
+    this.addUpdateStyles();
+  }
+
+  addUpdateStyles() {
+    if (document.getElementById('updates-dynamic-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'updates-dynamic-styles';
+    style.textContent = `
+      .version-card:hover {
+        transform: translateX(4px);
+        border-color: var(--primary) !important;
+        box-shadow: 0 4px 12px rgba(var(--primary-rgb, 255,107,53), 0.2);
+      }
+      
+      .version-card.active {
+        box-shadow: 0 4px 16px rgba(var(--primary-rgb, 255,107,53), 0.3);
+      }
+      
+      .roadmap-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        border-color: var(--primary);
+      }
+      
+      .versions-sidebar::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      .versions-sidebar::-webkit-scrollbar-track {
+        background: var(--bg-light);
+        border-radius: 4px;
+      }
+      
+      .versions-sidebar::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 4px;
+      }
+      
+      .versions-sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--secondary);
+      }
+      
+      @media (max-width: 991px) {
+        .updates-layout {
+          grid-template-columns: 1fr !important;
+        }
+        
+        .versions-sidebar {
+          position: static !important;
+          max-height: 400px !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  getUpdateTypeIcon(type) {
+    const icons = {
+      'major': '🚀',
+      'minor': '✨',
+      'release': '🎉',
+      'new': '🆕',
+      'hotfix': '🔥',
+      'deprecated': '⚠️'
+    };
+    return icons[type] || '📦';
   }
 
   getUpdateTypeColor(type) {
     const colors = {
       'major': '#22c55e',
-      'release': '#3b82f6',
+      'minor': '#3b82f6',
+      'release': '#8b5cf6',
       'new': '#ff6b35',
+      'hotfix': '#ef4444',
       'deprecated': '#dc2626'
     };
     return colors[type] || '#6b7280';
@@ -451,31 +492,80 @@ class UIManager {
 
   generateVersionDetails(update) {
     const typeColor = this.getUpdateTypeColor(update.type);
+    const typeIcon = this.getUpdateTypeIcon(update.type);
+    
     let html = `
-      <div style="border-bottom: 2px solid ${typeColor}; padding-bottom: 1.5rem; margin-bottom: 2rem;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-          <h3 style="color: ${typeColor}; margin: 0; font-size: 2rem;">v${update.version}</h3>
-          <span style="background: ${typeColor}; padding: 0.5rem 1.25rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white;">
+      <div class="version-header" style="border-bottom: 3px solid ${typeColor}; padding-bottom: 1.5rem; margin-bottom: 2rem; position: relative;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+          <h3 style="color: ${typeColor}; margin: 0; font-size: 2.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+            ${typeIcon} v${update.version}
+          </h3>
+          <span style="background: ${typeColor}; padding: 0.6rem 1.5rem; border-radius: 24px; font-size: 0.85rem; font-weight: 700; color: white; box-shadow: 0 4px 12px ${typeColor}40;">
             ${update.type.toUpperCase()}
           </span>
         </div>
-        <p style="color: var(--text-secondary); margin: 0.5rem 0; font-size: 0.9rem;">📅 ${update.date}</p>
-        <h4 style="color: var(--text-primary); margin: 1rem 0 0; font-size: 1.3rem;">${update.title}</h4>
+        <p style="color: var(--text-secondary); margin: 0.5rem 0; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>📅</span> ${update.date}
+        </p>
+        <h4 style="color: var(--text-primary); margin: 1rem 0 0; font-size: 1.5rem; font-weight: 600;">${update.title}</h4>
       </div>
     `;
     
+    // Features
     if (update.features?.length) {
-      html += '<div style="margin-bottom: 2rem;"><h5 style="color: var(--secondary); font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><span>✨</span> Características</h5><ul class="credit-list" style="display: grid; gap: 0.75rem;">';
+      html += `
+        <div class="update-section" style="margin-bottom: 2.5rem;">
+          <h5 style="color: var(--secondary); font-size: 1.2rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 700;">
+            <span style="font-size: 1.5rem;">✨</span> Características Nuevas
+          </h5>
+          <ul class="features-list" style="list-style: none; padding: 0; display: grid; gap: 0.75rem;">
+      `;
       update.features.forEach(feature => {
-        html += `<li style="font-size: 0.95rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px; border-left: 3px solid var(--secondary);">${feature}</li>`;
+        html += `
+          <li style="font-size: 0.95rem; padding: 1rem 1.25rem; background: linear-gradient(135deg, var(--bg-light), rgba(var(--secondary-rgb, 247,147,30), 0.05)); border-radius: 10px; border-left: 4px solid var(--secondary); transition: all 0.3s; position: relative; overflow: hidden;" 
+              onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" 
+              onmouseout="this.style.transform=''; this.style.boxShadow=''">
+            ${feature}
+          </li>
+        `;
       });
       html += '</ul></div>';
     }
     
+    // Qué significa (nueva sección)
+    if (update.que_significa?.length) {
+      html += `
+        <div class="update-section" style="margin-bottom: 2.5rem;">
+          <h5 style="color: #10b981; font-size: 1.2rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 700;">
+            <span style="font-size: 1.5rem;">💡</span> ¿Qué Significa Esto?
+          </h5>
+          <ul class="explanation-list" style="list-style: none; padding: 0; display: grid; gap: 0.75rem;">
+      `;
+      update.que_significa.forEach(explanation => {
+        html += `
+          <li style="font-size: 0.95rem; padding: 1rem 1.25rem; background: linear-gradient(135deg, var(--bg-light), rgba(16, 185, 129, 0.05)); border-radius: 10px; border-left: 4px solid #10b981; color: var(--text-primary);">
+            ${explanation}
+          </li>
+        `;
+      });
+      html += '</ul></div>';
+    }
+    
+    // Fixes
     if (update.fixes?.length) {
-      html += '<div style="margin-bottom: 2rem;"><h5 style="color: #fbbf24; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><span>🔧</span> Correcciones</h5><ul class="credit-list" style="display: grid; gap: 0.75rem;">';
+      html += `
+        <div class="update-section" style="margin-bottom: 2.5rem;">
+          <h5 style="color: #fbbf24; font-size: 1.2rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 700;">
+            <span style="font-size: 1.5rem;">🔧</span> Correcciones
+          </h5>
+          <ul class="fixes-list" style="list-style: none; padding: 0; display: grid; gap: 0.75rem;">
+      `;
       update.fixes.forEach(fix => {
-        html += `<li style="font-size: 0.95rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px; border-left: 3px solid #fbbf24; color: var(--text-primary);">${fix}</li>`;
+        html += `
+          <li style="font-size: 0.95rem; padding: 1rem 1.25rem; background: linear-gradient(135deg, var(--bg-light), rgba(251, 191, 36, 0.05)); border-radius: 10px; border-left: 4px solid #fbbf24; color: var(--text-primary);">
+            ${fix}
+          </li>
+        `;
       });
       html += '</ul></div>';
     }

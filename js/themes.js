@@ -243,6 +243,14 @@ function showThemePanel() {
   document.getElementById('theme-overlay').classList.add('show');
   document.getElementById('theme-panel').classList.add('show');
   
+  // Actualizar puntos disponibles
+  if (window.gameData) {
+    const pointsDisplay = document.getElementById('theme-points-display');
+    if (pointsDisplay) {
+      pointsDisplay.textContent = window.gameData.points || 0;
+    }
+  }
+  
   // Actualizar estado de temas premium cada vez que se abre el panel
   setTimeout(() => {
     updatePremiumThemes();
