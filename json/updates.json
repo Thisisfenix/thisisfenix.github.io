@@ -16,7 +16,8 @@
       "La página detecta automáticamente qué proyectos tienen página web",
       "Ahora ves 6 proyectos por página en lugar de 4",
       "La paginación es más inteligente cuando hay muchos proyectos",
-      "La página se reconoce a sí misma y dice 'Estás aquí'"
+      "La página se reconoce a sí misma y dice 'Estás aquí'",
+      "Nuevo experimento: Friday Night Cooking (FNCengine)"
     ]
   },
   
@@ -41,14 +42,17 @@
         "  ⬅️➡️ Botones de 'Anterior' y 'Siguiente' con flechitas",
         "� La página se reconoce a sí misma:",
         "  ✓ En lugar de 'Demo', dice 'Estás aquí' cuando es esta página",
-        "  🚀 Ya no hace cosas innecesarias para verificar su propia página"
+        "  🚀 Ya no hace cosas innecesarias para verificar su propia página",
+        "🍳 Nuevo experimento añadido:",
+        "  🎮 Friday Night Cooking (FNCengine) - Motor de juego de ritmo experimental"
       ],
       "que_significa": [
         "🎨 Imagina que tenías botones rojos con letras rojas (no se veían)",
         "✨ Ahora son botones blancos con letras rojas (se ven perfecto)",
         "🔍 La página revisa si un proyecto tiene página web antes de mostrarte el botón",
         "� Es como cuando en Netflix ves más películas por pantalla",
-        "🏠 La página ya no se pregunta a sí misma 'oye, ¿tengo página web?' jajaja"
+        "🏠 La página ya no se pregunta a sí misma 'oye, ¿tengo página web?' jajaja",
+        "🍳 Friday Night Cooking es un motor de juego de ritmo inspirado en FNF, ¡pruébalo!"
       ],
       "fixes": [
         "🐛 Los botones de experimentos ya no son invisibles",
