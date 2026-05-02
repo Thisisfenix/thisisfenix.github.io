@@ -1,0 +1,4357 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Batalla Épica: PNG vs Pollolito</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0a0a1a;
+            color: #fff;
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            touch-action: manipulation;
+        }
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+            /* Añade esta línea */
+        }
+
+        #loading-bar {
+            width: 80%;
+            max-width: 300px;
+            height: 20px;
+            border: 2px solid #7b68ee;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        #loading-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #7b68ee, #9d8aff);
+            transition: width 0.3s;
+        }
+
+        #mobile-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            background-color: #111126;
+            display: none;
+        }
+
+        #battle-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a3a, #0a0a1a);
+            z-index: 1;
+        }
+
+        .battle-character {
+            position: absolute;
+            bottom: 30%;
+            width: 180px;
+            height: 220px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom;
+            z-index: 10;
+            image-rendering: pixelated;
+        }
+
+        #player {
+            left: 20%;
+            background-image: url('assets/images/244_sin_titulo_20250626104631.png');
+            transform: translateX(-50%);
+        }
+
+        #enemy {
+            right: 20%;
+            background-image: url('assets/images/20250623_162257.jpg');
+            transform: translateX(50%);
+        }
+
+        #ally {
+            left: 30%;
+            bottom: 30%;
+            width: 150px;
+            height: 180px;
+            background-image: url('assets/images/image-233-1.png');
+            z-index: 9;
+            transform: translateX(-50%);
+            display: none;
+        }
+
+        .enemy-minion {
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            background-image: url('assets/images/20250703_202025.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom;
+            z-index: 8;
+            display: none;
+            image-rendering: pixelated;
+        }
+
+        #enemy-minion1 {
+            right: 8%;
+            bottom: 30%;
+        }
+
+        #enemy-minion2 {
+            right: 25%;
+            bottom: 30%;
+        }
+
+        .status-container {
+            position: absolute;
+            width: 250px;
+            height: 85px;
+            background-color: rgba(10, 10, 30, 0.8);
+            border: 3px solid #6a5acd;
+            border-radius: 5px;
+            padding: 5px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-name {
+            font-size: 12px;
+            color: #fff;
+            margin-bottom: 3px;
+            text-shadow: 0 0 5px #6a5acd;
+        }
+
+        .status-bar {
+            height: 18px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #483d8b;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 3px;
+        }
+
+        .status-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .hp-fill {
+            background: linear-gradient(to right, #ff3864, #ff6b8b);
+        }
+
+        .tp-fill {
+            background: linear-gradient(to right, #4169e1, #7b68ee);
+        }
+
+        .status-text {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: white;
+            text-shadow: 1px 1px 1px black;
+        }
+
+        #player-status {
+            top: 20px;
+            left: 20px;
+        }
+
+        #enemy-status {
+            top: 20px;
+            right: 20px;
+        }
+
+        #ally-status {
+            top: 100px;
+            left: 20px;
+            display: none;
+        }
+
+        #battle-ui {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 180px;
+            background-color: rgba(10, 10, 30, 0.9);
+            border-top: 4px solid #6a5acd;
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            z-index: 30;
+            box-sizing: border-box;
+        }
+
+        #action-box {
+            width: 100%;
+            height: 130px;
+            background-color: rgba(20, 20, 50, 0.7);
+            border: 3px solid #7b68ee;
+            border-radius: 5px;
+            padding: 8px;
+            margin-bottom: 8px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .action-button {
+            width: 48%;
+            height: 50px;
+            background-color: #483d8b;
+            color: #fff;
+            border: 2px solid #7b68ee;
+            border-radius: 5px;
+            padding: 5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .action-button:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .button-icon {
+            margin-bottom: 3px;
+            font-size: 14px;
+        }
+
+        .tp-cost {
+            position: absolute;
+            bottom: 2px;
+            right: 5px;
+            font-size: 8px;
+            color: #00ccff;
+        }
+
+        .submenu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 160px;
+            background-color: rgba(10, 10, 30, 0.95);
+            display: none;
+            flex-direction: column;
+            padding: 10px;
+            z-index: 40;
+            border-top: 4px solid #7b68ee;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .submenu-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .submenu-button {
+            width: 140px;
+            height: 60px;
+            background-color: #483d8b;
+            color: #fff;
+            border: 2px solid #7b68ee;
+            border-radius: 5px;
+            padding: 6px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .submenu-button:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .submenu-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .submenu-back-button {
+            width: 140px;
+            height: 60px;
+            background-color: #ff3864;
+            font-size: 11px;
+            border-color: #ff6b8b;
+        }
+
+        .battle-effect {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            animation: float-up 1s forwards;
+            text-shadow: 2px 2px 0 #000;
+            z-index: 40;
+            pointer-events: none;
+            color: #ff6b8b;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+            transform: translate3d(0, 0, 0);
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        #precision-game {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 500px;
+            height: 150px;
+            background-color: rgba(10, 10, 30, 0.95);
+            border: 4px solid #7b68ee;
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(123, 104, 238, 0.5);
+        }
+
+        #precision-bar {
+            width: 100%;
+            height: 50px;
+            background-color: #1a1a3a;
+            border: 2px solid #483d8b;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #precision-target {
+            position: absolute;
+            width: 30%;
+            height: 100%;
+            background-color: #7b68ee;
+            left: 35%;
+            opacity: 0.7;
+        }
+
+        #precision-indicator {
+            position: absolute;
+            width: 8px;
+            height: 100%;
+            background-color: #fff;
+            left: 0;
+            box-shadow: 0 0 5px #fff;
+        }
+
+        #dialogue-box {
+            position: fixed;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            background-color: rgba(10, 10, 30, 0.95);
+            border: 3px solid #7b68ee;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 0 15px rgba(123, 104, 238, 0.4);
+        }
+
+        #end-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 10, 30, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            font-size: 24px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #music-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background-color: #483d8b;
+            color: white;
+            border: 2px solid #7b68ee;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Green Mode Styles */
+        .green-mode {
+            background-color: rgba(10, 30, 10, 0.9) !important;
+            border-color: #4CAF50 !important;
+        }
+
+        .green-mode .status-container {
+            border-color: #4CAF50 !important;
+        }
+
+        .green-mode .status-name {
+            text-shadow: 0 0 5px #4CAF50 !important;
+        }
+
+        .green-mode .hp-fill {
+            background: linear-gradient(to right, #4CAF50, #8BC34A) !important;
+        }
+
+        .green-mode .tp-fill {
+            background: linear-gradient(to right, #2196F3, #4CAF50) !important;
+        }
+
+        @media (max-width: 768px) {
+            .battle-character {
+                width: 100px;
+                height: 140px;
+            }
+
+            #player {
+                left: 15%;
+            }
+
+            #enemy {
+                right: 15%;
+            }
+
+            #ally {
+                width: 80px;
+                height: 100px;
+                left: 25%;
+            }
+
+            .enemy-minion {
+                width: 40px;
+                height: 60px;
+            }
+
+            #enemy-minion1 {
+                right: 5%;
+                bottom: 25%;
+            }
+
+            #enemy-minion2 {
+                right: 20%;
+                bottom: 25%;
+            }
+
+            .status-container {
+                width: 180px;
+                height: 70px;
+            }
+
+            .status-bar {
+                height: 15px;
+                margin-bottom: 2px;
+            }
+
+            #battle-ui,
+            .submenu {
+                height: 200px;
+            }
+
+            #action-box {
+                height: 110px;
+            }
+
+            .action-button,
+            .submenu-button {
+                height: 60px;
+                font-size: 12px;
+                min-width: 120px;
+                /* Optimizaciones para Android */
+                min-height: 48px;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: rgba(123, 104, 238, 0.3);
+            }
+
+            .submenu-button {
+                min-width: 140px;
+                height: 70px;
+                font-size: 12px;
+                padding: 8px;
+                min-height: 48px;
+            }
+
+            .submenu-back-button {
+                width: 140px;
+                height: 45px;
+                min-height: 48px;
+            }
+
+            .button-icon {
+                font-size: 16px;
+                margin-bottom: 5px;
+            }
+
+            #dialogue-box {
+                font-size: 12px;
+                line-height: 1.3;
+                padding: 12px;
+                bottom: 220px;
+                border-width: 2px;
+            }
+
+            #precision-game {
+                width: 90%;
+                height: 120px;
+                /* Mejor visibilidad en Android */
+                border-width: 3px;
+            }
+
+            #precision-bar {
+                height: 60px;
+                border-width: 3px;
+            }
+
+            #precision-indicator {
+                width: 12px;
+                box-shadow: 0 0 8px #fff;
+            }
+
+            #mobile-warning {
+                display: flex;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+            
+            /* Optimizaciones específicas para Android */
+            #music-toggle {
+                font-size: 10px;
+                padding: 6px 12px;
+                min-height: 40px;
+            }
+            
+            #secret-panel-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+        
+        /* Estilos específicos para Android */
+        @media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 1) {
+            body {
+                -webkit-text-size-adjust: 100%;
+                -webkit-font-smoothing: antialiased;
+            }
+            
+            button {
+                -webkit-appearance: none;
+                appearance: none;
+                border-radius: 8px;
+                transition: all 0.15s ease;
+            }
+            
+            button:active {
+                transform: scale(0.95);
+                transition: transform 0.1s ease;
+            }
+            
+            /* Mejor contraste para pantallas Android */
+            .status-text {
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                font-weight: bold;
+            }
+            
+            .battle-effect {
+                font-size: 28px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            }
+        }
+
+        /* Panel Secreto */
+        #secret-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 9998;
+            display: none;
+            backdrop-filter: blur(12px) brightness(0.7);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #secret-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(20, 20, 50, 0.98), rgba(10, 10, 30, 0.98));
+            border: 4px solid #7b68ee;
+            border-radius: 12px;
+            padding: 30px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 0 40px rgba(123, 104, 238, 0.8),
+                0 0 80px rgba(123, 104, 238, 0.4) inset;
+            text-align: center;
+            width: 85%;
+            max-width: 380px;
+            animation: panelGlow 2.5s infinite alternate ease-in-out;
+            backdrop-filter: blur(8px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        #secret-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to bottom right,
+                    rgba(123, 104, 238, 0.1) 0%,
+                    rgba(123, 104, 238, 0) 50%,
+                    rgba(123, 104, 238, 0.1) 100%);
+            transform: rotate(45deg);
+            animation: panelScan 8s linear infinite;
+        }
+
+        @keyframes panelScan {
+            0% {
+                transform: rotate(45deg) translate(-30%, -30%);
+            }
+
+            100% {
+                transform: rotate(45deg) translate(30%, 30%);
+            }
+        }
+
+        @keyframes panelGlow {
+            0% {
+                box-shadow: 0 0 20px rgba(123, 104, 238, 0.6),
+                    0 0 40px rgba(123, 104, 238, 0.3);
+                border-color: #7b68ee;
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(123, 104, 238, 0.9),
+                    0 0 60px rgba(123, 104, 238, 0.5);
+                border-color: #9d8aff;
+            }
+
+            100% {
+                box-shadow: 0 0 20px rgba(123, 104, 238, 0.6),
+                    0 0 40px rgba(123, 104, 238, 0.3);
+                border-color: #7b68ee;
+            }
+        }
+
+        #secret-panel h3 {
+            color: #9d8aff;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(157, 138, 255, 0.8);
+            font-size: 20px;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        #secret-panel h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #7b68ee, transparent);
+        }
+
+        #secret-code {
+            margin: 20px 0;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            width: calc(100% - 30px);
+            text-align: center;
+            background-color: rgba(10, 10, 20, 0.8);
+            color: #e0e0ff;
+            border: 2px solid #5a4fcf;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-out;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        #secret-code::placeholder {
+            color: rgba(200, 200, 255, 0.3);
+            letter-spacing: normal;
+        }
+
+        #secret-code:focus {
+            border-color: #9d8aff;
+            box-shadow: 0 0 15px rgba(157, 138, 255, 0.6);
+            background-color: rgba(15, 15, 30, 0.9);
+            transform: translateY(-2px);
+        }
+
+        #submit-secret {
+            background: linear-gradient(145deg, #483d8b, #3a2d7a);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            margin-top: 20px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #submit-secret::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        #submit-secret:hover {
+            background: linear-gradient(145deg, #5a4fcf, #483d8b);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(123, 104, 238, 0.6);
+        }
+
+        #submit-secret:hover::before {
+            left: 100%;
+        }
+
+        #submit-secret:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(123, 104, 238, 0.6);
+        }
+
+        /* Botón flotante para móviles */
+        #secret-panel-toggle {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: rgba(123, 104, 238, 0.3);
+            border-radius: 50%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            z-index: 9997;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+
+        #secret-panel-toggle:hover,
+        #secret-panel-toggle.active {
+            opacity: 1;
+            background: rgba(123, 104, 238, 0.7);
+            transform: none;
+            box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.3);
+        }
+
+        /* Efectos */
+        .emoji-effect {
+            font-size: 32px;
+            animation: emoji-float 1.5s ease-out forwards, emoji-scale 1.5s ease-in-out;
+            z-index: 50;
+        }
+
+        .status-effect {
+            position: absolute;
+            font-size: 20px;
+            z-index: 25;
+            pointer-events: none;
+            animation: pulse 2s infinite;
+        }
+
+        .player-effect {
+            right: 15%;
+            bottom: 50%;
+        }
+
+        .enemy-effect {
+            left: 15%;
+            bottom: 50%;
+        }
+
+        .ally-effect {
+            left: 25%;
+            bottom: 45%;
+        }
+
+        @keyframes emoji-float {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-80px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes emoji-scale {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.8);
+            }
+        }
+
+        .button-pressed {
+            transform: scale(0.95);
+            opacity: 0.8;
+            transition: all 0.1s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse-effect {
+            animation: pulse 0.5s;
+        }
+
+        .heal-effect {
+            position: absolute;
+            font-size: 32px;
+            animation: float-up 1.5s ease-out forwards;
+            z-index: 50;
+        }
+
+        /* Animaciones para aliados */
+        @keyframes ally-spawn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.5) translateY(50px);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: translateX(-50%) scale(1.1) translateY(-10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1) translateY(0);
+            }
+        }
+
+        @keyframes ally-death {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1) translateY(0);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: translateX(-50%) scale(0.8) translateY(-20px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.3) translateY(30px);
+            }
+        }
+
+        /* Animaciones para minions enemigos */
+        @keyframes minion-spawn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) translateY(-30px);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.2) translateY(-10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes minion-death {
+            0% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(0.7) translateY(-15px) rotate(10deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.2) translateY(20px) rotate(45deg);
+            }
+        }
+
+        /* Nuevos efectos visuales */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #7b68ee;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 45;
+            animation: particle-float 1s ease-out forwards;
+        }
+
+        @keyframes particle-float {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.5) translateY(-60px);
+            }
+        }
+
+        .combo-indicator {
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff6b8b;
+            text-shadow: 0 0 20px #ff6b8b;
+            z-index: 60;
+            animation: combo-pulse 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes combo-pulse {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.5);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.2);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) scale(1);
+            }
+        }
+
+        .screen-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 55;
+            animation: flash 0.3s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes flash {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .critical-hit {
+            position: absolute;
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 15px #ffd700;
+            animation: critical-bounce 1.2s ease-out forwards;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        @keyframes critical-bounce {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(0);
+            }
+
+            30% {
+                opacity: 1;
+                transform: scale(1.3) translateY(-20px);
+            }
+
+            60% {
+                transform: scale(1.1) translateY(-40px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1) translateY(-60px);
+            }
+        }
+
+        .stamina-bar {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            width: calc(100% - 10px);
+            height: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .stamina-fill {
+            height: 100%;
+            background: linear-gradient(to right, #ff9500, #ffb347);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading-screen">
+        <div id="loading-content">
+            <h2>Cargando Recursos...</h2>
+            <div id="loading-bar">
+                <div id="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <button id="music-toggle">Música: ON</button>
+    <div id="debug-info"></div>
+
+    <div id="mobile-warning">
+        <div class="rotate-icon">🔄</div>
+        <h2>¡GIRA TU DISPOSITIVO!</h2>
+        <p>Para una mejor experiencia, gira tu teléfono a modo horizontal</p>
+    </div>
+
+    <div id="game-container">
+        <div id="battle-bg"></div>
+
+        <div id="player" class="battle-character"></div>
+        <div id="ally" class="battle-character"></div>
+        <div id="enemy" class="battle-character"></div>
+
+        <div id="enemy-minion1" class="enemy-minion"></div>
+        <div id="enemy-minion2" class="enemy-minion"></div>
+
+        <!-- Barras de salud para minions -->
+        <div id="enemy-minion1-health" class="status-container"
+            style="display: none; position: absolute; right: 3%; bottom: 15%; width: 120px; height: 30px;">
+            <div class="status-name" style="font-size: 8px;">MINION 1</div>
+            <div class="status-bar" style="height: 12px;">
+                <div id="enemy-minion1-health-fill" class="status-fill hp-fill" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div id="enemy-minion2-health" class="status-container"
+            style="display: none; position: absolute; right: 20%; bottom: 15%; width: 120px; height: 30px;">
+            <div class="status-name" style="font-size: 8px;">MINION 2</div>
+            <div class="status-bar" style="height: 12px;">
+                <div id="enemy-minion2-health-fill" class="status-fill hp-fill" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div id="player-status" class="status-container">
+            <div class="status-name">JUGADOR</div>
+            <div class="status-bar">
+                <div id="player-health-fill" class="status-fill hp-fill" style="width: 100%">
+                    <span class="status-text" id="player-health-text">400/400</span>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div id="player-tp-fill" class="status-fill tp-fill" style="width: 0%">
+                    <span class="status-text" id="player-tp-text">0/100</span>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div id="player-stamina-fill" class="status-fill stamina-fill" style="width: 100%">
+                    <span class="status-text" id="player-stamina-text">100/100</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="enemy-status" class="status-container">
+            <div class="status-name">POLLOLITO</div>
+            <div class="status-bar">
+                <div id="enemy-health-fill" class="status-fill hp-fill" style="width: 100%">
+                    <span class="status-text" id="enemy-health-text">850/850</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="ally-status" class="status-container">
+            <div class="status-name">ALIADO</div>
+            <div class="status-bar">
+                <div id="ally-health-fill" class="status-fill hp-fill" style="width: 100%">
+                    <span class="status-text" id="ally-health-text">100/100</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="battle-ui">
+            <div id="action-box">
+                <div class="action-row">
+                    <button class="action-button" data-action="showAttackMenu">
+                        <span class="button-icon">⚔️</span>ATACAR
+                    </button>
+                    <button class="action-button" data-action="showSkillMenu">
+                        <span class="button-icon">✨</span>HABILIDADES
+                    </button>
+                </div>
+                <div class="action-row">
+                    <button class="action-button" data-action="defend">
+                        <span class="button-icon">🛡️</span>DEFENDER
+                    </button>
+                    <button class="action-button" data-action="showItemMenu">
+                        <span class="button-icon">🧪</span>OBJETOS
+                    </button>
+                </div>
+            </div>
+            <div class="action-row">
+                <div style="flex: 1; text-align: center; font-size: 12px; color: #7b68ee;">
+                    <span id="tp-value">TP: 0 | ST: 100</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="attack-menu" class="submenu">
+            <div class="submenu-actions">
+                <button class="submenu-button" data-action="attack" data-type="ball">
+                    <span class="button-icon">⚽</span>PELOTA
+                </button>
+                <button class="submenu-button" data-action="attack" data-type="sword">
+                    <span class="button-icon">🗡️</span>ESPADA
+                </button>
+                <button class="submenu-button" data-action="attack" data-type="gun">
+                    <span class="button-icon">🔫</span>PISTOLA<span class="tp-cost">20 TP</span>
+                </button>
+                <button class="submenu-button" data-action="attack" data-type="doubleSword">
+                    <span class="button-icon">⚔️</span>DOBLE ESPADA<span class="tp-cost">30 TP</span>
+                </button>
+                <button class="submenu-button" data-action="attack" data-type="doubleGun">
+                    <span class="button-icon">🔫🔫</span>DOBLE PISTOLA<span class="tp-cost">40 TP</span>
+                </button>
+                <button class="submenu-button submenu-back-button" data-action="backToMainMenu">
+                    <span class="button-icon">↩️</span>VOLVER
+                </button>
+            </div>
+        </div>
+
+        <div id="skill-menu" class="submenu">
+            <div class="submenu-actions">
+                <button class="submenu-button" data-action="useSkill" data-skill="boring">
+                    <span class="button-icon">😴</span>BODRIO<span class="tp-cost">10 TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="heal">
+                    <span class="button-icon">❤️</span>CURAR<span class="tp-cost">15 TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="upgrade">
+                    <span class="button-icon">🛠️</span>MEJORAR<span class="tp-cost">MAX TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="coin">
+                    <span class="button-icon">🪙</span>MONEDA<span class="tp-cost">15 TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="summon">
+                    <span class="button-icon">👥</span>ALIADO<span class="tp-cost">30 TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="fireboots">
+                    <span class="button-icon">🔥</span>BOTAS FUEGO<span class="tp-cost">25 TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="greenmode">
+                    <span class="button-icon">💚</span>MODO VERDE<span class="tp-cost">20 TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="randomizer">
+                    <span class="button-icon">🎲</span>RANDOMIZADOR<span class="tp-cost">25 TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="doubleGun">
+                    <span class="button-icon">🔫🔫</span>DOBLE PISTOLA<span class="tp-cost">40 TP</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="berserker">
+                    <span class="button-icon">⚡</span>BERSERKER<span class="tp-cost">50 ST</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="focus">
+                    <span class="button-icon">🎯</span>CONCENTRAR<span class="tp-cost">30 ST</span>
+                </button>
+                <button class="submenu-button" data-action="useSkill" data-skill="rush">
+                    <span class="button-icon">💨</span>ATAQUE RÁPIDO<span class="tp-cost">40 ST</span>
+                </button>
+                <button class="submenu-button submenu-back-button" data-action="backToMainMenu">
+                    <span class="button-icon">↩️</span>VOLVER
+                </button>
+            </div>
+        </div>
+
+        <div id="item-menu" class="submenu">
+            <div class="submenu-actions">
+                <button class="submenu-button" data-action="useItem" data-item="dogResidue">
+                    <span class="button-icon">💩</span>RESIDUO
+                </button>
+                <button class="submenu-button" data-action="useItem" data-item="allyPotion">
+                    <span class="button-icon">👥</span>ALIADO
+                </button>
+                <button class="submenu-button" data-action="useItem" data-item="healthPotion">
+                    <span class="button-icon">❤️</span>SALUD
+                </button>
+                <button class="submenu-button" data-action="useItem" data-item="tpPotion">
+                    <span class="button-icon">🔋</span>ENERGÍA
+                </button>
+                <button class="submenu-button" data-action="useItem" data-item="shieldPotion">
+                    <span class="button-icon">🛡️</span>ESCUDO
+                </button>
+                <button class="submenu-button" data-action="useItem" data-item="firePotion">
+                    <span class="button-icon">🔥</span>FUEGO
+                </button>
+                <button class="submenu-button" data-action="useItem" data-item="icePotion">
+                    <span class="button-icon">❄️</span>HIELO
+                </button>
+                <button class="submenu-button" data-action="useItem" data-item="adrenalineShot">
+                    <span class="button-icon">💉</span>ADRENALINA
+                </button>
+                <button class="submenu-button submenu-back-button" data-action="backToMainMenu">
+                    <span class="button-icon">↩️</span>VOLVER
+                </button>
+            </div>
+        </div>
+
+        <div id="precision-game">
+            <div id="precision-bar">
+                <div id="precision-target"></div>
+                <div id="precision-indicator"></div>
+            </div>
+            <div id="precision-instructions">Presiona cuando el indicador esté en la zona verde</div>
+        </div>
+
+        <div id="dialogue-box"></div>
+
+        <div id="end-screen"></div>
+    </div>
+
+    <!-- Panel de Código Secreto -->
+    <div id="secret-overlay"></div>
+    <div id="secret-panel">
+        <h3>PANEL SECRETO</h3>
+        <input type="password" id="secret-code" placeholder="Ingresa el código">
+        <button id="submit-secret">ENVIAR</button>
+    </div>
+
+    <!-- Botón flotante solo para móviles -->
+    <div id="secret-panel-toggle">⚙️</div>
+
+    <!-- Audio elements with preload -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="assets/music/Feathers of Fury.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="angry-music" loop preload="auto">
+        <source src="assets/music/Rooster Rampage.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="attack-sound" preload="auto">
+        <source src="assets/sounds/sound-effect-inflicting-damage.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="defend-sound" preload="auto">
+        <source src="assets/sounds/minecraft-block.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="heal-sound" preload="auto">
+        <source src="assets/sounds/fortnite-care.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="coin-sound" preload="auto">
+        <source src="assets/sounds/coin-flip.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="summon-sound" preload="auto">
+        <source src="assets/sounds/killkill.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="error-sound" preload="auto">
+        <source src="assets/sounds/erro.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="gun-sound" preload="auto">
+        <source src="assets/sounds/pistol-shot.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="fire-sound" preload="auto">
+        <source src="assets/sounds/short-fire-whoosh_1-317280.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="minion-sound" preload="auto">
+        <source src="assets/sounds/oi-oi.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="item-sound" preload="auto">
+        <source src="assets/sounds/tem-sound.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="poison-sound" preload="auto">
+        <source src="assets/sounds/poison.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="invincible-sound" preload="auto">
+        <source src="assets/sounds/invincible.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="final-sound" preload="auto">
+        <source src="assets/sounds/final.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="ice-sound" preload="auto">
+        <source src="assets/sounds/ice.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="green-sound" preload="auto">
+        <source src="assets/sounds/green.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="js/secret-panel.js"></script>
+
+    <script>
+        // CONSTANTES DEL JUEGO
+        const ATTACK_TYPES = {
+            ball: { min: 10, max: 20, tp: 0, icon: '⚽', name: "Pelota" },
+            sword: { min: 15, max: 30, tp: 0, icon: '🗡️', name: "Espada" },
+            gun: { min: 35, max: 55, tp: 20, icon: '🔫', name: "Pistola" },
+            doubleSword: { min: 45, max: 70, tp: 30, icon: '⚔️', name: "Doble Espada" },
+            doubleGun: { min: 40, max: 100, tp: 40, icon: '🔫🔫', name: "Doble Pistola" }
+        };
+
+        const SKILLS = {
+            boring: { tp: 10, stamina: 0, icon: '😴', name: "Nivel Bodrio" },
+            heal: { tp: 15, stamina: 0, icon: '❤️', name: "Curación Épica" },
+            upgrade: { tp: 'MAX', stamina: 0, icon: '🛠️', name: "Mejorar Arma" },
+            coin: { tp: 15, stamina: 0, icon: '🪙', name: "Moneda de Suerte" },
+            summon: { tp: 30, stamina: 0, icon: '👥', name: "Invocar Aliado" },
+            fireboots: { tp: 25, stamina: 0, icon: '🔥', name: "Botas de Fuego" },
+            greenmode: { tp: 20, stamina: 0, icon: '💚', name: "Modo Verde" },
+            randomizer: { tp: 25, stamina: 0, icon: '🎲', name: "Randomizador" },
+            doubleGun: { tp: 40, stamina: 0, icon: '🔫🔫', name: "Doble Pistola" },
+            berserker: { tp: 0, stamina: 50, icon: '⚡', name: "Modo Berserker" },
+            focus: { tp: 0, stamina: 30, icon: '🎯', name: "Concentración" },
+            rush: { tp: 0, stamina: 40, icon: '💨', name: "Ataque Rápido" }
+        };
+
+        const ITEMS = {
+            dogResidue: { uses: 5, maxUses: 5, icon: '💩', name: "Residuo de Perro" },
+            allyPotion: { uses: 5, maxUses: 5, icon: '👥', name: "Poción Aliado" },
+            healthPotion: { uses: 3, maxUses: 3, icon: '❤️', name: "Poción de Salud" },
+            tpPotion: { uses: 3, maxUses: 3, icon: '🔋', name: "Poción de TP" },
+            shieldPotion: { uses: 2, maxUses: 2, icon: '🛡️', name: "Poción Escudo" },
+            firePotion: { uses: 3, maxUses: 3, icon: '🔥', name: "Poción de Fuego" },
+            icePotion: { uses: 2, maxUses: 2, icon: '❄️', name: "Poción de Hielo" },
+            adrenalineShot: { uses: 2, maxUses: 2, icon: '💉', name: "Inyección de Adrenalina" }
+        };
+
+        const EFFECT_EMOJIS = {
+            positive: ['✨', '🌟', '💪', '🚀', '🔝'],
+            negative: ['💀', '☠️', '🤕', '👎', '💢'],
+            fire: '🔥',
+            ice: '❄️',
+            poison: '☠️',
+            stun: '💫',
+            random: '🎲'
+        };
+
+        const POLLO_LINES = {
+            taunts: [
+                "¡Pío pío! ¡Vas a perder!",
+                "¡Nadie puede vencer a Pollolito!",
+                "¡Prepárate para mi ataque épico!",
+                "¡Ja ja ja! ¡Eres muy débil!",
+                "¡Mis habilidades de programación son superiores!"
+            ],
+            onAngry: [
+                "¡GRRRRR! ¡AHORA ME ENOJÉ DE VERDAD!",
+                "¡Nadie hace enojar a Pollolito y sale ileso!",
+                "¡MODO FURIOSO ACTIVADO! ¡PÍO PÍO!",
+                "¡Error 404: Tu victoria no existe!"
+            ],
+            onHeal: [
+                "¡Curación épica! ¡Nunca me rendiré!",
+                "¡Ja ja! ¿Pensaste que era fácil?",
+                "¡Pollolito nunca cae!",
+                "¡Mi código es imparable!"
+            ],
+            onHealBlock: [
+                "¡Denegado! ¡No curarás hoy!",
+                "¡HTTP 403: Curación prohibida!",
+                "¡Ja ja! Bloqueé tu curación"
+            ],
+            onAlly: [
+                "¡Un aliado? ¡Eso no es justo!",
+                "¡Ja ja! ¡Tu aliado no es rival para mí!",
+                "¡Invocar ayuda es de novatos!"
+            ],
+            onSummonMinions: [
+                "¡Mis minions te destruirán!",
+                "¡Ja ja! ¡Ahora somos más!",
+                "¡Te abrumarán mis seguidores!"
+            ],
+            onInvincible: [
+                "¡Ahora soy invencible! ¡Pío pío!",
+                "¡Ja ja! ¡No puedes dañarme ahora!",
+                "¡Error 418: Soy una tetera invencible!"
+            ],
+            onFinalAttack: [
+                "¡PREPÁRATE PARA MI ATAQUE DEFINITIVO!",
+                "¡JA JA JA! ¡ESTO ES EL FIN!",
+                "¡CÓDIGO FINAL: SYSTEM_SHUTDOWN!"
+            ],
+            onGreenMode: [
+                "¡Qué interfaz más fea!",
+                "¡El verde es de novatos!",
+                "¡Prefiero mi estilo original!"
+            ]
+        };
+
+        const gameState = {
+            player: {
+                hp: 400,
+                maxHp: 400,
+                tp: 0,
+                maxTp: 100,
+                stamina: 100,
+                maxStamina: 100,
+                attackBonus: 0,
+                hasWeapon: true,
+                defending: false,
+                defenseBoost: 0,
+                shield: 0,
+                shieldTurns: 0,
+                poisoned: 0,
+                invincible: 0,
+                skipTurn: false,
+                damageBoost: 0,
+                actionTaken: false,
+                comboCount: 0,
+                comboMultiplier: 1,
+                perfectBlocks: 0,
+                fatigue: 0,
+                focused: false,
+                randomizerActive: false,
+                adrenalineUsed: false,
+                lastAttackType: null
+            },
+            dialogueQueue: [],
+            ally: {
+                active: false,
+                hp: 100,
+                maxHp: 100,
+                turns: 0
+            },
+            enemyMinions: [
+                { id: 1, active: false, hp: 8, maxHp: 8, turns: 0 },
+                { id: 2, active: false, hp: 8, maxHp: 8, turns: 0 }
+            ],
+            enemy: {
+                hp: 850,
+                maxHp: 850,
+                asleep: 0,
+                defenseDown: false,
+                angryMode: false,
+                burning: 0,
+                invincible: 0,
+                healCooldown: 0,
+                summonCooldown: 0,
+                invincibleCooldown: 0,
+                finalAttackUsed: false,
+                frozen: 0,
+                adaptiveLevel: 0,
+                playerPatterns: { ball: 0, sword: 0, gun: 0, defend: 0 },
+                lastPlayerAction: null,
+                consecutiveAttacks: 0,
+                phase: 1
+            },
+            items: {
+                dogResidue: { uses: 5, maxUses: 5 },
+                allyPotion: { uses: 5, maxUses: 5 },
+                healthPotion: { uses: 3, maxUses: 3 },
+                tpPotion: { uses: 3, maxUses: 3 },
+                shieldPotion: { uses: 2, maxUses: 2 },
+                firePotion: { uses: 3, maxUses: 3 },
+                icePotion: { uses: 2, maxUses: 2 },
+                adrenalineShot: { uses: 2, maxUses: 2 }
+            },
+            currentTurn: 'player',
+            battleLog: [],
+            musicEnabled: true,
+            uiBlocked: false,
+            precisionGameActive: false,
+            perfectBlockWindow: false,
+            isMobile: false,
+            greenMode: false,
+            turnCount: 0,
+            difficulty: 1,
+            debug: {
+                fps: 0,
+                lastFrameTime: 0,
+                frameCount: 0,
+                lastFpsUpdate: 0
+            },
+            doubleGunCooldown: 0,
+            lastValidState: null,
+            errorCount: 0,
+            activeEffects: {
+                player: new Map(),
+                enemy: new Map(),
+                ally: new Map()
+            }
+        };
+
+        const elements = {
+            player: document.getElementById('player'),
+            ally: document.getElementById('ally'),
+            enemy: document.getElementById('enemy'),
+            enemyMinion1: document.getElementById('enemy-minion1'),
+            enemyMinion2: document.getElementById('enemy-minion2'),
+            playerHealthFill: document.getElementById('player-health-fill'),
+            playerHealthText: document.getElementById('player-health-text'),
+            playerTpFill: document.getElementById('player-tp-fill'),
+            playerTpText: document.getElementById('player-tp-text'),
+            allyHealthFill: document.getElementById('ally-health-fill'),
+            allyHealthText: document.getElementById('ally-health-text'),
+            enemyHealthFill: document.getElementById('enemy-health-fill'),
+            enemyHealthText: document.getElementById('enemy-health-text'),
+            playerStaminaFill: document.getElementById('player-stamina-fill'),
+            playerStaminaText: document.getElementById('player-stamina-text'),
+            dialogueBox: document.getElementById('dialogue-box'),
+            battleUI: document.getElementById('battle-ui'),
+            actionBox: document.getElementById('action-box'),
+            attackMenu: document.getElementById('attack-menu'),
+            skillMenu: document.getElementById('skill-menu'),
+            itemMenu: document.getElementById('item-menu'),
+            precisionGame: document.getElementById('precision-game'),
+            precisionBar: document.getElementById('precision-bar'),
+            precisionTarget: document.getElementById('precision-target'),
+            precisionIndicator: document.getElementById('precision-indicator'),
+            precisionInstructions: document.getElementById('precision-instructions'),
+            tpDisplay: document.getElementById('tp-value'),
+            endScreen: document.getElementById('end-screen'),
+            bgMusic: document.getElementById('bg-music'),
+            angryMusic: document.getElementById('angry-music'),
+            attackSound: document.getElementById('attack-sound'),
+            defendSound: document.getElementById('defend-sound'),
+            healSound: document.getElementById('heal-sound'),
+            coinSound: document.getElementById('coin-sound'),
+            summonSound: document.getElementById('summon-sound'),
+            errorSound: document.getElementById('error-sound'),
+            gunSound: document.getElementById('gun-sound'),
+            fireSound: document.getElementById('fire-sound'),
+            minionSound: document.getElementById('minion-sound'),
+            itemSound: document.getElementById('item-sound'),
+            poisonSound: document.getElementById('poison-sound'),
+            invincibleSound: document.getElementById('invincible-sound'),
+            finalSound: document.getElementById('final-sound'),
+            iceSound: document.getElementById('ice-sound'),
+            greenSound: document.getElementById('green-sound'),
+            musicToggle: document.getElementById('music-toggle'),
+            debugInfo: document.getElementById('debug-info'),
+            loadingScreen: document.getElementById('loading-screen'),
+            loadingProgress: document.getElementById('loading-progress'),
+            gameContainer: document.getElementById('game-container')
+        };
+
+        const UI_BLOCKED_TIMEOUT = 4000; // Reducido a 4 segundos
+        let uiBlockedTimer = null;
+
+        // Sistema de monitoreo y recuperación automática
+        setInterval(() => {
+            BattleSystem.validateGameState();
+            if (gameState.uiBlocked && gameState.currentTurn === 'player') {
+                console.log('🔍 UI Monitor - Bloqueada por:', performance.now() - (gameState.lastUIBlock || 0), 'ms');
+            }
+        }, 2000);
+
+        // ==================== SISTEMA DE BATALLA UNIFICADO ====================
+
+        class BattleSystem {
+            static getRandomLine(array) {
+                return array[Math.floor(Math.random() * array.length)];
+            }
+
+            static startUiBlockedTimer() {
+                if (uiBlockedTimer) clearTimeout(uiBlockedTimer);
+                uiBlockedTimer = setTimeout(() => {
+                    if (gameState.uiBlocked) {
+                        BattleSystem.forceUnlockUI();
+                    }
+                }, UI_BLOCKED_TIMEOUT);
+            }
+
+            static resetUiBlockedTimer() {
+                if (uiBlockedTimer) clearTimeout(uiBlockedTimer);
+            }
+
+            static validateGameState() {
+                // Validar estado inconsistente
+                if (gameState.player.hp <= 0 || gameState.enemy.hp <= 0) return;
+                
+                if (gameState.currentTurn === 'player' && gameState.uiBlocked && 
+                    !gameState.precisionGameActive && gameState.dialogueQueue.length === 0) {
+                    const timeSinceBlock = performance.now() - (gameState.lastUIBlock || 0);
+                    if (timeSinceBlock > 5000) {
+                        console.warn('⚠️ Estado inconsistente detectado - recuperando...');
+                        BattleSystem.forceUnlockUI();
+                    }
+                }
+                
+                // Guardar estado válido
+                if (!gameState.uiBlocked && gameState.currentTurn === 'player') {
+                    gameState.lastValidState = {
+                        player: {...gameState.player},
+                        enemy: {...gameState.enemy},
+                        ally: {...gameState.ally},
+                        turnCount: gameState.turnCount
+                    };
+                }
+            }
+
+            static forceUnlockUI() {
+                console.log('🔧 FORCE UNLOCK UI - Estado:', {
+                    uiBlocked: gameState.uiBlocked,
+                    precisionActive: gameState.precisionGameActive,
+                    currentTurn: gameState.currentTurn,
+                    skipTurn: gameState.player.skipTurn,
+                    playerHP: gameState.player.hp,
+                    enemyHP: gameState.enemy.hp
+                });
+
+                // Limpiar todos los estados de bloqueo
+                gameState.uiBlocked = false;
+                gameState.precisionGameActive = false;
+                gameState.dialogueQueue = [];
+                gameState.lastUIBlock = null;
+                BattleSystem.resetUiBlockedTimer();
+                BattleSystem.cleanupEffects();
+
+                // Ocultar elementos de UI que puedan estar bloqueando
+                if (elements.dialogueBox) elements.dialogueBox.style.display = 'none';
+                if (elements.precisionGame) elements.precisionGame.style.display = 'none';
+                
+                // Solo habilitar UI si es turno del jugador y el juego no ha terminado
+                if (gameState.currentTurn === 'player' && 
+                    !gameState.player.skipTurn && 
+                    gameState.player.hp > 0 && 
+                    gameState.enemy.hp > 0) {
+                    console.log('🔧 Enabling UI for player turn');
+                    BattleSystem.enableUI();
+                    BattleSystem.showMainMenu();
+                } else {
+                    console.log('🔧 Not enabling UI - conditions not met');
+                }
+            }
+
+            static cleanupEffects() {
+                // Limpiar efectos visuales huérfanos
+                document.querySelectorAll('.battle-effect, .particle, .combo-indicator, .screen-flash, .status-effect').forEach(el => {
+                    if (el.parentNode) el.remove();
+                });
+                
+                // Resetear animaciones
+                document.querySelectorAll('.shake').forEach(el => {
+                    el.classList.remove('shake');
+                });
+                
+                // Limpiar efectos activos
+                gameState.activeEffects.player.clear();
+                gameState.activeEffects.enemy.clear();
+                gameState.activeEffects.ally.clear();
+            }
+
+            static showStatusEffect(target, effectType, emoji, duration = null) {
+                const effectId = `${target}-${effectType}`;
+                
+                // Remover efecto existente si existe
+                BattleSystem.removeStatusEffect(target, effectType);
+                
+                // Crear nuevo efecto
+                const effect = document.createElement('div');
+                effect.className = `status-effect ${target}-effect`;
+                effect.textContent = emoji;
+                effect.id = effectId;
+                
+                if (elements.gameContainer) {
+                    elements.gameContainer.appendChild(effect);
+                    gameState.activeEffects[target].set(effectType, effect);
+                    
+                    // Auto-remover si tiene duración
+                    if (duration) {
+                        setTimeout(() => {
+                            BattleSystem.removeStatusEffect(target, effectType);
+                        }, duration * 1000);
+                    }
+                }
+            }
+
+            static removeStatusEffect(target, effectType) {
+                const effect = gameState.activeEffects[target].get(effectType);
+                if (effect && effect.parentNode) {
+                    effect.remove();
+                    gameState.activeEffects[target].delete(effectType);
+                }
+            }
+
+            static updateStatusEffects() {
+                // Efectos del jugador
+                if (gameState.player.poisoned > 0) {
+                    BattleSystem.showStatusEffect('player', 'poison', '☠️');
+                } else {
+                    BattleSystem.removeStatusEffect('player', 'poison');
+                }
+                
+                if (gameState.player.shield > 0) {
+                    BattleSystem.showStatusEffect('player', 'shield', '🛡️');
+                } else {
+                    BattleSystem.removeStatusEffect('player', 'shield');
+                }
+                
+                if (gameState.player.invincible > 0) {
+                    BattleSystem.showStatusEffect('player', 'invincible', '✨');
+                } else {
+                    BattleSystem.removeStatusEffect('player', 'invincible');
+                }
+                
+                if (gameState.player.damageBoost > 0) {
+                    BattleSystem.showStatusEffect('player', 'boost', '💪');
+                } else {
+                    BattleSystem.removeStatusEffect('player', 'boost');
+                }
+                
+                // Efectos del enemigo
+                if (gameState.enemy.burning > 0) {
+                    BattleSystem.showStatusEffect('enemy', 'burn', '🔥');
+                } else {
+                    BattleSystem.removeStatusEffect('enemy', 'burn');
+                }
+                
+                if (gameState.enemy.frozen > 0) {
+                    BattleSystem.showStatusEffect('enemy', 'freeze', '❄️');
+                } else {
+                    BattleSystem.removeStatusEffect('enemy', 'freeze');
+                }
+                
+                if (gameState.enemy.asleep > 0) {
+                    BattleSystem.showStatusEffect('enemy', 'sleep', '😴');
+                } else {
+                    BattleSystem.removeStatusEffect('enemy', 'sleep');
+                }
+                
+                if (gameState.enemy.invincible > 0) {
+                    BattleSystem.showStatusEffect('enemy', 'invincible', '✨');
+                } else {
+                    BattleSystem.removeStatusEffect('enemy', 'invincible');
+                }
+                
+                if (gameState.enemy.defenseDown) {
+                    BattleSystem.showStatusEffect('enemy', 'defenseDown', '👇');
+                } else {
+                    BattleSystem.removeStatusEffect('enemy', 'defenseDown');
+                }
+            }
+
+            static showEffectEmoji(emoji, target = 'player', duration = 1000) {
+                try {
+                    const effect = document.createElement('div');
+                    effect.className = 'battle-effect emoji-effect';
+                    effect.textContent = emoji;
+                    effect.style.animationDuration = `${duration}ms`;
+                    effect.style.position = 'absolute';
+                    effect.style.zIndex = '50';
+
+                    if (target === 'enemy') {
+                        effect.style.right = '25%';
+                        effect.style.bottom = '40%';
+                    } else {
+                        effect.style.left = '25%';
+                        effect.style.bottom = '40%';
+                    }
+
+                    if (elements.gameContainer) {
+                        elements.gameContainer.appendChild(effect);
+                        setTimeout(() => {
+                            if (effect.parentNode) effect.remove();
+                        }, duration);
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Error en efecto visual:', error);
+                }
+            }
+
+            static showDialogue(text, duration = 2000, forceShow = false) {
+                // Durante turno enemigo, mostrar diálogo SIN bloquear UI con duración extendida
+                if (gameState.currentTurn === 'enemy' && !forceShow) {
+                    const enemyDuration = Math.max(duration, 3000); // Mínimo 3 segundos
+                    if (elements.dialogueBox) {
+                        elements.dialogueBox.textContent = text;
+                        elements.dialogueBox.style.display = 'block';
+                    }
+                    if (enemyDuration > 0) {
+                        setTimeout(() => {
+                            if (elements.dialogueBox && elements.dialogueBox.textContent === text) {
+                                elements.dialogueBox.style.display = 'none';
+                            }
+                        }, enemyDuration);
+                    }
+                    return;
+                }
+
+                // Si ya hay un diálogo y no es forzado, encolar el mensaje
+                if (gameState.uiBlocked && !gameState.precisionGameActive && !forceShow) {
+                    if (!gameState.dialogueQueue) gameState.dialogueQueue = [];
+                    gameState.dialogueQueue.push({ text, duration });
+                    return;
+                }
+
+                gameState.uiBlocked = true;
+                gameState.lastUIBlock = performance.now();
+                BattleSystem.startUiBlockedTimer();
+                if (elements.dialogueBox) {
+                    elements.dialogueBox.textContent = text;
+                    elements.dialogueBox.style.display = 'block';
+                }
+
+                if (duration > 0) {
+                    setTimeout(() => {
+                        if (elements.dialogueBox && elements.dialogueBox.textContent === text) {
+                            BattleSystem.hideDialogue();
+                        }
+                    }, duration);
+                }
+            }
+
+            static hideDialogue() {
+                if (elements.dialogueBox) elements.dialogueBox.style.display = 'none';
+                gameState.uiBlocked = false;
+                BattleSystem.resetUiBlockedTimer();
+
+                // Procesar cola de diálogos si existe
+                if (gameState.dialogueQueue && gameState.dialogueQueue.length > 0) {
+                    const nextDialogue = gameState.dialogueQueue.shift();
+                    setTimeout(() => {
+                        BattleSystem.showDialogue(nextDialogue.text, nextDialogue.duration, true);
+                    }, 500);
+                    return;
+                }
+
+                if (gameState.currentTurn === 'player' && !gameState.player.skipTurn && !gameState.precisionGameActive) {
+                    BattleSystem.enableUI();
+                }
+            }
+
+            static updateDifficulty() {
+                const healthPercent = gameState.enemy.hp / gameState.enemy.maxHp;
+                if (healthPercent < 0.5 && gameState.enemy.phase === 1) {
+                    gameState.enemy.phase = 2;
+                    BattleSystem.showDialogue("¡Pollolito entra en FASE 2! Se vuelve más agresivo.");
+                }
+
+                gameState.difficulty = 1 + (gameState.turnCount * 0.05) + (gameState.enemy.adaptiveLevel * 0.1);
+            }
+
+            static updateHealthBars() {
+                // Actualizar barras del jugador
+                if (elements.playerHealthFill) {
+                    elements.playerHealthFill.style.width = `${(gameState.player.hp / gameState.player.maxHp) * 100}%`;
+                }
+                if (elements.playerTpFill) {
+                    elements.playerTpFill.style.width = `${Math.floor(gameState.player.tp / gameState.player.maxTp * 100)}%`;
+                }
+                const staminaFill = document.getElementById('player-stamina-fill');
+                if (staminaFill) {
+                    staminaFill.style.width = `${(gameState.player.stamina / gameState.player.maxStamina) * 100}%`;
+
+                    // Cambiar color según el nivel de stamina
+                    if (gameState.player.stamina < 30) {
+                        staminaFill.style.background = 'linear-gradient(to right, #ff4444, #ff6666)';
+                        if (gameState.player.stamina < 15) {
+                            staminaFill.style.animation = 'pulse 1s infinite';
+                        }
+                    } else if (gameState.player.stamina < 60) {
+                        staminaFill.style.background = 'linear-gradient(to right, #ffaa00, #ffcc44)';
+                        staminaFill.style.animation = 'none';
+                    } else {
+                        staminaFill.style.background = 'linear-gradient(to right, #ff9500, #ffb347)';
+                        staminaFill.style.animation = 'none';
+                    }
+                }
+                if (elements.enemyHealthFill) {
+                    elements.enemyHealthFill.style.width = `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`;
+                }
+
+                // Actualizar textos
+                if (elements.playerHealthText) {
+                    elements.playerHealthText.textContent = `${gameState.player.hp}/${gameState.player.maxHp}`;
+                }
+                if (elements.playerTpText) {
+                    elements.playerTpText.textContent = `${Math.floor(gameState.player.tp)}/${gameState.player.maxTp}`;
+                }
+                const staminaText = document.getElementById('player-stamina-text');
+                if (staminaText) {
+                    staminaText.textContent = `${gameState.player.stamina}/${gameState.player.maxStamina}`;
+                }
+                if (elements.enemyHealthText) {
+                    elements.enemyHealthText.textContent = `${gameState.enemy.hp}/${gameState.enemy.maxHp}`;
+                }
+                if (elements.tpDisplay) {
+                    elements.tpDisplay.textContent = `TP: ${Math.floor(gameState.player.tp)} | ST: ${gameState.player.stamina}`;
+                }
+
+
+                // Actualizar aliado si está activo
+                BattleSystem.updateAllyUI();
+
+                // Actualizar minions enemigos
+                gameState.enemyMinions.forEach(minion => {
+                    if (minion.active) {
+                        const healthFill = document.getElementById(`enemy-minion${minion.id}-health-fill`);
+                        if (healthFill) {
+                            healthFill.style.width = `${(minion.hp / minion.maxHp) * 100}%`;
+                            // Cambiar color si está herido
+                            if (minion.hp / minion.maxHp < 0.5) {
+                                healthFill.style.background = '#ff3864';
+                            } else {
+                                healthFill.style.background = 'linear-gradient(to right, #ff3864, #ff6b8b)';
+                            }
+                        }
+                    }
+                });
+
+                // Efectos visuales cuando la salud es baja
+                if (elements.playerHealthFill) {
+                    if (gameState.player.hp / gameState.player.maxHp < 0.3) {
+                        elements.playerHealthFill.style.background = gameState.greenMode ? '#4CAF50' : '#ff3864';
+                    } else {
+                        elements.playerHealthFill.style.background = gameState.greenMode ?
+                            'linear-gradient(to right, #4CAF50, #8BC34A)' :
+                            'linear-gradient(to right, #ff3864, #ff6b8b)';
+                    }
+                }
+
+                if (elements.enemyHealthFill) {
+                    if (gameState.enemy.hp / gameState.enemy.maxHp < 0.3) {
+                        elements.enemyHealthFill.style.background = '#ff3864';
+                    } else {
+                        elements.enemyHealthFill.style.background = 'linear-gradient(to right, #ff3864, #ff6b8b)';
+                    }
+                }
+            }
+
+            static updateAllyUI() {
+                if (gameState.ally.active) {
+                    if (elements.allyHealthFill) {
+                        elements.allyHealthFill.style.width = `${(gameState.ally.hp / gameState.ally.maxHp) * 100}%`;
+                    }
+                    if (elements.allyHealthText) {
+                        elements.allyHealthText.textContent = `${gameState.ally.hp}/${gameState.ally.maxHp}`;
+                    }
+                    if (elements.ally) {
+                        elements.ally.style.display = 'block';
+                    }
+                    const allyStatus = document.getElementById('ally-status');
+                    if (allyStatus) allyStatus.style.display = 'block';
+                } else {
+                    if (elements.ally) elements.ally.style.display = 'none';
+                    const allyStatus = document.getElementById('ally-status');
+                    if (allyStatus) allyStatus.style.display = 'none';
+                }
+            }
+
+            static showAttackEffect(source, value, target = 'enemy') {
+                const effect = document.createElement('div');
+                const isCritical = value > 50;
+
+                effect.className = isCritical ? 'critical-hit' : 'battle-effect';
+                effect.textContent = isCritical ? `CRÍTICO! -${value}` : `-${value}`;
+
+                if (source === 'player') {
+                    effect.style.right = '25%';
+                    effect.style.bottom = '40%';
+                    effect.style.color = gameState.greenMode ? '#4CAF50' : (isCritical ? '#ffd700' : '#7b68ee');
+                    if (elements.player) {
+                        elements.player.classList.add('shake');
+                        setTimeout(() => elements.player.classList.remove('shake'), 500);
+                    }
+
+                    // Crear partículas para ataques del jugador
+                    BattleSystem.createParticles(25, 40, isCritical ? '#ffd700' : '#7b68ee', 8);
+                } else if (target === 'ally') {
+                    effect.style.left = '35%';
+                    effect.style.bottom = '40%';
+                    effect.style.color = '#ff6b8b';
+                    if (elements.ally) {
+                        elements.ally.classList.add('shake');
+                        setTimeout(() => elements.ally.classList.remove('shake'), 500);
+                    }
+                } else if (target.startsWith('enemy-minion')) {
+                    effect.style.right = (target === 'enemy-minion1' ? '8%' : '25%');
+                    effect.style.bottom = '30%';
+                    effect.style.color = '#ff6b8b';
+                    const minionElement = document.getElementById(target);
+                    if (minionElement) {
+                        minionElement.classList.add('shake');
+                        setTimeout(() => minionElement.classList.remove('shake'), 500);
+                    }
+                } else {
+                    effect.style.left = '25%';
+                    effect.style.bottom = '40%';
+                    effect.style.color = '#ff6b8b';
+                    if (elements.enemy) {
+                        elements.enemy.classList.add('shake');
+                        setTimeout(() => elements.enemy.classList.remove('shake'), 500);
+                    }
+
+                    // Crear partículas para ataques al enemigo
+                    BattleSystem.createParticles(75, 40, '#ff6b8b', 6);
+                }
+
+                // Flash de pantalla para ataques críticos
+                if (isCritical) {
+                    BattleSystem.screenFlash();
+                }
+
+                if (elements.gameContainer) {
+                    elements.gameContainer.appendChild(effect);
+                    setTimeout(() => {
+                        if (effect.parentNode) effect.remove();
+                    }, isCritical ? 1200 : 1000);
+                }
+            }
+
+            static createParticles(x, y, color, count) {
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = `${x + (Math.random() - 0.5) * 10}%`;
+                    particle.style.bottom = `${y + (Math.random() - 0.5) * 10}%`;
+                    particle.style.background = color;
+                    particle.style.animationDelay = `${Math.random() * 0.3}s`;
+
+                    if (elements.gameContainer) {
+                        elements.gameContainer.appendChild(particle);
+                        setTimeout(() => {
+                            if (particle.parentNode) particle.remove();
+                        }, 1000);
+                    }
+                }
+            }
+
+            static screenFlash() {
+                const flash = document.createElement('div');
+                flash.className = 'screen-flash';
+                document.body.appendChild(flash);
+                setTimeout(() => flash.remove(), 300);
+            }
+
+            static showComboIndicator(comboCount) {
+                const indicator = document.createElement('div');
+                indicator.className = 'combo-indicator';
+                indicator.textContent = `COMBO x${comboCount}!`;
+
+                if (comboCount >= 5) {
+                    indicator.style.color = '#ffd700';
+                    indicator.textContent = `MEGA COMBO x${comboCount}!`;
+                }
+
+                document.body.appendChild(indicator);
+                setTimeout(() => indicator.remove(), 1000);
+            }
+
+            static showHealEffect() {
+                const effect = document.createElement('div');
+                effect.className = 'heal-effect';
+                effect.textContent = '❤️';
+                effect.style.right = '20%';
+                effect.style.bottom = '30%';
+
+                if (elements.gameContainer) {
+                    elements.gameContainer.appendChild(effect);
+                    setTimeout(() => {
+                        if (effect.parentNode) effect.remove();
+                    }, 1000);
+                }
+            }
+
+            static updateTemporaryEffects() {
+                // Efectos del jugador
+                if (gameState.player.shieldTurns > 0) {
+                    gameState.player.shieldTurns--;
+                    if (gameState.player.shieldTurns === 0) {
+                        gameState.player.shield = 0;
+                        // No mostrar diálogo cuando desaparece el escudo
+                    }
+                }
+
+                if (gameState.player.invincible > 0) {
+                    gameState.player.invincible--;
+                    // No mostrar diálogo cuando termina la invencibilidad
+                }
+
+                if (gameState.player.poisoned > 0) {
+                    gameState.player.poisoned--;
+                    const poisonDamage = 5;
+                    gameState.player.hp -= poisonDamage;
+                    if (gameState.player.hp < 0) gameState.player.hp = 0;
+
+                    BattleSystem.showDialogue("¡Sufres daño por veneno! -" + poisonDamage + " HP");
+                    BattleSystem.showAttackEffect('player', poisonDamage);
+                    BattleSystem.updateHealthBars();
+
+                    if (gameState.player.hp <= 0) {
+                        setTimeout(() => BattleSystem.showGameOver(false), 2000);
+                        return;
+                    }
+                }
+
+                if (gameState.player.damageBoost > 0) {
+                    gameState.player.damageBoost--;
+                    // No mostrar diálogo cuando termina el boost
+                }
+
+                if (gameState.player.focused) {
+                    gameState.player.focused = false;
+                    // No mostrar diálogo que bloquee la UI
+                }
+
+                if (gameState.player.randomizerActive) {
+                    gameState.player.randomizerActive = false;
+                    // No mostrar diálogo que bloquee la UI
+                }
+
+                // Manejo de aliado
+                BattleSystem.handleAllyEffects();
+
+                // Efectos del enemigo
+                if (gameState.enemy.burning > 0) {
+                    gameState.enemy.burning--;
+                    const burnDamage = 5;
+                    gameState.enemy.hp -= burnDamage;
+                    if (gameState.enemy.hp < 0) gameState.enemy.hp = 0;
+
+                    BattleSystem.showDialogue("¡Pollolito sufre quemaduras! -" + burnDamage + " HP");
+                    BattleSystem.showAttackEffect('player', burnDamage);
+                    BattleSystem.updateHealthBars();
+
+                    if (gameState.enemy.hp <= 0) {
+                        setTimeout(() => BattleSystem.showGameOver(true), 2000);
+                        return;
+                    }
+                }
+
+                if (gameState.enemy.frozen > 0) {
+                    gameState.enemy.frozen--;
+                    // No mostrar diálogo cuando se descongela
+                }
+
+                if (gameState.enemy.asleep > 0) {
+                    gameState.enemy.asleep--;
+                    // No mostrar diálogo cuando se despierta
+                }
+
+                // Cooldowns del enemigo
+                if (gameState.enemy.healCooldown > 0) gameState.enemy.healCooldown--;
+                if (gameState.enemy.summonCooldown > 0) gameState.enemy.summonCooldown--;
+                if (gameState.enemy.invincibleCooldown > 0) gameState.enemy.invincibleCooldown--;
+
+                // Reset de estados
+                if (gameState.player.defenseBoost < 0) gameState.player.defenseBoost = 0;
+                if (gameState.enemy.defenseDown) gameState.enemy.defenseDown = false;
+            }
+
+            static handleAllyEffects() {
+                if (gameState.ally.active) {
+                    gameState.ally.turns--;
+                    if (gameState.ally.turns <= 0 || gameState.ally.hp <= 0) {
+                        console.log('🔥 handleAllyEffects: Ally needs to be removed');
+                        BattleSystem.removeAlly();
+                    }
+                }
+
+                // Manejo de minions enemigos
+                gameState.enemyMinions.forEach(minion => {
+                    if (minion.active) {
+                        minion.turns--;
+                        if (minion.turns <= 0 || minion.hp <= 0) {
+                            const minionElement = document.getElementById(`enemy-minion${minion.id}`);
+                            const minionHealth = document.getElementById(`enemy-minion${minion.id}-health`);
+
+                            // Animación de desaparición
+                            if (minionElement) {
+                                minionElement.style.animation = 'minion-death 0.6s ease-out forwards';
+                                setTimeout(() => {
+                                    minionElement.style.display = 'none';
+                                    minionElement.style.animation = '';
+                                }, 600);
+                            }
+                            if (minionHealth) {
+                                setTimeout(() => {
+                                    minionHealth.style.display = 'none';
+                                }, 600);
+                            }
+
+                            minion.active = false;
+                            minion.hp = minion.maxHp; // Reset HP para próxima invocación
+                        }
+                    }
+                });
+            }
+
+            static removeAlly() {
+                console.log('🔥 removeAlly called - currentTurn:', gameState.currentTurn);
+                
+                // Animación de desaparición del aliado
+                if (elements.ally) {
+                    elements.ally.style.animation = 'ally-death 1s ease-out forwards';
+                }
+
+                gameState.ally.active = false;
+                gameState.ally.hp = 0;
+                BattleSystem.updateAllyUI();
+                
+                // CRÍTICO: NO bloquear UI durante turno enemigo
+                if (gameState.currentTurn === 'enemy') {
+                    console.log('🔥 Aliado derrotado durante turno enemigo - NO bloquear UI');
+                    // Asegurar que la UI permanezca desbloqueada
+                    gameState.uiBlocked = false;
+                    gameState.precisionGameActive = false;
+                    BattleSystem.resetUiBlockedTimer();
+                    // NO mostrar diálogos que bloqueen
+                    return;
+                }
+                
+                // Solo durante turno del jugador se puede mostrar diálogo
+                console.log('🔥 Aliado derrotado durante turno del jugador');
+            }
+
+            static activateAngryMode() {
+                gameState.enemy.angryMode = true;
+                if (elements.enemy) elements.enemy.classList.add('angry-mode');
+
+                if (gameState.musicEnabled) {
+                    if (elements.bgMusic) elements.bgMusic.pause();
+                    if (elements.angryMusic) {
+                        elements.angryMusic.currentTime = 0;
+                        elements.angryMusic.play().catch(e => console.log("Auto-play prevented:", e));
+                    }
+                }
+
+                const angryLine = BattleSystem.getRandomLine(POLLO_LINES.onAngry);
+                setTimeout(() => {
+                    BattleSystem.showDialogue("Pollolito: " + angryLine);
+                    setTimeout(() => {
+                        BattleSystem.showDialogue("¡Pollolito entra en MODO FURIOSO! Sus ataques son más fuertes.");
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.endPlayerTurn();
+                    }, 3000);
+                }, 2000);
+            }
+
+            static getStaminaCost(attackType) {
+                const costs = { ball: 5, sword: 10, gun: 15, doubleSword: 20, doubleGun: 25 };
+                return costs[attackType] || 5;
+            }
+
+            static getComboBonus() {
+                if (gameState.player.comboCount >= 5) return 2.0;
+                if (gameState.player.comboCount >= 3) return 1.5;
+                if (gameState.player.comboCount >= 2) return 1.2;
+                return 1.0;
+            }
+
+            static updateComboSystem(type, precisionLevel) {
+                if (precisionLevel === 2) {
+                    gameState.player.comboCount++;
+                    gameState.player.comboMultiplier = BattleSystem.getComboBonus();
+
+                    if (gameState.player.comboCount >= 3) {
+                        BattleSystem.showEffectEmoji('🔥', 'player');
+                        BattleSystem.showComboIndicator(gameState.player.comboCount);
+                        BattleSystem.showDialogue(`¡COMBO x${gameState.player.comboCount}! Multiplicador: ${gameState.player.comboMultiplier.toFixed(1)}x`);
+
+                        // Efectos especiales para combos altos
+                        if (gameState.player.comboCount >= 5) {
+                            BattleSystem.screenFlash();
+                            BattleSystem.createParticles(50, 50, '#ffd700', 15);
+                        }
+                    }
+                } else {
+                    if (gameState.player.comboCount > 0) {
+                        BattleSystem.showDialogue("¡Combo roto!");
+                    }
+                    gameState.player.comboCount = 0;
+                    gameState.player.comboMultiplier = 1;
+                }
+                gameState.player.lastAttackType = type;
+            }
+
+            static updateEnemyAI(playerAction) {
+                gameState.enemy.playerPatterns[playerAction]++;
+                gameState.enemy.lastPlayerAction = playerAction;
+                gameState.enemy.adaptiveLevel = Math.min(5, Math.floor(gameState.turnCount / 3));
+            }
+
+            static screenShake() {
+                if (elements.gameContainer) {
+                    elements.gameContainer.classList.add('shake');
+                    setTimeout(() => elements.gameContainer.classList.remove('shake'), 500);
+                }
+            }
+
+            static applyDamage(damage, isCombo, tpCost = 0, message = "", specialEffect = null) {
+                if (gameState.enemy.invincible > 0) {
+                    BattleSystem.showDialogue("¡Pollolito es invencible! El ataque no tiene efecto.");
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.endPlayerTurn();
+                    }, 2000);
+                    return;
+                }
+
+                if (gameState.enemy.angryMode) {
+                    damage = Math.floor(damage * 0.9);
+                }
+
+                if (gameState.enemy.defenseDown) {
+                    damage = Math.floor(damage * 1.2);
+                }
+
+                gameState.enemy.hp -= damage;
+                if (gameState.enemy.hp < 0) gameState.enemy.hp = 0;
+
+                if (tpCost > 0) {
+                    gameState.player.tp -= tpCost;
+                    if (gameState.player.tp < 0) gameState.player.tp = 0;
+                }
+
+                gameState.player.tp += isCombo ? 25 : 15;
+                if (gameState.player.tp > gameState.player.maxTp) {
+                    gameState.player.tp = gameState.player.maxTp;
+                }
+
+                if (specialEffect === 'fire' && elements.fireSound) {
+                    elements.fireSound.currentTime = 0;
+                    elements.fireSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                } else if (specialEffect === 'poison' && elements.poisonSound) {
+                    elements.poisonSound.currentTime = 0;
+                    elements.poisonSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                }
+
+                BattleSystem.showAttackEffect('player', damage);
+                if (message) BattleSystem.showDialogue(message);
+                BattleSystem.updateHealthBars();
+
+                if (!gameState.enemy.angryMode && gameState.enemy.hp / gameState.enemy.maxHp <= 0.3) {
+                    BattleSystem.activateAngryMode();
+                    return;
+                }
+
+                if (gameState.enemy.hp <= 0) {
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.showGameOver(true);
+                    }, 2000);
+                    return;
+                }
+
+                if (Math.random() < 0.4 && damage < 20) {
+                    setTimeout(() => {
+                        BattleSystem.showDialogue("Pollolito: " + BattleSystem.getRandomLine(POLLO_LINES.taunts));
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 3000);
+                    }, 2000);
+                } else {
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.endPlayerTurn();
+                    }, 2000);
+                }
+            }
+
+            static executePlayerAttack(type, precisionLevel) {
+                const attack = ATTACK_TYPES[type];
+                let damage = 0;
+                let message = "";
+                let tpCost = attack.tp;
+                let specialEffect = null;
+
+                // Sistema de stamina mejorado
+                const staminaCost = BattleSystem.getStaminaCost(type);
+                if (gameState.player.stamina < staminaCost) {
+                    damage = Math.floor(damage * 0.7);
+                    BattleSystem.showDialogue("¡Estás fatigado! Daño reducido.");
+                }
+                gameState.player.stamina = Math.max(0, gameState.player.stamina - staminaCost);
+
+                const damageMultiplier = gameState.player.damageBoost > 0 ? 1.5 : 1;
+                const comboBonus = BattleSystem.getComboBonus();
+
+                if (gameState.player.focused) {
+                    damage = attack.max * 1.2;
+                    message = `¡Ataque enfocado! ${Math.floor(damage)} de daño`;
+                } else if (gameState.player.randomizerActive) {
+                    damage = Math.floor(Math.random() * (attack.max * 2 - attack.min + 1) + attack.min);
+                    message = `¡Ataque randomizado! ${damage} de daño`;
+                } else if (type === 'ball' || type === 'sword') {
+                    damage = precisionLevel === 2 ? attack.max : (precisionLevel === 1 ? Math.floor((attack.min + attack.max) / 2) : attack.min);
+                    damage = Math.floor(damage * damageMultiplier * comboBonus);
+                    message = precisionLevel === 2 ? `¡${attack.name} precisa! +${damage} daño` :
+                        (precisionLevel === 1 ? `${attack.name} decente. +${damage} daño` : `${attack.name} débil. +${damage} daño`);
+                } else if (type === 'gun') {
+                    damage = Math.floor((Math.random() * (attack.max - attack.min + 1) + attack.min) * damageMultiplier);
+                    message = precisionLevel === 2 ? `¡Disparo certero! ${damage} de daño` :
+                        (precisionLevel === 1 ? `Disparo decente. ${damage} de daño` : `Disparo fallido. ${damage} de daño`);
+                } else if (type === 'doubleSword') {
+                    damage = Math.floor((Math.random() * (attack.max - attack.min + 1) + attack.min) * damageMultiplier);
+
+                    if (Math.random() < 0.5) {
+                        const effects = ['fire', 'poison', 'stun'];
+                        const chosenEffect = effects[Math.floor(Math.random() * effects.length)];
+
+                        switch (chosenEffect) {
+                            case 'fire':
+                                gameState.enemy.burning = 2;
+                                specialEffect = 'fire';
+                                message = `¡Doble espada de fuego! ${damage} de daño + quemaduras`;
+                                break;
+                            case 'poison':
+                                gameState.enemy.defenseDown = true;
+                                specialEffect = 'poison';
+                                message = `¡Doble espada venenosa! ${damage} de daño + defensa reducida`;
+                                break;
+                            case 'stun':
+                                gameState.enemy.asleep = 2;
+                                specialEffect = 'stun';
+                                message = `¡Doble espada aturdidora! ${damage} de daño + aturdimiento`;
+                                break;
+                        }
+                    } else {
+                        message = precisionLevel === 2 ? `¡Doble espada épica! ${damage} de daño` :
+                            (precisionLevel === 1 ? `Doble espada decente. ${damage} de daño` : `Doble espada débil. ${damage} de daño`);
+                    }
+                }
+
+                damage += gameState.player.attackBonus;
+
+                // Sistema de combos mejorado
+                BattleSystem.updateComboSystem(type, precisionLevel);
+
+                // Actualizar patrones de IA
+                BattleSystem.updateEnemyAI(type);
+
+                // Efectos visuales mejorados
+                if (damage > 50) {
+                    BattleSystem.screenShake();
+                }
+                if (precisionLevel === 2) {
+                    BattleSystem.showEffectEmoji('💥', 'enemy');
+                }
+
+                BattleSystem.applyDamage(damage, false, tpCost, message, specialEffect);
+            }
+
+            static startPlayerTurn() {
+                if (gameState.player.hp <= 0 || gameState.enemy.hp <= 0) return;
+
+                gameState.turnCount++;
+                gameState.player.actionTaken = false;
+                gameState.player.defending = false;
+                gameState.player.defenseBoost = 0;
+                gameState.uiBlocked = false;
+                gameState.precisionGameActive = false;
+                BattleSystem.resetUiBlockedTimer();
+
+                // Regenerar stamina
+                gameState.player.stamina = Math.min(gameState.player.maxStamina, gameState.player.stamina + 15);
+
+                if (gameState.player.skipTurn) {
+                    gameState.player.skipTurn = false;
+                    BattleSystem.showDialogue("¡Estás aturdido! Pierdes este turno.");
+                    setTimeout(BattleSystem.endPlayerTurn, 1500);
+                    return;
+                }
+
+                BattleSystem.updateTemporaryEffects();
+                BattleSystem.updateHealthBars();
+                BattleSystem.updateStatusEffects();
+                BattleSystem.updateDifficulty();
+
+                if (!gameState.uiBlocked && !gameState.precisionGameActive) {
+                    BattleSystem.enableUI();
+                }
+
+                BattleSystem.showMainMenu();
+            }
+
+            static endPlayerTurn() {
+                gameState.currentTurn = 'enemy';
+                gameState.uiBlocked = false;
+                gameState.precisionGameActive = false;
+                BattleSystem.resetUiBlockedTimer();
+                BattleSystem.disableUI();
+                BattleSystem.hideDialogue();
+                setTimeout(BattleSystem.startEnemyTurn, 1000);
+            }
+
+            static playerAttack(type) {
+                if (!ATTACK_TYPES[type]) return;
+
+                if (gameState.player.actionTaken) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue("¡Ya realizaste una acción este turno!");
+                    setTimeout(() => BattleSystem.hideDialogue(), 2000);
+                    return;
+                }
+
+                const attack = ATTACK_TYPES[type];
+
+                if (attack.tp > 0 && gameState.player.tp < attack.tp) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue(`No tienes suficiente TP para usar ${type === 'gun' ? 'la pistola' : 'la doble espada'}.`);
+                    setTimeout(() => {
+                        BattleSystem.hideDialogue();
+                        BattleSystem.startPlayerTurn();
+                    }, 2000);
+                    return;
+                }
+
+                if (!gameState.player.hasWeapon && (type === 'sword' || type === 'doubleSword')) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue("¡No tienes espada! Usa 'Mejorar Armas' primero.");
+                    setTimeout(() => {
+                        BattleSystem.hideDialogue();
+                        BattleSystem.startPlayerTurn();
+                    }, 2000);
+                    return;
+                }
+
+                gameState.player.actionTaken = true;
+                BattleSystem.disableUI();
+                BattleSystem.startPrecisionGame(type);
+            }
+
+            static startPrecisionGame(attackType) {
+                gameState.precisionGameActive = true;
+                BattleSystem.showDialogue("¡Juego de precisión! Toca cuando el indicador esté en la zona verde.");
+
+                setTimeout(() => {
+                    BattleSystem.hideDialogue();
+                    if (elements.precisionGame) elements.precisionGame.style.display = 'flex';
+
+                    let position = 0;
+                    let direction = 1;
+                    let speed = 2 + Math.random() * 0.3;
+                    let lastTime = performance.now();
+                    let animationId;
+
+                    const animate = (currentTime) => {
+                        if (!gameState.precisionGameActive) {
+                            cancelAnimationFrame(animationId);
+                            return;
+                        }
+
+                        const deltaTime = currentTime - lastTime;
+                        lastTime = currentTime;
+
+                        position += direction * speed * (deltaTime / 16);
+
+                        if (position >= 100) {
+                            position = 100;
+                            direction = -1;
+                            speed = 2 + Math.random() * 0.3;
+                        } else if (position <= 0) {
+                            position = 0;
+                            direction = 1;
+                            speed = 2 + Math.random() * 0.3;
+                        }
+
+                        if (elements.precisionIndicator) elements.precisionIndicator.style.left = `${position}%`;
+                        animationId = requestAnimationFrame(animate);
+                    };
+
+                    animationId = requestAnimationFrame(animate);
+
+                    const handlePrecisionClick = (e) => {
+                        e.preventDefault();
+                        if (!gameState.precisionGameActive) return;
+
+                        cancelAnimationFrame(animationId);
+
+                        const indicatorPos = elements.precisionIndicator ? parseFloat(elements.precisionIndicator.style.left) : 0;
+                        const targetStart = 35;
+                        const targetEnd = 65;
+
+                        let precisionLevel = 0;
+                        if (indicatorPos >= targetStart && indicatorPos <= targetEnd) {
+                            precisionLevel = 2;
+                        } else if (indicatorPos >= targetStart - 15 && indicatorPos <= targetEnd + 15) {
+                            precisionLevel = 1;
+                        }
+
+                        if (elements.precisionGame) {
+                            elements.precisionGame.style.display = 'none';
+                            elements.precisionGame.removeEventListener('click', handlePrecisionClick);
+                            elements.precisionGame.removeEventListener('touchstart', handlePrecisionClick);
+                        }
+                        gameState.precisionGameActive = false;
+                        BattleSystem.executePlayerAttack(attackType, precisionLevel);
+                    };
+
+                    if (elements.precisionGame) {
+                        elements.precisionGame.addEventListener('click', handlePrecisionClick);
+                        elements.precisionGame.addEventListener('touchstart', handlePrecisionClick);
+                    }
+
+                    setTimeout(() => {
+                        if (gameState.precisionGameActive) {
+                            cancelAnimationFrame(animationId);
+                            if (elements.precisionGame) {
+                                elements.precisionGame.style.display = 'none';
+                                elements.precisionGame.removeEventListener('click', handlePrecisionClick);
+                                elements.precisionGame.removeEventListener('touchstart', handlePrecisionClick);
+                            }
+                            gameState.precisionGameActive = false;
+                            BattleSystem.showDialogue("¡Demasiado lento! Pierdes tu turno.");
+                            setTimeout(BattleSystem.endPlayerTurn, 2000);
+                        }
+                    }, 5000);
+                }, 1000);
+            }
+
+            static playerDefend() {
+                if (gameState.player.actionTaken) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue("¡Ya realizaste una acción este turno!");
+                    setTimeout(() => BattleSystem.hideDialogue(), 2000);
+                    return;
+                }
+
+                gameState.player.actionTaken = true;
+                BattleSystem.disableUI();
+
+                // Activar ventana de bloqueo perfecto
+                gameState.perfectBlockWindow = true;
+                setTimeout(() => {
+                    gameState.perfectBlockWindow = false;
+                }, 1000);
+
+                if (elements.defendSound) {
+                    elements.defendSound.currentTime = 0;
+                    elements.defendSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                }
+
+                gameState.player.defending = true;
+                gameState.player.defenseBoost = 0.7;
+
+                // Regenerar stamina al defender
+                gameState.player.stamina = Math.min(gameState.player.maxStamina, gameState.player.stamina + 20);
+
+                gameState.player.tp += 15;
+                if (gameState.player.tp > gameState.player.maxTp) {
+                    gameState.player.tp = gameState.player.maxTp;
+                }
+
+                // Actualizar patrones de IA
+                BattleSystem.updateEnemyAI('defend');
+
+                BattleSystem.showDialogue("¡Te preparas para defender! (+15 TP, +20 Stamina, -70% daño)");
+                BattleSystem.updateHealthBars();
+
+                setTimeout(() => {
+                    BattleSystem.forceUnlockUI();
+                    BattleSystem.endPlayerTurn();
+                }, 1500);
+            }
+
+            static useSkill(skill) {
+                if (!SKILLS[skill]) return;
+
+                if (gameState.player.actionTaken) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue("¡Ya realizaste una acción este turno!");
+                    setTimeout(() => BattleSystem.hideDialogue(), 2000);
+                    return;
+                }
+
+                const skillInfo = SKILLS[skill];
+
+                // Verificar stamina si la habilidad la requiere
+                if (skillInfo.stamina > 0 && gameState.player.stamina < skillInfo.stamina) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue(`No tienes suficiente stamina para ${skillInfo.name}. Necesitas ${skillInfo.stamina} ST.`);
+                    setTimeout(() => {
+                        BattleSystem.hideDialogue();
+                    }, 2000);
+                    return;
+                }
+
+                if (skillInfo.tp !== 'MAX' && skillInfo.tp > 0 && gameState.player.tp < skillInfo.tp) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue(`No tienes suficiente TP para usar ${skillInfo.name}. Necesitas ${skillInfo.tp} TP.`);
+                    setTimeout(() => {
+                        BattleSystem.hideDialogue();
+                    }, 2000);
+                    return;
+                }
+
+                if (skillInfo.tp === 'MAX' && gameState.player.tp < gameState.player.maxTp) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue("No tienes el TP al máximo.");
+                    setTimeout(() => {
+                        BattleSystem.hideDialogue();
+                    }, 2000);
+                    return;
+                }
+
+                gameState.player.actionTaken = true;
+                BattleSystem.disableUI();
+
+                // Consumir recursos
+                if (skillInfo.tp > 0 && skillInfo.tp !== 'MAX') {
+                    gameState.player.tp -= skillInfo.tp;
+                }
+                if (skillInfo.stamina > 0) {
+                    gameState.player.stamina -= skillInfo.stamina;
+                }
+
+                switch (skill) {
+                    case 'boring':
+                        gameState.enemy.asleep = 2;
+                        BattleSystem.showEffectEmoji('😴', 'enemy');
+                        BattleSystem.showDialogue("¡Nivel bodrio! Pollolito se duerme por 2 turnos.");
+                        BattleSystem.updateHealthBars();
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 2000);
+                        break;
+
+                    case 'berserker':
+                        gameState.player.damageBoost = 3;
+                        gameState.player.comboCount = 0; // Reset combo pero gana daño
+                        BattleSystem.showEffectEmoji('⚡', 'player');
+                        BattleSystem.showDialogue("¡MODO BERSERKER! +50% daño por 3 turnos, pero pierdes combos.");
+                        BattleSystem.updateHealthBars();
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 2000);
+                        break;
+
+                    case 'focus':
+                        gameState.player.focused = true;
+                        gameState.player.comboCount += 1; // Bonus al combo
+                        BattleSystem.showEffectEmoji('🎯', 'player');
+                        BattleSystem.showDialogue("¡CONCENTRACIÓN! Próximo ataque será preciso y +1 combo.");
+                        BattleSystem.updateHealthBars();
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 2000);
+                        break;
+
+                    case 'rush':
+                        // Ataque rápido que no consume turno pero hace daño menor
+                        const rushDamage = Math.floor(Math.random() * 20) + 15;
+                        gameState.enemy.hp -= rushDamage;
+                        if (gameState.enemy.hp < 0) gameState.enemy.hp = 0;
+
+                        BattleSystem.showEffectEmoji('💨', 'enemy');
+                        BattleSystem.showAttackEffect('player', rushDamage);
+                        BattleSystem.showDialogue(`¡ATAQUE RÁPIDO! ${rushDamage} de daño sin consumir turno.`, 1500);
+                        BattleSystem.updateHealthBars();
+
+                        // Verificar si el enemigo murió
+                        if (gameState.enemy.hp <= 0) {
+                            setTimeout(() => BattleSystem.showGameOver(true), 2000);
+                            return;
+                        }
+
+                        // No termina el turno, permite otra acción
+                        gameState.player.actionTaken = false;
+                        setTimeout(() => {
+                            console.log('💨 RUSH: Desbloqueando UI para otra acción');
+                            gameState.uiBlocked = false;
+                            gameState.precisionGameActive = false;
+                            BattleSystem.resetUiBlockedTimer();
+                            BattleSystem.enableUI();
+                            BattleSystem.showMainMenu();
+                        }, 1500);
+                        break;
+
+                    case 'heal':
+                        if (Math.random() < 0.2) {
+                            if (elements.errorSound) {
+                                elements.errorSound.currentTime = 0;
+                                elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                            }
+                            const healBlockLine = BattleSystem.getRandomLine(POLLO_LINES.onHealBlock);
+                            BattleSystem.showDialogue(`Pollolito: ${healBlockLine}`);
+                            setTimeout(() => {
+                                BattleSystem.showDialogue("¡Pollolito niega tu curación!");
+                            }, 2000);
+                        } else {
+                            if (elements.healSound) {
+                                elements.healSound.currentTime = 0;
+                                elements.healSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                            }
+                            const healAmount = 50 - Math.floor(50 * (gameState.player.fatigue * 0.03));
+                            gameState.player.hp += healAmount;
+                            if (gameState.player.hp > gameState.player.maxHp) {
+                                gameState.player.hp = gameState.player.maxHp;
+                            }
+                            BattleSystem.showDialogue("¡Curación épica! +" + healAmount + " HP.");
+                            BattleSystem.showHealEffect();
+                            BattleSystem.updateHealthBars();
+                        }
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 2000);
+                        break;
+
+                    case 'upgrade':
+                        if (skillInfo.tp === 'MAX') {
+                            gameState.player.tp = 0;
+                        }
+                        const roll = Math.random();
+
+                        if (roll < 0.4) {
+                            if (elements.healSound) {
+                                elements.healSound.currentTime = 0;
+                                elements.healSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                            }
+                            gameState.player.attackBonus += 5;
+                            BattleSystem.showDialogue("¡Mejora épica! +5 de daño permanente.");
+                        } else if (roll < 0.7) {
+                            if (elements.errorSound) {
+                                elements.errorSound.currentTime = 0;
+                                elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                            }
+                            gameState.player.hasWeapon = false;
+                            gameState.player.attackBonus = Math.max(-5, gameState.player.attackBonus - 5);
+                            BattleSystem.showDialogue("¡Oh no! Pierdes tu arma. -5 de daño.");
+                        } else {
+                            if (elements.errorSound) {
+                                elements.errorSound.currentTime = 0;
+                                elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                            }
+                            BattleSystem.showDialogue("Nada ocurre... qué bodrio.");
+                        }
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 2000);
+                        break;
+
+                    case 'coin':
+                        BattleSystem.updateHealthBars();
+
+                        if (elements.coinSound) {
+                            elements.coinSound.currentTime = 0;
+                            elements.coinSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                        }
+
+                        const result = Math.random();
+
+                        if (result < 0.5) {
+                            gameState.player.damageBoost = 2;
+                            BattleSystem.showDialogue("¡Moneda de la suerte! +50% de daño por 2 turnos.");
+                        } else {
+                            const damage = 5;
+                            gameState.player.hp -= damage;
+                            if (gameState.player.hp < 0) gameState.player.hp = 0;
+                            BattleSystem.showDialogue("¡Mala suerte! La moneda te quita 5 HP.");
+                            BattleSystem.showAttackEffect('player', damage);
+                        }
+
+                        BattleSystem.updateHealthBars();
+
+                        if (gameState.player.hp <= 0) {
+                            setTimeout(() => {
+                                BattleSystem.forceUnlockUI();
+                                BattleSystem.showGameOver(false);
+                            }, 2000);
+                            return;
+                        }
+
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 2000);
+                        break;
+
+                    case 'summon':
+                        if (gameState.ally.active) {
+                            if (elements.errorSound) {
+                                elements.errorSound.currentTime = 0;
+                                elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                            }
+                            BattleSystem.showDialogue("¡Ya tienes un aliado en batalla!");
+                            setTimeout(() => {
+                                BattleSystem.hideDialogue();
+                                BattleSystem.startPlayerTurn();
+                            }, 2000);
+                            return;
+                        }
+
+                        if (elements.summonSound) {
+                            elements.summonSound.currentTime = 0;
+                            elements.summonSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                        }
+                        gameState.ally.active = true;
+                        gameState.ally.hp = 100;
+                        gameState.ally.turns = 6;
+
+                        // Animación de aparición del aliado
+                        if (elements.ally) {
+                            elements.ally.style.animation = 'ally-spawn 1s ease-out forwards';
+                        }
+
+                        BattleSystem.updateAllyUI();
+                        BattleSystem.updateHealthBars();
+
+                        BattleSystem.showDialogue("¡Invocas un aliado épico! Te ayudará por 6 turnos.");
+                        setTimeout(() => {
+                            const allyLine = BattleSystem.getRandomLine(POLLO_LINES.onAlly);
+                            BattleSystem.showDialogue(`Pollolito: ${allyLine}`);
+                            setTimeout(() => {
+                                BattleSystem.forceUnlockUI();
+                                BattleSystem.endPlayerTurn();
+                            }, 2000);
+                        }, 2000);
+                        break;
+
+                    case 'fireboots':
+                        if (elements.fireSound) {
+                            elements.fireSound.currentTime = 0;
+                            elements.fireSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                        }
+                        gameState.enemy.burning = 2;
+                        BattleSystem.showEffectEmoji('🔥', 'enemy');
+
+                        BattleSystem.showDialogue("¡Botas de fuego! Pollolito arderá por 2 turnos.");
+                        BattleSystem.updateHealthBars();
+                        BattleSystem.updateStatusEffects();
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 2000);
+                        break;
+
+                    case 'greenmode':
+                        if (elements.greenSound) {
+                            elements.greenSound.currentTime = 0;
+                            elements.greenSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                        }
+                        gameState.greenMode = !gameState.greenMode;
+
+                        if (gameState.greenMode) {
+                            if (elements.battleUI) elements.battleUI.classList.add('green-mode');
+                            if (elements.attackMenu) elements.attackMenu.classList.add('green-mode');
+                            if (elements.skillMenu) elements.skillMenu.classList.add('green-mode');
+                            if (elements.itemMenu) elements.itemMenu.classList.add('green-mode');
+                            document.querySelectorAll('.status-container').forEach(el => el.classList.add('green-mode'));
+                            BattleSystem.showDialogue("¡Modo Verde activado! Interfaz mejorada.");
+                        } else {
+                            if (elements.battleUI) elements.battleUI.classList.remove('green-mode');
+                            if (elements.attackMenu) elements.attackMenu.classList.remove('green-mode');
+                            if (elements.skillMenu) elements.skillMenu.classList.remove('green-mode');
+                            if (elements.itemMenu) elements.itemMenu.classList.remove('green-mode');
+                            document.querySelectorAll('.status-container').forEach(el => el.classList.remove('green-mode'));
+                            BattleSystem.showDialogue("¡Modo Verde desactivado!");
+                        }
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.endPlayerTurn();
+                        }, 2000);
+                        break;
+
+                    case 'randomizer':
+                        const randomEffect = Math.floor(Math.random() * 5);
+
+                        switch (randomEffect) {
+                            case 0:
+                                gameState.player.damageBoost = 3;
+                                BattleSystem.showEffectEmoji(EFFECT_EMOJIS.positive[0], 'player');
+                                BattleSystem.showDialogue("¡Randomizador: +50% daño por 3 turnos!");
+                                break;
+                            case 1:
+                                const healAmount = Math.floor(gameState.player.maxHp * 0.5);
+                                gameState.player.hp += healAmount;
+                                if (gameState.player.hp > gameState.player.maxHp) gameState.player.hp = gameState.player.maxHp;
+                                BattleSystem.showEffectEmoji(EFFECT_EMOJIS.positive[1], 'player');
+                                BattleSystem.showDialogue(`¡Randomizador: +${healAmount} HP!`);
+                                break;
+                            case 2:
+                                gameState.player.poisoned = 3;
+                                BattleSystem.showEffectEmoji(EFFECT_EMOJIS.negative[0], 'player');
+                                BattleSystem.showDialogue("¡Randomizador: ¡Envenenado por 3 turnos!");
+                                break;
+                            case 3:
+                                gameState.player.fatigue += 20;
+                                BattleSystem.showEffectEmoji(EFFECT_EMOJIS.negative[1], 'player');
+                                BattleSystem.showDialogue("¡Randomizador: +20% de fatiga!");
+                                break;
+                            case 4:
+                                gameState.player.damageBoost = 2;
+                                gameState.player.skipTurn = true;
+                                BattleSystem.showEffectEmoji(EFFECT_EMOJIS.random, 'player');
+                                BattleSystem.showDialogue("¡Randomizador: +30% daño pero pierdes el próximo turno!");
+                                break;
+                        }
+
+                        gameState.player.randomizerActive = true;
+                        BattleSystem.updateHealthBars();
+                        setTimeout(() => BattleSystem.endPlayerTurn(), 2000);
+                        break;
+
+                    case 'doubleGun':
+                        const gunRoll = Math.random();
+
+                        if (gunRoll < 0.5) {
+                            const damage = Math.floor(Math.random() * 61) + 40;
+                            gameState.enemy.hp -= damage;
+                            if (gameState.enemy.hp < 0) gameState.enemy.hp = 0;
+
+                            BattleSystem.showEffectEmoji('🔫💥', 'enemy');
+                            BattleSystem.showAttackEffect('player', damage);
+                            BattleSystem.showDialogue(`¡Doble Pistola exitosa! ${damage} de daño.`);
+                        }
+                        else if (gunRoll < 0.7) {
+                            BattleSystem.showEffectEmoji('🔫❌', 'player');
+                            BattleSystem.showDialogue("¡Las pistolas se traban! Pierdes tu turno.");
+                            gameState.player.skipTurn = true;
+                        }
+                        else {
+                            const selfDamage = Math.floor(Math.random() * 31) + 20;
+                            gameState.player.hp -= selfDamage;
+                            if (gameState.player.hp < 0) gameState.player.hp = 0;
+
+                            BattleSystem.showEffectEmoji('💥🔥', 'player');
+                            BattleSystem.showAttackEffect('player', selfDamage);
+                            BattleSystem.showDialogue("¡CATÁSTROFE! Una pistola explota y te dañas.");
+                        }
+
+                        BattleSystem.updateHealthBars();
+                        setTimeout(() => {
+                            BattleSystem.showDialogue("Pollolito: " + BattleSystem.getRandomLine(POLLO_LINES.onGreenMode));
+                            setTimeout(() => {
+                                BattleSystem.forceUnlockUI();
+                                BattleSystem.endPlayerTurn();
+                            }, 2000);
+                        }, 2000);
+                        break;
+                }
+            }
+
+            static useItem(item) {
+                if (!ITEMS[item]) return;
+
+                if (gameState.player.actionTaken) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue("¡Ya realizaste una acción este turno!");
+                    setTimeout(() => BattleSystem.hideDialogue(), 2000);
+                    return;
+                }
+
+                if (gameState.items[item].uses <= 0) {
+                    if (elements.errorSound) {
+                        elements.errorSound.currentTime = 0;
+                        elements.errorSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                    }
+                    BattleSystem.showDialogue("¡No te quedan usos de este objeto!");
+                    setTimeout(() => {
+                        BattleSystem.hideDialogue();
+                        BattleSystem.startPlayerTurn();
+                    }, 2000);
+                    return;
+                }
+
+                gameState.player.actionTaken = true;
+                BattleSystem.disableUI();
+                if (elements.itemSound) {
+                    elements.itemSound.currentTime = 0;
+                    elements.itemSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                }
+
+                switch (item) {
+                    case 'dogResidue':
+                        const results = [
+                            { text: "¡Residuo mágico! Curación completa.", heal: gameState.player.maxHp },
+                            { text: "¡Buena suerte! Curación del 50%.", heal: Math.floor(gameState.player.maxHp * 0.5) },
+                            { text: "Curación decente. 2/4 de vida.", heal: Math.floor(gameState.player.maxHp * 0.5) },
+                            { text: "Solo un poco... +1 HP.", heal: 1 }
+                        ];
+
+                        const result = results[Math.floor(Math.random() * results.length)];
+                        gameState.player.hp += result.heal;
+                        if (gameState.player.hp > gameState.player.maxHp) gameState.player.hp = gameState.player.maxHp;
+
+                        BattleSystem.showDialogue(result.text);
+                        BattleSystem.showHealEffect();
+                        break;
+
+                    case 'allyPotion':
+                        if (!gameState.ally.active) {
+                            BattleSystem.showDialogue("No tienes aliado para curar.");
+                            setTimeout(() => {
+                                BattleSystem.hideDialogue();
+                                BattleSystem.startPlayerTurn();
+                            }, 2000);
+                            return;
+                        }
+
+                        const healAmount = 30;
+                        gameState.ally.hp += healAmount;
+                        if (gameState.ally.hp > gameState.ally.maxHp) gameState.ally.hp = gameState.ally.maxHp;
+
+                        BattleSystem.showDialogue(`¡Poción aliada! +${healAmount} HP a tu aliado.`);
+                        break;
+
+                    case 'healthPotion':
+                        const healthAmount = 50;
+                        gameState.player.hp += healthAmount;
+                        if (gameState.player.hp > gameState.player.maxHp) gameState.player.hp = gameState.player.maxHp;
+
+                        BattleSystem.showDialogue(`¡Poción de salud! +${healthAmount} HP.`);
+                        BattleSystem.showHealEffect();
+                        break;
+
+                    case 'tpPotion':
+                        const tpAmount = 30;
+                        gameState.player.tp += tpAmount;
+                        if (gameState.player.tp > gameState.player.maxTp) gameState.player.tp = gameState.player.maxTp;
+
+                        BattleSystem.showDialogue(`¡Poción de TP! +${tpAmount} TP.`);
+                        break;
+
+                    case 'shieldPotion':
+                        gameState.player.shield = 50;
+                        gameState.player.shieldTurns = 3;
+
+                        BattleSystem.showDialogue(`¡Poción de escudo! 50% de reducción por 3 turnos.`);
+                        if (elements.defendSound) {
+                            elements.defendSound.currentTime = 0;
+                            elements.defendSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                        }
+                        break;
+
+                    case 'firePotion':
+                        gameState.enemy.burning = 3;
+                        BattleSystem.showEffectEmoji('🔥', 'enemy');
+
+                        BattleSystem.showDialogue("¡Poción de fuego! Pollolito arderá por 3 turnos.");
+                        BattleSystem.updateStatusEffects();
+                        if (elements.fireSound) {
+                            elements.fireSound.currentTime = 0;
+                            elements.fireSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                        }
+                        break;
+
+                    case 'icePotion':
+                        gameState.enemy.frozen = 1;
+                        BattleSystem.showEffectEmoji('❄️', 'enemy');
+
+                        BattleSystem.showDialogue("¡Poción de hielo! Pollolito se congela por 1 turno.");
+                        BattleSystem.updateStatusEffects();
+                        if (elements.iceSound) {
+                            elements.iceSound.currentTime = 0;
+                            elements.iceSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                        }
+                        break;
+
+                    case 'adrenalineShot':
+                        const adrenalineEffect = Math.floor(Math.random() * 4);
+
+                        switch (adrenalineEffect) {
+                            case 0:
+                                gameState.player.damageBoost = 2;
+                                BattleSystem.showEffectEmoji('💪', 'player');
+                                BattleSystem.showDialogue("¡Adrenalina: +30% daño por 2 turnos!");
+                                break;
+                            case 1:
+                                gameState.player.tp = Math.min(gameState.player.tp + 50, gameState.player.maxTp);
+                                BattleSystem.showEffectEmoji('⚡', 'player');
+                                BattleSystem.showDialogue("¡Adrenalina: +50 TP instantáneo!");
+                                break;
+                            case 2:
+                                gameState.player.invincible = 1;
+                                BattleSystem.showEffectEmoji('🛡️', 'player');
+                                BattleSystem.showDialogue("¡Adrenalina: Invencibilidad por 1 turno!");
+                                break;
+                            case 3:
+                                gameState.player.stamina = gameState.player.maxStamina;
+                                BattleSystem.showEffectEmoji('🔥', 'player');
+                                BattleSystem.showDialogue("¡Adrenalina: Stamina completa!");
+                                break;
+                        }
+                }
+
+                gameState.items[item].uses--;
+                BattleSystem.updateHealthBars();
+
+                setTimeout(() => {
+                    BattleSystem.updateHealthBars();
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.endPlayerTurn();
+                    }, 1500);
+                }, 1000);
+            }
+
+            static startEnemyTurn() {
+                if (gameState.player.hp <= 0 || gameState.enemy.hp <= 0) return;
+
+                if (gameState.enemy.asleep > 0) {
+                    gameState.enemy.asleep--;
+                    BattleSystem.showDialogue(`Pollolito está dormido. Turnos restantes: ${gameState.enemy.asleep + 1}`);
+
+                    setTimeout(() => {
+                        if (gameState.enemy.asleep > 0) {
+                            BattleSystem.startPlayerTurn();
+                        } else {
+                            BattleSystem.showDialogue("¡Pollolito se despierta!");
+                            setTimeout(() => BattleSystem.selectEnemyAction(), 1500);
+                        }
+                    }, 2000);
+                    return;
+                }
+
+                if (gameState.enemy.invincible > 0) {
+                    gameState.enemy.invincible--;
+                    if (gameState.enemy.invincible === 0) {
+                        BattleSystem.showDialogue("¡La invencibilidad de Pollolito ha terminado!");
+                    }
+                }
+
+                BattleSystem.selectEnemyAction();
+            }
+
+            static selectEnemyAction() {
+                let actions = ['basic', 'allstar', 'kick', 'deny', 'powerAttack'];
+                let weights = [0.3, 0.15, 0.15, 0.1, 0.15];
+
+                // IA Adaptativa mejorada
+                BattleSystem.adaptEnemyBehavior(actions, weights);
+
+                if (gameState.enemy.healCooldown === 0) {
+                    actions.push('heal');
+                    weights.push(0.05);
+                }
+
+                if (gameState.enemy.summonCooldown === 0) {
+                    actions.push('summonMinions');
+                    weights.push(0.05);
+                }
+
+                if (gameState.enemy.invincibleCooldown === 0) {
+                    actions.push('invincible');
+                    weights.push(0.05);
+                }
+
+                if (!gameState.enemy.finalAttackUsed && gameState.enemy.hp / gameState.enemy.maxHp <= 0.15) {
+                    actions.push('finalAttack');
+                    weights.push(0.1);
+                }
+
+                // Contraataques basados en patrones del jugador
+                if (gameState.enemy.playerPatterns.gun > 3) {
+                    weights[3] += 0.15; // Más deny contra pistolas
+                }
+                if (gameState.player.comboCount > 2) {
+                    weights[4] += 0.2; // Más ataques poderosos contra combos
+                }
+
+                if (gameState.enemy.defenseDown) weights[0] += 0.2;
+                if (gameState.player.tp > 50) weights[3] += 0.1;
+                if (gameState.enemy.angryMode) weights[0] += 0.1;
+                if (gameState.ally.active) weights[0] += 0.2;
+                if (gameState.enemy.phase === 2) {
+                    weights[0] += 0.15;
+                    weights[4] += 0.1;
+                }
+
+                if (gameState.enemy.hp / gameState.enemy.maxHp < 0.3 && actions.includes('heal')) {
+                    const healIndex = actions.indexOf('heal');
+                    weights[healIndex] += 0.15;
+                }
+
+                const roll = Math.random();
+                let action;
+                let cumulativeWeight = 0;
+
+                for (let i = 0; i < actions.length; i++) {
+                    cumulativeWeight += weights[i];
+                    if (roll < cumulativeWeight) {
+                        action = actions[i];
+                        break;
+                    }
+                }
+
+                switch (action) {
+                    case 'basic': BattleSystem.enemyBasicAttack(); break;
+                    case 'allstar': BattleSystem.enemyAllStar(); break;
+                    case 'kick': BattleSystem.enemyKick(); break;
+                    case 'deny': BattleSystem.enemyDeny(); break;
+                    case 'powerAttack': BattleSystem.enemyPowerAttack(); break;
+                    case 'heal': BattleSystem.enemyHeal(); break;
+                    case 'summonMinions': BattleSystem.enemySummonMinions(); break;
+                    case 'invincible': BattleSystem.enemyInvincible(); break;
+                    case 'finalAttack': BattleSystem.enemyFinalAttack(); break;
+                    default: BattleSystem.enemyBasicAttack(); break;
+                }
+            }
+
+            static adaptEnemyBehavior(actions, weights) {
+                // Adaptar comportamiento basado en las acciones del jugador
+                const mostUsedAction = Object.keys(gameState.enemy.playerPatterns)
+                    .reduce((a, b) => gameState.enemy.playerPatterns[a] > gameState.enemy.playerPatterns[b] ? a : b);
+
+                // Contraataques específicos
+                if (mostUsedAction === 'defend' && gameState.enemy.playerPatterns.defend > 2) {
+                    weights[4] += 0.2; // Más ataques poderosos contra defensores
+                }
+
+                if (gameState.player.stamina < 30) {
+                    weights[0] += 0.15; // Más agresivo cuando el jugador está cansado
+                }
+            }
+
+            static enemyBasicAttack() {
+                let damage = Math.floor(Math.random() * 16) + 15;
+
+                // Escalado de dificultad
+                damage = Math.floor(damage * gameState.difficulty);
+
+                if (gameState.enemy.angryMode) {
+                    damage = Math.floor(damage * 1.5);
+                }
+                if (gameState.enemy.phase === 2) {
+                    damage = Math.floor(damage * 1.2);
+                }
+
+                let target = gameState.ally.active ? 'ally' : 'player';
+
+                let finalDamage = Math.floor(damage * (1 - (gameState.player.shield / 100)));
+
+                // Sistema de bloqueo perfecto
+                if (target === 'player' && gameState.player.defending) {
+                    if (gameState.perfectBlockWindow) {
+                        finalDamage = 0;
+                        gameState.player.perfectBlocks++;
+                        BattleSystem.showEffectEmoji('🛡️✨', 'player');
+                        BattleSystem.showDialogue("¡BLOQUEO PERFECTO! +10 TP bonus");
+                        gameState.player.tp = Math.min(gameState.player.maxTp, gameState.player.tp + 10);
+                    } else {
+                        finalDamage = Math.floor(finalDamage * (1 - gameState.player.defenseBoost));
+                    }
+                }
+
+                if (target === 'player' && gameState.player.invincible > 0) {
+                    BattleSystem.showDialogue("¡Eres invencible! El ataque no tiene efecto.");
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.startPlayerTurn();
+                    }, 2000);
+                    return;
+                }
+
+                if (target === 'player') {
+                    finalDamage = Math.floor(finalDamage * (1 + (gameState.player.fatigue * 0.03)));
+                }
+
+                if (target === 'ally') {
+                    gameState.ally.hp -= finalDamage;
+                    if (gameState.ally.hp < 0) gameState.ally.hp = 0;
+                    BattleSystem.showAttackEffect('enemy', finalDamage, 'ally');
+                    BattleSystem.showDialogue(`¡Pollolito ataca a tu aliado! ${finalDamage} de daño.`);
+                } else {
+                    gameState.player.hp -= finalDamage;
+                    if (gameState.player.hp < 0) gameState.player.hp = 0;
+                    BattleSystem.showAttackEffect('enemy', finalDamage);
+
+                    if (finalDamage === 0) {
+                        BattleSystem.showDialogue(`¡Bloqueo perfecto! Sin daño.`);
+                    } else {
+                        BattleSystem.showDialogue(`¡Picotazo de Pollolito! ${finalDamage} de daño.`);
+                    }
+                }
+
+                BattleSystem.updateHealthBars();
+
+                if (gameState.player.hp <= 0) {
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.showGameOver(false);
+                    }, 2000);
+                    return;
+                }
+
+                if (gameState.ally.active && gameState.ally.hp <= 0) {
+                    console.log('🔥 Enemy attack: Ally died, removing...');
+                    BattleSystem.removeAlly();
+                }
+
+                setTimeout(() => {
+                    console.log('🔥 Enemy attack finished, starting player turn');
+                    BattleSystem.forceUnlockUI();
+                    BattleSystem.startPlayerTurn();
+                }, 2000);
+            }
+
+            static enemyAllStar() {
+                let damage = 25;
+
+                if (gameState.enemy.angryMode) {
+                    damage = Math.floor(damage * 1.7);
+                }
+
+                BattleSystem.showDialogue("¡Pollolito lanza objetos de All Star!");
+
+                setTimeout(() => {
+                    let target = gameState.ally.active ? 'ally' : 'player';
+
+                    let finalDamage = Math.floor(damage * (1 - (gameState.player.shield / 100)));
+                    if (target === 'player' && gameState.player.defending) {
+                        finalDamage = Math.floor(finalDamage * (1 - gameState.player.defenseBoost));
+                    }
+
+                    if (target === 'player' && gameState.player.invincible > 0) {
+                        BattleSystem.showDialogue("¡Eres invencible! El ataque no tiene efecto.");
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.startPlayerTurn();
+                        }, 2002);
+                        return;
+                    }
+
+                    if (target === 'ally') {
+                        gameState.ally.hp -= finalDamage;
+                        if (gameState.ally.hp < 0) gameState.ally.hp = 0;
+                        BattleSystem.showAttackEffect('enemy', finalDamage, 'ally');
+                        BattleSystem.showDialogue(`¡Objetos de All Star golpean a tu aliado! ${finalDamage} de daño.`);
+                    } else {
+                        gameState.player.hp -= finalDamage;
+                        if (gameState.player.hp < 0) gameState.player.hp = 0;
+                        BattleSystem.showAttackEffect('enemy', finalDamage);
+                        BattleSystem.showDialogue(`¡Objetos de All Star te golpean! ${finalDamage} de daño.`);
+                    }
+
+                    BattleSystem.updateHealthBars();
+
+                    if (gameState.player.hp <= 0) {
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.showGameOver(false);
+                        }, 2000);
+                        return;
+                    }
+
+                    if (gameState.ally.active && gameState.ally.hp <= 0) {
+                        console.log('🔥 Enemy AllStar: Ally died, removing...');
+                        BattleSystem.removeAlly();
+                    }
+
+                    setTimeout(() => {
+                        console.log('🔥 Enemy AllStar finished, starting player turn');
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.startPlayerTurn();
+                    }, 2000);
+                }, 1200);
+            }
+
+            static enemyKick() {
+                if (Math.random() < 0.5) {
+                    let damage = 60;
+
+                    if (gameState.enemy.angryMode) {
+                        damage = Math.floor(damage * 1.6);
+                    }
+
+                    let target = gameState.ally.active ? 'ally' : 'player';
+
+                    let finalDamage = Math.floor(damage * (1 - (gameState.player.shield / 100)));
+                    if (target === 'player' && gameState.player.defending) {
+                        finalDamage = Math.floor(finalDamage * (1 - gameState.player.defenseBoost));
+                    }
+
+                    if (target === 'player' && gameState.player.invincible > 0) {
+                        BattleSystem.showDialogue("¡Eres invencible! El ataque no tiene efecto.");
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.startPlayerTurn();
+                        }, 2000);
+                        return;
+                    }
+
+                    if (target === 'ally') {
+                        gameState.ally.hp -= finalDamage;
+                        if (gameState.ally.hp < 0) gameState.ally.hp = 0;
+                        BattleSystem.showAttackEffect('enemy', finalDamage, 'ally');
+                        BattleSystem.showDialogue("¡Patear azulitos a tu aliado! " + finalDamage + " de daño.");
+                    } else {
+                        gameState.player.hp -= finalDamage;
+                        if (gameState.player.hp < 0) gameState.player.hp = 0;
+                        BattleSystem.showAttackEffect('enemy', finalDamage);
+                        BattleSystem.showDialogue("¡Patear azulitos! " + finalDamage + " de daño.");
+                    }
+
+                    BattleSystem.updateHealthBars();
+
+                    if (gameState.player.hp <= 0) {
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.showGameOver(false);
+                        }, 2000);
+                        return;
+                    }
+
+                    if (gameState.ally.active && gameState.ally.hp <= 0) {
+                        console.log('🔥 Enemy Kick: Ally died, removing...');
+                        BattleSystem.removeAlly();
+                    }
+                } else {
+                    gameState.enemy.defenseDown = true;
+                    BattleSystem.showDialogue("¡Pollolito falla el patear azulitos! Su defensa baja.");
+                    if (elements.enemy) {
+                        elements.enemy.classList.add('shake');
+                        setTimeout(() => elements.enemy.classList.remove('shake'), 500);
+                    }
+                }
+
+                setTimeout(() => {
+                    BattleSystem.forceUnlockUI();
+                    BattleSystem.startPlayerTurn();
+                }, 2000);
+            }
+
+            static enemyDeny() {
+                BattleSystem.showDialogue("Pollolito se prepara para negar tu próximo épico...");
+                setTimeout(() => {
+                    BattleSystem.hideDialogue();
+                    BattleSystem.forceUnlockUI();
+                    BattleSystem.startPlayerTurn();
+                }, 2000);
+            }
+
+            static enemyPowerAttack() {
+                let damage = Math.floor(Math.random() * 21) + 30;
+
+                if (gameState.enemy.angryMode) {
+                    damage = Math.floor(damage * 1.8);
+                }
+
+                BattleSystem.showDialogue("¡Pollolito prepara un ataque potente!");
+
+                setTimeout(() => {
+                    if (gameState.player.defending) {
+                        damage = Math.floor(damage * 0.3);
+                        gameState.enemy.defenseDown = true;
+                        BattleSystem.showDialogue("¡Defendiste bien! Pollolito pierde defensa.");
+                    }
+
+                    let finalDamage = Math.floor(damage * (1 - (gameState.player.shield / 100)));
+
+                    if (gameState.player.invincible > 0) {
+                        BattleSystem.showDialogue("¡Eres invencible! El ataque no tiene efecto.");
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.startPlayerTurn();
+                        }, 2000);
+                        return;
+                    }
+
+                    gameState.player.hp -= finalDamage;
+                    if (gameState.player.hp < 0) gameState.player.hp = 0;
+
+                    BattleSystem.showAttackEffect('enemy', finalDamage);
+                    BattleSystem.showDialogue(`¡Ataque potente de Pollolito! ${finalDamage} de daño.`);
+                    BattleSystem.updateHealthBars();
+
+                    if (gameState.player.hp <= 0) {
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.showGameOver(false);
+                        }, 2000);
+                        return;
+                    }
+
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.startPlayerTurn();
+                    }, 2000);
+                }, 1500);
+            }
+
+            static enemyHeal() {
+                if (gameState.enemy.healCooldown > 0) {
+                    BattleSystem.enemyBasicAttack();
+                    return;
+                }
+
+                const healAmount = Math.floor(gameState.enemy.maxHp * (0.15 + Math.random() * 0.1));
+                gameState.enemy.hp += healAmount;
+                if (gameState.enemy.hp > gameState.enemy.maxHp) gameState.enemy.hp = gameState.enemy.maxHp;
+
+                gameState.enemy.healCooldown = 4;
+
+                BattleSystem.showDialogue("¡Pollolito usa curación épica! +" + healAmount + " HP.");
+
+                if (elements.healSound) {
+                    elements.healSound.currentTime = 0;
+                    elements.healSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                }
+                BattleSystem.updateHealthBars();
+
+                setTimeout(() => {
+                    BattleSystem.showDialogue("Pollolito: " + BattleSystem.getRandomLine(POLLO_LINES.onHeal));
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.startPlayerTurn();
+                    }, 2000);
+                }, 2000);
+            }
+
+            static enemySummonMinions() {
+                if (gameState.enemy.summonCooldown > 0) {
+                    BattleSystem.enemyBasicAttack();
+                    return;
+                }
+
+                gameState.enemy.summonCooldown = 5;
+
+                let summoned = 0;
+                gameState.enemyMinions.forEach(minion => {
+                    if (!minion.active && summoned < 2) {
+                        minion.active = true;
+                        minion.hp = 8;
+                        minion.turns = 3;
+                        summoned++;
+
+                        const minionElement = document.getElementById(`enemy-minion${minion.id}`);
+                        const healthElement = document.getElementById(`enemy-minion${minion.id}-health`);
+                        const healthFillElement = document.getElementById(`enemy-minion${minion.id}-health-fill`);
+
+                        if (minionElement) {
+                            minionElement.style.display = 'block';
+                            minionElement.style.animation = 'minion-spawn 0.8s ease-out forwards';
+                        }
+                        if (healthElement) healthElement.style.display = 'block';
+                        if (healthFillElement) healthFillElement.style.width = '100%';
+                    }
+                });
+
+                BattleSystem.showDialogue("¡Pollolito invoca minions kamikaze!");
+
+                if (elements.minionSound) {
+                    elements.minionSound.currentTime = 0;
+                    elements.minionSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                }
+
+                setTimeout(() => {
+                    BattleSystem.showDialogue("Pollolito: " + BattleSystem.getRandomLine(POLLO_LINES.onSummonMinions));
+
+                    setTimeout(() => {
+                        let totalDamage = 0;
+                        gameState.enemyMinions.forEach(minion => {
+                            if (minion.active) {
+                                const damage = 3;
+                                gameState.player.hp -= damage;
+                                totalDamage += damage;
+                                BattleSystem.showAttackEffect('enemy', damage, 'player');
+                            }
+                        });
+
+                        if (totalDamage > 0) {
+                            BattleSystem.showDialogue(`¡Los minions de Pollolito atacan! ${totalDamage} de daño total.`);
+                            BattleSystem.updateHealthBars();
+
+                            if (gameState.player.hp <= 0) {
+                                setTimeout(() => {
+                                    BattleSystem.forceUnlockUI();
+                                    BattleSystem.showGameOver(false);
+                                }, 2000);
+                                return;
+                            }
+                        }
+
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.startPlayerTurn();
+                        }, 2000);
+                    }, 2000);
+                }, 2000);
+            }
+
+            static enemyInvincible() {
+                if (gameState.enemy.invincibleCooldown > 0) {
+                    BattleSystem.enemyBasicAttack();
+                    return;
+                }
+
+                gameState.enemy.invincible = 1;
+                gameState.enemy.invincibleCooldown = 6;
+
+                BattleSystem.showDialogue("¡Pollolito se vuelve invencible por 1 turno!");
+
+                if (elements.invincibleSound) {
+                    elements.invincibleSound.currentTime = 0;
+                    elements.invincibleSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                }
+
+                setTimeout(() => {
+                    BattleSystem.showDialogue("Pollolito: " + BattleSystem.getRandomLine(POLLO_LINES.onInvincible));
+                    setTimeout(() => {
+                        BattleSystem.forceUnlockUI();
+                        BattleSystem.startPlayerTurn();
+                    }, 2000);
+                }, 2000);
+            }
+
+            static enemyFinalAttack() {
+                gameState.enemy.finalAttackUsed = true;
+
+                BattleSystem.showDialogue("¡Pollolito prepara su ATAQUE DEFINITIVO!");
+
+                if (elements.finalSound) {
+                    elements.finalSound.currentTime = 0;
+                    elements.finalSound.play().catch(e => console.log("Error al reproducir sonido:", e));
+                }
+
+                setTimeout(() => {
+                    BattleSystem.showDialogue("Pollolito: " + BattleSystem.getRandomLine(POLLO_LINES.onFinalAttack));
+
+                    setTimeout(() => {
+                        let damage = 100;
+
+                        if (gameState.player.defending) {
+                            damage = Math.floor(damage * 0.3);
+                        }
+
+                        damage = Math.floor(damage * (1 - (gameState.player.shield / 100)));
+
+                        if (gameState.player.invincible > 0) {
+                            BattleSystem.showDialogue("¡Eres invencible! El ataque no tiene efecto.");
+                            setTimeout(() => {
+                                BattleSystem.forceUnlockUI();
+                                BattleSystem.startPlayerTurn();
+                            }, 2000);
+                            return;
+                        }
+
+                        gameState.player.hp -= damage;
+                        if (gameState.player.hp < 0) gameState.player.hp = 0;
+
+                        BattleSystem.showAttackEffect('enemy', damage);
+                        BattleSystem.showDialogue(`¡ATAQUE DEFINITIVO DE POLLOLITO! ${damage} de daño.`);
+                        BattleSystem.updateHealthBars();
+
+                        if (gameState.player.hp <= 0) {
+                            setTimeout(() => {
+                                BattleSystem.forceUnlockUI();
+                                BattleSystem.showGameOver(false);
+                            }, 2000);
+                            return;
+                        }
+
+                        setTimeout(() => {
+                            BattleSystem.forceUnlockUI();
+                            BattleSystem.startPlayerTurn();
+                        }, 2000);
+                    }, 2000);
+                }, 2000);
+            }
+
+            static showGameOver(playerWon) {
+                BattleSystem.disableUI();
+
+                // Mostrar estadísticas finales
+                const stats = {
+                    turnos: gameState.turnCount,
+                    combosMaximos: Math.max(...Object.values(gameState.enemy.playerPatterns)),
+                    bloqueosPerfectos: gameState.player.perfectBlocks,
+                    dañoTotal: gameState.enemy.maxHp - gameState.enemy.hp
+                };
+
+                if (elements.endScreen) {
+                    elements.endScreen.style.display = 'flex';
+
+                    if (playerWon) {
+                        BattleSystem.screenFlash();
+                        BattleSystem.createParticles(50, 50, '#ffd700', 20);
+                        elements.endScreen.innerHTML = `
+                    <h1>¡VICTORIA ÉPICA!</h1>
+                    <p>Has derrotado a Pollolito. ¡Eres un verdadero programador épico!</p>
+                    <div style="margin: 20px 0; font-size: 14px;">
+                        <p>Turnos: ${stats.turnos} | Bloqueos perfectos: ${stats.bloqueosPerfectos}</p>
+                        <p>Combo máximo: ${gameState.player.comboCount}</p>
+                    </div>
+                    <button onclick="location.reload()">Jugar de nuevo</button>
+                `;
+                    } else {
+                        elements.endScreen.innerHTML = `
+                    <h1>¡DERROTA BODRIA!</h1>
+                    <p>Pollolito te ha derrotado. ¡Necesitas más práctica en programación!</p>
+                    <div style="margin: 20px 0; font-size: 14px;">
+                        <p>Sobreviviste ${stats.turnos} turnos</p>
+                        <p>Daño infligido: ${stats.dañoTotal}</p>
+                    </div>
+                    <button onclick="location.reload()">Reintentar</button>
+                `;
+                    }
+                }
+            }
+
+            static enableUI() {
+                BattleSystem.resetUiBlockedTimer();
+                document.querySelectorAll('.action-button, .submenu-button').forEach(button => {
+                    button.disabled = false;
+                });
+            }
+
+            static disableUI() {
+                document.querySelectorAll('.action-button, .submenu-button').forEach(button => {
+                    button.disabled = true;
+                });
+            }
+
+            static showMainMenu() {
+                if (elements.attackMenu) elements.attackMenu.style.display = 'none';
+                if (elements.skillMenu) elements.skillMenu.style.display = 'none';
+                if (elements.itemMenu) elements.itemMenu.style.display = 'none';
+                if (elements.battleUI) elements.battleUI.style.display = 'block';
+            }
+
+            static showAttackMenu() {
+                if (elements.attackMenu) elements.attackMenu.style.display = 'flex';
+                if (elements.skillMenu) elements.skillMenu.style.display = 'none';
+                if (elements.itemMenu) elements.itemMenu.style.display = 'none';
+                if (elements.battleUI) elements.battleUI.style.display = 'none';
+            }
+
+            static showSkillMenu() {
+                if (elements.attackMenu) elements.attackMenu.style.display = 'none';
+                if (elements.skillMenu) elements.skillMenu.style.display = 'flex';
+                if (elements.itemMenu) elements.itemMenu.style.display = 'none';
+                if (elements.battleUI) elements.battleUI.style.display = 'none';
+            }
+
+            static showItemMenu() {
+                console.log('🎯 ACTION: showItemMenu called');
+                if (elements.attackMenu) elements.attackMenu.style.display = 'none';
+                if (elements.skillMenu) elements.skillMenu.style.display = 'none';
+                if (elements.itemMenu) elements.itemMenu.style.display = 'flex';
+                if (elements.battleUI) elements.battleUI.style.display = 'none';
+            }
+
+            static backToMainMenu() {
+                BattleSystem.showMainMenu();
+            }
+
+            static toggleMusic(enable) {
+                gameState.musicEnabled = enable !== undefined ? enable : !gameState.musicEnabled;
+                if (elements.musicToggle) {
+                    elements.musicToggle.textContent = `Música: ${gameState.musicEnabled ? 'ON' : 'OFF'}`;
+                }
+
+                if (gameState.musicEnabled) {
+                    if (gameState.enemy.angryMode) {
+                        if (elements.bgMusic) elements.bgMusic.pause();
+                        if (elements.angryMusic) {
+                            elements.angryMusic.currentTime = 0;
+                            elements.angryMusic.play().catch(e => console.log("Auto-play prevented:", e));
+                        }
+                    } else {
+                        if (elements.angryMusic) elements.angryMusic.pause();
+                        if (elements.bgMusic) {
+                            elements.bgMusic.play().catch(e => console.log("Auto-play prevented:", e));
+                        }
+                    }
+                } else {
+                    if (elements.bgMusic) elements.bgMusic.pause();
+                    if (elements.angryMusic) elements.angryMusic.pause();
+                }
+            }
+
+            static updateDebugInfo() {
+                const now = performance.now();
+                gameState.debug.frameCount++;
+
+                if (now >= gameState.debug.lastFpsUpdate + 1000) {
+                    gameState.debug.fps = Math.round((gameState.debug.frameCount * 1000) / (now - gameState.debug.lastFpsUpdate));
+                    gameState.debug.frameCount = 0;
+                    gameState.debug.lastFpsUpdate = now;
+
+                    if (elements.debugInfo) {
+                        elements.debugInfo.textContent = `Build 0.4.0 | FPS: ${gameState.debug.fps}`;
+                    }
+                }
+
+                requestAnimationFrame(BattleSystem.updateDebugInfo);
+            }
+
+            static initGame() {
+                let progress = 0;
+                const loadingInterval = setInterval(() => {
+                    progress += 5;
+                    if (elements.loadingProgress) {
+                        elements.loadingProgress.style.width = `${progress}%`;
+                    }
+
+                    if (progress >= 100) {
+                        clearInterval(loadingInterval);
+                        if (elements.loadingScreen) {
+                            elements.loadingScreen.style.opacity = '0';
+                            setTimeout(() => {
+                                elements.loadingScreen.style.display = 'none';
+                                elements.loadingScreen.style.zIndex = '-1';
+                            }, 500);
+                        }
+                        if (elements.gameContainer) {
+                            elements.gameContainer.style.display = 'block';
+                        }
+                        BattleSystem.startGame();
+                    }
+                }, 100);
+            }
+
+            static startGame() {
+                if (elements.musicToggle) {
+                    elements.musicToggle.addEventListener('click', () => BattleSystem.toggleMusic());
+                }
+
+                BattleSystem.toggleMusic(true);
+                BattleSystem.updateHealthBars();
+
+                gameState.debug.lastFrameTime = performance.now();
+                gameState.debug.lastFpsUpdate = gameState.debug.lastFrameTime;
+                BattleSystem.updateDebugInfo();
+
+                BattleSystem.showDialogue("¡Pollolito aparece! ¡Prepárate para una batalla ÉPICA!");
+                setTimeout(() => {
+                    BattleSystem.showDialogue("Pollolito: " + BattleSystem.getRandomLine(POLLO_LINES.taunts));
+                    setTimeout(() => {
+                        BattleSystem.hideDialogue();
+                        BattleSystem.startPlayerTurn();
+                    }, 3000);
+                }, 2000);
+            }
+
+            static handleAction(e) {
+                e.preventDefault();
+                const button = e.target.closest('button');
+
+                if (!button) {
+                    console.warn('⚠️ No button found');
+                    return;
+                }
+
+                if (button.disabled) {
+                    console.warn('⚠️ Button disabled:', button.textContent);
+                    return;
+                }
+
+                if (gameState.uiBlocked && gameState.currentTurn === 'player') {
+                    console.warn('⚠️ UI blocked during player turn, forcing unlock');
+                    BattleSystem.forceUnlockUI();
+                }
+
+                if (gameState.precisionGameActive) {
+                    console.warn('⚠️ Precision game active, action ignored:', button.textContent);
+                    return;
+                }
+
+                const action = button.dataset.action;
+                const type = button.dataset.type || button.dataset.skill || button.dataset.item;
+
+                console.log('🎯 ACTION:', action || 'undefined', type || 'undefined');
+                console.log('🎯 Button datasets:', button.dataset);
+
+                button.classList.add('button-pressed');
+                setTimeout(() => button.classList.remove('button-pressed'), 200);
+
+                if (action === 'useSkill' && (type === 'randomizer' || type === 'doubleGun')) {
+                    button.style.boxShadow = '0 0 15px gold';
+                    setTimeout(() => button.style.boxShadow = '', 500);
+                }
+
+                if (action === 'useItem' && type === 'adrenalineShot') {
+                    button.classList.add('pulse-effect');
+                    setTimeout(() => button.classList.remove('pulse-effect'), 500);
+                }
+
+                try {
+                    switch (action) {
+                        case 'showAttackMenu': BattleSystem.showAttackMenu(); break;
+                        case 'showSkillMenu': BattleSystem.showSkillMenu(); break;
+                        case 'showItemMenu': BattleSystem.showItemMenu(); break;
+                        case 'backToMainMenu': BattleSystem.backToMainMenu(); break;
+                        case 'attack': BattleSystem.playerAttack(type); break;
+                        case 'useSkill': BattleSystem.useSkill(type); break;
+                        case 'useItem': BattleSystem.useItem(type); break;
+                        case 'defend': BattleSystem.playerDefend(); break;
+                        default: 
+                            console.warn('⚠️ Unknown action:', action, 'type:', type);
+                            console.warn('⚠️ Button element:', button);
+                            break;
+                    }
+                } catch (error) {
+                    console.error('💥 ERROR in handleAction:', error);
+                    gameState.errorCount++;
+                    if (gameState.errorCount > 3 && gameState.lastValidState) {
+                        console.warn('⚠️ Demasiados errores - restaurando estado válido');
+                        Object.assign(gameState.player, gameState.lastValidState.player);
+                        Object.assign(gameState.enemy, gameState.lastValidState.enemy);
+                        Object.assign(gameState.ally, gameState.lastValidState.ally);
+                        gameState.turnCount = gameState.lastValidState.turnCount;
+                        gameState.errorCount = 0;
+                    }
+                    BattleSystem.forceUnlockUI();
+                }
+            }
+
+            static handleTouch(e) {
+                e.preventDefault();
+                const touch = e.changedTouches[0];
+                const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                if (element && (element.tagName === 'BUTTON' || element.closest('button'))) {
+                    const button = element.tagName === 'BUTTON' ? element : element.closest('button');
+                    if (!button.disabled && !gameState.uiBlocked && !gameState.precisionGameActive) {
+                        // Feedback táctil mejorado para Android
+                        if (navigator.vibrate) {
+                            navigator.vibrate(30);
+                        }
+                        
+                        button.classList.add('button-pressed');
+                        button.style.transform = 'scale(0.95)';
+                        button.style.boxShadow = '0 0 15px rgba(123, 104, 238, 0.6)';
+                        
+                        setTimeout(() => {
+                            button.classList.remove('button-pressed');
+                            button.style.transform = 'scale(1)';
+                            button.style.boxShadow = '';
+                        }, 150);
+                        
+                        // Delay para mejor respuesta en Android
+                        setTimeout(() => {
+                            button.click();
+                        }, 50);
+                    }
+                }
+            }
+        }
+
+        // Optimizaciones específicas para Android
+        function setupAndroidOptimizations() {
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            
+            if (isAndroid) {
+                // Prevenir zoom y menú contextual
+                document.addEventListener('contextmenu', e => e.preventDefault());
+                document.addEventListener('gesturestart', e => e.preventDefault());
+                document.addEventListener('gesturechange', e => e.preventDefault());
+                
+                // Prevenir scroll y zoom accidental
+                document.addEventListener('touchmove', e => {
+                    if (e.scale !== 1) e.preventDefault();
+                }, { passive: false });
+                
+                // Wake lock para mantener pantalla activa
+                if ('wakeLock' in navigator) {
+                    navigator.wakeLock.request('screen').catch(() => {});
+                }
+                
+                // Optimizar rendimiento para Android
+                const androidVersion = parseFloat(navigator.userAgent.match(/Android (\d+\.\d+)/)?.[1] || '0');
+                if (androidVersion < 7.0) {
+                    // Android más antiguo - reducir efectos
+                    document.documentElement.style.setProperty('--animation-duration', '0.1s');
+                }
+                
+                // Configurar fullscreen automático después de interacción
+                let hasInteracted = false;
+                const enableFullscreen = () => {
+                    if (!hasInteracted && gameState.isMobile) {
+                        hasInteracted = true;
+                        setTimeout(() => {
+                            if (document.documentElement.requestFullscreen) {
+                                document.documentElement.requestFullscreen().catch(() => {});
+                            } else if (document.documentElement.webkitRequestFullscreen) {
+                                document.documentElement.webkitRequestFullscreen().catch(() => {});
+                            }
+                        }, 1000);
+                    }
+                };
+                
+                document.addEventListener('touchstart', enableFullscreen, { once: true });
+                document.addEventListener('click', enableFullscreen, { once: true });
+                
+                // Mejorar respuesta táctil
+                document.body.style.touchAction = 'manipulation';
+                document.body.style.userSelect = 'none';
+                document.body.style.webkitUserSelect = 'none';
+                document.body.style.webkitTouchCallout = 'none';
+                
+                // Optimizar botones para Android
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(button => {
+                    button.style.minHeight = '48px';
+                    button.style.minWidth = '48px';
+                    button.addEventListener('touchstart', (e) => {
+                        if (navigator.vibrate) navigator.vibrate(25);
+                        button.style.transform = 'scale(0.95)';
+                    });
+                    button.addEventListener('touchend', (e) => {
+                        button.style.transform = 'scale(1)';
+                    });
+                });
+            }
+        }
+
+        // Inicialización del juego
+        window.addEventListener('DOMContentLoaded', () => {
+            gameState.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Configurar optimizaciones para Android
+            setupAndroidOptimizations();
+
+            if (gameState.isMobile) {
+                const checkOrientation = () => {
+                    const warning = document.getElementById('mobile-warning');
+                    if (warning) {
+                        if (window.innerHeight > window.innerWidth) {
+                            warning.style.display = 'flex';
+                        } else {
+                            warning.style.display = 'none';
+                            BattleSystem.initGame();
+                        }
+                    }
+                };
+
+                checkOrientation();
+                window.addEventListener('resize', checkOrientation);
+                
+                // Orientación de pantalla para Android
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {});
+                }
+            } else {
+                BattleSystem.initGame();
+            }
+
+            document.body.addEventListener('click', BattleSystem.handleAction);
+            document.body.addEventListener('touchstart', BattleSystem.handleTouch, { passive: false });
+        });
+    </script>
+</body>
+
+</html>

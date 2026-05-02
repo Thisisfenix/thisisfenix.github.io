@@ -1,0 +1,167 @@
+[
+  {
+    "version": "0.3.0",
+    "label": "Nuevo",
+    "labelColor": "success",
+    "date": "26/04/2026",
+    "dateNote": null,
+    "sections": [
+      {
+        "title": "⚔️ Arreglos en la batalla vs Pollolito",
+        "items": [
+          "💥 Los combos ahora dan más energía (TP) como se esperaba, antes siempre daban la misma cantidad sin importar si hacías combo o no",
+          "💉 La inyección de adrenalina ya no se gastaba el doble de lo que debía, ahora consume solo un uso correctamente",
+          "🛡️ La defensa del jugador funcionaba de forma inestable en algunos casos, ya está corregida"
+        ]
+      },
+      {
+        "title": "🔐 Panel secreto mejorado",
+        "items": [
+          "🔒 El código secreto ahora está protegido, ya no se puede ver fácilmente si alguien inspecciona el juego",
+          "🌀 El archivo del panel secreto fue ofuscado para que sea mucho más difícil de leer o modificar"
+        ]
+      },
+      {
+        "title": "📋 Sistema de actualizaciones renovado",
+        "items": [
+          "📄 Las actualizaciones ahora viven en su propio archivo separado, así es mucho más fácil agregar nuevas versiones sin tocar el resto del juego",
+          "⚡ El panel de actualizaciones carga la información de forma dinámica"
+        ]
+      },
+      {
+        "title": "🔧 Otros arreglos",
+        "items": [
+          "🐔 El juego vs Pollolito fue movido a una ubicación más estable para evitar errores al cargarlo",
+          "🔗 El botón de jugar vs Pollolito desde el menú principal ya redirige correctamente"
+        ]
+      }
+    ]
+  },
+  {
+    "version": "0.2.5",
+    "label": "Nuevo",
+    "labelColor": "success",
+    "date": "25/11/2025",
+    "dateNote": "Hotfix crítico aplicado",
+    "sections": [
+      {
+        "title": "🔥 HOTFIX CRÍTICO - vs Pollolito",
+        "items": [
+          "🛠️ Arreglado bloqueo de pantalla cuando el aliado moría",
+          "💬 Los diálogos de Pollolito ahora se ven correctamente",
+          "🎯 Efectos visuales aparecen en el personaje correcto",
+          "🧪 Las pociones y objetos funcionan sin problemas",
+          "⚡ Sistema de recuperación automática mejorado",
+          "📱 Mejor compatibilidad móvil y respuesta táctil",
+          "🎮 Botones más cómodos para mejor usabilidad",
+          "📱 Interfaz optimizada para dispositivos táctiles",
+          "🎨 Diseño mejorado y más agradable de usar"
+        ]
+      },
+      {
+        "title": "🔧 HOTFIX - Chef's Kitchen Frenzy",
+        "items": [
+          "🐛 Corregido error \"redeclaration of let particlePool\"",
+          "🐛 Añadida llave de cierre faltante en función update()",
+          "✅ Juego ahora funciona sin errores de sintaxis JavaScript",
+          "📱 FIXES MÓVILES APLICADOS:",
+          "🔧 Menús que no se cerraban: Añadido cierre con ESC y toque fuera del panel",
+          "📱 Botones de cierre móvil automáticos en cada panel",
+          "🔄 Problemas de orientación: Cierre automático de paneles al rotar",
+          "📐 Reajuste automático de UI para landscape/portrait",
+          "🎮 Detección mejorada de dispositivos móviles",
+          "✨ Forzado de repaint en móviles para evitar glitches visuales"
+        ]
+      },
+      {
+        "title": "🎮 PEPE QUEST - Rework v1.0 + ARREGLOS MÓVILES",
+        "items": [
+          "🌍 Mundo masivo con 5 reinos elementales",
+          "⚔️ Sistema de combate completamente rediseñado",
+          "👹 30+ enemigos con IA avanzada y 4 jefes épicos",
+          "🌦️ Sistema de clima dinámico que afecta gameplay",
+          "💬 NPCs con diálogos y sistema de comercio",
+          "🎒 Inventario completo con armas, pociones y llaves",
+          "💾 Sistema de guardado con 3 slots",
+          "📱 ARREGLOS MÓVILES: Controles táctiles mejorados",
+          "🔄 Rotación de cámara táctil funcional (deslizar para rotar)",
+          "🖥️ Fullscreen automático y persistente",
+          "⚡ Optimización de rendimiento para dispositivos móviles",
+          "🔧 Funciones faltantes añadidas para estabilidad"
+        ]
+      },
+      {
+        "title": "🔥 HOTFIX - Pepe Quest Mobile",
+        "items": [
+          "📱 Controles móviles completamente rediseñados",
+          "🎮 Rotación de cámara táctil arreglada (deslizar para rotar)",
+          "🕹️ Controles separados del joystick en modo horizontal",
+          "🤖 Optimizaciones específicas para Android, iOS y Windows Phone",
+          "👹 Enemigos con modelos 3D mejorados e IA inteligente",
+          "🧠 Sistema de estados: Patrulla → Persecución → Búsqueda",
+          "👀 Ojos brillantes que se iluminan al perseguirte",
+          "📳 Feedback háptico mejorado para móviles"
+        ]
+      },
+      {
+        "title": "🎯 Mejoras universales móviles",
+        "items": [
+          "✋ Gestos de 2 dedos: Arriba=Inventario, Abajo=Pausa",
+          "🔋 Modo ahorro de batería automático (<20%)",
+          "📢 Notificaciones nativas por plataforma",
+          "❓ Botón de ayuda con controles específicos"
+        ]
+      }
+    ]
+  },
+  {
+    "version": "0.2.4",
+    "label": null,
+    "date": "12/10/2025",
+    "dateNote": null,
+    "sections": [
+      {
+        "title": "Mejoras anteriores",
+        "items": [
+          "🎮 PEPE QUEST v1.0 - Rework completo con 5 reinos",
+          "📱 Controles móviles completamente rediseñados",
+          "👹 30+ enemigos con IA avanzada y 4 jefes épicos",
+          "🌦️ Sistema de clima dinámico"
+        ]
+      }
+    ]
+  },
+  {
+    "version": "0.2.3",
+    "label": null,
+    "date": "30/06/2025",
+    "dateNote": null,
+    "sections": [
+      {
+        "title": "Nuevo juego añadido",
+        "items": [
+          "🎮 Player Escape Minigames: 40 niveles de desafíos trolls",
+          "🎯 Desde botones esquivos hasta matemáticas imposibles",
+          "🏆 Sistema de progreso y guardado automático"
+        ]
+      },
+      {
+        "title": "Mejoras del sistema",
+        "items": [
+          "🎵 Reproducción secuencial de música (1→2→3→loop)",
+          "🔊 Audio activado con cualquier interacción",
+          "⭐ Sistema de prestigio completamente funcional"
+        ]
+      },
+      {
+        "title": "Nuevos logros",
+        "items": [
+          "🎮 Explorador de Escape Games",
+          "🏃 Speedrunner de Minijuegos",
+          "🧠 Maestro de Puzzles",
+          "🎯 Completista Total"
+        ]
+      }
+    ]
+  }
+]

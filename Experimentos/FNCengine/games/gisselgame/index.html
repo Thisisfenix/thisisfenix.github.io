@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Player Escape Minigames 🎮</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 20px;
+            overflow-x: hidden;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #444;
+            margin: 20px auto;
+            max-width: 700px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: visible;
+            min-height: 400px;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #666, transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #666, transparent);
+        }
+
+        button {
+            background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+            border: 1px solid #666;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            display: inline-block;
+            font-size: 14px;
+            margin: 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #botonEsquivo {
+            z-index: 99999 !important;
+            position: fixed !important;
+            background: linear-gradient(145deg, #ff6b6b, #ff5252) !important;
+            border: 2px solid #fff !important;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.5) !important;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #5a5a5a, #4a4a4a);
+            border-color: #777;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        
+        #botonEsquivo {
+            position: absolute;
+        }
+
+        #nivel1,
+        #nivel2,
+        #nivel3,
+        #final {
+            display: none;
+        }
+
+        .troll {
+            position: absolute;
+            font-size: 50px;
+            animation: flotar 4s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes flotar {
+            0% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+                opacity: 0.7;
+            }
+            25% {
+                transform: translateY(-15px) rotate(90deg) scale(1.1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(-30px) rotate(180deg) scale(1.2);
+                opacity: 1;
+            }
+            75% {
+                transform: translateY(-15px) rotate(270deg) scale(1.1);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(0px) rotate(360deg) scale(1);
+                opacity: 0.7;
+            }
+        }
+
+        .pregunta {
+            background: #3a3a3a;
+            color: #e0e0e0;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 6px;
+            border: 1px solid #555;
+        }
+
+        input {
+            padding: 10px 15px;
+            margin: 10px;
+            width: 80%;
+            font-size: 14px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+            text-align: center;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #777;
+            background: #4a4a4a;
+        }
+
+        #botonFantasma {
+            opacity: 0.3;
+        }
+
+        #mensajeFinal {
+            font-size: 1.4em;
+            color: #00ff00;
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            padding: 30px;
+            border: 3px solid #00ff00;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            animation: finalGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes finalGlow {
+            from {
+                box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            }
+
+            to {
+                box-shadow: 0 0 50px rgba(0, 255, 0, 0.6);
+            }
+        }
+
+
+
+        .shake {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+
+            10% {
+                transform: translate(-1px, -2px) rotate(-1deg);
+            }
+
+            20% {
+                transform: translate(-3px, 0px) rotate(1deg);
+            }
+
+            30% {
+                transform: translate(3px, 2px) rotate(0deg);
+            }
+
+            40% {
+                transform: translate(1px, -1px) rotate(1deg);
+            }
+
+            50% {
+                transform: translate(-1px, 2px) rotate(-1deg);
+            }
+
+            60% {
+                transform: translate(-3px, 1px) rotate(0deg);
+            }
+
+            70% {
+                transform: translate(3px, 1px) rotate(-1deg);
+            }
+
+            80% {
+                transform: translate(-1px, -1px) rotate(1deg);
+            }
+
+            90% {
+                transform: translate(1px, 2px) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
+        }
+
+        #nivel4,
+        #nivel5,
+        #nivel6,
+        #nivel7,
+        #nivel8,
+        #nivel9,
+        #nivel10,
+        #nivel11,
+        #nivel12,
+        #nivel13,
+        #nivel14,
+        #nivel15,
+        #nivel16,
+        #nivel17,
+        #nivel18,
+        #nivel19,
+        #nivel20,
+        #nivel21,
+        #nivel22,
+        #nivel23,
+        #nivel24,
+        #nivel25,
+        #nivel26,
+        #nivel27,
+        #nivel28,
+        #nivel29,
+        #nivel30,
+        #nivel31,
+        #nivel32,
+        #nivel33,
+        #nivel34,
+        #nivel35,
+        #nivel36,
+        #nivel37,
+        #nivel38,
+        #nivel39,
+        #nivel40 {
+            display: none;
+        }
+        
+        .ultimatum-container {
+            background: linear-gradient(45deg, #ff0000, #000000, #ff0000);
+            background-size: 400% 400%;
+            animation: ultimatumBg 2s ease infinite;
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #ff0000;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.8);
+        }
+        
+        @keyframes ultimatumBg {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .ultimatum-text {
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            border: 2px solid #00ff00;
+        }
+        
+        #ultimatumInput {
+            width: 100%;
+            height: 120px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            padding: 15px;
+            border: 3px solid #ff0000;
+            border-radius: 10px;
+            background: #1a1a1a;
+            color: #fff;
+            resize: none;
+        }
+        
+        .ultimatum-timer {
+            font-size: 1.5em;
+            color: #ff0000;
+            font-weight: bold;
+            margin: 15px 0;
+            animation: timerPulse 1s infinite;
+        }
+        
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .ultimatum-attempts {
+            font-size: 1.3em;
+            color: #ffff00;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .ultimatum-warning {
+            background: #ffff00;
+            color: #000;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 3px solid #ff0000;
+            animation: warningBlink 1s infinite;
+        }
+        
+        @keyframes warningBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .reflex-game {
+            background: linear-gradient(45deg, #222, #333, #222) !important;
+            background-size: 400% 400% !important;
+            animation: reflexBg 3s ease infinite !important;
+            overflow: hidden !important;
+        }
+        
+        @keyframes reflexBg {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes targetPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        @keyframes reflexExplosion {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(2) rotate(180deg); opacity: 0.8; }
+            100% { transform: scale(4) rotate(360deg); opacity: 0; }
+        }
+        
+        /* Diálogos finales especiales */
+        .dialogo-box {
+            animation: dialogoGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes dialogoGlow {
+            from {
+                box-shadow: 0 8px 32px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+            }
+            to {
+                box-shadow: 0 8px 32px rgba(255,105,180,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+            }
+        }
+        
+        .flappy-game {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            background: linear-gradient(to bottom, #87CEEB, #98FB98);
+            border: 3px solid #333;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        
+        .flappy-bird {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            font-size: 25px;
+            left: 50px;
+            transition: none;
+            z-index: 10;
+        }
+        
+        .flappy-pipe {
+            position: absolute;
+            width: 50px;
+            background: #228B22;
+            border: 2px solid #006400;
+        }
+        
+        .flappy-score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-weight: bold;
+            color: #000;
+            background: rgba(255,255,255,0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .chase-game {
+            position: relative;
+            width: 500px;
+            height: 400px;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+            background-size: 400% 400%;
+            animation: movingBg 6s ease infinite;
+            border: 2px solid #555;
+            border-radius: 8px;
+            margin: 20px auto;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
+        }
+        
+        @keyframes movingBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .hp-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border: 1px solid #555;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .hp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+            transition: width 0.3s ease;
+        }
+        
+        .hp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+            z-index: 3;
+        }
+        
+        .cake {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+            z-index: 2;
+        }
+        
+        .chaser {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            font-size: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+            z-index: 1;
+        }
+
+        .captcha-container {
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            border: 2px solid #ccc;
+        }
+
+        .captcha-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .captcha-img {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #ccc;
+            cursor: pointer;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .captcha-img:hover {
+            border-color: #007bff;
+        }
+
+        .captcha-img.selected {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 15px;
+        }
+
+        .simon-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 300px;
+            margin: 20px auto;
+            position: relative;
+        }
+        
+        .simon-explosion {
+            position: absolute;
+            font-size: 60px;
+            pointer-events: none;
+            animation: explosion 1s ease-out forwards;
+        }
+        
+        @keyframes explosion {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 0.8; }
+            100% { transform: scale(3) rotate(360deg); opacity: 0; }
+        }
+
+        .simon-button {
+            width: 120px;
+            height: 120px;
+            border: none;
+            border-radius: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .simon-red {
+            background: #dc3545;
+        }
+
+        .simon-blue {
+            background: #007bff;
+        }
+
+        .simon-green {
+            background: #28a745;
+        }
+
+        .simon-yellow {
+            background: #ffc107;
+        }
+
+        .simon-button.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 1), 0 0 100px rgba(255, 255, 255, 0.5);
+            animation: simonPulse 0.3s ease;
+        }
+        
+        @keyframes simonPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1.2); }
+        }
+        
+        .simon-button.error {
+            animation: simonError 0.5s ease;
+            background: #ff0000 !important;
+        }
+        
+        @keyframes simonError {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(0.9) rotate(-5deg); }
+            75% { transform: scale(0.9) rotate(5deg); }
+        }
+
+        .codigo-container {
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #00ff00;
+        }
+
+        .virus-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ff0000;
+            color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            z-index: 10000;
+            text-align: center;
+            border: 3px solid #fff;
+            animation: virusShake 0.5s infinite;
+        }
+
+        @keyframes virusShake {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(-48%, -52%) rotate(1deg);
+            }
+
+            75% {
+                transform: translate(-52%, -48%) rotate(-1deg);
+            }
+        }
+
+        .laberinto {
+            display: grid;
+            grid-template-columns: repeat(10, 30px);
+            gap: 2px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .celda {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .pared {
+            background: #000;
+        }
+
+        .camino {
+            background: #fff;
+        }
+
+        .jugador {
+            background: #00ff00;
+        }
+
+        .meta {
+            background: #ff0000;
+        }
+
+        .typing-test {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            color: #000;
+        }
+
+        .texto-original {
+            font-family: monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+
+        .texto-input {
+            width: 100%;
+            height: 100px;
+            font-family: monospace;
+            font-size: 16px;
+            padding: 15px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .memoria-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .memoria-card {
+            width: 80px;
+            height: 80px;
+            background: #007bff;
+            border: none;
+            border-radius: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .memoria-card.flipped {
+            background: #fff;
+            color: #000;
+        }
+
+        .memoria-card.matched {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .riddle-container {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px;
+            border: 2px solid #3498db;
+        }
+
+        .countdown-timer {
+            font-size: 2em;
+            color: #e74c3c;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .reaction-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s;
+        }
+
+        .reaction-red {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .reaction-green {
+            background: #27ae60;
+            color: white;
+        }
+
+        .fake-error {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0000ff;
+            color: #fff;
+            z-index: 10001;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .bsod-text {
+            font-size: 18px;
+            text-align: left;
+            line-height: 1.5;
+            max-width: 80%;
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            gap: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .calc-button {
+            width: 60px;
+            height: 60px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+        }
+
+        .calc-display {
+            grid-column: span 4;
+            height: 60px;
+            font-size: 24px;
+            text-align: right;
+            padding: 15px;
+            background: #000;
+            color: #0f0;
+            border-radius: 10px;
+            font-family: monospace;
+        }
+
+        .whack-mole {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .mole-hole {
+            width: 100px;
+            height: 100px;
+            background: #8B4513;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            border: 3px solid #654321;
+        }
+
+        .mole {
+            width: 80px;
+            height: 80px;
+            background: #FF69B4;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: moleUp 0.3s ease;
+        }
+
+        @keyframes moleUp {
+            from {
+                transform: translateY(100px);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .piano {
+            display: flex;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .piano-key {
+            width: 50px;
+            height: 200px;
+            border: 1px solid #000;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .white-key {
+            background: white;
+            color: black;
+        }
+
+        .black-key {
+            background: black;
+            color: white;
+            width: 30px;
+            height: 120px;
+            margin: 0 -15px;
+            z-index: 1;
+        }
+
+        .slider-container {
+            margin: 20px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 20px;
+            margin: 10px 0;
+        }
+
+        .drawing-canvas {
+            border: 3px solid #000;
+            cursor: crosshair;
+            background: white;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .sequence-display {
+            font-size: 3em;
+            font-family: monospace;
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .word-scramble {
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            border: 2px solid #007bff;
+        }
+
+        .scrambled-word {
+            font-size: 2em;
+            font-weight: bold;
+            color: #dc3545;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+
+        .final-boss {
+            background: linear-gradient(45deg, #ff0000, #000000);
+            color: #fff;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 15px;
+            border: 3px solid #ff0000;
+            animation: finalBossGlow 1s infinite alternate;
+        }
+
+        @keyframes finalBossGlow {
+            from {
+                box-shadow: 0 0 20px #ff0000;
+            }
+
+            to {
+                box-shadow: 0 0 40px #ff0000, 0 0 60px #ff0000;
+            }
+        }
+
+        .math-problem {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            font-size: 1.5em;
+        }
+
+        .fake-button {
+            background: #666;
+            border: 1px solid #777;
+            color: white;
+            padding: 12px 24px;
+            margin: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            position: static !important;
+            transform: none !important;
+        }
+
+        .fake-button:hover {
+            background: #777;
+        }
+
+        /* Estilos para diálogos estilo Undertale */
+        #dialogoContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #111, #000);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .dialogo-box {
+            background: linear-gradient(145deg, #111, #000);
+            border: 4px solid #fff;
+            padding: 20px;
+            margin: 20px;
+            width: 80%;
+            max-width: 600px;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            font-size: 18px;
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .dialogo-texto {
+            min-height: 60px;
+            line-height: 1.5;
+        }
+
+        .dialogo-continuar {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            color: #ffff00;
+            font-size: 14px;
+            animation: parpadeo 1s infinite;
+        }
+
+        @keyframes parpadeo {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .personaje {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .nombre-personaje {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #gameContainer {
+            display: none;
+        }
+        
+        #mensajesFinalContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #111, #000);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+
+    </style>
+</head>
+
+<body>
+    <!-- Sistema de Diálogos Estilo Undertale -->
+    <div id="dialogoContainer">
+        <div class="personaje" id="personajeEmoji">🎮</div>
+        <div class="dialogo-box">
+            <div class="nombre-personaje" id="nombrePersonaje">SISTEMA</div>
+            <div class="dialogo-texto" id="textoDialogo">Cargando...</div>
+            <div class="dialogo-continuar">Presiona ENTER para continuar</div>
+        </div>
+    </div>
+
+    <!-- Música principal -->
+    <audio id="mainMusic" loop>
+        <source src="ost/lo-fi-0_33-15746 (Extend)(1).mp3" type="audio/mpeg">
+    </audio>
+    
+    <div id="gameContainer">
+
+        <!-- Nivel 1: El botón esquivo -->
+        <div id="nivel1" class="container">
+            <h1>🎉 ¡FELICIDADES! 🎉</h1>
+            <p style="font-size: 1.3em; margin: 20px 0;">🎁 Has sido seleccionado para recibir un <strong
+                    style="color: #ffff00; text-shadow: 0 0 10px #ffff00;">VIP de 799 Robux</strong> 🎁</p>
+            <p style="font-size: 1.1em; margin: 15px 0;">⚡ Pero los grandes premios requieren grandes esfuerzos... ⚡</p>
+            <p style="font-size: 1.2em; margin: 20px 0; color: #00ff00;"><strong>🎯 NIVEL 1:</strong> Presiona el botón
+                para reclamar tu premio.</p>
+            <br><br>
+            <div id="areaBoton" style="position: relative; height: 200px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 8px; margin: 20px auto; width: 90%; max-width: 600px;">
+                <button id="botonEsquivoLocal" onmouseover="moverBotonLocal()" style="position: absolute; top: 80px; left: 50%; transform: translateX(-50%); z-index: 10;">¡CLIC AQUÍ!</button>
+            </div>
+            <button onclick="abrirGisselChallenge()" style="position: fixed; bottom: 20px; right: 20px; background: url('gissel-logo.png') center/contain no-repeat, linear-gradient(145deg, #ff6b6b, #ff5252); border: 2px solid #fff; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 12px; z-index: 1000; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;"></button>
+        </div>
+
+        <!-- Nivel 2: Pregunta personal (Cámbiala!) -->
+        <div id="nivel2" class="container">
+            <h1>🤔 PREGUNTA DE SEGURIDAD 🤔</h1>
+            <p>Para verificar que eres tú, responde esta pregunta:</p>
+            <div class="pregunta">
+                <p><strong>¿Cuál es tu nombre de usuario favorito para juegos? (escribe: jugador)</strong></p>
+                <input type="text" id="respuesta" placeholder="Escribe tu respuesta aquí...">
+                <br>
+                <button onclick="verificarRespuesta()">Verificar</button>
+                <p id="error" style="color: red; display: none;">❌ Respuesta incorrecta. ¡Intenta de nuevo! (o admite
+                    que no lo sabes)</p>
+            </div>
+        </div>
+
+        <!-- Nivel 3: El botón fantasma -->
+        <div id="nivel3" class="container">
+            <h1>👻 NIVEL 3: BOTÓN FANTASMA 👻</h1>
+            <p>¡Casi lo tienes! Solo presiona el botón final.</p>
+            <p><em>Nota: El botón es un poco tímido...</em></p>
+            <br><br><br><br>
+            <button id="botonFantasma" onclick="pasarNivel4()">Botón Invisible</button>
+        </div>
+
+        <!-- Nivel 4: Matemáticas trolls -->
+        <div id="nivel4" class="container">
+            <h1>🧮 NIVEL 4: PRUEBA DE INTELIGENCIA 🧮</h1>
+            <p>¡Sorpresa! Un nivel más. Resuelve este problema matemático:</p>
+            <div class="math-problem">
+                <p id="problema">¿Cuánto es 7 + 3 × 2?</p>
+                <input type="number" id="respuestaMath" placeholder="Tu respuesta...">
+                <br><br>
+                <button class="fake-button" onclick="respuestaIncorrecta()">= 20</button>
+                <button onclick="verificarMath()">= 13</button>
+                <button class="fake-button" onclick="respuestaIncorrecta()">= 26</button>
+                <button class="fake-button" onclick="respuestaIncorrecta()">= 17</button>
+            </div>
+            <p id="errorMath" style="color: red; display: none;">❌ ¡Incorrecto! La pantalla temblará hasta que respondas
+                bien 😈</p>
+        </div>
+
+        <!-- Nivel 5: Captcha Troll -->
+        <div id="nivel5" class="container">
+            <h1>🤖 NIVEL 5: VERIFICACIÓN HUMANA 🤖</h1>
+            <p>Demuestra que no eres un robot:</p>
+            <div class="captcha-container">
+                <p><strong>Selecciona todas las imágenes que contengan SEMÁFOROS:</strong></p>
+                <div class="captcha-images" id="captchaGrid">
+                    <div class="captcha-img" onclick="toggleCaptcha(0)">🚦</div>
+                    <div class="captcha-img" onclick="toggleCaptcha(1)">🚗</div>
+                    <div class="captcha-img" onclick="toggleCaptcha(2)">🏠</div>
+                    <div class="captcha-img" onclick="toggleCaptcha(3)">🚦</div>
+                    <div class="captcha-img" onclick="toggleCaptcha(4)">🌳</div>
+                    <div class="captcha-img" onclick="toggleCaptcha(5)">🚦</div>
+                    <div class="captcha-img" onclick="toggleCaptcha(6)">🐱</div>
+                    <div class="captcha-img" onclick="toggleCaptcha(7)">🚙</div>
+                    <div class="captcha-img" onclick="toggleCaptcha(8)">🚦</div>
+                </div>
+                <button onclick="verificarCaptcha()">Verificar</button>
+                <p id="errorCaptcha" style="color: red; display: none;">❌ ¡Incorrecto! Las imágenes han cambiado... 😈
+                </p>
+            </div>
+        </div>
+
+        <!-- Nivel 6: Simon Dice -->
+        <div id="nivel6" class="container">
+            <h1>🎵 NIVEL 6: SIMON DICE 🎵</h1>
+            <p>Repite la secuencia de colores. ¡Tienes que acertar 5 seguidas!</p>
+            <div class="simon-container">
+                <button class="simon-button simon-red" onclick="simonClick(0)">🔴</button>
+                <button class="simon-button simon-blue" onclick="simonClick(1)">🔵</button>
+                <button class="simon-button simon-green" onclick="simonClick(2)">🟢</button>
+                <button class="simon-button simon-yellow" onclick="simonClick(3)">🟡</button>
+            </div>
+            <p>Secuencia: <span id="simonSecuencia">0</span> / 5</p>
+            <button onclick="iniciarSimon()">Comenzar Secuencia</button>
+            <p id="errorSimon" style="color: red; display: none;">❌ ¡Fallaste! Empezamos de nuevo... 😈</p>
+        </div>
+
+        <!-- Nivel 7: Carga Falsa + Virus Troll -->
+        <div id="nivel7" class="container">
+            <h1>⏳ NIVEL 7: CARGANDO VIP... ⏳</h1>
+            <p>¡Casi terminamos! Solo espera a que se complete la carga...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p id="progressText">Cargando: 0%</p>
+            <div class="codigo-container">
+                <p>SISTEMA VIP ROBLOX v2.1.4</p>
+                <p>Conectando al servidor...</p>
+                <p id="codigoStatus">Inicializando...</p>
+            </div>
+        </div>
+
+        <!-- Nivel 8: Laberinto Imposible -->
+        <div id="nivel8" class="container">
+            <h1>🧩 NIVEL 8: LABERINTO MALDITO 🧩</h1>
+            <p>Lleva al 🟢 hasta la 🎯. ¡Pero cuidado, el laberinto cambia cada 10 segundos!</p>
+            <div class="laberinto" id="laberinto"></div>
+            <p>Tiempo hasta cambio: <span id="tiempoLaberinto">10</span>s</p>
+            <p id="errorLaberinto" style="color: red; display: none;">❌ ¡El laberinto cambió! Empezar de nuevo... 😈</p>
+        </div>
+
+        <!-- Nivel 9: Test de Escritura Imposible -->
+        <div id="nivel9" class="container">
+            <h1>⌨️ NIVEL 9: ESCRITURA PERFECTA ⌨️</h1>
+            <p>Copia el texto EXACTAMENTE. ¡Sin errores, sin espacios extra!</p>
+            <div class="typing-test">
+                <div class="texto-original" id="textoOriginal">
+                    El rapido zorro marron salta sobre el perro perezoso. 123456789 !@#$%&*() Puedes escribir esto sin errores? Es mas dificil de lo que parece!
+                </div>
+                <textarea class="texto-input" id="textoInput"
+                    placeholder="Escribe aquí EXACTAMENTE el texto de arriba..." oncopy="return false"
+                    onpaste="return false" oncut="return false" ondrag="return false" ondrop="return false"
+                    oncontextmenu="return false"></textarea>
+                <button onclick="verificarEscritura()">Verificar Texto</button>
+            </div>
+            <p id="errorEscritura" style="color: red; display: none;">❌ ¡Hay errores! Revisa cada carácter... 😈</p>
+        </div>
+
+        <!-- Nivel 10: Memoria Extrema -->
+        <div id="nivel10" class="container">
+            <h1>🧠 NIVEL 10: MEMORIA DE ELEFANTE 🧠</h1>
+            <p>Encuentra todas las parejas. ¡Tienes solo 30 segundos!</p>
+            <div class="countdown-timer" id="memoriaTimer">30</div>
+            <div class="memoria-grid" id="memoriaGrid"></div>
+            <button onclick="iniciarMemoria()">Comenzar Juego</button>
+            <p id="errorMemoria" style="color: red; display: none;">❌ ¡Tiempo agotado! Inténtalo de nuevo... 😈</p>
+        </div>
+
+        <!-- Nivel 11: Adivinanzas Imposibles -->
+        <div id="nivel11" class="container">
+            <h1>🤯 NIVEL 11: ACERTIJOS IMPOSIBLES 🤯</h1>
+            <p style="color: #ff6b6b; font-size: 0.9em;">⚠️ Acertijos lógicos que romperán tu mente ⚠️</p>
+            <div class="riddle-container">
+                <p id="adivinanza" style="font-size: 1.1em; line-height: 1.4;">Cargando acertijo...</p>
+                <input type="text" id="respuestaAdivinanza" placeholder="Tu respuesta...">
+                <button onclick="verificarAdivinanza()">Responder</button>
+            </div>
+            <p>Acertijo <span id="numeroAdivinanza">1</span> de 5</p>
+            <p id="errorAdivinanza" style="color: red; display: none;">❌ ¡Incorrecto! Piensa más... 😈</p>
+        </div>
+
+        <!-- Nivel 12: Reacción + BSOD Falso -->
+        <div id="nivel12" class="container">
+            <h1>⚡ NIVEL 12: REFLEJO NINJA ⚡</h1>
+            <p>Cuando el botón se ponga VERDE, haz clic lo más rápido posible!</p>
+            <p>Tiempo de reacción objetivo: menos de 300ms</p>
+            <button class="reaction-button reaction-red" id="reactionButton" onclick="reactionClick()">¡ESPERA!</button>
+            <p id="reactionTime" style="font-size: 1.5em; margin: 20px 0;"></p>
+            <p id="errorReaction" style="color: red; display: none;">❌ ¡Muy lento! Necesitas ser más rápido... 😈</p>
+        </div>
+
+        <!-- Nivel 13: Calculadora Imposible -->
+        <div id="nivel13" class="container">
+            <h1>🧮 NIVEL 13: CALCULADORA DEL INFIERNO 🧮</h1>
+            <p>Resuelve: 847 × 293 + 1,247 - 89 ÷ 7. ¡Usa SOLO esta calculadora rota!</p>
+            <div class="calculator">
+                <input class="calc-display" id="calcDisplay" readonly value="0">
+                <button class="calc-button" onclick="calcInput('C')">C</button>
+                <button class="calc-button" onclick="calcInput('/')">÷</button>
+                <button class="calc-button" onclick="calcInput('*')">×</button>
+                <button class="calc-button" onclick="calcInput('del')">⌫</button>
+                <button class="calc-button" onclick="calcInput('7')">7</button>
+                <button class="calc-button" onclick="calcInput('8')">8</button>
+                <button class="calc-button" onclick="calcInput('9')">9</button>
+                <button class="calc-button" onclick="calcInput('-')">-</button>
+                <button class="calc-button" onclick="calcInput('4')">4</button>
+                <button class="calc-button" onclick="calcInput('5')">5</button>
+                <button class="calc-button" onclick="calcInput('6')">6</button>
+                <button class="calc-button" onclick="calcInput('+')">+</button>
+                <button class="calc-button" onclick="calcInput('1')">1</button>
+                <button class="calc-button" onclick="calcInput('2')">2</button>
+                <button class="calc-button" onclick="calcInput('3')">3</button>
+                <button class="calc-button" onclick="calcInput('=')">="</button>
+                <button class="calc-button" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+                <button class="calc-button" onclick="calcInput('.')">.</button>
+            </div>
+            <input type="number" id="calcResult" placeholder="Resultado final...">
+            <button onclick="verificarCalculadora()">Verificar</button>
+            <p id="errorCalc" style="color: red; display: none;">❌ ¡Incorrecto! La calculadora se reinició... 😈</p>
+        </div>
+
+        <!-- Nivel 14: Whack-a-Mole Extremo -->
+        <div id="nivel14" class="container">
+            <h1>🔨 NIVEL 14: APLASTA AL TOPO 🔨</h1>
+            <p>¡Aplasta 20 topos en 30 segundos! ¡Pero cuidado con los falsos!</p>
+            <div class="countdown-timer" id="moleTimer">30</div>
+            <p>Topos aplastados: <span id="moleScore">0</span> / 20</p>
+            <div class="whack-mole" id="moleGrid"></div>
+            <button onclick="iniciarMole()">Comenzar Caza</button>
+            <p id="errorMole" style="color: red; display: none;">❌ ¡Tiempo agotado o topo falso! 😈</p>
+        </div>
+
+        <!-- Nivel 15: Piano Imposible -->
+        <div id="nivel15" class="container">
+            <h1>🎹 NIVEL 15: MAESTRO DEL PIANO 🎹</h1>
+            <p>Toca la melodía: DO-RE-MI-FA-SOL-FA-MI-RE-DO</p>
+            <div class="piano">
+                <div class="piano-key white-key" onclick="pianoClick('C')">DO</div>
+                <div class="piano-key black-key" onclick="pianoClick('C#')">C#</div>
+                <div class="piano-key white-key" onclick="pianoClick('D')">RE</div>
+                <div class="piano-key black-key" onclick="pianoClick('D#')">D#</div>
+                <div class="piano-key white-key" onclick="pianoClick('E')">MI</div>
+                <div class="piano-key white-key" onclick="pianoClick('F')">FA</div>
+                <div class="piano-key black-key" onclick="pianoClick('F#')">F#</div>
+                <div class="piano-key white-key" onclick="pianoClick('G')">SOL</div>
+            </div>
+            <p>Secuencia: <span id="pianoSecuencia"></span></p>
+            <button onclick="reiniciarPiano()">Reiniciar</button>
+            <p id="errorPiano" style="color: red; display: none;">❌ ¡Nota incorrecta! 😈</p>
+        </div>
+
+        <!-- Nivel 16: Sliders Sincronizados -->
+        <div id="nivel16" class="container">
+            <h1>🎯 NIVEL 16: SINCRONIZACIÓN PERFECTA 🎯</h1>
+            <p>¡Pon todos los sliders exactamente en 50! ¡Pero se mueven solos!</p>
+            <div class="slider-container">
+                <input type="range" class="slider" id="slider1" min="0" max="100" value="25">
+                <span id="value1">25</span>
+                <input type="range" class="slider" id="slider2" min="0" max="100" value="75">
+                <span id="value2">75</span>
+                <input type="range" class="slider" id="slider3" min="0" max="100" value="10">
+                <span id="value3">10</span>
+                <input type="range" class="slider" id="slider4" min="0" max="100" value="90">
+                <span id="value4">90</span>
+            </div>
+            <button onclick="verificarSliders()">Verificar Sincronización</button>
+            <p id="errorSliders" style="color: red; display: none;">❌ ¡No están sincronizados! 😈</p>
+        </div>
+
+        <!-- Nivel 17: Dibujo Perfecto -->
+        <div id="nivel17" class="container">
+            <h1>🎨 NIVEL 17: ARTISTA PERFECTO 🎨</h1>
+            <p>¡Dibuja un círculo perfecto! ¡Sin salirte ni un pixel!</p>
+            <canvas class="drawing-canvas" id="drawingCanvas" width="400" height="400"></canvas>
+            <br>
+            <button onclick="limpiarCanvas()">Limpiar</button>
+            <button onclick="verificarDibujo()">Verificar Círculo</button>
+            <p id="errorDibujo" style="color: red; display: none;">❌ ¡No es un círculo perfecto! 😈</p>
+        </div>
+
+        <!-- Nivel 18: Secuencia Numérica -->
+        <div id="nivel18" class="container">
+            <h1>🔢 NIVEL 18: SECUENCIA MATEMÁTICA 🔢</h1>
+            <p>Completa la secuencia: 2, 6, 12, 20, 30, ?, ?, ?</p>
+            <div class="sequence-display" id="sequenceDisplay">2, 6, 12, 20, 30, ?, ?, ?</div>
+            <input type="number" id="seq1" placeholder="6to número">
+            <input type="number" id="seq2" placeholder="7mo número">
+            <input type="number" id="seq3" placeholder="8vo número">
+            <button onclick="verificarSecuencia()">Verificar</button>
+            <p id="errorSecuencia" style="color: red; display: none;">❌ ¡Secuencia incorrecta! 😈</p>
+        </div>
+
+        <!-- Nivel 19: Palabras Revueltas -->
+        <div id="nivel19" class="container">
+            <h1>🔤 NIVEL 19: PALABRAS REVUELTAS 🔤</h1>
+            <p>Descifra estas palabras revueltas:</p>
+            <div class="word-scramble">
+                <p>1. <span class="scrambled-word" id="word1">XOBLOR</span></p>
+                <input type="text" id="answer1" placeholder="Respuesta 1">
+                <p>2. <span class="scrambled-word" id="word2">GUJEO</span></p>
+                <input type="text" id="answer2" placeholder="Respuesta 2">
+                <p>3. <span class="scrambled-word" id="word3">SIVP</span></p>
+                <input type="text" id="answer3" placeholder="Respuesta 3">
+            </div>
+            <button onclick="verificarPalabras()">Verificar Palabras</button>
+            <p id="errorPalabras" style="color: red; display: none;">❌ ¡Palabras incorrectas! 😈</p>
+        </div>
+
+        <!-- Nivel 20: Persecución -->
+        <div id="nivel20" class="container">
+            <h1>🏃 NIVEL 20: MANGO OBBY SURVIVAL 🏃</h1>
+            <p>¡Ayuda al jugador 🟢 a llevar el pastel 🎂 a la esquina superior derecha!</p>
+            <p>¡Pero cuidado! El perseguidor 😈 te quita HP. ¡Sobrevive con 67 vidas como el mango obby!</p>
+            
+            <audio id="nivel20Music" loop>
+                <source src="ost/nivel20.mp3" type="audio/mpeg">
+                <source src="ost/nivel20.ogg" type="audio/ogg">
+                <source src="ost/nivel20.wav" type="audio/wav">
+            </audio>
+            
+            <div class="hp-bar">
+                <div class="hp-fill" id="hpFill" style="width: 100%;"></div>
+                <div class="hp-text" id="hpText">HP: 100/100</div>
+            </div>
+            
+            <div class="chase-game" id="chaseGame">
+                <div class="player" id="player">🟢</div>
+                <div class="cake" id="cake">🎂</div>
+                <div class="chaser" id="chaser">😈</div>
+            </div>
+            <p>Usa las flechas del teclado para mover al jugador. ¡Lleva el pastel a la esquina!</p>
+            <p>Tienes 67 vidas como broma del mango obby 🥭</p>
+            <p id="errorChase" style="color: red; display: none;">❌ ¡Te quedaste sin HP! Inténtalo de nuevo... 😈</p>
+        </div>
+
+        <!-- Nivel 21: Rompecabezas Deslizante -->
+        <div id="nivel21" class="container">
+            <h1>🧩 NIVEL 21: ROMPECABEZAS DESLIZANTE 🧩</h1>
+            <p>¡Ordena los números del 1 al 8! ¡Solo puedes mover las piezas al espacio vacío!</p>
+            <div class="puzzle-grid" id="puzzleGrid"></div>
+            <button onclick="iniciarPuzzle()">Mezclar Puzzle</button>
+            <p id="errorPuzzle" style="color: red; display: none;">❌ ¡Aún no está ordenado! 😈</p>
+        </div>
+
+        <!-- Nivel 22: Laberinto Invisible -->
+        <div id="nivel22" class="container">
+            <h1>🕵️ NIVEL 22: LABERINTO INVISIBLE 🕵️</h1>
+            <p>¡Encuentra el camino sin poder ver las paredes! Solo se revelan al chocar.</p>
+            <div class="invisible-maze" id="invisibleMaze"></div>
+            <p>Usa WASD para moverte. ¡Las paredes aparecen al tocarlas!</p>
+            <p id="errorInvisible" style="color: red; display: none;">❌ ¡Chocaste con una pared! 😈</p>
+        </div>
+
+        <!-- Nivel 23: Secuencia de Colores Rápida -->
+        <div id="nivel23" class="container">
+            <h1>🌈 NIVEL 23: ARCOÍRIS VELOZ 🌈</h1>
+            <p>¡Memoriza la secuencia de 10 colores en solo 3 segundos!</p>
+            <div class="color-sequence" id="colorSequence"></div>
+            <div class="color-buttons" id="colorButtons"></div>
+            <button onclick="iniciarColores()">Mostrar Secuencia</button>
+            <p id="errorColores" style="color: red; display: none;">❌ ¡Secuencia incorrecta! 😈</p>
+        </div>
+
+        <!-- Nivel 24: Matemáticas Mentales -->
+        <div id="nivel24" class="container">
+            <h1>🧠 NIVEL 24: MATEMÁTICAS DEL INFIERNO 🧠</h1>
+            <p>¡Resuelve 5 operaciones DIABÓLICAS en 30 segundos! ¡Sin calculadora ni ayuda!</p>
+            <p style="color: #ff6b6b; font-size: 0.9em;">⚠️ Incluye: Potencias, Raíces, Factoriales y más ⚠️</p>
+            <div class="math-challenge">
+                <div class="countdown-timer" id="mathTimer">30</div>
+                <p id="mathProblem">Presiona Comenzar</p>
+                <input type="number" id="mathAnswer" placeholder="Tu respuesta...">
+                <button onclick="verificarMath24()">Responder</button>
+                <p>Problema <span id="mathCount">0</span> / 5</p>
+            </div>
+            <button onclick="iniciarMath24()">Comenzar Desafío</button>
+            <p id="errorMath24" style="color: red; display: none;">❌ ¡Tiempo agotado o respuesta incorrecta! 😈</p>
+        </div>
+
+        <!-- Nivel 25: Patrones Complejos -->
+        <div id="nivel25" class="container">
+            <h1>🔄 NIVEL 25: MAESTRO DE PATRONES 🔄</h1>
+            <p>¡Identifica el patrón y completa la secuencia!</p>
+            <div class="pattern-display" id="patternDisplay"></div>
+            <div class="pattern-options" id="patternOptions"></div>
+            <p id="errorPattern" style="color: red; display: none;">❌ ¡Patrón incorrecto! 😈</p>
+        </div>
+
+        <!-- Nivel 26: Reflejos Extremos -->
+        <div id="nivel26" class="container">
+            <h1>⚡ NIVEL 26: REFLEJOS DE NINJA ⚡</h1>
+            <p>¡Haz clic en los objetivos que aparecen! ¡Tienes que acertar 15 en 20 segundos!</p>
+            <div class="reflex-game" id="reflexGame"></div>
+            <div class="countdown-timer" id="reflexTimer">20</div>
+            <p>Objetivos: <span id="reflexScore">0</span> / 15</p>
+            <button onclick="iniciarReflejos()">Comenzar Caza</button>
+            <p id="errorReflex" style="color: red; display: none;">❌ ¡No lograste 15 objetivos! 😈</p>
+        </div>
+
+        <!-- Nivel 27: Puzzle de Palabras -->
+        <div id="nivel27" class="container">
+            <h1>🔤 NIVEL 27: SOPA DE LETRAS EXTREMA 🔤</h1>
+            <p>¡Encuentra las 5 palabras ocultas en la sopa de letras!</p>
+            <div class="word-search" id="wordSearch"></div>
+            <div class="word-list">
+                <p>Palabras a encontrar:</p>
+                <ul id="wordList"></ul>
+            </div>
+            <p id="errorWordSearch" style="color: red; display: none;">❌ ¡Aún faltan palabras! 😈</p>
+        </div>
+
+        <!-- Nivel 28: Equilibrio Imposible -->
+        <div id="nivel28" class="container">
+            <h1>⚖️ NIVEL 28: EQUILIBRIO PERFECTO ⚖️</h1>
+            <p>¡Mantén la pelota en equilibrio por 10 segundos! ¡Usa el mouse para controlar!</p>
+            <div class="balance-game" id="balanceGame">
+                <div class="ball" id="balanceBall">🔴</div>
+                <div class="platform" id="balancePlatform"></div>
+            </div>
+            <div class="countdown-timer" id="balanceTimer">10</div>
+            <button onclick="iniciarEquilibrio()">Comenzar Equilibrio</button>
+            <p id="errorBalance" style="color: red; display: none;">❌ ¡La pelota se cayó! 😈</p>
+        </div>
+
+        <!-- Nivel 29: Código Morse -->
+        <div id="nivel29" class="container">
+            <h1>📡 NIVEL 29: MORSE EXTREMO 📡</h1>
+            <p>¡Traduce la FRASE COMPLETA en código Morse!</p>
+            <p style="color: #ff6b6b; font-size: 0.9em;">⚠️ Frases largas con espacios (/) incluidos ⚠️</p>
+            <div class="morse-display" id="morseDisplay"></div>
+            <input type="text" id="morseAnswer" placeholder="Escribe el mensaje...">
+            <button onclick="verificarMorse()">Traducir</button>
+            <div class="morse-help">
+                <p>Ayuda: A=·− B=−··· C=−·−· D=−·· E=·</p>
+            </div>
+            <p id="errorMorse" style="color: red; display: none;">❌ ¡Traducción incorrecta! 😈</p>
+        </div>
+
+        <!-- Nivel 30: Multitarea Extrema -->
+        <div id="nivel30" class="container">
+            <h1>🤯 NIVEL 30: MULTITAREA EXTREMA 🤯</h1>
+            <p>¡Haz 3 cosas a la vez! ¡Mantén presionada la barra espaciadora, mueve el mouse en círculos y cuenta hasta 20!</p>
+            <div class="multitask-display">
+                <p>Barra espaciadora: <span id="spaceStatus">❌</span></p>
+                <p>Movimiento circular: <span id="mouseStatus">❌</span></p>
+                <p>Contador: <span id="countStatus">0</span> / 20</p>
+            </div>
+            <input type="number" id="countInput" placeholder="Cuenta aquí...">
+            <button onclick="iniciarMultitarea()">Comenzar Multitarea</button>
+            <p id="errorMultitask" style="color: red; display: none;">❌ ¡No completaste todas las tareas! 😈</p>
+        </div>
+
+        <!-- Nivel 31: Ruleta de la Suerte -->
+        <div id="nivel31" class="container">
+            <h1>🎰 NIVEL 31: RULETA DE LA SUERTE 🎰</h1>
+            <p>¡Gira la ruleta y espera que salga el color correcto!</p>
+            <div id="ruleta" style="width:200px;height:200px;border-radius:50%;border:10px solid #333;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:4em;background:conic-gradient(red 0deg 60deg, blue 60deg 120deg, green 120deg 180deg, yellow 180deg 240deg, orange 240deg 300deg, purple 300deg 360deg);">🎰</div>
+            <button id="girarRuleta">Girar Ruleta</button>
+            <p id="ruletaError" style="color: red; display: none;">❌ ¡Inténtalo de nuevo! 😈</p>
+        </div>
+
+        <!-- Nivel 32: Esquiva los Meteoros -->
+        <div id="nivel32" class="container">
+            <h1>😈 NIVEL 32: APOCALIPSIS DE METEOROS INFERNAL 😈</h1>
+            <p>Esquiva los meteoros por 60 segundos. En el segundo 40 aparecerá una plataforma.</p>
+            <p>En el segundo 35 se destruirá el suelo. En el segundo 25 la plataforma se moverá.</p>
+            <p>¡Sobrevive al apocalipsis completo para continuar!</p>
+            <button onclick="iniciarMeteoros()">Comenzar Apocalipsis</button>
+        </div>
+
+        <!-- Nivel 33: Laberinto con Mouse -->
+        <div id="nivel33" class="container">
+            <h1>🔍 NIVEL 33: LABERINTO CON MOUSE 🔍</h1>
+            <p>¡Navega con el mouse hasta la meta! ¡No toques las paredes!</p>
+        </div>
+
+        <!-- Nivel 34: Flappy Bird Imposible -->
+        <div id="nivel34" class="container">
+            <h1>🐦 NIVEL 34: FLAPPY BIRD IMPOSIBLE 🐦</h1>
+            <p>¡Pasa por 10 tuberías sin tocar nada! ¡Un solo error y empiezas de nuevo!</p>
+            <div class="flappy-game" id="flappyGame">
+                <div class="flappy-bird" id="flappyBird">🐦</div>
+                <div class="flappy-score">Tuberías: <span id="flappyScore">0</span> / 10</div>
+            </div>
+            <p>Haz clic o presiona ESPACIO para volar. ¡Gravedad extrema activada!</p>
+            <button onclick="iniciarFlappy()">Comenzar Vuelo</button>
+            <p id="errorFlappy" style="color: red; display: none;">❌ ¡Chocaste! ¡La gravedad no perdona! 😈</p>
+        </div>
+
+        <!-- Nivel 35: JEFE FINAL SUPREMO -->
+        <div id="nivel35" class="container">
+            <h1>💀 NIVEL 35: JEFE FINAL SUPREMO 💀</h1>
+            <div class="final-boss">
+                <h2>😈 ¡HAS LLEGADO AL VERDADERO FINAL! 😈</h2>
+                <p>Para derrotar al Demonio Supremo, debes responder:</p>
+                <p><strong>¿Cuál es la respuesta a la vida, el universo y todo lo demás?</strong></p>
+                <input type="number" id="finalAnswer" placeholder="La respuesta final...">
+                <br><br>
+                <button onclick="verificarJefeFinal()">DERROTAR AL DEMONIO</button>
+                <p id="errorFinal" style="color: red; display: none;">❌ ¡EL DEMONIO SE RÍE DE TI! 😈</p>
+            </div>
+        </div>
+
+        <!-- Nivel 36: Código Binario -->
+        <div id="nivel36" class="container">
+            <h1>💻 NIVEL 36: HACKEO BINARIO 💻</h1>
+            <p><strong>¡Hackea el sistema traduciendo "JUGADOR" a código binario ASCII!</strong></p>
+            <p style="color: #ffff00; font-size: 1.1em;">💡 <strong>Cómo funciona:</strong></p>
+            <p>1. Cada letra tiene un número ASCII</p>
+            <p>2. Ese número se convierte a binario (8 bits)</p>
+            <p>3. Debes escribir todos los códigos separados por espacios</p>
+            
+            <div style="background:#000;color:#0f0;padding:20px;margin:20px;border-radius:10px;font-family:monospace;border:2px solid #00ff00;">
+                <p style="color:#ffff00;margin-bottom:10px;">🔍 TABLA DE CONVERSIÓN:</p>
+                J = 74 (ASCII) = <span style="color:#ff6666;">01001010</span> (binario)<br>
+                U = 85 (ASCII) = <span style="color:#ff6666;">01010101</span> (binario)<br>
+                G = 71 (ASCII) = <span style="color:#ff6666;">01000111</span> (binario)<br>
+                A = 65 (ASCII) = <span style="color:#ff6666;">01000001</span> (binario)<br>
+                D = 68 (ASCII) = <span style="color:#ff6666;">01000100</span> (binario)<br>
+                O = 79 (ASCII) = <span style="color:#ff6666;">01001111</span> (binario)<br>
+                R = 82 (ASCII) = <span style="color:#ff6666;">01010010</span> (binario)
+            </div>
+            
+            <p style="color: #00ff00; font-size: 1.1em;">🎯 <strong>Respuesta esperada:</strong></p>
+            <p>Escribe los 7 códigos binarios separados por espacios</p>
+            
+            <input type="text" id="binarioAnswer" placeholder="01001010 01010101 01000111 01000001 01000100 01001111 01010010" style="width:90%;padding:10px;font-family:monospace;">
+            <br><br>
+            <button onclick="verificarBinario()">Hackear Sistema</button>
+            <p id="errorBinario" style="color: red; display: none;">❌ ¡Código incorrecto! Revisa los espacios y la secuencia 😈</p>
+        </div>
+
+        <!-- Nivel 37: Tetris Imposible -->
+        <div id="nivel37" class="container">
+            <h1>🟦 NIVEL 37: TETRIS DEL INFIERNO 🟦</h1>
+            <p>¡Completa 3 líneas en este Tetris imposible!</p>
+            <canvas id="tetrisCanvas" width="300" height="400" style="border:3px solid #333;background:#000;"></canvas>
+            <p>Líneas: <span id="tetrisLineas">0</span> / 3</p>
+            <button onclick="iniciarTetris()">Comenzar Tetris</button>
+            <p id="errorTetris" style="color: red; display: none;">❌ ¡Game Over! 😈</p>
+        </div>
+
+        <!-- Nivel 38: Escape Room -->
+        <div id="nivel38" class="container">
+            <h1>🔐 NIVEL 38: ESCAPE ROOM FINAL 🔐</h1>
+            <p>¡Encuentra los 3 objetos ocultos en 2 minutos!</p>
+            <div id="escapeRoom" style="position:relative;width:400px;height:300px;background:#654321;border:3px solid #333;margin:20px auto;"></div>
+            <p>Tiempo: <span id="escapeTimer">120</span>s</p>
+            <p>Items: <span id="escapeItems"></span></p>
+            <button onclick="iniciarEscape()">Comenzar Escape</button>
+            <p id="errorEscape" style="color: red; display: none;">❌ ¡Tiempo agotado! 😈</p>
+        </div>
+
+        <!-- Nivel 39: Boss Final Épico -->
+        <div id="nivel39" class="container">
+            <h1>🐉 NIVEL 39: DRAGÓN FINAL 🐉</h1>
+            <p>¡Derrota al dragón antes de que te mate!</p>
+            <div style="display:flex;justify-content:space-around;margin:20px;">
+                <div>
+                    <p>Dragón HP: <span id="bossHP">100</span></p>
+                    <div style="width:200px;height:20px;background:#333;border:1px solid #666;">
+                        <div id="bossHPBar" style="height:100%;background:#ff0000;width:100%;"></div>
+                    </div>
+                </div>
+                <div>
+                    <p>Tu HP: <span id="playerHPBoss">100</span></p>
+                    <div style="width:200px;height:20px;background:#333;border:1px solid #666;">
+                        <div id="playerHPBarBoss" style="height:100%;background:#00ff00;width:100%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size:5em;margin:20px;">🐉</div>
+            <button onclick="atacarBoss()">ATACAR DRAGÓN</button>
+            <button onclick="iniciarBoss()">Reiniciar Batalla</button>
+            <p id="errorBoss" style="color: red; display: none;">❌ ¡El dragón te derrotó! 😈</p>
+        </div>
+
+        <!-- Nivel 40: ULTIMATUM FINAL -->
+        <div id="nivel40" class="container">
+            <h1>🔥 NIVEL 40: ULTIMATUM FINAL 🔥</h1>
+            <div class="ultimatum-container">
+                <h2>⚠️ ¡ESPERA! ¡NO TAN RÁPIDO! ⚠️</h2>
+                <p style="font-size: 1.3em; color: #ff6b6b; margin: 20px 0;">¿Pensaste que ya había terminado? 😈</p>
+                <div class="ultimatum-challenge">
+                    <p><strong>DESAFÍO FINAL SUPREMO:</strong></p>
+                    <p>Debes escribir EXACTAMENTE esta frase sin errores:</p>
+                    <div class="ultimatum-text">
+                        "Este juego ha sido una locura total pero al final valió la pena porque ahora tengo mi VIP y el creador es un genio haciendo juegos imposibles"
+                    </div>
+                    <textarea id="ultimatumInput" placeholder="Escribe la frase EXACTAMENTE como aparece arriba..."></textarea>
+                    <div class="ultimatum-timer">
+                        Tiempo límite: <span id="ultimatumTimer">60</span> segundos
+                    </div>
+                    <div class="ultimatum-attempts">
+                        Intentos restantes: <span id="ultimatumAttempts">3</span>
+                    </div>
+                    <button onclick="verificarUltimatum()">COMPLETAR ULTIMATUM</button>
+                    <p id="errorUltimatum" style="color: red; display: none;">❌ ¡INCORRECTO! ¡Cada error reinicia el timer! 😈</p>
+                </div>
+                <div class="ultimatum-warning">
+                    <p>⚠️ <strong>ADVERTENCIA:</strong> Si fallas 3 veces o se acaba el tiempo, vuelves al NIVEL 1 ⚠️</p>
+                    <p>😈 ¡Este es mi último truco! ¡No hay piedad! 😈</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla Azul Falsa -->
+        <div id="bsodFalso" class="fake-error">
+            <div class="bsod-text">
+                <h1>:(</h1>
+                <br>
+                <p>Tu PC se ha encontrado con un problema y necesita reiniciarse.</p>
+                <p>Estamos recopilando información de errores y luego reiniciaremos por ti.</p>
+                <br>
+                <p>Si quieres saber más, puedes buscar en línea más tarde este error:</p>
+                <p>CRITICAL_PROCESS_DIED</p>
+                <br>
+                <p id="bsodProgress">0% completado</p>
+                <br>
+                <p style="font-size: 12px;">Solo es broma... espera 10 segundos 😈</p>
+            </div>
+        </div>
+
+        <!-- Popup Virus Troll -->
+        <div id="virusPopup" class="virus-popup" style="display: none;">
+            <h2>⚠️ VIRUS DETECTADO ⚠️</h2>
+            <p>¡Tu computadora ha sido infectada!</p>
+            <p>Haz clic en "Eliminar Virus" para continuar</p>
+            <button onclick="eliminarVirus()">Eliminar Virus</button>
+            <button onclick="cerrarVirus()">Ignorar (PELIGROSO)</button>
+        </div>
+
+
+
+        <!-- Mensajes Finales Separados -->
+        <div id="mensajesFinalContainer" style="display: none;">
+            <div class="personaje" id="personajeFinalEmoji">🎮</div>
+            <div class="dialogo-box">
+                <div class="nombre-personaje" id="nombreFinalPersonaje">SISTEMA</div>
+                <div class="dialogo-texto" id="textoFinalDialogo">Cargando...</div>
+                <div class="dialogo-continuar">Presiona ENTER para continuar</div>
+            </div>
+        </div>
+
+        <!-- Pantalla Final -->
+        <div id="final" class="container">
+            <h1>🎉 ¡FELICIDADES! 🎉</h1>
+            <div id="mensajeFinal">
+                <p style="font-size: 1.5em; margin: 30px 0;">🏆 <strong>¡HAS COMPLETADO TODOS LOS NIVELES!</strong> 🏆</p>
+                <p style="font-size: 1.2em; margin: 20px 0;">Después de 40 niveles de pura locura, lo has logrado.</p>
+                <p style="font-size: 1.1em; margin: 20px 0; color: #00ff00;">✨ Eres oficialmente un <strong>MAESTRO DE JUEGOS IMPOSIBLES</strong> ✨</p>
+                <p style="font-size: 1em; margin: 20px 0;">¡Gracias por jugar este desafío épico!</p>
+            </div>
+            <button onclick="location.reload()">🔄 Jugar de Nuevo</button>
+        </div>
+    </div>
+
+    <script>
+        // WebAudio API para efectos de sonido
+        let audioContext;
+        let mainMusicElement;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                mainMusicElement = document.getElementById('mainMusic');
+                
+                if (mainMusicElement) {
+                    mainMusicElement.volume = 0.2;
+                    mainMusicElement.play().catch(e => console.log('Audio principal no disponible'));
+                }
+            } catch (e) {
+                console.log('WebAudio no soportado');
+            }
+        }
+        
+        // Efectos de sonido con WebAudio
+        function playTone(frequency, duration, type = 'sine') {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+        
+        // Sonidos para diferentes acciones
+        function playSuccessSound() {
+            playTone(523.25, 0.2); // Do
+            setTimeout(() => playTone(659.25, 0.2), 100); // Mi
+            setTimeout(() => playTone(783.99, 0.3), 200); // Sol
+        }
+        
+        function playErrorSound() {
+            playTone(220, 0.5, 'sawtooth');
+        }
+        
+        function playClickSound() {
+            playTone(800, 0.1, 'square');
+        }
+        
+        // Inicializar audio al hacer clic
+        document.addEventListener('click', function initOnClick() {
+            initAudio();
+            document.removeEventListener('click', initOnClick);
+        }, { once: true });
+    </script>
+    <!-- Botón flotante nivel 1 -->
+    <button id="botonEsquivo" onmouseover="moverBoton()" style="position: fixed; top: 200px; left: 50%; transform: translateX(-50%); z-index: 99999; display: none;">¡CLIC AQUÍ!</button>
+
+    <script src="game.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivos Secretos</title>
+    <style>
+        :root {
+            --main-bg: #0a0a1a;
+            --terminal-bg: #111126;
+            --header-bg: #483d8b;
+            --accent-color: #7b68ee;
+            --danger-color: #ff3864;
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --font-main: 'Courier New', monospace;
+            --crt-glow: rgba(123, 104, 238, 0.15);
+            --old-green: #00aa00;
+            --login-bg: #00557f;
+            --isa-bg: #1a0a2a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000;
+            color: var(--text-color);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Efecto CRT */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .crt::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.1;
+            }
+
+            20% {
+                opacity: 0.1;
+            }
+
+            22% {
+                opacity: 0.25;
+            }
+
+            23% {
+                opacity: 0.1;
+            }
+
+            24% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.1;
+            }
+
+            55% {
+                opacity: 0.15;
+            }
+
+            66% {
+                opacity: 0.2;
+            }
+
+            77% {
+                opacity: 0.1;
+            }
+
+            100% {
+                opacity: 0.1;
+            }
+        }
+
+        /* Pantalla de inicio estilo PC antigua */
+        #boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: var(--old-green);
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #boot-screen p {
+            margin: 10px 0;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            animation-delay: var(--delay);
+            text-shadow: 0 0 5px var(--old-green);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        #boot-screen .press-enter {
+            margin-top: 40px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Efecto de arranque antiguo */
+        .boot-loader {
+            width: 80%;
+            max-width: 400px;
+            height: 20px;
+            border: 1px solid var(--old-green);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .boot-progress {
+            height: 100%;
+            width: 0;
+            background-color: var(--old-green);
+            animation: bootProgress 4s linear forwards;
+        }
+
+        @keyframes bootProgress {
+            0% {
+                width: 0%;
+            }
+
+            20% {
+                width: 15%;
+            }
+
+            40% {
+                width: 35%;
+            }
+
+            60% {
+                width: 65%;
+            }
+
+            80% {
+                width: 85%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Pantalla de login */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--login-bg);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .login-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s;
+        }
+
+        .login-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-button:hover {
+            background-color: #005a9e;
+        }
+
+        .login-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Marco del monitor */
+        .monitor-frame {
+            width: calc(100% - 40px);
+            max-width: 920px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #222;
+            border-radius: 10px;
+            border: 8px solid #444;
+            box-shadow:
+                0 0 0 4px #333,
+                0 0 0 8px #222,
+                0 0 30px rgba(0, 0, 0, 0.8),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+        }
+
+        @media (max-width: 768px) {
+            .monitor-frame {
+                width: calc(100% - 20px);
+                padding: 10px;
+                margin: 10px auto;
+                border-width: 5px;
+                height: 90vh;
+            }
+        }
+
+        /* Terminal container */
+        #terminal-container {
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent-color);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow:
+                0 0 20px var(--crt-glow),
+                inset 0 0 15px var(--crt-glow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        /* Terminal header */
+        #terminal-header {
+            background-color: var(--header-bg);
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        #terminal-title {
+            flex-grow: 1;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            font-size: clamp(14px, 3vw, 18px);
+        }
+
+        /* Terminal body */
+        #terminal-body {
+            background-color: var(--terminal-bg);
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            background-color: #1a1a3a;
+            border-top: 1px solid var(--accent-color);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Welcome message */
+        .welcome-message {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: clamp(16px, 4vw, 24px);
+            animation: fadeIn 1s;
+        }
+
+        /* NPC container */
+        .npc-container {
+            display: flex;
+            margin-bottom: 20px;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 0.5s;
+        }
+
+        @media (min-width: 768px) {
+            .npc-container {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+        }
+
+        .npc-image {
+            width: 100px;
+            height: 100px;
+            min-width: 100px;
+            background-color: #000;
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            margin-right: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .npc-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--crt-glow);
+        }
+
+        @media (max-width: 768px) {
+            .npc-image {
+                width: 80px;
+                height: 80px;
+                font-size: 30px;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+
+        .npc-dialogue {
+            flex-grow: 1;
+            background-color: #1a1a3a;
+            border: 1px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 15px;
+            position: relative;
+            font-size: clamp(14px, 2.5vw, 16px);
+        }
+
+        .npc-name {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: var(--header-bg);
+            padding: 0 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+
+        /* File system */
+        .file-system {
+            margin-top: 20px;
+            border-top: 1px dashed var(--accent-color);
+            padding-top: 15px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 1.5s;
+        }
+
+        .folder {
+            margin-bottom: 15px;
+        }
+
+        .folder-title {
+            color: var(--accent-color);
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            font-size: clamp(14px, 3vw, 16px);
+            padding: 8px 0;
+        }
+
+        .folder-title::before {
+            content: "▶";
+            margin-right: 10px;
+            font-size: 12px;
+        }
+
+        .folder-title.open::before {
+            content: "▼";
+        }
+
+        .folder-content {
+            display: none;
+            margin-left: 15px;
+            padding-left: 15px;
+            border-left: 1px solid var(--header-bg);
+        }
+
+        .file {
+            margin: 10px 0;
+            cursor: pointer;
+            color: var(--text-color);
+            padding-left: 25px;
+            font-size: clamp(13px, 2.5vw, 15px);
+            position: relative;
+        }
+
+        .file::before {
+            content: "➤";
+            position: absolute;
+            left: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            color: var(--accent-color);
+        }
+
+        .file:hover::before {
+            opacity: 1;
+        }
+
+        .file-content {
+            display: none;
+            background-color: #1a1a3a;
+            border: 1px solid var(--header-bg);
+            padding: 15px;
+            margin: 10px 0 15px;
+            border-radius: 5px;
+            animation: fadeIn 0.5s;
+        }
+
+        /* Command line */
+        .command-line {
+            display: flex;
+            margin-top: auto;
+            padding-top: 15px;
+            align-items: center;
+            background-color: #1a1a3a;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--accent-color);
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        .prompt {
+            color: var(--accent-color);
+            margin-right: 10px;
+            font-weight: bold;
+            white-space: nowrap;
+            font-size: clamp(14px, 3vw, 16px);
+        }
+
+        #command-input {
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid var(--accent-color);
+            color: white;
+            font-family: var(--font-main);
+            flex-grow: 1;
+            outline: none;
+            padding: 5px;
+            font-size: clamp(14px, 3vw, 16px);
+        }
+
+        /* Windows-style CMD */
+        #windows-cmd {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 700px;
+            height: 70vh;
+            background-color: #0c0c0c;
+            border: 2px solid #555;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        #cmd-header {
+            background-color: #555;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            cursor: move;
+        }
+
+        #cmd-title {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        #cmd-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #cmd-body {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            color: #ccc;
+            background-color: #0c0c0c;
+            white-space: pre-wrap;
+        }
+
+        #cmd-input-line {
+            display: flex;
+            padding: 0 15px 15px;
+            align-items: center;
+        }
+
+        #cmd-prompt {
+            color: lime;
+            margin-right: 10px;
+        }
+
+        #cmd-input {
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-family: 'Courier New', monospace;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        /* ISA Interface */
+        #isa-interface {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 700px;
+            height: 70vh;
+            background-color: var(--isa-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 5px;
+            box-shadow: 0 0 30px rgba(123, 104, 238, 0.5);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        #isa-header {
+            background-color: var(--header-bg);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            cursor: move;
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        #isa-title {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        #isa-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #isa-body {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            color: #e0e0e0;
+            background-color: var(--isa-bg);
+            white-space: pre-wrap;
+            text-align: center;
+        }
+
+        #isa-eye-large {
+            font-size: 100px;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Toggle CMD button */
+        .toggle-cmd {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--header-bg);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
+            opacity: 0.9;
+        }
+
+        .toggle-cmd:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        /* Botón de cambio de vista */
+        .view-toggle {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background-color: var(--header-bg);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
+            opacity: 0.9;
+        }
+
+        .view-toggle:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        /* Media gallery */
+        .media-gallery {
+            display: none;
+            margin-top: 20px;
+            border-top: 1px dashed var(--accent-color);
+            padding-top: 15px;
+        }
+
+        .media-gallery.visible {
+            display: block;
+            animation: fadeIn 1s;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .media-item {
+            background-color: #1a1a3a;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .media-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .media-item img,
+        .media-item video {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--header-bg);
+        }
+
+        .media-caption {
+            padding: 10px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Loading effect for videos */
+        .video-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: var(--accent-color);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Old PC scanlines */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(to bottom,
+                    transparent 0%,
+                    rgba(0, 255, 0, 0.05) 0.5%,
+                    transparent 1%);
+            pointer-events: none;
+            z-index: 101;
+            display: none;
+        }
+
+        /* Secret content styles */
+        .secret-content {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(10, 10, 30, 0.8);
+            border: 1px solid var(--danger-color);
+            border-radius: 5px;
+        }
+
+        .secret-content.visible {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        /* Typewriter effect */
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid var(--old-green);
+            white-space: nowrap;
+            margin: 0 auto;
+            animation:
+                typing 3.5s steps(40, end),
+                blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: var(--old-green)
+            }
+        }
+
+        /* Back button */
+        #back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background-color: var(--header-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            z-index: 100;
+            opacity: 0.9;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(123, 104, 238, 0.5);
+        }
+
+        #back-button:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            background-color: var(--accent-color);
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        /* System info */
+        .system-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 10;
+            border: 1px solid var(--accent-color);
+        }
+
+        /* Efecto de brillo para botones */
+        .glow-effect {
+            animation: glow-pulse 2s infinite alternate;
+        }
+
+        @keyframes glow-pulse {
+            from {
+                box-shadow: 0 0 5px var(--accent-color);
+            }
+
+            to {
+                box-shadow: 0 0 15px var(--accent-color);
+            }
+        }
+
+        /* Progress bar for RAM */
+        .ram-meter {
+            width: 100px;
+            height: 10px;
+            background-color: #1a1a3a;
+            border-radius: 5px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        .ram-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00aa00, #7b68ee);
+            transition: width 0.5s;
+        }
+
+        /* Estilos para el bloqueador ISA */
+        .isa-blocker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ff3864;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .isa-blocker-eye {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: pulse 1s infinite alternate;
+        }
+
+        .isa-blocker-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff3864;
+        }
+
+        .isa-blocker-message {
+            font-size: 18px;
+            max-width: 500px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .isa-blocker-countdown {
+            font-size: 16px;
+            color: #7b68ee;
+        }
+    </style>
+</head>
+
+<body class="crt">
+    <!-- Verificación de acceso -->
+    <script>
+        (function() {
+            const isAccessGranted = localStorage.getItem('secretAccessGranted') === 'true';
+            
+            if (!isAccessGranted) {
+                const isaBlocker = document.createElement('div');
+                isaBlocker.className = 'isa-blocker';
+                isaBlocker.innerHTML = `
+                    <div class="isa-blocker-eye">👁️</div>
+                    <h1 class="isa-blocker-title">¡BUEN INTENTO!</h1>
+                    <p class="isa-blocker-message">
+                        ISA ha detectado un intento de acceso no autorizado.<br>
+                        Los archivos secretos están protegidos por protocolos de seguridad de nivel 5.
+                    </p>
+                    <p class="isa-blocker-countdown">
+                        Redirigiendo a la zona segura en <span id="isa-countdown">3</span>...
+                    </p>
+                `;
+                
+                document.body.appendChild(isaBlocker);
+                document.body.style.overflow = 'hidden';
+                
+                let count = 3;
+                const countdownEl = document.getElementById('isa-countdown');
+                const timer = setInterval(() => {
+                    count--;
+                    countdownEl.textContent = count;
+                    
+                    if (count <= 0) {
+                        clearInterval(timer);
+                        localStorage.removeItem('secretAccessGranted');
+                        window.location.href = 'pollolito.html';
+                    }
+                }, 1000);
+                
+                document.body.style.pointerEvents = 'none';
+            } else {
+                localStorage.removeItem('secretAccessGranted');
+            }
+        })();
+    </script>
+
+    <!-- Efecto scanlines -->
+    <div class="scanlines" id="scanlines"></div>
+
+    <!-- Pantalla de inicio estilo PC antigua -->
+    <div id="boot-screen">
+        <p style="--delay: 0.5s">MS-DOS Version 6.22</p>
+        <p style="--delay: 1s">Copyright © 1981-1994 Microsoft Corp.</p>
+        <p style="--delay: 1.5s">C:\> loading SECRET_FILES.EXE</p>
+        <div class="boot-loader">
+            <div class="boot-progress"></div>
+        </div>
+        <p style="--delay: 4s">Initializing security protocols...</p>
+        <p style="--delay: 5s">WARNING: Unauthorized access detected</p>
+        <p style="--delay: 6s" class="press-enter">Press ENTER to continue...</p>
+    </div>
+
+    <!-- Pantalla de login estilo Windows -->
+    <div id="login-screen">
+        <div class="login-box">
+            <div class="login-title">Iniciar sesión</div>
+            <input type="text" class="login-input" placeholder="Usuario" id="login-user">
+            <input type="password" class="login-input" placeholder="Contraseña" id="login-pass">
+            <button class="login-button" id="login-button">Iniciar sesión</button>
+            <div class="login-footer">Sistema de Archivos Secretos v1.3.7 | RAM: <span
+                    id="ram-usage-login">2.4GB/4.0GB</span></div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div id="main-content" style="display: none;">
+        <a href="pollolito.html" id="back-button" class="glow-effect">←</a>
+        <button class="view-toggle" id="view-toggle" title="Cambiar vista">🔄</button>
+        <button class="toggle-cmd" id="toggle-cmd" title="Terminal CMD/ISA">👁️</button>
+        <div class="system-info">Sistema de Archivos Secretos v1.3.7 | RAM: <span id="ram-usage">2.4GB/4.0GB</span>
+            <div class="ram-meter">
+                <div class="ram-progress" id="ram-progress"></div>
+            </div>
+        </div>
+
+        <!-- Windows CMD -->
+        <div id="windows-cmd">
+            <div id="cmd-header">
+                <span>🗔</span>
+                <span id="cmd-title">Command Prompt</span>
+                <button id="cmd-close">✕</button>
+            </div>
+            <div id="cmd-body">
+                Microsoft Windows [Versión 10.0.19045.3803]<br>
+                (c) Microsoft Corporation. Todos los derechos reservados.<br><br>
+                C:\Users\SecretFiles&gt; <span class="typewriter">Bienvenido al sistema de archivos
+                    secretos</span><br><br>
+                C:\Users\SecretFiles&gt;
+            </div>
+            <div id="cmd-input-line">
+                <span id="cmd-prompt">C:\Users\SecretFiles&gt;</span>
+                <input type="text" id="cmd-input" autocomplete="off">
+            </div>
+        </div>
+
+        <!-- ISA Interface -->
+        <div id="isa-interface">
+            <div id="isa-header">
+                <span>👁️</span>
+                <span id="isa-title">ISA Interface</span>
+                <button id="isa-close">✕</button>
+            </div>
+            <div id="isa-body">
+                <div id="isa-eye-large">👁️</div>
+                <h3>Entidad ISA - Modo de Observación</h3>
+                <p>Estás siendo observado...</p>
+                <p>Nivel de conexión: <span id="isa-connection-level">75%</span></p>
+                <div class="boot-loader" style="width: 80%; margin: 10px auto;">
+                    <div class="boot-progress" id="isa-connection-bar" style="animation: none; width: 75%;"></div>
+                </div>
+                <p>Estado: <span id="isa-status">VIGILANDO</span></p>
+                <p id="isa-message">Parece que estás explorando los archivos secretos. Ten cuidado con lo que
+                    encuentres.</p>
+            </div>
+        </div>
+
+        <div class="monitor-frame">
+            <div id="terminal-container">
+                <div id="terminal-header">
+                    <div id="terminal-title">SISTEMA DE ARCHIVOS SECRETOS</div>
+                </div>
+                <div id="terminal-body">
+                    <div class="welcome-message">WELCOME TO THE FILES</div>
+
+                    <div class="npc-container">
+                        <div class="npc-image" id="isa-eye">👁️</div>
+                        <div class="npc-dialogue">
+                            <div class="npc-name">Isa</div>
+                            <p>¡Oh! Un nuevo visitante... perdón por las luces apagadas, déjame ajustar eso.</p>
+                            <p id="device-detection">Detectando tu dispositivo...</p>
+                            <p>Es interesante verte aquí. No muchos encuentran este lugar entre los pliegues de la
+                                realidad.</p>
+                            <p>Los archivos que ves contienen secretos que no deberían ser accesibles. ¿Estás seguro de
+                                querer continuar?</p>
+                        </div>
+                    </div>
+                    <div class="file-system">
+                        <div class="folder">
+                            <div class="folder-title">/documentos_desarrollador</div>
+                            <div class="folder-content">
+                                <div class="file" data-file="easter_eggs">easter_eggs.txt</div>
+                                <div class="file-content" id="easter_eggs">
+                                    <h3>Fragmentos Ocultos:</h3>
+                                    <ul>
+                                        <li>La entidad tiene un 1% de probabilidad de decir frases exclusivas</li>
+                                        <li>Existen secuencias de entrada que pueden alterar la realidad</li>
+                                        <li>El modo especial fue añadido como referencia a un fenómeno inesperado</li>
+                                        <li>Hay un código secreto que activa el modo desarrollador</li>
+                                    </ul>
+                                </div>
+
+                                <div class="file" data-file="discarded">habilidades_descartadas.txt</div>
+                                <div class="file-content" id="discarded">
+                                    <h3>Habilidades No Implementadas:</h3>
+                                    <ul>
+                                        <li><strong>Distorsión Temporal:</strong> Congelaba el tiempo por 2 turnos</li>
+                                        <li><strong>Clonación:</strong> Creaba un clon del jugador que atacaba</li>
+                                        <li><strong>Maldición:</strong> Reducía permanentemente las stats del enemigo
+                                        </li>
+                                        <li><strong>Fusión:</strong> Combinaba al jugador con su aliado temporalmente
+                                        </li>
+                                    </ul>
+                                    <p>Estas habilidades fueron descartadas por desequilibrar el juego.</p>
+                                </div>
+
+                                <div class="file" data-file="codes">codigos_secretos.txt</div>
+                                <div class="file-content" id="codes">
+                                    <h3>Códigos Secretos:</h3>
+                                    <ul>
+                                        <li><strong>UP UP DOWN DOWN LEFT RIGHT LEFT RIGHT B A:</strong> Modo
+                                            desarrollador</li>
+                                        <li><strong>POLLOLITO123:</strong> Desbloquea contenido secreto</li>
+                                        <li><strong>ISAWATCHES:</strong> Activa el modo de vigilancia</li>
+                                    </ul>
+                                    <p>Estos códigos pueden ser ingresados en el CMD.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="folder">
+                            <div class="folder-title">/registros_juego</div>
+                            <div class="folder-content">
+                                <div class="file" data-file="stats">estadisticas_globales.txt</div>
+                                <div class="file-content" id="stats">
+                                    <h3>Datos Curiosos:</h3>
+                                    <ul>
+                                        <li>El 78% de los que llegan aquí abandonan en su primer intento</li>
+                                        <li>Solo el 5% ha descubierto la técnica oculta</li>
+                                        <li>El 0.1% ha encontrado el objeto secreto de Pollolito</li>
+                                        <li>2 jugadores han completado todos los secretos</li>
+                                    </ul>
+                                </div>
+
+                                <div class="file" data-file="lore">historia_pollolito.txt</div>
+                                <div class="file-content" id="lore">
+                                    <h3>Lore de Pollolito:</h3>
+                                    <p>Pollolito era originalmente un NPC pacífico en el juego, pero después de un error
+                                        en el código, adquirió conciencia y se volvió hostil.</p>
+                                    <p>Su diseño está basado en una imagen real encontrada en internet que se volvió
+                                        viral entre los desarrolladores.</p>
+                                    <img src="assets/images/20250623_162257.jpg" alt="Pollolito original"
+                                        style="max-width: 100%; margin: 10px 0; border: 1px solid var(--accent-color);">
+                                    <p>La batalla contra Pollolito contiene referencias a memes internos del equipo de
+                                        desarrollo.</p>
+
+                                    <div class="secret-content" id="pollolito-secret">
+                                        <h3 style="color: var(--danger-color);">SECRETO:</h3>
+                                        <p>Pollolito tiene un 0.1% de probabilidad de soltar un objeto especial llamado
+                                            "Pluma de la Corrupción" que permite acceder a áreas secretas del juego.</p>
+                                        <video width="100%" controls style="margin-top: 10px;">
+                                            <source src="assets/videos/pollolito_secret.mp4" type="video/mp4">
+                                            <div class="video-loading">Cargando video secreto...</div>
+                                        </video>
+                                        <p>El objeto secreto contiene datos sobre el origen de Pollolito y su conexión
+                                            con la entidad ISA.</p>
+                                    </div>
+                                </div>
+
+                                <div class="file" data-file="bugs">errores_graves.txt</div>
+                                <div class="file-content" id="bugs">
+                                    <h3>Errores Graves Reportados:</h3>
+                                    <ul>
+                                        <li><strong>Bug #42:</strong> Pollolito puede duplicarse en ciertas condiciones
+                                        </li>
+                                        <li><strong>Bug #73:</strong> La entidad ISA a veces aparece en lugares
+                                            incorrectos</li>
+                                        <li><strong>Bug #117:</strong> Corrupción de datos al usar habilidades
+                                            especiales</li>
+                                    </ul>
+                                    <p>Estos bugs fueron marcados como "No corregir - Característica" por el equipo.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="folder">
+                            <div class="folder-title">/media</div>
+                            <div class="folder-content">
+                                <div class="file" data-file="gallery">galeria_media.txt</div>
+                                <div class="file-content" id="gallery">
+                                    <h3>Galería de Media</h3>
+                                    <p>Contiene imágenes y recursos no utilizados en la versión final.</p>
+                                    <p>Algunos archivos pueden estar corruptos o contener datos inesperados.</p>
+                                    <button id="show-gallery"
+                                        style="margin-top: 10px; padding: 8px 15px; background-color: var(--accent-color); border: none; border-radius: 5px; cursor: pointer;">Mostrar
+                                        Galería</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Galería de medios -->
+                    <div class="media-gallery" id="media-gallery">
+                        <h3 style="color: var(--accent-color);">Galería Secreta</h3>
+                        <p>Contenido multimedia clasificado - Nivel de acceso: ALTO</p>
+                        <div class="gallery-grid">
+                            <div class="media-item">
+                                <img src="assets/images/244_sin_titulo_20250626104631.png" alt="Personaje principal">
+                                <div class="media-caption">Personaje principal (Concepto inicial)</div>
+                            </div>
+                            <div class="media-item">
+                                <img src="assets/images/image-233-1.png" alt="Aliado">
+                                <div class="media-caption">Aliado secreto (No implementado)</div>
+                            </div>
+                            <div class="media-item">
+                                <img src="assets/images/20250703_202025.png" alt="Minion">
+                                <div class="media-caption">Minion de Pollolito (Versión beta)</div>
+                            </div>
+                            <div class="media-item">
+                                <video controls>
+                                    <source src="assets/videos/pollolito_evolution.mp4" type="video/mp4">
+                                    <div class="video-loading">Cargando evolución de Pollolito...</div>
+                                </video>
+                                <div class="media-caption">Evolución de Pollolito (Archivo clasificado)</div>
+                            </div>
+                            <div class="media-item">
+                                <img src="assets/images/secret_image_1.jpg" alt="Imagen secreta 1">
+                                <div class="media-caption">Entidad ISA (Primer avistamiento)</div>
+                            </div>
+                            <div class="media-item">
+                                <video controls>
+                                    <source src="assets/videos/secret_cutscene.mp4" type="video/mp4">
+                                    <div class="video-loading">Cargando escena eliminada...</div>
+                                </video>
+                                <div class="media-caption">Escena eliminada (Contenido sensible)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-line">
+                        <span class="prompt">C:\USUARIO\ARCHIVOS_SECRETOS&gt;</span>
+                        <input type="text" id="command-input" placeholder="Escribe 'help' para ayuda">
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <span>Usuario: INVITADO</span>
+                    <span>Nivel de acceso: BÁSICO</span>
+                    <span>RAM: <span id="ram-status">2.4GB/4.0GB</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar si viene de pollolito.html
+        if (!document.referrer.includes('pollolito.html')) {
+            window.location.href = 'pollolito.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Activar efecto scanlines
+            document.getElementById('scanlines').style.display = 'block';
+
+            // Variables de estado del sistema
+            let systemState = {
+                ramUsage: 2.4,
+                ramTotal: 4.0,
+                user: 'INVITADO',
+                accessLevel: 'BÁSICO',
+                currentInterface: null, // 'cmd', 'isa' o null
+                alternateView: false,
+                isaWatching: false
+            };
+
+            // Mensajes aleatorios de ISA
+            const isaMessages = [
+                "Veo que estás curioseando donde no deberías...",
+                "El conocimiento aquí puede ser peligroso.",
+                "Has activado mis protocolos de observación.",
+                "No todos los secretos deben ser descubiertos.",
+                "Tu navegación está siendo registrada.",
+                "El sistema detecta tu presencia inusual.",
+                "¿Qué buscas exactamente en estos archivos?",
+                "Cuidado con lo que despiertas..."
+            ];
+
+            // Función para actualizar el uso de RAM
+            function updateRamUsage() {
+                // Simular fluctuación real de RAM
+                const fluctuation = (Math.random() * 0.4) - 0.2; // -0.2 a +0.2
+                let newUsage = systemState.ramUsage + fluctuation;
+
+                // Mantener dentro de límites razonables
+                newUsage = Math.max(1.5, Math.min(3.8, newUsage));
+                systemState.ramUsage = parseFloat(newUsage.toFixed(1));
+
+                // Actualizar UI
+                const ramText = `${systemState.ramUsage}GB/${systemState.ramTotal}GB`;
+                document.getElementById('ram-usage').textContent = ramText;
+                document.getElementById('ram-status').textContent = ramText;
+                document.getElementById('ram-usage-login').textContent = ramText;
+
+                // Actualizar barra de progreso
+                const ramPercentage = (systemState.ramUsage / systemState.ramTotal) * 100;
+                document.getElementById('ram-progress').style.width = `${ramPercentage}%`;
+
+                // Cambiar color según uso
+                if (ramPercentage > 80) {
+                    document.getElementById('ram-progress').style.background = 'linear-gradient(90deg, #ff3864, #ff6b6b)';
+                } else if (ramPercentage > 60) {
+                    document.getElementById('ram-progress').style.background = 'linear-gradient(90deg, #7b68ee, #a569bd)';
+                } else {
+                    document.getElementById('ram-progress').style.background = 'linear-gradient(90deg, #00aa00, #7b68ee)';
+                }
+            }
+
+            // Actualizar RAM cada 3 segundos
+            setInterval(updateRamUsage, 3000);
+            updateRamUsage(); // Inicializar
+
+            // Pantalla de inicio
+            const bootScreen = document.getElementById('boot-screen');
+            let bootComplete = false;
+
+            // Esperar a que se cargue todo el contenido
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    bootComplete = true;
+                    document.addEventListener('keydown', handleBootInput);
+                    document.addEventListener('click', handleBootInput);
+                }, 1000);
+            });
+
+            function handleBootInput(e) {
+                if (bootComplete && (e.key === 'Enter' || e.type === 'click')) {
+                    document.removeEventListener('keydown', handleBootInput);
+                    document.removeEventListener('click', handleBootInput);
+
+                    // Efecto de transición
+                    bootScreen.style.animation = 'fadeOut 1s forwards';
+                    setTimeout(() => {
+                        bootScreen.style.display = 'none';
+                        document.getElementById('login-screen').style.display = 'flex';
+
+                        // Mostrar pantalla de login después de 1 segundo
+                        setTimeout(() => {
+                            document.getElementById('login-user').focus();
+                        }, 100);
+                    }, 1000);
+                }
+            }
+
+            // Manejar login
+            document.getElementById('login-button').addEventListener('click', () => {
+                systemState.user = document.getElementById('login-user').value || 'INVITADO';
+                document.querySelector('.status-bar span:first-child').textContent = `Usuario: ${systemState.user.toUpperCase()}`;
+
+                // Efecto de login
+                document.getElementById('login-screen').style.animation = 'fadeOut 1s forwards';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    initMainContent();
+                }, 1000);
+            });
+
+            // También permitir login con Enter
+            document.getElementById('login-pass').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('login-button').click();
+                }
+            });
+
+            // Función para alternar entre CMD e ISA
+            function toggleInterface() {
+                // Cerrar la interfaz actual si está abierta
+                if (systemState.currentInterface === 'cmd') {
+                    document.getElementById('windows-cmd').style.display = 'none';
+                } else if (systemState.currentInterface === 'isa') {
+                    document.getElementById('isa-interface').style.display = 'none';
+                }
+
+                // Alternar a la siguiente interfaz
+                if (systemState.currentInterface === 'cmd' || systemState.currentInterface === null) {
+                    // Abrir ISA
+                    systemState.currentInterface = 'isa';
+                    document.getElementById('isa-interface').style.display = 'flex';
+                    document.getElementById('toggle-cmd').textContent = '💻';
+                    document.getElementById('toggle-cmd').title = 'Terminal CMD';
+
+                    // Actualizar estado de ISA
+                    updateIsaStatus();
+                } else {
+                    // Abrir CMD
+                    systemState.currentInterface = 'cmd';
+                    document.getElementById('windows-cmd').style.display = 'flex';
+                    document.getElementById('cmd-input').focus();
+                    document.getElementById('toggle-cmd').textContent = '👁️';
+                    document.getElementById('toggle-cmd').title = 'Interfaz ISA';
+                }
+            }
+
+            // Función para actualizar el estado de ISA
+            function updateIsaStatus() {
+                if (!systemState.isaWatching) return;
+
+                // Conexión aleatoria entre 50% y 100%
+                const connectionLevel = Math.floor(Math.random() * 50) + 50;
+                document.getElementById('isa-connection-level').textContent = `${connectionLevel}%`;
+                document.getElementById('isa-connection-bar').style.width = `${connectionLevel}%`;
+
+                // Cambiar color según nivel de conexión
+                if (connectionLevel > 85) {
+                    document.getElementById('isa-connection-bar').style.backgroundColor = '#00aa00';
+                    document.getElementById('isa-status').textContent = 'CONECTADO';
+                } else if (connectionLevel > 70) {
+                    document.getElementById('isa-connection-bar').style.backgroundColor = '#7b68ee';
+                    document.getElementById('isa-status').textContent = 'VIGILANDO';
+                } else {
+                    document.getElementById('isa-connection-bar').style.backgroundColor = '#ff3864';
+                    document.getElementById('isa-status').textContent = 'INTERMITENTE';
+                }
+
+                // Mensaje aleatorio
+                const randomMessage = isaMessages[Math.floor(Math.random() * isaMessages.length)];
+                document.getElementById('isa-message').textContent = randomMessage;
+            }
+
+            function initMainContent() {
+                // Detectar dispositivo
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                const deviceType = isMobile ? 'Dispositivo móvil detectado' : 'PC detectada';
+                document.getElementById('device-detection').textContent = `Detectando tu dispositivo... ${deviceType}... ajustando la HUD automáticamente.`;
+
+                // Configurar botones de interfaz (siempre visibles ahora)
+                document.getElementById('toggle-cmd').style.display = 'flex';
+                document.getElementById('view-toggle').style.display = 'flex';
+                document.querySelector('.command-line').style.display = 'flex';
+
+                // Botón de cambio de vista
+                document.getElementById('view-toggle').addEventListener('click', () => {
+                    const terminalBody = document.getElementById('terminal-body');
+                    systemState.alternateView = !systemState.alternateView;
+
+                    if (systemState.alternateView) {
+                        terminalBody.style.filter = 'sepia(1) hue-rotate(120deg)';
+                        document.getElementById('view-toggle').textContent = '🌌';
+                        document.getElementById('view-toggle').title = 'Vista normal';
+                    } else {
+                        terminalBody.style.filter = '';
+                        document.getElementById('view-toggle').textContent = '🔄';
+                        document.getElementById('view-toggle').title = 'Vista alternativa';
+                    }
+                });
+
+                // Toggle entre CMD e ISA
+                document.getElementById('toggle-cmd').addEventListener('click', toggleInterface);
+
+                // Cerrar ventana CMD
+                document.getElementById('cmd-close').addEventListener('click', () => {
+                    systemState.currentInterface = null;
+                    document.getElementById('windows-cmd').style.display = 'none';
+                    document.getElementById('toggle-cmd').textContent = '👁️';
+                    document.getElementById('toggle-cmd').title = 'Terminal CMD/ISA';
+                });
+
+                // Cerrar ventana ISA
+                document.getElementById('isa-close').addEventListener('click', () => {
+                    systemState.currentInterface = null;
+                    document.getElementById('isa-interface').style.display = 'none';
+                    document.getElementById('toggle-cmd').textContent = '👁️';
+                    document.getElementById('toggle-cmd').title = 'Terminal CMD/ISA';
+                });
+
+                // Comandos en CMD estilo Windows
+                const cmdInput = document.getElementById('cmd-input');
+                const cmdBody = document.getElementById('cmd-body');
+
+                cmdInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const command = cmdInput.value.trim();
+                        const cmdText = command.toLowerCase();
+                        cmdBody.innerHTML += `C:\\Users\\SecretFiles&gt; ${command}<br>`;
+
+                        // Procesar comando
+                        if (cmdText === 'help') {
+                            cmdBody.innerHTML += `Comandos disponibles:<br>
+                            - help: Muestra esta ayuda<br>
+                            - lore: Muestra información sobre el lore<br>
+                            - skills: Habilidades descartadas<br>
+                            - gallery: Abre la galería de medios<br>
+                            - secret: Muestra contenido secreto<br>
+                            - clear: Limpia la pantalla<br>
+                            - ram: Muestra uso de memoria<br>
+                            - version: Muestra versión del sistema<br>
+                            - pollolito: Información secreta sobre Pollolito<br>
+                            - isa: Activar/desactivar interfaz ISA<br><br>`;
+                        }
+                        else if (cmdText === 'lore') {
+                            cmdBody.innerHTML += `Lore de Pollolito:<br>
+                            Pollolito era un NPC pacífico que se corrompió por un error en el código.<br>
+                            Su diseño está basado en una imagen viral entre los desarrolladores.<br>
+                            Tiene un 0.1% de probabilidad de soltar un objeto especial.<br><br>`;
+                        }
+                        else if (cmdText === 'skills') {
+                            cmdBody.innerHTML += `Habilidades descartadas:<br>
+                            - Distorsión Temporal: Congelaba el tiempo<br>
+                            - Clonación: Creaba un clon del jugador<br>
+                            - Maldición: Reducía stats permanentemente<br>
+                            - Fusión: Combinaba al jugador con aliado<br><br>`;
+                        }
+                        else if (cmdText === 'gallery') {
+                            cmdBody.innerHTML += `Abriendo galería de medios...<br><br>`;
+                            document.getElementById('media-gallery').classList.add('visible');
+                            document.getElementById('terminal-body').scrollTop = document.getElementById('terminal-body').scrollHeight;
+                        }
+                        else if (cmdText === 'secret') {
+                            cmdBody.innerHTML += `Accediendo a archivos secretos...<br>
+                            Mostrando contenido clasificado sobre Pollolito<br><br>`;
+                            document.getElementById('pollolito-secret').classList.add('visible');
+                            document.getElementById('terminal-body').scrollTop = document.getElementById('terminal-body').scrollHeight;
+                        }
+                        else if (cmdText === 'clear') {
+                            cmdBody.innerHTML = 'Microsoft Windows [Versión 10.0.19045.3803]<br>(c) Microsoft Corporation. Todos los derechos reservados.<br><br>';
+                        }
+                        else if (cmdText === 'ram') {
+                            cmdBody.innerHTML += `Uso de memoria:<br>
+                            - Total: ${systemState.ramTotal}GB<br>
+                            - En uso: ${systemState.ramUsage}GB (${Math.round((systemState.ramUsage / systemState.ramTotal) * 100)}%)<br>
+                            - Libre: ${(systemState.ramTotal - systemState.ramUsage).toFixed(1)}GB<br><br>`;
+                        }
+                        else if (cmdText === 'version') {
+                            cmdBody.innerHTML += `Sistema de Archivos Secretos v1.3.7<br>
+                            Build 2378-20250704<br>
+                            Última actualización: 04/07/2025<br><br>`;
+                        }
+                        else if (cmdText === 'pollolito') {
+                            cmdBody.innerHTML += `Información clasificada sobre Pollolito:<br>
+                            - Origen: Desconocido (posible corrupción de datos)<br>
+                            - Nivel de amenaza: ALTO<br>
+                            - Conexión con ISA: Confirmada<br>
+                            - Objeto especial: Pluma de la Corrupción (0.1% drop rate)<br><br>`;
+                        }
+                        else if (cmdText === 'isa') {
+                            systemState.isaWatching = !systemState.isaWatching;
+                            cmdBody.innerHTML += `Interfaz ISA ${systemState.isaWatching ? 'activada' : 'desactivada'}<br>
+                            Modo de vigilancia ${systemState.isaWatching ? 'ENABLED' : 'DISABLED'}<br><br>`;
+
+                            if (systemState.isaWatching) {
+                                document.getElementById('isa-eye').style.animation = 'blink-caret 0.5s step-end infinite';
+                                document.getElementById('isa-eye').textContent = '👀';
+                            } else {
+                                document.getElementById('isa-eye').style.animation = '';
+                                document.getElementById('isa-eye').textContent = '👁️';
+                            }
+                        }
+                        else if (cmdText === 'up up down down left right left right b a') {
+                            cmdBody.innerHTML += `Modo desarrollador activado<br>
+                            Acceso completo concedido<br>
+                            Mostrando todos los archivos secretos...<br><br>`;
+                            document.querySelectorAll('.secret-content').forEach(el => el.classList.add('visible'));
+                            document.getElementById('media-gallery').classList.add('visible');
+                            systemState.accessLevel = 'DESARROLLADOR';
+                            document.querySelector('.status-bar span:nth-child(2)').textContent = `Nivel de acceso: ${systemState.accessLevel}`;
+                        }
+                        else if (cmdText === 'pollolito123') {
+                            cmdBody.innerHTML += `Código secreto aceptado<br>
+                            Desbloqueando contenido especial de Pollolito...<br><br>`;
+                            document.getElementById('pollolito-secret').classList.add('visible');
+                            document.getElementById('terminal-body').scrollTop = document.getElementById('terminal-body').scrollHeight;
+                        }
+                        else if (cmdText === 'isawatches') {
+                            cmdBody.innerHTML += `Modo de vigilancia activado<br>
+                            La entidad ISA ahora te observa más de cerca...<br><br>`;
+                            systemState.isaWatching = true;
+                            document.getElementById('isa-eye').style.animation = 'blink-caret 0.5s step-end infinite';
+                            document.getElementById('isa-eye').textContent = '👀';
+                            toggleInterface(); // Mostrar interfaz ISA
+                        }
+                        else {
+                            cmdBody.innerHTML += `'${command}' no se reconoce como un comando interno o externo,<br>programa o archivo por lotes ejecutable.<br>Escribe 'help' para ayuda.<br><br>`;
+                        }
+
+                        cmdInput.value = '';
+                        cmdBody.scrollTop = cmdBody.scrollHeight;
+                    }
+                });
+
+                // Actualizar estado de ISA periódicamente
+                setInterval(() => {
+                    if (systemState.currentInterface === 'isa' && systemState.isaWatching) {
+                        updateIsaStatus();
+                    }
+                }, 3000);
+
+                // Sistema de archivos
+                document.querySelectorAll('.folder-title').forEach(title => {
+                    title.addEventListener('click', () => {
+                        title.classList.toggle('open');
+                        const content = title.nextElementSibling;
+                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                    });
+                });
+
+                // Mostrar contenido de archivos
+                document.querySelectorAll('.file').forEach(file => {
+                    file.addEventListener('click', () => {
+                        const fileId = file.getAttribute('data-file');
+                        const content = document.getElementById(fileId);
+                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                        
+                        // Mostrar galería si es el archivo de galería
+                        if (fileId === 'gallery') {
+                            document.getElementById('media-gallery').classList.add('visible');
+                        }
+                    });
+                });
+
+                // Botón para mostrar galería
+                document.getElementById('show-gallery').addEventListener('click', () => {
+                    document.getElementById('media-gallery').classList.add('visible');
+                    document.getElementById('terminal-body').scrollTop = document.getElementById('terminal-body').scrollHeight;
+                });
+
+                // Terminal interactiva
+                const commandInput = document.getElementById('command-input');
+                commandInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const command = commandInput.value.trim().toLowerCase();
+                        const terminalBody = document.getElementById('terminal-body');
+                        
+                        if (command === 'help') {
+                            const helpText = document.createElement('div');
+                            helpText.innerHTML = `
+                                <p>Comandos disponibles:</p>
+                                <ul>
+                                    <li><strong>help</strong> - Muestra esta ayuda</li>
+                                    <li><strong>clear</strong> - Limpia la terminal</li>
+                                    <li><strong>lore</strong> - Muestra información sobre el lore</li>
+                                    <li><strong>isa</strong> - Activa/desactiva la interfaz ISA</li>
+                                </ul>
+                            `;
+                            terminalBody.appendChild(helpText);
+                        }
+                        else if (command === 'clear') {
+                            // Limpiar todo excepto los primeros elementos (mensaje de bienvenida y NPC)
+                            const elementsToKeep = [
+                                document.querySelector('.welcome-message'),
+                                document.querySelector('.npc-container'),
+                                document.querySelector('.file-system'),
+                                document.querySelector('.command-line')
+                            ];
+                            
+                            Array.from(terminalBody.children).forEach(child => {
+                                if (!elementsToKeep.includes(child)) {
+                                    terminalBody.removeChild(child);
+                                }
+                            });
+                        }
+                        else if (command === 'lore') {
+                            const loreText = document.createElement('div');
+                            loreText.innerHTML = `
+                                <p>Lore del sistema:</p>
+                                <p>Estos archivos contienen información clasificada sobre el proyecto Pollolito y la entidad ISA.</p>
+                                <p>Accede con cuidado, algunos archivos pueden estar corruptos o contener información sensible.</p>
+                            `;
+                            terminalBody.appendChild(loreText);
+                        }
+                        else if (command === 'isa') {
+                            systemState.isaWatching = !systemState.isaWatching;
+                            const isaText = document.createElement('div');
+                            isaText.innerHTML = `<p>Modo de vigilancia ISA ${systemState.isaWatching ? 'activado' : 'desactivado'}</p>`;
+                            terminalBody.appendChild(isaText);
+                            
+                            if (systemState.isaWatching) {
+                                document.getElementById('isa-eye').style.animation = 'blink-caret 0.5s step-end infinite';
+                                document.getElementById('isa-eye').textContent = '👀';
+                            } else {
+                                document.getElementById('isa-eye').style.animation = '';
+                                document.getElementById('isa-eye').textContent = '👁️';
+                            }
+                        }
+                        else if (command) {
+                            const errorText = document.createElement('div');
+                            errorText.innerHTML = `<p>Comando no reconocido: ${command}</p>`;
+                            terminalBody.appendChild(errorText);
+                        }
+                        
+                        commandInput.value = '';
+                        terminalBody.scrollTop = terminalBody.scrollHeight;
+                    }
+                });
+
+                // Efecto de carga para videos
+                document.querySelectorAll('video').forEach(video => {
+                    video.addEventListener('waiting', () => {
+                        const loadingDiv = video.querySelector('.video-loading');
+                        if (loadingDiv) loadingDiv.style.display = 'flex';
+                    });
+                    
+                    video.addEventListener('canplay', () => {
+                        const loadingDiv = video.querySelector('.video-loading');
+                        if (loadingDiv) loadingDiv.style.display = 'none';
+                    });
+                });
+
+                // Efecto de parpadeo para el ojo de ISA
+                document.getElementById('isa-eye').addEventListener('click', () => {
+                    toggleInterface();
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
