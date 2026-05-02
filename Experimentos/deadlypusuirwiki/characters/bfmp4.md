@@ -31,9 +31,14 @@ Bfmp4 es el dealer oficial de la tienda de Deadly Pursuit, donde los jugadores p
 - 🚧 **Cosméticos** - Próximamente
 
 ### Sistema de Moneda:
-> 🚧 **Work in Progress**
-> 
-> El sistema de moneda y precios está siendo documentado y será añadido próximamente.
+
+La moneda del juego se obtiene al ganar partidas, ya sea como **Killer** o como **Survivor**. Esta moneda se utiliza para comprar items en la tienda de Bfmp4.
+
+#### 💰 Cómo Obtener Moneda:
+- **Ganar como Survivor:** Obtén moneda al escapar exitosamente
+- **Ganar como Killer:** Obtén moneda al eliminar a los survivors
+
+> 🚧 **Precios y cantidades específicas están siendo documentados y serán añadidos próximamente.**
 
 ## 💬 Diálogos y Personalidad
 

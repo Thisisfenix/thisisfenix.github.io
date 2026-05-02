@@ -1,0 +1,99 @@
+{
+  "currentVersion": "1.0",
+  "updates": [
+    {
+      "version": "1.0",
+      "date": "2026-05-02",
+      "title": "🎉 Lanzamiento Inicial de la Wiki",
+      "type": "major",
+      "changes": [
+        {
+          "category": "✨ Nuevo Contenido",
+          "items": [
+            "Wiki completa de Deadly Pursuit lanzada",
+            "Documentación de 16 personajes (Killers, Survivors, Bosses, NPCs)",
+            "Guía de mecánicas del juego",
+            "Sistema de navegación por categorías"
+          ]
+        },
+        {
+          "category": "🎭 Personajes Documentados",
+          "items": [
+            "Killers: 2019X, iA666, MissX, Peace",
+            "Boss: AbelitoGamer con sistema de fases completo",
+            "Survivors: Molly, iA777, Gissel, Iris, Luna, Angel, Allison, Valem, Anna, Ankush",
+            "NPC: Bfmp4 (Dealer de la tienda)"
+          ]
+        },
+        {
+          "category": "🎮 Características",
+          "items": [
+            "Infobox detallado para cada personaje",
+            "Sistema de habilidades con cooldowns y stats",
+            "Guías de estrategia y combos",
+            "Matchups entre personajes",
+            "Tips avanzados y mecánicas especiales"
+          ]
+        },
+        {
+          "category": "🎨 Diseño",
+          "items": [
+            "Tema oscuro con acentos rojos y púrpura",
+            "Animaciones y efectos visuales",
+            "Diseño responsive para todos los dispositivos",
+            "Iconos de personajes integrados"
+          ]
+        },
+        {
+          "category": "💰 Sistema de Economía",
+          "items": [
+            "Documentación del sistema de moneda",
+            "Tienda de Bfmp4 con emotes disponibles",
+            "Cosméticos próximamente"
+          ]
+        }
+      ],
+      "notes": "Primera versión oficial de la Deadly Pursuit Wiki. Incluye documentación completa de personajes, mecánicas y estrategias."
+    }
+  ],
+  "roadmap": [
+    {
+      "version": "1.1",
+      "status": "planned",
+      "features": [
+        "Completar personajes Work in Progress (Peace, Valem, Anna, Ankush, Angel, Allison, Gissel)",
+        "Añadir sección de mapas detallada",
+        "Guía de tips y trucos expandida",
+        "Sistema de búsqueda de personajes"
+      ]
+    },
+    {
+      "version": "1.2",
+      "status": "planned",
+      "features": [
+        "Galería de cosméticos",
+        "Precios detallados de la tienda",
+        "Guía de progresión y niveles",
+        "Sección de logros y desafíos"
+      ]
+    },
+    {
+      "version": "2.0",
+      "status": "future",
+      "features": [
+        "Sistema de builds recomendados",
+        "Calculadora de daño",
+        "Tier list interactiva",
+        "Modo comparación de personajes",
+        "Sección de comunidad y fan art"
+      ]
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Abelito",
+      "role": "Creador del juego y wiki",
+      "contributions": "Desarrollo del juego, documentación, diseño"
+    }
+  ]
+}

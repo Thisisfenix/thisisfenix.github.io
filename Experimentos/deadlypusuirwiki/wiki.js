@@ -1050,8 +1050,116 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             }
         });
     }
+
+    async showChangelog() {
+        const backdrop = document.getElementById('changelog-backdrop');
+        const drawer = document.getElementById('changelog-drawer');
+        const body = document.getElementById('changelog-body');
+
+        backdrop.classList.add('active');
+        drawer.classList.add('active');
+
+        // Forzar scroll nativo directo
+        body.style.cssText = `
+            overflow-y: scroll !important;
+            height: calc(100vh - 64px) !important;
+            display: block !important;
+            padding: 1.25rem;
+            box-sizing: border-box;
+        `;
+
+        try {
+            const res = await fetch('Assets/data/updates.json');
+            const data = await res.json();
+
+            const renderEntry = (update) => {
+                const date = new Date(update.date).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+                return `
+                    <div class="changelog-entry" style="margin-bottom:1rem;">
+                        <div class="changelog-entry-header">
+                            <span class="changelog-version">v${update.version}</span>
+                            <span class="changelog-title">${update.title}</span>
+                            <span class="changelog-type-badge ${update.type}">${update.type}</span>
+                            <span class="changelog-date">${date}</span>
+                        </div>
+                        <div class="changelog-changes">
+                            ${update.changes.map(c => `
+                                <div style="margin-bottom:0.6rem;">
+                                    <div class="changelog-category">${c.category}</div>
+                                    <ul class="changelog-items">
+                                        ${c.items.map(i => `<li>${i}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${update.notes ? `<div class="changelog-notes">📝 ${update.notes}</div>` : ''}
+                    </div>
+                `;
+            };
+
+            const [latest, ...older] = data.updates;
+            let html = renderEntry(latest);
+
+            if (older.length > 0) {
+                html += `
+                    <button class="changelog-older-btn" id="older-btn" onclick="wiki.toggleOlderChangelog()">
+                        <span>🕘 Ver versiones anteriores (${older.length})</span>
+                        <span class="btn-arrow">▼</span>
+                    </button>
+                    <div class="changelog-older-entries" id="older-entries">
+                        ${older.map(renderEntry).join('')}
+                    </div>
+                `;
+            }
+
+            if (data.roadmap?.length) {
+                html += `
+                    <div class="changelog-roadmap" style="margin-top:1rem;">
+                        <div class="changelog-roadmap-title">🗺️ Roadmap</div>
+                        ${data.roadmap.map(r => `
+                            <div class="roadmap-item">
+                                <span class="roadmap-version">v${r.version}</span>
+                                <span class="roadmap-status ${r.status}">${r.status}</span>
+                                <ul class="roadmap-features">
+                                    ${r.features.map(f => `<li>${f}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="height:1rem;"></div>
+                `;
+            }
+
+            body.innerHTML = html;
+
+        } catch (e) {
+            body.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No se pudo cargar el historial de cambios.</p>';
+        }
+    }
+
+    toggleOlderChangelog() {
+        const btn = document.getElementById('older-btn');
+        const entries = document.getElementById('older-entries');
+        const isOpen = entries.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+        btn.querySelector('span:first-child').textContent = isOpen
+            ? '🕘 Ocultar versiones anteriores'
+            : `🕘 Ver versiones anteriores`;
+    }
+
+    closeChangelog() {
+        document.getElementById('changelog-backdrop').classList.remove('active');
+        document.getElementById('changelog-drawer').classList.remove('active');
+        const body = document.getElementById('changelog-body');
+        if (body) {
+            body.style.cssText = '';
+            body.innerHTML = '<div class="loading">Cargando...</div>';
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new DeadlyPursuerWiki();
+    wiki = new DeadlyPursuerWiki();
 });
+
+let wiki;
