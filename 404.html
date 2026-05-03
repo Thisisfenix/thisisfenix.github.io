@@ -8,7 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Mismo CSS del sitio principal para heredar los temas -->
+    <!-- Tema: aplica antes de pintar para evitar flash -->
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme');
+            var safe = ['light','neon','cyberpunk','matrix','synthwave','ocean','forest','sunset','christmas','halloween','valentine','easter','summer','autumn','funkyatlas','funkyatlas-christmas','galaxy','gold','rainbow','diamond','vaporwave','hacker','neon-city','space','fire','ice','toxic','royal','steampunk','hologram','legendary','plushie-rain','valentines-love','pastel-kawaii'];
+            if (t && t !== 'dark' && safe.indexOf(t) !== -1) {
+                document.documentElement.classList.add(t + '-theme');
+            }
+        })();
+    </script>
+    <!-- CSS del sitio principal — incluye todos los temas -->
     <link rel="stylesheet" href="placeholder/styles.css">
     <style>
         body {
@@ -102,7 +112,6 @@
 
         .btn:active { transform: translateY(0); }
     </style>
-    <script src="guessbook/js/theme-adapter.js"></script>
 </head>
 <body>
     <div class="code">
