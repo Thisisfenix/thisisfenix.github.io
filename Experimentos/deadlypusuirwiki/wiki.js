@@ -27,7 +27,6 @@ class DeadlyPursuerWiki {
         this.generateStats();
         this.setupEventListeners();
         this.handleRouting();
-        this._initMobileSidebar();
     }
 
     generateNavigation() {
@@ -70,7 +69,7 @@ class DeadlyPursuerWiki {
             if (char.role === 'npc') roleLabel = 'NPC';
             
             card.innerHTML = `
-                <img src="${char.icon}" alt="${char.name}">
+                <img src="${char.icon}" alt="${char.name}" onerror="this.src='Assets/images/PlaceHolder.png'">
                 <h4>${char.name}</h4>
                 <span class="role ${char.role}">${roleLabel}</span>
             `;
@@ -469,7 +468,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         if (!character) return;
 
         const content = document.getElementById('character-content');
-        content.innerHTML = '<div class="loading">Cargando...</div>';
+        content.innerHTML = this._randomLoading();
 
         // Check if this character is Work in Progress
         let markdown;
@@ -551,7 +550,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         
         const infoBoxHtml = charInfo.fullName ? `
             <div class="character-infobox">
-                <img src="${character.icon}" alt="${character.name}" class="character-portrait">
+                <img src="${character.icon}" alt="${character.name}" class="character-portrait" onerror="this.src='Assets/images/PlaceHolder.png'">
                 <h3>${charInfo.fullName}</h3>
                 <span class="role ${character.role}">${character.role.toUpperCase()}</span>
 
@@ -676,7 +675,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             return;
         }
         
-        content.innerHTML = '<div class="loading">Cargando...</div>';
+        content.innerHTML = this._randomLoading();
         
         // Check if this page is Work in Progress
         let markdown;
@@ -999,6 +998,12 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                     <div class="intro-description">
                         <p>Explora las habilidades únicas de cada personaje, aprende estrategias avanzadas y domina las mecánicas del juego. Esta wiki contiene toda la información que necesitas para convertirte en un maestro de Deadly Pursuit.</p>
                     </div>
+
+                    <div class="intro-play-btn-wrap">
+                        <a class="intro-play-btn" href="https://www.roblox.com/games/86490677615660/Deadly-pursuit" target="_blank" rel="noopener noreferrer">
+                            🎮 Jugar en Roblox
+                        </a>
+                    </div>
                 </div>
                 
                 <h3 class="characters-title">🎭 Selecciona un Personaje</h3>
@@ -1011,7 +1016,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                         
                         return `
                             <div class="character-card" data-character="${id}">
-                                <img src="${char.icon}" alt="${char.name}">
+                                <img src="${char.icon}" alt="${char.name}" onerror="this.src='Assets/images/PlaceHolder.png'">
                                 <h4>${char.name}</h4>
                                 <span class="role ${char.role}">${roleLabel}</span>
                             </div>
@@ -1056,24 +1061,6 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         activeElement.classList.add('active');
     }
 
-    _initMobileSidebar() {
-        const toggle   = document.getElementById('sidebar-toggle');
-        const sidebar  = document.querySelector('.fixed-sidebar');
-        const overlay  = document.getElementById('sidebar-overlay');
-        if (!toggle || !sidebar) return;
-
-        const open  = () => { sidebar.classList.add('open'); overlay.classList.add('active'); };
-        const close = () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); };
-
-        toggle.addEventListener('click', () => sidebar.classList.contains('open') ? close() : open());
-        overlay.addEventListener('click', close);
-
-        // Cierra al seleccionar un personaje en móvil
-        sidebar.querySelectorAll('[data-character], [data-page]').forEach(el => {
-            el.addEventListener('click', () => { if (window.innerWidth <= 768) close(); });
-        });
-    }
-
     shareCharacter(characterId) {
         // URL de GitHub Pages adaptada automáticamente
         const base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -1089,6 +1076,36 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             setTimeout(() => toast.classList.add('show'), 10);
             setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 2000);
         });
+    }
+
+    _randomLoading() {
+        const frases = [
+            { text: '"Welcome back..."', color: '#ff4444', font: 'JetBrains Mono' },
+            { text: 'Un momento...', color: '#b3b3b3' },
+            { text: 'Casi listo', color: '#fbbf24' },
+            { text: '¿Sabías que Molly tiene una galleta?', color: '#fbbf24' },
+            { text: 'El Bosque Umbral espera', color: '#4ade80' },
+            { text: 'iA777 está cargando...', color: '#c084fc' },
+            { text: 'Luna tomó su Energy Juice', color: '#60a5fa' },
+            { text: 'Bfmp4 está abriendo la tienda', color: '#fbbf24' },
+            { text: 'Iris está buscando a iA777', color: '#c084fc' },
+            { text: 'AbelitoGamer entró al mapa', color: '#ff4444' },
+            { text: '...', color: '#444444', font: 'JetBrains Mono' },
+            { text: 'Espera un poco', color: '#b3b3b3' },
+            { text: 'iA666 no puede ser stuneado', color: '#ff4444' },
+            { text: 'Angel está curando al equipo', color: '#4ade80' },
+            { text: 'Gissel desplegó sus alas', color: '#fbbf24' },
+            { text: null, img: 'Assets/images/AnkushCat.png', caption: 'Ankush Gato dice hola 🐱', color: '#b3b3b3' },
+        ];
+        const f = frases[Math.floor(Math.random() * frases.length)];
+        if (f.img) {
+            return `<div class="loading loading-cat">
+                <img src="${f.img}" alt="Ankush Gato" style="width:64px;height:64px;object-fit:contain;image-rendering:pixelated;margin-bottom:0.5rem;">
+                <span style="color:${f.color};font-size:0.85rem;">${f.caption}</span>
+            </div>`;
+        }
+        const style = `color:${f.color};${f.font ? `font-family:'${f.font}',monospace;` : ''}`;
+        return `<div class="loading"><span style="${style}">${f.text}</span></div>`;
     }
 
     _injectCharNav(currentId, container) {
@@ -1352,6 +1369,9 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             this.showPage(hash);
             const navLink = document.querySelector(`[data-page="${hash}"]`);
             if (navLink) this.updateActiveNav(navLink);
+        } else if (hash) {
+            // Hash desconocido — mostrar página 404
+            this.show404(hash);
         }
 
         window.addEventListener('popstate', (e) => {
@@ -1360,11 +1380,56 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             } else if (e.state?.page) {
                 if (e.state.page === 'gameplay') {
                     this.showGameplayPage();
+                } else if (e.state.page === '404') {
+                    this.show404(e.state.badHash);
                 } else {
                     this.showPage(e.state.page);
                 }
             }
         });
+    }
+
+    show404(badHash = '') {
+        const content = document.getElementById('character-content');
+        const escaped = badHash.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        content.innerHTML = `
+            <div class="wiki-404">
+                <div class="wiki-404-code">
+                    <span class="neon-digit" data-char="4">4</span>
+                    <span class="neon-digit" data-char="0">0</span>
+                    <span class="neon-digit" data-char="4">4</span>
+                </div>
+                <h2 class="wiki-404-title">Página no encontrada</h2>
+                <p class="wiki-404-msg">
+                    El enlace <code>#${escaped}</code> no existe en esta wiki.
+                    Puede que haya sido eliminado, renombrado o que el link esté mal escrito.
+                </p>
+                <img src="Assets/images/AnkushCat.png" alt="Ankush Gato" class="wiki-404-cat">
+                <button class="wiki-404-btn" onclick="wiki.showHome(); window.history.replaceState({page:'home'}, '', '#');">
+                    ← Volver al inicio
+                </button>
+            </div>
+        `;
+
+        // Parpadeo aleatorio: rara vez, en un dígito al azar
+        const digits = content.querySelectorAll('.neon-digit');
+        const flicker = () => {
+            // Espera entre 4 y 12 segundos antes del próximo parpadeo
+            const delay = 4000 + Math.random() * 8000;
+            setTimeout(() => {
+                // Elige un dígito al azar
+                const target = digits[Math.floor(Math.random() * digits.length)];
+                target.classList.add('neon-flicker');
+                // El parpadeo dura ~400ms, luego se quita la clase
+                setTimeout(() => {
+                    target.classList.remove('neon-flicker');
+                    flicker(); // programa el siguiente
+                }, 400);
+            }, delay);
+        };
+        flicker();
+
+        window.history.replaceState({ page: '404', badHash }, '', `#${badHash}`);
     }
 
     async showChangelog() {
@@ -1374,6 +1439,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
 
         backdrop.classList.add('active');
         drawer.classList.add('active');
+        body.innerHTML = this._randomLoading();
 
         // Forzar scroll nativo directo
         body.style.cssText = `
@@ -1385,7 +1451,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         `;
 
         try {
-            const res = await fetch('Assets/data/updates.json');
+            const res = await fetch('Assets/data/updates.json?v=' + Date.now());
             const data = await res.json();
 
             const renderEntry = (update) => {

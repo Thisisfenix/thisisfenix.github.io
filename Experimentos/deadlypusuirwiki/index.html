@@ -14,10 +14,11 @@
             <a class="header-back-btn" href="../../index.html">← Laboratorio</a>
         </div>
         <div class="header-content">
-            <h1>🎮 Deadly Pursuit Wiki <span class="version-badge">v1.0a</span></h1>
+            <h1>🎮 Deadly Pursuit Wiki <span class="version-badge">v1.0b</span></h1>
             <p>Guía completa de personajes y mecánicas</p>
         </div>
         <div class="header-right">
+            <button class="header-config-btn" id="config-btn" title="Configuración">⚙️</button>
             <button class="header-changes-btn" id="changes-btn" onclick="wiki.showChangelog()">📋 Cambios</button>
         </div>
     </header>
@@ -31,7 +32,6 @@
             <button class="changelog-close" onclick="wiki.closeChangelog()">✕</button>
         </div>
         <div class="changelog-drawer-body" id="changelog-body">
-            <div class="loading">Cargando...</div>
         </div>
     </aside>
 
@@ -88,6 +88,12 @@
                     <div class="intro-description">
                         <p>Explora las habilidades únicas de cada personaje, aprende estrategias avanzadas y domina las mecánicas del juego. Esta wiki contiene toda la información que necesitas para convertirte en un maestro de Deadly Pursuit.</p>
                     </div>
+
+                    <div class="intro-play-btn-wrap">
+                        <a class="intro-play-btn" href="https://www.roblox.com/games/86490677615660/Deadly-pursuit" target="_blank" rel="noopener noreferrer">
+                            🎮 Jugar en Roblox
+                        </a>
+                    </div>
                 </div>
                 
                 <h3 class="characters-title">🎭 Selecciona un Personaje</h3>
@@ -98,6 +104,65 @@
         </div>
     </main>
 
+    <!-- Ankush Gato arrastrable -->
+    <img src="Assets/images/AnkushCat.png" id="ankush-cat" alt="Ankush Gato" title="¡Arrástrame!" style="display:none;">
+
+    <!-- Panel de configuración -->
+    <div class="config-backdrop" id="config-backdrop"></div>
+    <div class="config-panel" id="config-panel">
+        <div class="config-header">
+            <h3>⚙️ Configuración</h3>
+            <button class="config-close" id="config-close">✕</button>
+        </div>
+        <div class="config-body">
+
+            <div class="config-section">
+                <h4>🌓 Tema</h4>
+                <div class="config-theme-btns">
+                    <button class="config-theme-btn active" data-theme="dark">🌙 Oscuro</button>
+                    <button class="config-theme-btn" data-theme="light">☀️ Claro</button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h4>� Ankush Gato</h4>
+                <div class="config-toggle-row">
+                    <span class="config-toggle-label">Mostrar gato</span>
+                    <button class="config-toggle" id="toggle-cat" data-on="false">OFF</button>
+                </div>
+                <div class="config-toggle-row">
+                    <span class="config-toggle-label">Gravedad</span>
+                    <button class="config-toggle" id="toggle-gravity" data-on="false">OFF</button>
+                </div>
+                <div class="config-toggle-row">
+                    <span class="config-toggle-label">Modo DVD 📀</span>
+                    <button class="config-toggle" id="toggle-bunny" data-on="false">OFF</button>
+                </div>
+                <div class="config-toggle-row">
+                    <span class="config-toggle-label">Modo Conejo 🐰</span>
+                    <button class="config-toggle" id="toggle-rabbit" data-on="false">OFF</button>
+                </div>
+                <div class="config-toggle-row" style="flex-direction:column;align-items:flex-start;gap:0.4rem;">
+                    <span class="config-toggle-label">Tamaño</span>
+                    <input type="range" id="cat-size" min="32" max="160" value="56" style="width:100%;accent-color:#ff4444;">
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h4>�🔤 Fuente personalizada</h4>
+                <p class="config-hint">Sube un archivo .ttf o .woff2. Se guarda en IndexedDB (persiste entre sesiones). Solo una fuente a la vez (máx 5 MB) — restaura para cambiarla.</p>
+                <label class="config-font-label">
+                    <input type="file" id="config-font-input" accept=".ttf,.woff,.woff2,.otf" hidden>
+                    <span>📁 Elegir fuente</span>
+                </label>
+                <div class="config-font-preview" id="config-font-preview"></div>
+                <button class="config-reset-font" id="config-reset-font">↩ Restaurar fuente original</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="Assets/JS/config.js"></script>
     <script src="wiki.js"></script>
 </body>
 </html>

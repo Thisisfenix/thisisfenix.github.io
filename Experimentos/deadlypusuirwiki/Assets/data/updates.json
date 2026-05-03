@@ -1,6 +1,43 @@
 {
-  "currentVersion": "1.0a",
+  "currentVersion": "1.0b",
   "updates": [
+    {
+      "version": "1.0b",
+      "date": "2026-05-03",
+      "title": "🔧 Arreglos y Mejoras",
+      "type": "minor",
+      "changes": [
+        {
+          "category": "🎮 Introducción",
+          "items": [
+            "Nuevo botón para ir directo al juego en Roblox desde la pantalla de inicio"
+          ]
+        },
+        {
+          "category": "🔤 Fuente personalizada",
+          "items": [
+            "La fuente que subas ahora se recuerda aunque cierres la página",
+            "Solo puedes tener una fuente a la vez — tienes que quitar la actual para poner otra",
+            "Límite de 5 MB por archivo"
+          ]
+        },
+        {
+          "category": "🖼️ Imágenes",
+          "items": [
+            "Los personajes sin imagen ahora muestran un placeholder en vez de un espacio vacío"
+          ]
+        },
+        {
+          "category": "❌ Página de error",
+          "items": [
+            "Si compartes un link que no existe, ahora aparece una página de error propia en vez de nada",
+            "El error 404 tiene efecto de letrero de neón con parpadeo aleatorio",
+            "Ankush Gato aparece en la página de error"
+          ]
+        }
+      ],
+      "notes": "Pequeña actualización de pulido. Lo más importante: los links rotos ya no te dejan en blanco y la fuente personalizada ahora se guarda."
+    },
     {
       "version": "1.0a",
       "date": "2026-05-03",
