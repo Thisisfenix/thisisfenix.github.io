@@ -86,16 +86,31 @@ body::before {
     background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(20px);
     border-bottom: 2px solid var(--border-accent);
-    padding: 1.5rem 0;
     z-index: 1000;
     height: 90px;
     box-shadow: var(--shadow-red);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    gap: 1rem;
+}
+
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+    min-width: 140px;
+}
+
+.header-right {
+    justify-content: flex-end;
 }
 
 .header-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
+    flex: 1;
     text-align: center;
 }
 
@@ -145,10 +160,6 @@ body::before {
 
 /* Header Changes Button */
 .header-changes-btn {
-    position: absolute;
-    right: 2rem;
-    top: 50%;
-    transform: translateY(-50%);
     background: transparent;
     border: 1px solid var(--border-accent);
     color: var(--text-primary);
@@ -160,12 +171,64 @@ body::before {
     transition: all 0.2s ease;
     font-family: 'Inter', sans-serif;
     letter-spacing: 0.03em;
+    white-space: nowrap;
 }
 
 .header-changes-btn:hover {
     background: var(--accent-red);
     border-color: var(--accent-red);
     box-shadow: var(--shadow-red);
+}
+
+.header-back-btn {
+    background: transparent;
+    border: 1px solid var(--border-secondary);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.header-back-btn:hover {
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+/* Sidebar toggle — solo visible en móvil */
+.sidebar-toggle {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border-secondary);
+    color: var(--text-primary);
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: var(--radius-sm);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sidebar-toggle:hover {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+@media (max-width: 768px) {
+    .sidebar-toggle { display: flex; }
+    .header-back-btn { display: none; }
+    .header-changes-btn { font-size: 0.75rem; padding: 0.4rem 0.7rem; }
+    .header-left, .header-right { min-width: auto; }
 }
 
 /* ── Changelog Drawer ─────────────────────────────────── */

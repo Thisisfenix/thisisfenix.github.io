@@ -9,12 +9,17 @@
 </head>
 <body>
     <header class="fixed-header">
+        <div class="header-left">
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menú">☰</button>
+            <a class="header-back-btn" href="../../index.html">← Laboratorio</a>
+        </div>
         <div class="header-content">
             <h1>🎮 Deadly Pursuit Wiki <span class="version-badge">v1.0a</span></h1>
             <p>Guía completa de personajes y mecánicas</p>
         </div>
-        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menú">☰</button>
-        <button class="header-changes-btn" id="changes-btn" onclick="wiki.showChangelog()">📋 Cambios</button>
+        <div class="header-right">
+            <button class="header-changes-btn" id="changes-btn" onclick="wiki.showChangelog()">📋 Cambios</button>
+        </div>
     </header>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
