@@ -1668,3 +1668,452 @@ body::before {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===================================================================
+   LORE CUSTOM TEXT STYLES
+   =================================================================== */
+
+/* Colores */
+.lore-red    { color: #ff4444; font-weight: 600; }
+.lore-yellow { color: #fbbf24; font-weight: 600; }
+.lore-green  { color: #4ade80; font-weight: 600; }
+.lore-purple { color: #c084fc; font-weight: 600; }
+.lore-blue   { color: #60a5fa; font-weight: 600; }
+.lore-gray   { color: var(--text-muted); font-style: italic; }
+
+/* Resaltado */
+.lore-highlight-red    { background: rgba(255,68,68,0.15); color: #ff4444; padding: 0.1em 0.4em; border-radius: 4px; font-weight: 600; }
+.lore-highlight-yellow { background: rgba(251,191,36,0.15); color: #fbbf24; padding: 0.1em 0.4em; border-radius: 4px; font-weight: 600; }
+
+/* Fuentes especiales */
+.lore-horror  { font-family: 'Courier New', monospace; letter-spacing: 0.1em; color: #ff4444; }
+.lore-mono    { font-family: 'JetBrains Mono', monospace; font-size: 0.95em; color: var(--accent-blue); }
+.lore-italic  { font-style: italic; color: var(--text-secondary); }
+
+/* Bloque importante */
+.lore-important {
+    display: block;
+    border-left: 3px solid #ff4444;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    background: rgba(255,68,68,0.06);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.lore-warning {
+    display: block;
+    border-left: 3px solid #fbbf24;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    background: rgba(251,191,36,0.06);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Typewriter */
+.lore-typewriter {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid #ff4444;
+    animation: lore-blink 0.75s step-end infinite;
+    font-family: 'JetBrains Mono', monospace;
+    color: #ff4444;
+    font-weight: 600;
+}
+
+@keyframes lore-blink {
+    0%, 100% { border-color: #ff4444; }
+    50%       { border-color: transparent; }
+}
+
+/* Texto tachado dramático */
+.lore-strike {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+/* Texto "glitch" */
+.lore-glitch {
+    color: #ff4444;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    animation: lore-glitch-anim 2s infinite;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+@keyframes lore-glitch-anim {
+    0%, 90%, 100% { text-shadow: none; opacity: 1; }
+    92%  { text-shadow: 2px 0 #00ffff, -2px 0 #ff00ff; opacity: 0.9; }
+    94%  { text-shadow: -2px 0 #00ffff, 2px 0 #ff00ff; opacity: 1; }
+    96%  { text-shadow: 1px 0 #00ffff; opacity: 0.8; }
+}
+
+/* Texto temblando estilo Undertale */
+.lore-shake {
+    display: inline;
+    color: #ff4444;
+    font-weight: 700;
+    font-size: 0;        /* elimina whitespace entre inline-block hijos */
+    letter-spacing: 0;
+}
+
+.lore-shake > span {
+    font-size: 0.95rem;  /* restaura tamaño en cada letra */
+    letter-spacing: normal;
+}
+
+@keyframes lore-shake-anim {
+    0%   { transform: translate(0px,  0px); }
+    20%  { transform: translate(-1px, 1px); }
+    40%  { transform: translate(1px, -1px); }
+    60%  { transform: translate(-1px,-1px); }
+    80%  { transform: translate(1px,  1px); }
+    100% { transform: translate(0px,  0px); }
+}
+
+/* ===================================================================
+   NAVEGACIÓN SIGUIENTE / ANTERIOR
+   =================================================================== */
+
+.char-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-primary);
+    gap: 1rem;
+}
+
+.char-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: transparent;
+    border: 1px solid var(--border-secondary);
+    color: var(--text-muted);
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.char-nav-btn:hover {
+    border-color: var(--text-muted);
+    color: var(--text-secondary);
+    background: var(--bg-hover);
+}
+
+.char-nav-btn .char-nav-name {
+    font-weight: 600;
+    color: var(--text-secondary);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Hint de teclado — solo en PC */
+.char-nav-kbd {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.char-nav-kbd kbd {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 3px;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+}
+
+@media (hover: none) and (pointer: coarse) {
+    /* Móvil: ocultar hint de teclado */
+    .char-nav-kbd { display: none; }
+    /* Botón más grande para touch */
+    .char-nav-btn { padding: 0.75rem 1.4rem; font-size: 0.9rem; }
+}
+
+/* ===================================================================
+   LORE DIALOG - Sistema de texto por páginas estilo Undertale
+   =================================================================== */
+
+.lore-dialog {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1.75rem;
+    margin: 1rem 0;
+    position: relative;
+    min-height: 80px;
+}
+
+.lore-dialog-text {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    min-height: 3em;
+}
+
+.lore-dialog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-primary);
+}
+
+.lore-dialog-skip {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    opacity: 0.5;
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--radius-sm);
+    transition: opacity 0.2s;
+}
+
+.lore-dialog-skip:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.lore-dialog-counter {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.lore-dialog-next {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1px solid var(--border-secondary);
+    color: var(--text-muted);
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.lore-dialog-next:hover {
+    color: var(--text-secondary);
+    border-color: var(--text-muted);
+    background: var(--bg-hover);
+}
+
+.lore-dialog-next:active {
+    transform: scale(0.96);
+}
+
+/* Hint de teclado solo en PC */
+.lore-dialog-next .lore-kbd {
+    font-size: 0.65rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-secondary);
+    border-radius: 3px;
+    padding: 0.1rem 0.3rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .lore-dialog-next .lore-kbd { display: none; }
+    .lore-dialog-next { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+}
+
+/* Cursor parpadeante al final del texto */
+.lore-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: var(--text-muted);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: lore-cursor-blink 0.7s step-end infinite;
+}
+
+.lore-dialog-full {
+    animation: fadeIn 0.4s ease;
+    line-height: 1.9;
+}
+
+@keyframes lore-cursor-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+/* ===================================================================
+   GALERÍA DE ICONOS
+   =================================================================== */
+
+.char-icon-gallery {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 0.75rem 0;
+    flex-wrap: wrap;
+}
+
+.char-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-primary);
+    transition: all 0.2s ease;
+    opacity: 0.5;
+}
+
+.char-icon-item:hover,
+.char-icon-item.active {
+    opacity: 1;
+    border-color: var(--border-accent);
+    background: var(--bg-hover);
+}
+
+.char-icon-item img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.char-icon-item span {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ===================================================================
+   BOTÓN COMPARTIR
+   =================================================================== */
+
+.char-share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    margin: 0.5rem 0 0.75rem;
+    padding: 0.45rem;
+    background: transparent;
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.char-share-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background: rgba(0, 212, 255, 0.05);
+}
+
+/* Toast de confirmación */
+.share-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(1rem);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-accent);
+    color: var(--text-primary);
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.25s ease;
+    pointer-events: none;
+}
+
+.share-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ===================================================================
+   SIDEBAR MÓVIL - Botón hamburguesa
+   =================================================================== */
+
+.sidebar-toggle {
+    display: none;
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid var(--border-secondary);
+    color: var(--text-primary);
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: var(--radius-sm);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1001;
+}
+
+.sidebar-toggle:hover {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+}
+
+.sidebar-overlay.active { display: block; }
+
+@media (max-width: 768px) {
+    .sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+
+    .fixed-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 999;
+    }
+
+    .fixed-sidebar.open {
+        transform: translateX(0);
+    }
+
+    .header-changes-btn {
+        right: 1rem;
+        font-size: 0.75rem;
+        padding: 0.4rem 0.7rem;
+    }
+}

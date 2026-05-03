@@ -1,59 +1,78 @@
 {
-  "currentVersion": "1.0",
+  "currentVersion": "1.0a",
   "updates": [
+    {
+      "version": "1.0a",
+      "date": "2026-05-03",
+      "title": "✨ Mejoras y Pulido",
+      "type": "minor",
+      "changes": [
+        {
+          "category": "🎭 Personajes",
+          "items": [
+            "MissX ahora tiene su icono correcto",
+            "Se añadió el lore de MissX con el sistema de diálogo",
+            "Los lores de Iris, iA666, 2019x, Angel y Gissel ahora usan el nuevo sistema de diálogo",
+            "2019x marcado como Work in Progress por rework de habilidades",
+            "AbelitoGamer tiene su información completa en el infobox"
+          ]
+        },
+        {
+          "category": "📖 Sistema de Lore",
+          "items": [
+            "Los lores ahora se leen página por página, como un diálogo",
+            "Texto con efectos: colores, temblor, resaltado y más",
+            "Botón para saltar el lore si ya lo leíste antes",
+            "Al terminar de leer, se muestra toda la historia completa",
+            "Puedes avanzar con el botón o con la tecla Z / Enter"
+          ]
+        },
+        {
+          "category": "🖼️ Infobox",
+          "items": [
+            "Galería de iconos: Normal, Danger y Dead para cada personaje",
+            "Al hacer click en un icono cambia el retrato principal",
+            "Botón para copiar el enlace directo a un personaje"
+          ]
+        },
+        {
+          "category": "📱 Mejoras Generales",
+          "items": [
+            "Botón de menú en móvil para abrir y cerrar el sidebar",
+            "Panel de Cambios ahora desliza desde la derecha",
+            "Navegación entre personajes con botones Anterior y Siguiente",
+            "Versión v1.0 visible en el header"
+          ]
+        }
+      ],
+      "notes": "Muchas mejoras de experiencia y contenido nuevo. El lore de los personajes ahora es mucho más interesante de leer."
+    },
     {
       "version": "1.0",
       "date": "2026-05-02",
-      "title": "🎉 Lanzamiento Inicial de la Wiki",
+      "title": "🎉 Lanzamiento de la Wiki",
       "type": "major",
       "changes": [
         {
-          "category": "✨ Nuevo Contenido",
+          "category": "✨ Lo que hay",
           "items": [
-            "Wiki completa de Deadly Pursuit lanzada",
-            "Documentación de 16 personajes (Killers, Survivors, Bosses, NPCs)",
+            "16 personajes documentados: Killers, Survivors, Boss y NPC",
+            "Ficha de cada personaje con habilidades, estrategias y tips",
+            "Infobox con datos del personaje: edad, relaciones, apariencia y más",
             "Guía de mecánicas del juego",
-            "Sistema de navegación por categorías"
-          ]
-        },
-        {
-          "category": "🎭 Personajes Documentados",
-          "items": [
-            "Killers: 2019X, iA666, MissX, Peace",
-            "Boss: AbelitoGamer con sistema de fases completo",
-            "Survivors: Molly, iA777, Gissel, Iris, Luna, Angel, Allison, Valem, Anna, Ankush",
-            "NPC: Bfmp4 (Dealer de la tienda)"
-          ]
-        },
-        {
-          "category": "🎮 Características",
-          "items": [
-            "Infobox detallado para cada personaje",
-            "Sistema de habilidades con cooldowns y stats",
-            "Guías de estrategia y combos",
-            "Matchups entre personajes",
-            "Tips avanzados y mecánicas especiales"
+            "Navegación por categorías en el sidebar"
           ]
         },
         {
           "category": "🎨 Diseño",
           "items": [
-            "Tema oscuro con acentos rojos y púrpura",
-            "Animaciones y efectos visuales",
-            "Diseño responsive para todos los dispositivos",
-            "Iconos de personajes integrados"
-          ]
-        },
-        {
-          "category": "💰 Sistema de Economía",
-          "items": [
-            "Documentación del sistema de moneda",
-            "Tienda de Bfmp4 con emotes disponibles",
-            "Cosméticos próximamente"
+            "Tema oscuro con rojo y púrpura",
+            "Iconos de personajes en la pantalla principal",
+            "Diseño adaptado para celular y computadora"
           ]
         }
       ],
-      "notes": "Primera versión oficial de la Deadly Pursuit Wiki. Incluye documentación completa de personajes, mecánicas y estrategias."
+      "notes": "Primera versión de la wiki. Todavía hay personajes en construcción, se irán completando poco a poco."
     }
   ],
   "roadmap": [
@@ -61,31 +80,26 @@
       "version": "1.1",
       "status": "planned",
       "features": [
-        "Completar personajes Work in Progress (Peace, Valem, Anna, Ankush, Angel, Allison, Gissel)",
-        "Añadir sección de mapas detallada",
-        "Guía de tips y trucos expandida",
-        "Sistema de búsqueda de personajes"
+        "Completar personajes pendientes: Peace, Valem, Anna, Ankush, Allison",
+        "Sección de mapas",
+        "Búsqueda de personajes"
       ]
     },
     {
       "version": "1.2",
       "status": "planned",
       "features": [
-        "Galería de cosméticos",
-        "Precios detallados de la tienda",
-        "Guía de progresión y niveles",
-        "Sección de logros y desafíos"
+        "Galería de cosméticos y tienda",
+        "Guía de progresión"
       ]
     },
     {
       "version": "2.0",
       "status": "future",
       "features": [
-        "Sistema de builds recomendados",
-        "Calculadora de daño",
         "Tier list interactiva",
-        "Modo comparación de personajes",
-        "Sección de comunidad y fan art"
+        "Comparador de personajes",
+        "Calculadora de daño"
       ]
     }
   ],

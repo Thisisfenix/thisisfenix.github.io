@@ -19,13 +19,17 @@
 
 ## 📖 Historia
 
-**Angel – El Protector Angelical**
-
-Angel es un survivor único cuya naturaleza angelical lo convierte en el protector natural del grupo. Su presencia inspira esperanza en los momentos más oscuros del Bosque Umbral.
-
-Con habilidades que priorizan la protección y el sacrificio por otros, Angel representa la luz en medio de la oscuridad. Su llegada al Bosque Umbral no fue casualidad, sino un llamado divino para proteger a los inocentes.
-
-Es el survivor más altruista del roster, siempre dispuesto a arriesgar su propia seguridad por el bienestar del equipo.
+<div class="lore-dialog" id="lore-angel">
+  <div class="lore-page" hidden><span class="lore-yellow">Angel</span> es un survivor único cuya naturaleza angelical lo convierte en el <span class="lore-blue">protector natural</span> del grupo. Su presencia inspira esperanza en los momentos más oscuros del Bosque Umbral.</div>
+  <div class="lore-page" hidden>Con habilidades que priorizan la <span class="lore-green">protección y el sacrificio</span> por otros, Angel representa la luz en medio de la oscuridad.</div>
+  <div class="lore-page" hidden><span class="lore-important">Su llegada al Bosque Umbral no fue casualidad, sino un llamado divino para proteger a los inocentes.</span></div>
+  <div class="lore-page" hidden>Es el survivor más <span class="lore-yellow">altruista</span> del roster, siempre dispuesto a arriesgar su propia seguridad por el bienestar del equipo.</div>
+  <div class="lore-dialog-text"></div>
+  <div class="lore-dialog-footer">
+    <span class="lore-dialog-counter"></span>
+    <button class="lore-dialog-next"></button>
+  </div>
+</div>
 
 ## 🎮 Estrategias de Juego
 

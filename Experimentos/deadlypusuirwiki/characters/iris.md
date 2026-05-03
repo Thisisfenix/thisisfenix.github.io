@@ -50,11 +50,17 @@
 
 ## 📖 Historia
 
-**Iris Afton Miller – La Compañera Leal**
-
-Iris estaba ayudando a iA777 a derrotar a un robot de Maxwell durante una batalla crucial. En el momento decisivo, vio cómo iA777 era succionado por un portal misterioso. Sin darse cuenta, ella también iba a ser teletransportada.
-
-El portal la arrastró junto con iA777, llevándolos a ambos al Bosque Umbral. Ahora, separada de su compañero en este lugar extraño, Iris usa sus habilidades telequinéticas para sobrevivir mientras busca reunirse con iA777.
+<div class="lore-dialog" id="lore-iris">
+  <div class="lore-page" hidden><span class="lore-yellow">Iris Afton Miller</span> estaba ayudando a <span class="lore-blue">iA777</span> a derrotar a un robot de Maxwell durante una batalla crucial.</div>
+  <div class="lore-page" hidden>En el momento decisivo, vio cómo <span class="lore-blue">iA777</span> era succionado por un <span class="lore-purple">portal misterioso</span>. Sin darse cuenta, ella también iba a ser teletransportada.</div>
+  <div class="lore-page" hidden><span class="lore-important">El portal la arrastró junto con iA777, llevándolos a ambos al Bosque Umbral.</span></div>
+  <div class="lore-page" hidden>Ahora, separada de su compañero en este lugar extraño, Iris usa sus habilidades telequinéticas para sobrevivir mientras busca reunirse con <span class="lore-blue">iA777</span>.</div>
+  <div class="lore-dialog-text"></div>
+  <div class="lore-dialog-footer">
+    <span class="lore-dialog-counter"></span>
+    <button class="lore-dialog-next"></button>
+  </div>
+</div>
 
 ## 🎮 Estrategias de Juego
 

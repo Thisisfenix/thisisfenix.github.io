@@ -66,9 +66,18 @@ Concluyendo con una risa siniestra, iniciando la partida.
 
 ## 📖 Historia
 
-> 🚧 **Work in Progress**
-> 
-> La historia de MissX está siendo escrita y será añadida próximamente.
+<div class="lore-dialog" id="lore-missx">
+  <div class="lore-page" hidden>Después de tanto tiempo dominando su propio mundo, <span class="lore-yellow">MissX se aburrió</span>. Años y años torturando a las mismas víctimas, jugando siempre el mismo juego, todo se había vuelto predecible y monótono.</div>
+  <div class="lore-page" hidden>Fue entonces cuando decidió explorar. Cruzando mundos, atravesando el vacío, el espacio y el tiempo, algo llamó su atención — una dimensión que <span class="lore-italic">no podía describir con palabras</span>. Una sensación extraña invadió su ser, algo que nunca había sentido antes: un sentimiento raro y misterioso que no sabía identificar.</div>
+  <div class="lore-page" hidden><span class="lore-important">Curiosa, y cansada de lo de siempre, tomó la decisión de abandonar su dimensión y adentrarse en ese lugar desconocido. Sin pensarlo dos veces, entró.</span></div>
+  <div class="lore-page" hidden><span class="lore-shake">Fue el peor error de su existencia.</span></div>
+  <div class="lore-page" hidden>Una vez dentro, se dio cuenta de que <span class="lore-red">ya no podía salir</span>.</div>
+  <div class="lore-dialog-text"></div>
+  <div class="lore-dialog-footer">
+    <span class="lore-dialog-counter"></span>
+    <button class="lore-dialog-next"></button>
+  </div>
+</div>
 
 ## 🎮 Estrategias de Juego
 

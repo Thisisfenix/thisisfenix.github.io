@@ -4,19 +4,19 @@ class DeadlyPursuerWiki {
             '2019x': { name: '2019X', role: 'killer', icon: '../public/assets/icons/2019XNormalIcon.png' },
             'bfmp4': { name: 'Bfmp4', role: 'npc', icon: '../public/assets/icons/Bfmp4Icon.png' },
             'ia666': { name: 'iA666', role: 'killer', icon: 'Assets/images/IA666.png' },
-            'missx': { name: 'MissX', role: 'killer', icon: '../public/assets/icons/MissXNormalIcon.png' },
+            'missx': { name: 'MissX', role: 'killer', icon: 'Assets/images/MissX.png' },
             'peace': { name: 'Peace', role: 'killer', icon: '../public/assets/icons/PeaceNormalIcon.png' },
             'abelitogamer': { name: 'AbelitoGamer', role: 'boss', icon: 'Assets/images/AbelitoInactiveIcon.png' },
-            'molly': { name: 'Molly', role: 'survivor', icon: '../public/assets/icons/MollyNormalIcon.png' },
+            'molly': { name: 'Molly', role: 'survivor', icon: '../public/assets/icons/MollyNormalIcon.png', icons: { danger: '../public/assets/icons/MollyDangerIcon.png', dead: '../public/assets/icons/MollyDeadIcon.png' } },
             'gissel': { name: 'Gissel', role: 'survivor', icon: '../public/assets/icons/GisselInactiveIcon.png' },
-            'ia777': { name: 'iA777', role: 'survivor', icon: '../public/assets/icons/IA777NormalIcon.png' },
-            'angel': { name: 'Angel', role: 'survivor', icon: '../public/assets/icons/AngelNormalIcon.png' },
-            'iris': { name: 'Iris', role: 'survivor', icon: '../public/assets/icons/IrisNormalIcon.png' },
+            'ia777': { name: 'iA777', role: 'survivor', icon: '../public/assets/icons/IA777NormalIcon.png', icons: { danger: '../public/assets/icons/IA777DangerIcon.png', dead: '../public/assets/icons/IA777DeadIcon.png' } },
+            'angel': { name: 'Angel', role: 'survivor', icon: '../public/assets/icons/AngelNormalIcon.png', icons: { danger: '../public/assets/icons/AngelDangerIcon.png', dead: '../public/assets/icons/AngelDeadIcon.png' } },
+            'iris': { name: 'Iris', role: 'survivor', icon: '../public/assets/icons/IrisNormalIcon.png', icons: { danger: '../public/assets/icons/IrisDangerIcon.png', dead: '../public/assets/icons/IrisDeadIcon.png' } },
             'allison': { name: 'Allison', role: 'survivor', icon: '../public/assets/icons/AllisonNormalIcon.png' },
-            'luna': { name: 'Luna', role: 'survivor', icon: '../public/assets/icons/LunaNormalIcon.png' },
+            'luna': { name: 'Luna', role: 'survivor', icon: '../public/assets/icons/LunaNormalIcon.png', icons: { danger: '../public/assets/icons/LunaDangerIcon.png', dead: '../public/assets/icons/LunaDeadIcon.png' } },
             'valem': { name: 'Valem', role: 'survivor', icon: '../public/assets/icons/ValemNormalIcon.png' },
             'anna': { name: 'Anna Moonred', role: 'survivor', icon: '../public/assets/icons/AnnaNormalIcon.png' },
-            'ankush': { name: 'Ankush Moonred', role: 'survivor', icon: 'Assets/images/AnkusHNormalIcon.png' }
+            'ankush': { name: 'Ankush Moonred', role: 'survivor', icon: 'Assets/images/AnkusHNormalIcon.png', icons: { danger: '../public/assets/icons/AnkushDangerIcon.png', dead: '../public/assets/icons/AnkushDeadIcon.png' } }
         };
         this.init();
     }
@@ -27,6 +27,7 @@ class DeadlyPursuerWiki {
         this.generateStats();
         this.setupEventListeners();
         this.handleRouting();
+        this._initMobileSidebar();
     }
 
     generateNavigation() {
@@ -125,7 +126,7 @@ class DeadlyPursuerWiki {
     isWorkInProgress(characterId) {
         // Lista de personajes que están en Work in Progress
         const wipCharacters = [
-            '2019x', 'gissel',
+            'gissel',
             'angel', 'allison',
             'peace', 'valem', 'anna', 'ankush'
         ];
@@ -553,6 +554,26 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                 <img src="${character.icon}" alt="${character.name}" class="character-portrait">
                 <h3>${charInfo.fullName}</h3>
                 <span class="role ${character.role}">${character.role.toUpperCase()}</span>
+
+                ${character.icons ? `
+                <div class="char-icon-gallery">
+                    <div class="char-icon-item active" title="Normal">
+                        <img src="${character.icon}" alt="Normal">
+                        <span>Normal</span>
+                    </div>
+                    ${character.icons.danger ? `<div class="char-icon-item" title="Danger">
+                        <img src="${character.icons.danger}" alt="Danger">
+                        <span>Danger</span>
+                    </div>` : ''}
+                    ${character.icons.dead ? `<div class="char-icon-item" title="Dead">
+                        <img src="${character.icons.dead}" alt="Dead">
+                        <span>Dead</span>
+                    </div>` : ''}
+                </div>` : ''}
+
+                <button class="char-share-btn" onclick="wiki.shareCharacter('${characterId}')" title="Copiar enlace">
+                    🔗 Compartir
+                </button>
                 
                 <div class="character-details">
                     ${charInfo.aliases ? `<div class="detail-section">
@@ -624,6 +645,19 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         `;
         
         content.innerHTML = html;
+        this._initLoreEffects(content);
+        this._injectCharNav(characterId, content);
+
+        // Galería de iconos interactiva
+        content.querySelectorAll('.char-icon-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const src = item.querySelector('img').src;
+                content.querySelector('.character-portrait').src = src;
+                content.querySelectorAll('.char-icon-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
         window.history.pushState({character: characterId}, '', `#${characterId}`);
     }
 
@@ -1020,6 +1054,288 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             link.classList.remove('active');
         });
         activeElement.classList.add('active');
+    }
+
+    _initMobileSidebar() {
+        const toggle   = document.getElementById('sidebar-toggle');
+        const sidebar  = document.querySelector('.fixed-sidebar');
+        const overlay  = document.getElementById('sidebar-overlay');
+        if (!toggle || !sidebar) return;
+
+        const open  = () => { sidebar.classList.add('open'); overlay.classList.add('active'); };
+        const close = () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); };
+
+        toggle.addEventListener('click', () => sidebar.classList.contains('open') ? close() : open());
+        overlay.addEventListener('click', close);
+
+        // Cierra al seleccionar un personaje en móvil
+        sidebar.querySelectorAll('[data-character], [data-page]').forEach(el => {
+            el.addEventListener('click', () => { if (window.innerWidth <= 768) close(); });
+        });
+    }
+
+    shareCharacter(characterId) {
+        // URL de GitHub Pages adaptada automáticamente
+        const base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? window.location.origin + window.location.pathname
+            : 'https://thisisfenix.github.io/FenixLaboratory/Experimentos/deadlypusuirwiki/';
+        const url = base + '#' + characterId;
+        navigator.clipboard.writeText(url).then(() => {
+            // Toast de confirmación
+            const toast = document.createElement('div');
+            toast.className = 'share-toast';
+            toast.textContent = '🔗 Enlace copiado';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 2000);
+        });
+    }
+
+    _injectCharNav(currentId, container) {
+        const ids = Object.keys(this.characters);
+        const idx = ids.indexOf(currentId);
+        const prevId = idx > 0 ? ids[idx - 1] : null;
+        const nextId = idx < ids.length - 1 ? ids[idx + 1] : null;
+
+        const btnHtml = (id, dir) => {
+            if (!id) return `<div></div>`;
+            const char = this.characters[id];
+            const arrow = dir === 'next' ? '▶' : '◀';
+            const key   = dir === 'next' ? '→' : '←';
+            const label = dir === 'next'
+                ? `<span class="char-nav-name">${char.name}</span> ${arrow}`
+                : `${arrow} <span class="char-nav-name">${char.name}</span>`;
+            return `
+                <button class="char-nav-btn" onclick="wiki.showCharacter('${id}')">
+                    ${label}
+                    <span class="char-nav-kbd"><kbd>${key}</kbd></span>
+                </button>`;
+        };
+
+        const nav = document.createElement('div');
+        nav.className = 'char-nav';
+        nav.innerHTML = btnHtml(prevId, 'prev') + btnHtml(nextId, 'next');
+        container.querySelector('.character-profile')?.appendChild(nav)
+            || container.appendChild(nav);
+
+        // Teclas de flecha (solo registra una vez)
+        if (!this._navKeyHandler) {
+            this._navKeyHandler = (e) => {
+                if (e.target.tagName === 'INPUT') return;
+                if (e.key === 'ArrowRight' && this._currentCharId) {
+                    const i = Object.keys(this.characters).indexOf(this._currentCharId);
+                    const next = Object.keys(this.characters)[i + 1];
+                    if (next) this.showCharacter(next);
+                } else if (e.key === 'ArrowLeft' && this._currentCharId) {
+                    const i = Object.keys(this.characters).indexOf(this._currentCharId);
+                    const prev = Object.keys(this.characters)[i - 1];
+                    if (prev) this.showCharacter(prev);
+                }
+            };
+            document.addEventListener('keydown', this._navKeyHandler);
+        }
+        this._currentCharId = currentId;
+    }
+
+    _initLoreEffects(container) {
+
+        // ── Helper: aplica shake letra por letra ─────────────────
+        const applyShake = (el) => {
+            if (el.dataset.shakeApplied) return;
+            el.dataset.shakeApplied = '1';
+            const text = el.textContent;
+            el.innerHTML = '';
+            [...text].forEach((char, i) => {
+                const s = document.createElement('span');
+                s.textContent = char === ' ' ? '\u00A0' : char;
+                s.style.cssText = `display:inline-block;animation:lore-shake-anim 0.08s infinite;animation-delay:${(i*13)%80}ms;`;
+                el.appendChild(s);
+            });
+        };
+
+        // ── Shake standalone (fuera de dialog) ───────────────────
+        container.querySelectorAll('.lore-shake').forEach(applyShake);
+
+        // ── Typewriter standalone ─────────────────────────────────
+        container.querySelectorAll('.lore-typewriter').forEach(el => {
+            const text = el.textContent;
+            el.textContent = '';
+            let i = 0;
+            const speed = parseInt(el.dataset.speed) || 50;
+            const type = () => {
+                if (i < text.length) { el.textContent += text[i++]; setTimeout(type, speed); }
+                else { setTimeout(() => el.style.borderRight = 'none', 1000); }
+            };
+            new IntersectionObserver((entries, obs) => {
+                if (entries[0].isIntersecting) { obs.disconnect(); setTimeout(type, 300); }
+            }).observe(el);
+        });
+
+        // ── Lore Dialog ───────────────────────────────────────────
+        container.querySelectorAll('.lore-dialog').forEach(dialog => {
+
+            // Recoge páginas desde .lore-page ocultos O desde <template>
+            let pages = [];
+            const tmpl = dialog.querySelector('template.lore-pages');
+            if (tmpl) {
+                pages = [...tmpl.content.querySelectorAll('p')].map(p => p.innerHTML.trim());
+            } else {
+                pages = [...dialog.querySelectorAll('.lore-page')].map(p => p.innerHTML.trim());
+            }
+            if (!pages.length) { console.warn('[LoreDialog] Sin páginas:', dialog); return; }
+
+            // Key para localStorage basada en el id del dialog o del personaje
+            const charId = dialog.id || dialog.closest('[id]')?.id || 'unknown';
+            const loreKey = `lore-seen-${charId}`;
+            const seenBefore = localStorage.getItem(loreKey) === '1';
+
+            // Elementos del dialog
+            const textEl    = dialog.querySelector('.lore-dialog-text');
+            const counterEl = dialog.querySelector('.lore-dialog-counter');
+            const nextBtn   = dialog.querySelector('.lore-dialog-next');
+            const footer    = dialog.querySelector('.lore-dialog-footer');
+
+            if (!textEl || !nextBtn) { console.warn('[LoreDialog] Faltan elementos:', dialog); return; }
+
+            let current = 0;
+            let typing  = false;
+            let tickTimer = null;
+
+            // ── Muestra todo de golpe ─────────────────────────────
+            const showAll = () => {
+                localStorage.setItem(loreKey, '1');
+                if (tickTimer) clearTimeout(tickTimer);
+                // Construye vista completa con separadores
+                const full = document.createElement('div');
+                full.className = 'lore-dialog-text lore-dialog-full';
+                pages.forEach((html, i) => {
+                    const p = document.createElement('p');
+                    p.innerHTML = html;
+                    full.appendChild(p);
+                    if (i < pages.length - 1) full.appendChild(document.createElement('br'));
+                });
+                dialog.innerHTML = '';
+                dialog.appendChild(full);
+                dialog.querySelectorAll('.lore-shake').forEach(applyShake);
+            };
+
+            // ── Botón skip (solo si ya vio antes) ─────────────────
+            if (seenBefore && footer) {
+                const skipBtn = document.createElement('button');
+                skipBtn.className = 'lore-dialog-skip';
+                skipBtn.textContent = 'saltar';
+                skipBtn.addEventListener('click', showAll);
+                footer.prepend(skipBtn);
+            }
+
+            // ── Typewriter DOM-aware ──────────────────────────────
+            const typewriterRender = (html, onDone) => {
+                typing = true;
+                textEl.innerHTML = '';
+
+                const src = document.createElement('div');
+                src.innerHTML = html;
+
+                const isSlowPage = !!src.querySelector('.lore-shake');
+                const speed = isSlowPage ? 100 : 20;
+
+                // Clona estructura vacía
+                const cloneStructure = (node) => {
+                    if (node.nodeType === Node.TEXT_NODE) return document.createTextNode('');
+                    const clone = node.cloneNode(false);
+                    node.childNodes.forEach(c => clone.appendChild(cloneStructure(c)));
+                    return clone;
+                };
+
+                // Recoge text nodes en orden
+                const collectTextNodes = (node, arr = []) => {
+                    if (node.nodeType === Node.TEXT_NODE) arr.push(node);
+                    else node.childNodes.forEach(c => collectTextNodes(c, arr));
+                    return arr;
+                };
+
+                const liveRoot  = cloneStructure(src);
+                const srcNodes  = collectTextNodes(src);
+                const liveNodes = collectTextNodes(liveRoot);
+
+                textEl.appendChild(liveRoot);
+
+                const cursor = document.createElement('span');
+                cursor.className = 'lore-cursor';
+                textEl.appendChild(cursor);
+
+                let ni = 0, ci = 0;
+                const tick = () => {
+                    if (!typing) return; // cancelado
+                    if (ni >= srcNodes.length) {
+                        typing = false;
+                        cursor.remove();
+                        textEl.querySelectorAll('.lore-shake').forEach(applyShake);
+                        onDone();
+                        return;
+                    }
+                    const srcNode  = srcNodes[ni];
+                    const liveNode = liveNodes[ni];
+                    if (ci < srcNode.textContent.length) {
+                        liveNode.textContent += srcNode.textContent[ci++];
+                    } else { ni++; ci = 0; }
+                    tickTimer = setTimeout(tick, speed);
+                };
+                tick();
+            };
+
+            // ── Renderiza una página ──────────────────────────────
+            const renderPage = (idx, instant = false) => {
+                const html = pages[idx];
+                const isLast = idx === pages.length - 1;
+
+                counterEl.textContent = `${idx + 1} / ${pages.length}`;
+                nextBtn.innerHTML = isLast
+                    ? `Fin <span class="lore-kbd">Z</span>`
+                    : `Siguiente ▶ <span class="lore-kbd">Z</span>`;
+                nextBtn.style.opacity = '0';
+
+                const onDone = () => { nextBtn.style.opacity = '1'; };
+
+                if (instant) {
+                    if (tickTimer) clearTimeout(tickTimer);
+                    typing = false;
+                    textEl.innerHTML = html;
+                    textEl.querySelectorAll('.lore-shake').forEach(applyShake);
+                    onDone();
+                } else {
+                    typewriterRender(html, onDone);
+                }
+            };
+
+            // ── Avanzar ───────────────────────────────────────────
+            const advance = () => {
+                if (typing) { renderPage(current, true); return; }
+                if (current < pages.length - 1) { current++; renderPage(current); }
+                else { showAll(); }
+            };
+
+            nextBtn.addEventListener('click', advance);
+
+            // Tecla Z / Enter
+            const keyHandler = (e) => {
+                if (e.key !== 'z' && e.key !== 'Z' && e.key !== 'Enter') return;
+                const r = dialog.getBoundingClientRect();
+                if (r.top < window.innerHeight && r.bottom > 0) advance();
+            };
+            document.addEventListener('keydown', keyHandler);
+
+            // Limpia listener al cambiar de personaje
+            new MutationObserver((_, obs) => {
+                if (!document.contains(dialog)) {
+                    document.removeEventListener('keydown', keyHandler);
+                    if (tickTimer) clearTimeout(tickTimer);
+                    obs.disconnect();
+                }
+            }).observe(document.body, { childList: true, subtree: false });
+
+            renderPage(0);
+        });
     }
 
     handleRouting() {

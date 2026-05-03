@@ -9,7 +9,15 @@
 
 ## 📖 Historia
 
-Gissel es la survivor ágil del roster. Su habilidad Sharp Wings la convierte en una luchadora capaz de enfrentar killers directamente, especialmente poderosa en situaciones de Last Man Standing donde recibe un boost significativo de HP.
+<div class="lore-dialog" id="lore-gissel">
+  <div class="lore-page" hidden><span class="lore-yellow">Gissel</span> es la survivor más ágil del roster. Su habilidad <span class="lore-purple">Sharp Wings</span> la convierte en una luchadora capaz de enfrentar killers directamente.</div>
+  <div class="lore-page" hidden>Es especialmente poderosa en situaciones de <span class="lore-red">Last Man Standing</span>, donde recibe un boost significativo de HP que la transforma en una amenaza real para cualquier killer.</div>
+  <div class="lore-dialog-text"></div>
+  <div class="lore-dialog-footer">
+    <span class="lore-dialog-counter"></span>
+    <button class="lore-dialog-next"></button>
+  </div>
+</div>
 
 ## 🎮 Estrategias de Juego
 

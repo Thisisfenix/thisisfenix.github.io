@@ -10,11 +10,13 @@
 <body>
     <header class="fixed-header">
         <div class="header-content">
-            <h1>🎮 Deadly Pursuit Wiki <span class="version-badge">v1.0</span></h1>
+            <h1>🎮 Deadly Pursuit Wiki <span class="version-badge">v1.0a</span></h1>
             <p>Guía completa de personajes y mecánicas</p>
         </div>
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menú">☰</button>
         <button class="header-changes-btn" id="changes-btn" onclick="wiki.showChangelog()">📋 Cambios</button>
     </header>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
     <!-- Changelog Drawer -->
     <div class="changelog-backdrop" id="changelog-backdrop" onclick="wiki.closeChangelog()"></div>
