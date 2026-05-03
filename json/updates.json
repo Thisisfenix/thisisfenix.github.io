@@ -1,27 +1,52 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.6.2",
-  "lastUpdate": "2026-05-02",
+  "version": "2.6.3",
+  "lastUpdate": "2026-05-03",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
-  "sitio_web": "https://thisisfenix.github.io/FenixLaboratory/",
+  "sitio_web": "https://thisisfenix.github.io/",
   
   "info_version_actual": {
-    "numero": "2.6.2",
-    "fecha": "2026-05-02",
+    "numero": "2.6.3",
+    "fecha": "2026-05-03",
     "tipo": "minor",
     "estado": "estable",
     "cambios_principales": [
-      "Los botones de experimentos ahora se ven bien (ya no son invisibles)",
-      "La página detecta automáticamente qué proyectos tienen página web",
-      "Ahora ves 6 proyectos por página en lugar de 4",
-      "La paginación es más inteligente cuando hay muchos proyectos",
-      "La página se reconoce a sí misma y dice 'Estás aquí'",
-      "Nuevo experimento: Friday Night Cooking (FNCengine)"
+      "La Wiki de Deadly Pursuit se actualizó a v1.0b con varias mejoras",
+      "Página de error 404 propia cuando un link no existe",
+      "La fuente personalizada ahora se recuerda entre sesiones",
+      "Nuevo botón para ir al juego en Roblox desde la wiki",
+      "Página de error 404 para el sitio principal"
     ]
   },
   
   "updates": [
+    {
+      "version": "2.6.3",
+      "date": "2026-05-03",
+      "title": "📖 Wiki de Deadly Pursuit v1.0b",
+      "type": "minor",
+      "features": [
+        "📖 La Wiki de Deadly Pursuit se actualizó — puedes verla en Experimentos:",
+        "  🔗 https://thisisfenix.github.io/Experimentos/deadlypusuirwiki/index.html",
+        "  🎮 Nuevo botón para ir directo al juego en Roblox desde la pantalla de inicio",
+        "  ❌ Si compartes un link que no existe, aparece una página de error propia con neón y Ankush Gato",
+        "  🔤 La fuente personalizada que subas ahora se recuerda aunque cierres la página",
+        "  🖼️ Los personajes sin imagen ahora muestran un placeholder en vez de un espacio vacío",
+        "🚫 El sitio principal ahora tiene su propia página de error 404 en lugar de la de GitHub"
+      ],
+      "que_significa": [
+        "📖 La wiki del juego tiene cositas nuevas — entra desde Experimentos",
+        "🎮 Desde la wiki puedes ir directo a jugar en Roblox con un botón",
+        "❌ Si alguien te manda un link roto de la wiki, ya no ves una pantalla en blanco",
+        "🔤 Si cambias la fuente de la wiki, la próxima vez que entres sigue igual",
+        "🚫 Si escribes mal una URL del sitio, ves nuestra página de error en vez de la de GitHub"
+      ],
+      "fixes": [
+        "🐛 Links de personajes sin imagen ya no muestran espacio vacío",
+        "🐛 La fuente personalizada ya no se pierde al recargar"
+      ]
+    },
     {
       "version": "2.6.2",
       "date": "2026-05-02",

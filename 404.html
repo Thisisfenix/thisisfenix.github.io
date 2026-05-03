@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — FenixLaboratory</title>
+    <link rel="icon" type="image/png" href="placeholder/AnkushCat.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Mismo CSS del sitio principal para heredar los temas -->
+    <link rel="stylesheet" href="placeholder/styles.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+            gap: 1.25rem;
+        }
+
+        .code {
+            font-size: clamp(5rem, 20vw, 10rem);
+            font-weight: 700;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--primary, #ff6b35), var(--secondary, #f7931e));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 32px rgba(255, 107, 53, 0.4));
+            display: flex;
+            gap: 0.05em;
+        }
+
+        .digit { display: inline-block; }
+        .digit.flicker { animation: digit-flicker 0.4s steps(1) forwards; }
+
+        @keyframes digit-flicker {
+            0%   { opacity: 1; }
+            15%  { opacity: 0.1; }
+            30%  { opacity: 1; }
+            50%  { opacity: 0.15; }
+            65%  { opacity: 1; }
+            80%  { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        .cat {
+            width: 88px;
+            height: 88px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            animation: bounce 1.2s ease-in-out infinite;
+            filter: drop-shadow(0 6px 14px rgba(0,0,0,0.4));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-primary, #f0f0f0);
+        }
+
+        p {
+            color: var(--text-secondary, #b0b0b0);
+            font-size: 0.95rem;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.65rem 1.6rem;
+            background: linear-gradient(135deg, var(--primary, #ff6b35), var(--secondary, #f7931e));
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 0 18px rgba(255, 107, 53, 0.35);
+            transition: box-shadow 0.2s, transform 0.15s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.55);
+            transform: translateY(-2px);
+        }
+
+        .btn:active { transform: translateY(0); }
+    </style>
+    <script src="guessbook/js/theme-adapter.js"></script>
+</head>
+<body>
+    <div class="code">
+        <span class="digit" id="d0">4</span>
+        <span class="digit" id="d1">0</span>
+        <span class="digit" id="d2">4</span>
+    </div>
+
+    <img src="placeholder/AnkushCat.png" alt="Ankush Gato" class="cat">
+
+    <h1>Página no encontrada</h1>
+    <p>Esta ruta no existe en FenixLaboratory. Puede que el link esté mal escrito o que la página haya sido movida.</p>
+
+    <a class="btn" href="https://thisisfenix.github.io/">← Volver al inicio</a>
+
+    <script>
+        // Parpadeo aleatorio en un dígito — rara vez
+        const digits = [d0, d1, d2];
+        const flicker = () => {
+            const delay = 4000 + Math.random() * 9000;
+            setTimeout(() => {
+                const t = digits[Math.floor(Math.random() * digits.length)];
+                t.classList.add('flicker');
+                setTimeout(() => { t.classList.remove('flicker'); flicker(); }, 400);
+            }, delay);
+        };
+        flicker();
+    </script>
+</body>
+</html>
