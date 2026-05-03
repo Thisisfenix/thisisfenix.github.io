@@ -11,11 +11,22 @@
     <!-- Tema: aplica antes de pintar para evitar flash -->
     <script>
         (function() {
-            var t = localStorage.getItem('theme');
-            var safe = ['light','neon','cyberpunk','matrix','synthwave','ocean','forest','sunset','christmas','halloween','valentine','easter','summer','autumn','funkyatlas','funkyatlas-christmas','galaxy','gold','rainbow','diamond','vaporwave','hacker','neon-city','space','fire','ice','toxic','royal','steampunk','hologram','legendary','plushie-rain','valentines-love','pastel-kawaii'];
-            if (t && t !== 'dark' && safe.indexOf(t) !== -1) {
-                document.documentElement.classList.add(t + '-theme');
+            var all = ['neon','cyberpunk','matrix','synthwave','ocean','forest','sunset','christmas','halloween','valentine','easter','summer','autumn','funkyatlas','funkyatlas-christmas','galaxy','gold','rainbow','diamond','vaporwave','hacker','neon-city','space','fire','ice','toxic','royal','steampunk','hologram','legendary','plushie-rain','valentines-love','pastel-kawaii','light'];
+            // Temas oscuros para el fallback aleatorio
+            var darkThemes = ['neon','cyberpunk','matrix','synthwave','galaxy','vaporwave','hacker','neon-city','space','fire','ice','toxic','royal','steampunk','hologram','legendary','halloween','ocean','forest'];
+
+            var saved = localStorage.getItem('theme');
+            var theme;
+
+            if (saved && saved !== 'dark' && all.indexOf(saved) !== -1) {
+                // Viene del lab o guestbook — usa su tema
+                theme = saved;
+            } else {
+                // Sin tema guardado o viene de otra página — elige uno oscuro al azar
+                theme = darkThemes[Math.floor(Math.random() * darkThemes.length)];
             }
+
+            document.documentElement.classList.add(theme + '-theme');
         })();
     </script>
     <!-- CSS del sitio principal — incluye todos los temas -->
