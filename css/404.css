@@ -1,0 +1,156 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #080810;
+    color: #e0e0f0;
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    gap: 1.25rem;
+    overflow: hidden;
+}
+
+/* Fondo con gradiente azul-morado frío */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 25% 40%, rgba(80, 40, 180, 0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 70%, rgba(30, 20, 100, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 10%, rgba(120, 60, 220, 0.07) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Líneas de scanline sutiles */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.012) 2px,
+        rgba(255,255,255,0.012) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+body > * { position: relative; z-index: 1; }
+
+/* ── 404 ── */
+.code {
+    font-size: clamp(5rem, 20vw, 10rem);
+    font-weight: 700;
+    line-height: 1;
+    color: #c084fc;
+    text-shadow:
+        0 0 8px #fff,
+        0 0 20px #a855f7,
+        0 0 50px #7c3aed,
+        0 0 90px rgba(124, 58, 237, 0.4);
+    display: flex;
+    gap: 0.05em;
+    animation: neon-breathe 3s ease-in-out infinite alternate;
+}
+
+@keyframes neon-breathe {
+    from {
+        text-shadow:
+            0 0 8px #fff,
+            0 0 20px #a855f7,
+            0 0 50px #7c3aed,
+            0 0 90px rgba(124, 58, 237, 0.4);
+    }
+    to {
+        text-shadow:
+            0 0 4px #fff,
+            0 0 12px #a855f7,
+            0 0 30px #7c3aed,
+            0 0 55px rgba(124, 58, 237, 0.3);
+    }
+}
+
+.digit { display: inline-block; }
+
+.digit.flicker { animation: digit-flicker 0.4s steps(1) forwards; }
+
+@keyframes digit-flicker {
+    0%   { opacity: 1; }
+    15%  { opacity: 0.05; }
+    30%  { opacity: 1; }
+    50%  { opacity: 0.1; }
+    65%  { opacity: 1; }
+    80%  { opacity: 0.08; }
+    100% { opacity: 1; }
+}
+
+/* ── Gato ── */
+.cat {
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    animation: bounce 1.2s ease-in-out infinite;
+    filter:
+        drop-shadow(0 0 8px rgba(168, 85, 247, 0.6))
+        drop-shadow(0 6px 16px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-12px); }
+}
+
+/* ── Texto ── */
+h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #d8b4fe;
+}
+
+p {
+    color: #6b7280;
+    font-size: 0.95rem;
+    max-width: 400px;
+    line-height: 1.7;
+}
+
+/* ── Botón ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1.75rem;
+    background: transparent;
+    color: #c084fc;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid #7c3aed;
+    border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.3), inset 0 0 12px rgba(124, 58, 237, 0.05);
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background: rgba(124, 58, 237, 0.15);
+    border-color: #a855f7;
+    color: #e9d5ff;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.5), inset 0 0 20px rgba(124, 58, 237, 0.1);
+    transform: translateY(-2px);
+}
+
+.btn:active { transform: translateY(0); }
