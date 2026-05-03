@@ -1,100 +1,54 @@
-# 🔬 FenixLaboratory v2.2.0
+# 🔬 FenixLaboratory
 
-**Mi rinconcito donde subo mis experimentos raros + juegos multijugador**
+![Versión](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fthisisfenix.github.io%2Fjson%2Fupdates.json&query=%24.version&label=versi%C3%B3n&color=ff6b35&style=flat-square)
+
+**Mi rinconcito donde subo mis experimentos raros**
 
 ## 📋 ¿Qué es esto?
 
-Básicamente es donde pongo todos mis proyectos de GitHub para que no se vean tan perdidos. Ahora también incluye juegos multijugador porque... ¿por qué no?
+Un portfolio interactivo donde pongo todos mis proyectos. Tiene wikis, un guestbook para dibujar y un montón de cosas raras.
 
 ## ✨ Qué tiene
 
-### 🎮 Juegos Multijugador
-- **Deadly Pursuer** - Juego multijugador online con Discord Friends (hasta 8 jugadores)
-  - 4 personajes únicos con habilidades especiales
-  - Sistema de Rage Mode para killers
-  - Soporte para gamepad/controller
-  - Nuevo killer Vortex con habilidades telequinéticas
-  - Survivors: Gissel, iA777, Angel, Iris
-  - Música LMS personalizada por personaje
+### 🧪 Experimentos
+- **Deadly Pursuit Wiki** — Guía completa de personajes y mecánicas del juego
+- **Chatbot IA** — Asistente virtual con reproductor de música integrado
+- **Archive of Creation** — Wiki colaborativa de personajes
+- **FNCengine** — Motor de juego de ritmo experimental (inspirado en FNF)
 
-### 🎨 Guestbook Interactivo v2.0.9
-- 50+ herramientas de dibujo profesionales
-- Sistema de perfiles con avatares personalizados
-- 32 temas integrados (11 gratis, 14 premium, 7 VIP)
-- Sistema de puntos: +10 dibujos, +5 comentarios, +2 likes
-- Rankings y estadísticas en tiempo real
-- Galería pública con likes y comentarios
-- Firebase para sincronización en tiempo real
-- Optimizado para móvil con touch events
+### 🎨 Guestbook Interactivo
+- Herramientas de dibujo
+- Perfiles con avatares personalizados
+- 32+ temas (gratis, premium y VIP)
+- Sistema de puntos y rankings
 
 ### 🏆 Sistema de Logros
-- Logros desbloqueables por hacer cosas
-- Sistema de rachas por visitar seguido
+- Logros desbloqueables
 - Desafíos diarios y semanales
 - Puntos para desbloquear temas
-- Ranking local
+- Ranking global
 
 ### 🎨 Temas y Personalización
 - 50+ temas para elegir
-- Algunos temas premium que se compran con puntos
-- Editor para hacer tu propio tema
-- Cursores personalizados
-- Efectos visuales chéveres
 - Temas estacionales automáticos
+- Editor de tema personalizado
+- Cursores y efectos visuales
 
-### 📱 PWA (App Instalable)
-- Se puede instalar como app en tu teléfono
-- Guarda tu progreso
-- Notificaciones para no perder tu racha
-
-### 🔧 Otras Funcionalidades
-- Carga automática de repos desde GitHub API
-- Filtros por lenguaje de programación
-- Buscador avanzado de proyectos
-- Sistema de paginación
-- Estadísticas de GitHub en tiempo real
+### 🔧 Otras cosas
+- Tus repos de GitHub aparecen automáticamente
+- Filtros y buscador de proyectos
 - Panel técnico para nerds 🤓
-- Comentarios con Giscus
-- Animaciones y efectos visuales
-
-
-## 🚀 Cómo usarlo
-
-Si quieres copiar esto (no sé por qué querrías, pero bueno):
-
-1. Haz fork del repo
-2. Cambia `const user = 'thisisfenix';` por tu usuario
-3. Actualiza tus redes sociales
-4. Ya está, no es ciencia espacial
-
-Si quieres cambiar colores o algo, está todo en el CSS. Los colores principales están en `:root` al inicio.
+- Comentarios integrados
+- Instalable como app
+- Página de error 404 personalizada
 
 ## 🌐 Ver en vivo
 
-👉 [thisisfenix.github.io/FenixLaboratory](https://thisisfenix.github.io/FenixLaboratory/)
+👉 [thisisfenix.github.io](https://thisisfenix.github.io/)
 
-## 🛠️ Qué usa
+## 👨‍💻 Yo
 
-- HTML, CSS, JavaScript (lo básico)
-- Bootstrap para no sufrir con el responsive
-- GitHub API para traer los repos
-- Firebase para el guestbook
-- Supabase para el multijugador
-- Algunas librerías de iconos
-- GitHub Pages para hosting
-
-## 📝 Cosas que tal vez agregue después
-
-- [ ] Más juegos multijugador
-- [ ] Torneos semanales
-- [ ] Minijuegos (Snake, Tetris)
-- [ ] Más personajes en Deadly Pursuer
-- [ ] Sistema de clanes
-
-## 👨💻 Yo
-
-**ThisIsFenix** - Solo un tipo que hace cosas en internet
+**ThisIsFenix** — Solo un tipo que hace cosas en internet
 - GitHub: [@thisisfenix](https://github.com/thisisfenix)
-- Twitter: [@AntiAnkush](https://twitter.com/AntiAnkush) 
+- Twitter: [@AntiAnkush](https://twitter.com/AntiAnkush)
 - TikTok: [@thefenixpro216](https://www.tiktok.com/@thefenixpro216)
-
