@@ -20,65 +20,44 @@
     <img src="https://thisisfenix.github.io/placeholder/AnkushCat.png" alt="Ankush Gato" class="cat">
 
     <h1>Página no encontrada</h1>
-    <p>Esta ruta no existe en FenixLaboratory. Puede que el link esté mal escrito o que la página haya sido movida.</p>
+    <p>Esta ruta no existe en FenixLaboratory. Puede que el link esté mal escroto o que la página haya sido movida.</p>
 
     <a class="btn" href="https://thisisfenix.github.io/">← Volver al inicio</a>
 
     <script>
-        // Mensajes chistosos por sección
-        const mensajes = {
-            experimentos: [
-                'bro escribiste mal la URL o simplemente inventaste una 💀',
-                'este experimento no existe, igual que tu sentido de la dirección',
-                'ni el chatbot sabe a dónde ibas',
-                'te perdiste en los experimentos, clásico',
-                'esto no existe we, vuelve a intentarlo',
-            ],
-            guestbook: [
-                'alguien dibujó encima de esta página y ya no se ve 💀',
-                'bro el guestbook tiene como 3 páginas, ¿cómo te perdiste?',
-                'esta URL la inventaste tú, no nosotros',
-                'ni los artistas del guestbook saben dónde está esto',
-                'te fuiste tan lejos del guestbook que ya no hay wifi',
-            ],
-            lab: [
-                'bro ¿qué estabas buscando exactamente?',
-                'esto no existe, igual que tu sentido de orientación',
-                'el nerd panel tampoco sabe dónde está esto 🤓',
-                'fenix borró esto y fingió que nunca existió',
-                'escribiste algo raro y el laboratorio dijo que no',
-            ],
-            default: [
-                '¿cómo llegaste aquí? ni yo sé',
-                'felicidades, encontraste la nada absoluta',
-                'ankush gato tampoco sabe dónde estás',
-                'bro esto no existe en ningún universo',
-                'te mandaron un link roto, clásico de tus amigos',
-            ]
-        };
+        const mensajes = [
+            '¿cómo llegaste aquí? ni yo sé',
+            'felicidades, encontraste la nada absoluta',
+            'ankush gato tampoco sabe dónde estás',
+            'bro esto no existe en ningún universo',
+            'te mandaron un link roto, clásico de tus amigos',
+            'bro ¿qué estabas buscando exactamente?',
+            'esto no existe, igual que tu sentido de orientación',
+            'fenix borró esto y fingió que nunca existió',
+            'escribiste algo raro y el sitio dijo que no',
+            'ni el nerd panel sabe dónde está esto 🤓',
+            'bro escribiste mal la URL o simplemente inventaste una 💀',
+            'te perdiste, clásico',
+            'esto no existe we, vuelve a intentarlo',
+            'te fuiste tan lejos que ya no hay wifi',
+            'alguien te mandó un link roto y aquí estás',
+        ];
 
         const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
-        // Detecta de dónde viene y ajusta el botón y mensaje
         (function() {
             const ref = document.referrer;
             const btn = document.querySelector('.btn');
             const msg = document.querySelector('p');
 
+            msg.textContent = pick(mensajes);
+
             if (ref.includes('/Experimentos/')) {
                 btn.href = 'https://thisisfenix.github.io/#experimentos';
                 btn.textContent = '← Volver a Experimentos';
-                msg.textContent = pick(mensajes.experimentos);
             } else if (ref.includes('/guessbook/') || ref.includes('guestbook')) {
                 btn.href = 'https://thisisfenix.github.io/guessbook/guestbook-new.html';
                 btn.textContent = '← Volver al Guestbook';
-                msg.textContent = pick(mensajes.guestbook);
-            } else if (ref.includes('thisisfenix.github.io')) {
-                btn.href = 'https://thisisfenix.github.io/';
-                btn.textContent = '← Volver al Laboratorio';
-                msg.textContent = pick(mensajes.lab);
-            } else {
-                msg.textContent = pick(mensajes.default);
             }
         })();
         const digits = [d0, d1, d2];

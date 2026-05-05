@@ -1,6 +1,37 @@
 {
-  "currentVersion": "1.0b",
+  "currentVersion": "1.0.1",
   "updates": [
+    {
+      "version": "1.0.1",
+      "date": "2026-05-05",
+      "title": "🔗 Links con Embed",
+      "type": "minor",
+      "changes": [
+        {
+          "category": "🔗 Compartir personajes",
+          "items": [
+            "Los links de personajes ahora muestran embed en Discord, WhatsApp y Twitter",
+            "El embed incluye el icono del personaje, su nombre y una descripción",
+            "El link redirige automáticamente a la página del personaje sin pasos extra"
+          ]
+        },
+        {
+          "category": "📖 Contenido",
+          "items": [
+            "Tips & Trucos ahora está disponible desde el sidebar",
+            "Gissel, Angel y Allison ya no están bloqueados como WIP — tienen contenido real",
+            "Matchups de iA666 completados con todos los survivors"
+          ]
+        },
+        {
+          "category": "🐛 Fixes",
+          "items": [
+            "El botón Compartir ahora genera la URL correcta en cualquier entorno"
+          ]
+        }
+      ],
+      "notes": "Lo más importante de esta update: los links de personajes ahora tienen preview cuando los compartes en Discord o WhatsApp."
+    },
     {
       "version": "1.0b",
       "date": "2026-05-03",

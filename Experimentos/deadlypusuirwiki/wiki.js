@@ -1,4 +1,4 @@
-class DeadlyPursuerWiki {
+﻿class DeadlyPursuerWiki {
     constructor() {
         this.characters = {
             '2019x': { name: '2019X', role: 'killer', icon: '../public/assets/icons/2019XNormalIcon.png' },
@@ -1062,12 +1062,10 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
     }
 
     shareCharacter(characterId) {
-        // URL de GitHub Pages adaptada automáticamente
-        const base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? window.location.origin + window.location.pathname
-            : 'https://thisisfenix.github.io/FenixLaboratory/Experimentos/deadlypusuirwiki/';
-        const url = base + '#' + characterId;
-        navigator.clipboard.writeText(url).then(() => {
+        // Genera link de share con OG tags para embeds en Discord/WhatsApp
+        const base = window.location.origin + window.location.pathname.replace(/\/+$/, '') + '/';
+        const url = base + 'share/' + characterId + '.html';
+navigator.clipboard.writeText(url).then(() => {
             // Toast de confirmación
             const toast = document.createElement('div');
             toast.className = 'share-toast';
@@ -1392,6 +1390,26 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
     show404(badHash = '') {
         const content = document.getElementById('character-content');
         const escaped = badHash.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        const mensajes = [
+            'no existe we, alguien te mandó basura',
+            'ese link está más roto que mis ganas de documentar',
+            'ni idea de dónde sacaste eso',
+            'te perdiste o te perdieron',
+            'eso no existe, punto',
+            'revisa el link porque algo está mal ahí',
+            'bro eso nunca existió',
+            'te mandaron mal el link o lo escribiste tú mal, cualquiera de las dos',
+            'no está, no estuvo, no estará',
+            'alguien compartió esto sin probarlo primero lol',
+            'ese personaje vive en tu cabeza nomás',
+            'ni yo sé cómo llegaste aquí',
+            'eso no sale ni en el lore alternativo',
+            'te fuiste por las ramas y ya no hay wiki',
+            'error tuyo o de quien te mandó esto, no nuestro',
+        ];
+        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
         content.innerHTML = `
             <div class="wiki-404">
                 <div class="wiki-404-code">
@@ -1401,8 +1419,8 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                 </div>
                 <h2 class="wiki-404-title">Página no encontrada</h2>
                 <p class="wiki-404-msg">
-                    El enlace <code>#${escaped}</code> no existe en esta wiki.
-                    Puede que haya sido eliminado, renombrado o que el link esté mal escrito.
+                    El enlace <code>#${escaped}</code> no existe en esta wiki, o te lo inventaste o está mal ${Math.random() < 0.001 ? 'escroto' : 'escrito'}.<br>
+                    <span style="color:var(--text-muted);font-size:0.85em;">${pick(mensajes)}</span>
                 </p>
                 <img src="Assets/images/AnkushCat.png" alt="Ankush Gato" class="wiki-404-cat">
                 <button class="wiki-404-btn" onclick="wiki.showHome(); window.history.replaceState({page:'home'}, '', '#');">
