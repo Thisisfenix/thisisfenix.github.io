@@ -125,9 +125,7 @@
     isWorkInProgress(characterId) {
         // Lista de personajes que están en Work in Progress
         const wipCharacters = [
-            'gissel',
-            'angel', 'allison',
-            'peace', 'valem', 'anna', 'ankush'
+            'peace', 'valem', 'anna'
         ];
         const wipPages = ['gameplay', 'tips'];
         
@@ -425,21 +423,21 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             },
             'ankush': {
                 fullName: 'Ankush Moonred',
-                aliases: ['TBD'],
-                gender: 'TBD',
-                pronouns: 'TBD',
-                orientation: 'TBD',
-                relationships: ['TBD'],
-                affiliation: 'TBD',
-                occupation: 'TBD',
-                age: 'TBD',
-                birthday: 'TBD',
-                status: 'TBD',
-                species: 'TBD',
-                height: 'TBD',
-                eyes: 'TBD',
-                hair: 'TBD',
-                voice: 'TBD'
+                aliases: ['Fenix', 'El vagabundo', 'Felix', 'Fenki'],
+                gender: 'Hombre',
+                pronouns: 'He/Him',
+                orientation: 'Heterosexual',
+                relationships: ['Gissel (Pareja)', 'Anna Moonred (Hermana Mayor)', 'Lexa (Hermana Menor)'],
+                affiliation: 'Funky Maker Server / FunkStudio Island',
+                occupation: 'Investigador Tecnológico',
+                age: '21',
+                birthday: '06/07/2004',
+                status: 'Vivo',
+                species: 'Humano',
+                height: '1.78m',
+                eyes: 'Negros',
+                hair: 'Azul Marino, mechones rubio-claros',
+                voice: 'La de su creador lol'
             },
             'bfmp4': {
                 fullName: 'Bfmp4',
@@ -634,7 +632,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         
         const html = `
             <div class="character-profile active">
-                <div class="character-main">
+                <div class="character-main ${infoBoxHtml ? '' : 'no-infobox'}">
                     <div class="markdown-content">
                         ${infoBoxHtml}
                         ${marked.parse(markdown)}
@@ -744,103 +742,6 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                         <li>Controlar el mapa estratégicamente</li>
                                         <li>Impedir que los Survivors escapen por los anillos</li>
                                     </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Controles Básicos -->
-                    <section class="gameplay-section">
-                        <div class="section-header">
-                            <span class="section-icon">🎮</span>
-                            <h2>Controles</h2>
-                        </div>
-                        <div class="section-content">
-                            <p style="text-align: center; margin-bottom: 1.5rem; color: var(--text-secondary);">
-                                Deadly Pursuit está disponible en <strong>PC</strong>, <strong>Móviles</strong> y <strong>Consolas</strong>
-                            </p>
-                            
-                            <h3 style="font-size: 1.1rem; margin: 1.5rem 0 1rem 0; color: var(--accent-red);">💻 PC (Teclado y Mouse)</h3>
-                            <div class="controls-grid">
-                                <div class="control-item">
-                                    <kbd>W A S D</kbd>
-                                    <span>Movimiento</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Shift</kbd>
-                                    <span>Correr</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>E</kbd>
-                                    <span>Interactuar</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Q</kbd>
-                                    <span>Habilidad</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Space</kbd>
-                                    <span>Acción Especial</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Tab</kbd>
-                                    <span>Scoreboard</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Mouse</kbd>
-                                    <span>Cámara</span>
-                                </div>
-                            </div>
-                            
-                            <h3 style="font-size: 1.1rem; margin: 1.5rem 0 1rem 0; color: var(--accent-red);">📱 Móviles (Touch)</h3>
-                            <div class="controls-grid">
-                                <div class="control-item">
-                                    <kbd>Joystick</kbd>
-                                    <span>Movimiento</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Botón Sprint</kbd>
-                                    <span>Correr</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Botón E</kbd>
-                                    <span>Interactuar</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Botón Q</kbd>
-                                    <span>Habilidad</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Deslizar</kbd>
-                                    <span>Cámara</span>
-                                </div>
-                            </div>
-                            
-                            <h3 style="font-size: 1.1rem; margin: 1.5rem 0 1rem 0; color: var(--accent-red);">🎮 Consolas (Gamepad)</h3>
-                            <div class="controls-grid">
-                                <div class="control-item">
-                                    <kbd>Stick Izq.</kbd>
-                                    <span>Movimiento</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Stick Der.</kbd>
-                                    <span>Cámara</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>A / X</kbd>
-                                    <span>Interactuar</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>B / O</kbd>
-                                    <span>Habilidad</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>LB / L1</kbd>
-                                    <span>Correr</span>
-                                </div>
-                                <div class="control-item">
-                                    <kbd>Start</kbd>
-                                    <span>Scoreboard</span>
                                 </div>
                             </div>
                         </div>
@@ -1068,11 +969,9 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
     }
 
     shareCharacter(characterId) {
-        // Genera link de share con OG tags para embeds en Discord/WhatsApp
-        // Elimina index.html y trailing slashes para construir la base correctamente
-        const base = window.location.origin + window.location.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '') + '/';
-        const url = base + 'share/' + characterId + '.html';
-navigator.clipboard.writeText(url).then(() => {
+        // Copia el link directo a la wiki con el hash del personaje
+        const url = window.location.origin + window.location.pathname + '#' + characterId;
+        navigator.clipboard.writeText(url).then(() => {
             // Toast de confirmación
             const toast = document.createElement('div');
             toast.className = 'share-toast';

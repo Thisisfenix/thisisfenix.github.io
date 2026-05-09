@@ -1,6 +1,59 @@
 {
-  "currentVersion": "1.0.1",
+  "currentVersion": "1.0.2",
   "updates": [
+    {
+      "version": "1.0.2",
+      "date": "2026-05-09",
+      "title": "📝 Contenido Completo y Mejoras",
+      "type": "minor",
+      "changes": [
+        {
+          "category": "✅ Personajes Completados",
+          "items": [
+            "Ankush Moonred: Todas las habilidades con stats y cooldowns (Q, E, R), 3 pasivas, estrategias, 4 builds, tips avanzados y matchups",
+            "Ankush Moonred: Historia completa con sistema de diálogo (11 páginas con efectos visuales)",
+            "Ankush Moonred: Infobox completo con edad, relaciones (Gissel, Anna, Lexa) y datos personales",
+            "Allison Moon: Historia convertida a sistema de diálogo (15 páginas con efectos)",
+            "Allison Moon: Todas las habilidades pulidas con números específicos y cooldowns",
+            "Allison Moon: 3 pasivas, 4 builds detallados, tips avanzados y matchups mejorados",
+            "AbelitoGamer: Historia chistosa añadida — era un bossfight de April Fools que se quedó por hueva"
+          ]
+        },
+        {
+          "category": "🔗 Sistema de Compartir",
+          "items": [
+            "Eliminados archivos HTML individuales de /share/",
+            "Botón Compartir ahora copia links directos con hash (#personaje)",
+            "Links compartidos muestran el header de la wiki original con Open Graph meta tags",
+            "Funciona en Discord, WhatsApp y Twitter con preview correcto"
+          ]
+        },
+        {
+          "category": "🎨 Mejoras de Layout",
+          "items": [
+            "Personajes sin infobox ahora tienen layout centrado mejorado",
+            "Historia ajusta su tamaño automáticamente cuando no hay infobox",
+            "Contenido principal con max-width 900px para mejor lectura"
+          ]
+        },
+        {
+          "category": "🧹 Limpieza de UI",
+          "items": [
+            "Eliminada sección completa de Controles (PC, Mobile, Console) de la página de gameplay",
+            "Removido link de Mecánicas del sidebar",
+            "Sidebar ahora solo muestra: Introducción y Tips & Trucos"
+          ]
+        },
+        {
+          "category": "📋 Work in Progress",
+          "items": [
+            "Ankush removido de la lista WIP — ahora está completo",
+            "Sección 'Mejores Mapas' marcada como Work in Progress en varios personajes"
+          ]
+        }
+      ],
+      "notes": "Gran actualización de contenido. Ankush y Allison ahora están 100% completos con todo su lore, habilidades y estrategias. La historia de Abelito es puro meme."
+    },
     {
       "version": "1.0.1",
       "date": "2026-05-05",

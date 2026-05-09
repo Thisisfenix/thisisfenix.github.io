@@ -129,9 +129,29 @@
 
 ## 📖 Historia
 
-> 🚧 **Work in Progress**
-> 
-> La historia de AbelitoGamer está siendo desarrollada y será añadida próximamente.
+<div class="lore-dialog" id="lore-abelito">
+  <div class="lore-page" hidden>Era <span class="lore-yellow">1 de Abril</span>. April Fools. El día perfecto para hacer pendejadas.</div>
+  <div class="lore-page" hidden>Y alguien tuvo la brillante idea: <span class="lore-important">"¿Sabes qué sería chistoso? Meter a Abelito como boss."</span></div>
+  <div class="lore-page" hidden>Así nació el bossfight más random de la historia. <span class="lore-yellow">AbelitoGamer</span>, metido al juego <span class="lore-italic">literalmente por sus huevos</span>.</div>
+  <div class="lore-page" hidden>Los jugadores entraban como: <span class="lore-purple">"¿Qué pedo con este wey?"</span></div>
+  <div class="lore-page" hidden>Era <span class="lore-important">gloriosamente estúpido</span>.</div>
+  <div class="lore-page" hidden>Pero entonces llegó el 2 de Abril. Hora de quitar el evento de April Fools.</div>
+  <div class="lore-page" hidden><span class="lore-italic">"Ok, ya estuvo, hay que quitarlo..."</span></div>
+  <div class="lore-page" hidden><span class="lore-purple">*mira el código*</span></div>
+  <div class="lore-page" hidden><span class="lore-yellow">"...nah, me da paja."</span></div>
+  <div class="lore-page" hidden><span class="lore-shake">Y ASÍ SE QUEDÓ.</span></div>
+  <div class="lore-page" hidden>Literalmente. <span class="lore-red">Le dio paja quitarlo</span> y Abelito se quedó en el juego para siempre.</div>
+  <div class="lore-page" hidden>Con sus <span class="lore-red">2200 HP</span>. Sus tres fases. Sus doce habilidades diferentes. <span class="lore-shake">Inmune a stuns</span>.</div>
+  <div class="lore-page" hidden>El bossfight de broma se convirtió en <span class="lore-important">el boss final no oficial</span>.</div>
+  <div class="lore-page" hidden>Ahora los jugadores lo enfrentan y piensan: <span class="lore-italic">"Este wey está aquí porque le dio paja quitarlo y ahora nos está partiendo la madre."</span></div>
+  <div class="lore-page" hidden>Y así es como <span class="lore-yellow">AbelitoGamer</span>, el April Fools boss que se quedó por <span class="lore-purple">pura hueva</span>, sigue ahí.</div>
+  <div class="lore-page" hidden><span class="lore-important">Ni leyenda ni nada. Nomás se quedó porque sí.</span> 💀</div>
+  <div class="lore-dialog-text"></div>
+  <div class="lore-dialog-footer">
+    <span class="lore-dialog-counter"></span>
+    <button class="lore-dialog-next"></button>
+  </div>
+</div>
 
 ## 🎮 Estrategias de Juego
 

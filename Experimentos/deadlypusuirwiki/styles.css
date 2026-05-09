@@ -890,6 +890,21 @@ body::before {
     overflow: auto; /* Para que respete el float */
 }
 
+/* Cuando no hay infobox, el contenido ocupa todo el ancho */
+.character-main.no-infobox .markdown-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.character-main.no-infobox .markdown-content h1 {
+    text-align: center;
+}
+
+.character-main.no-infobox .lore-dialog {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
 
 
 .character-sidebar::-webkit-scrollbar {
