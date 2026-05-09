@@ -657,6 +657,12 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             });
         });
 
+        // Actualizar sidebar para marcar el personaje actual como activo
+        const sidebarLink = document.querySelector(`.nav-section a[data-character="${characterId}"]`);
+        if (sidebarLink) {
+            this.updateActiveNav(sidebarLink);
+        }
+
         window.history.pushState({character: characterId}, '', `#${characterId}`);
     }
 
@@ -1063,7 +1069,8 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
 
     shareCharacter(characterId) {
         // Genera link de share con OG tags para embeds en Discord/WhatsApp
-        const base = window.location.origin + window.location.pathname.replace(/\/+$/, '') + '/';
+        // Elimina index.html y trailing slashes para construir la base correctamente
+        const base = window.location.origin + window.location.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '') + '/';
         const url = base + 'share/' + characterId + '.html';
 navigator.clipboard.writeText(url).then(() => {
             // Toast de confirmación
