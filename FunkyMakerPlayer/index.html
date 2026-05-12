@@ -1,0 +1,665 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🎵 FunkyMakerPlayer</title>
+  <meta name="description" content="Un reproductor de niveles de Funky Maker para Windows. Arrastra un archivo .FNMM o .rar para cargar un nivel." />
+  <link rel="icon" type="image/png" href="../placeholder/AnkushCat.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --accent: #f59e0b;
+      --accent-dim: rgba(245,158,11,0.15);
+      --accent-border: rgba(245,158,11,0.3);
+      --accent-light: #fbbf24;
+      --bg: #0a0a0f;
+      --bg-card: #111118;
+      --bg-card2: #16161f;
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid bg */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(245,158,11,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,158,11,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 1.5rem 3rem;
+      position: relative;
+      background: radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.2) 0%, transparent 60%);
+      z-index: 1;
+    }
+
+    .hero-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 3rem;
+      max-width: 960px;
+      width: 100%;
+    }
+
+    .hero-img-wrap {
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .hero-img-wrap img {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      border-radius: 24px;
+      box-shadow: 0 0 60px rgba(245,158,11,0.5), 0 0 120px rgba(245,158,11,0.2);
+      display: block;
+    }
+
+    .hero-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 30px;
+      border: 1px solid rgba(245,158,11,0.25);
+      pointer-events: none;
+    }
+
+    .hero-text { flex: 1; min-width: 260px; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-light);
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-text h1 .accent {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-text p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .drag-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px dashed rgba(245,158,11,0.35);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      color: var(--accent-light);
+      margin: 1rem 0 1.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn-funky {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.6rem;
+      border-radius: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      border: none;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      color: #0a0a0f;
+      box-shadow: 0 0 24px rgba(245,158,11,0.45);
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(245,158,11,0.65);
+      color: #0a0a0f;
+    }
+
+    .btn-back {
+      background: transparent;
+      color: var(--accent-light);
+      border: 1.5px solid var(--accent-border);
+    }
+
+    .btn-back:hover {
+      background: var(--accent-dim);
+      transform: translateY(-2px);
+      color: var(--accent-light);
+    }
+
+    /* Sections */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 4rem 1.5rem;
+    }
+
+    section:nth-child(even) { background: var(--bg-card); }
+
+    .section-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .section-title span { color: var(--accent); }
+
+    /* Features grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card2);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+    .feature-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.3rem; }
+    .feature-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* Controls table */
+    .controls-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .controls-table thead tr {
+      border-bottom: 1px solid var(--accent-border);
+    }
+
+    .controls-table th {
+      text-align: left;
+      padding: 0.6rem 1rem;
+      color: var(--accent-light);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .controls-table td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text-muted);
+    }
+
+    .controls-table tr:last-child td { border-bottom: none; }
+    .controls-table tr:hover td { background: rgba(245,158,11,0.04); }
+
+    .key {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid var(--accent-border);
+      border-radius: 6px;
+      padding: 0.15rem 0.55rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: var(--accent-light);
+      white-space: nowrap;
+    }
+
+    /* Requirements */
+    .req-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .req-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .req-item i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; }
+
+    /* Credits */
+    .credits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .credit-card {
+      background: var(--bg-card2);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+
+    .credit-role {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent-light);
+      margin-bottom: 0.3rem;
+    }
+
+    .credit-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
+    .credit-sub { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* Tech pills */
+    .tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tech-pill {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Note banner */
+    .note-banner {
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.88rem;
+      color: #fcd34d;
+      line-height: 1.5;
+    }
+
+    .note-banner i { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Float notes */
+    .float-note {
+      position: absolute;
+      font-size: 1.4rem;
+      opacity: 0.1;
+      animation: floatNote 7s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .float-note:nth-child(1) { top: 12%; left: 5%;    animation-delay: 0s; }
+    .float-note:nth-child(2) { top: 20%; right: 7%;   animation-delay: 2s; }
+    .float-note:nth-child(3) { bottom: 18%; left: 9%; animation-delay: 4s; }
+    .float-note:nth-child(4) { bottom: 25%; right: 5%; animation-delay: 1s; }
+
+    @keyframes floatNote {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50%       { transform: translateY(-16px) rotate(4deg); }
+    }
+
+    @media (max-width: 600px) {
+      .hero-inner { flex-direction: column; align-items: center; text-align: center; }
+      .hero-actions { justify-content: center; }
+      .drag-hint { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="float-note">🎵</span>
+    <span class="float-note">🎶</span>
+    <span class="float-note">🎸</span>
+    <span class="float-note">🥁</span>
+
+    <div class="hero-inner">
+      <div class="hero-img-wrap">
+        <img src="../placeholder/AnkushCat.png" alt="FunkyMakerPlayer logo">
+      </div>
+      <div class="hero-text">
+        <div class="hero-badge">
+          <i class="bi bi-flask-fill"></i> FenixLaboratory
+        </div>
+        <h1>FUNKY MAKER<br><span class="accent">PLAYER</span></h1>
+        <p>Un reproductor de niveles de Funky Maker para Windows.</p>
+        <div class="drag-hint">
+          <i class="bi bi-file-earmark-arrow-down"></i>
+          Arrastra un archivo <strong>.FNMM</strong> o <strong>.rar</strong> a la ventana para cargar un nivel
+        </div>
+        <div class="hero-actions">
+          <a href="#download" class="btn-funky btn-download">
+            <i class="bi bi-download"></i> Descargar
+          </a>
+          <a href="../index.html" class="btn-funky btn-back">
+            <i class="bi bi-arrow-left"></i> Volver al Lab
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Caracteristicas -->
+  <section>
+    <div class="section-inner">
+      <h2 class="section-title"><span>✦</span> Características</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📦</div>
+          <div class="feature-title">Carga de niveles</div>
+          <div class="feature-desc">Soporta archivos <strong>.FNMM</strong> (ZIP y RAR) con drag &amp; drop directo.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎸</div>
+          <div class="feature-title">Múltiples strumlines</div>
+          <div class="feature-desc">Soporte completo para niveles con múltiples strumlines simultáneas.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">▶️</div>
+          <div class="feature-title">Autoplay y manual</div>
+          <div class="feature-desc">Alterna entre modo automático y control manual en cualquier momento.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⬇️</div>
+          <div class="feature-title">Downscroll</div>
+          <div class="feature-desc">Modo downscroll disponible para los que prefieren las notas bajando.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⏱️</div>
+          <div class="feature-title">Timer estilo Psych</div>
+          <div class="feature-desc">Timer de canción con el estilo visual de Psych Engine.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⏩</div>
+          <div class="feature-title">Timeskip</div>
+          <div class="feature-desc">Salta hacia adelante o atrás en la canción con Tab / Shift+Tab.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">❤️</div>
+          <div class="feature-title">Barra de vida</div>
+          <div class="feature-desc">Colores de la barra de vida basados en el icono del personaje.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <div class="feature-title">Settings persistentes</div>
+          <div class="feature-desc">Tu configuración se guarda automáticamente entre sesiones.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💀</div>
+          <div class="feature-title">Notas especiales</div>
+          <div class="feature-desc">Soporte para notas de daño, instakill y heal.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎮</div>
+          <div class="feature-title">Compatibilidad Psych</div>
+          <div class="feature-desc">Compatible con niveles creados para Psych Engine.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controles -->
+  <section>
+    <div class="section-inner">
+      <h2 class="section-title"><span>✦</span> Controles</h2>
+      <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);overflow:hidden;">
+        <table class="controls-table">
+          <thead>
+            <tr>
+              <th>Tecla</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key">↑ ↓ ← →</span> / <span class="key">WASD</span></td>
+              <td>Notas (configurable)</td>
+            </tr>
+            <tr>
+              <td><span class="key">ESC</span></td>
+              <td>Pausa / Settings</td>
+            </tr>
+            <tr>
+              <td><span class="key">P</span></td>
+              <td>Pausar</td>
+            </tr>
+            <tr>
+              <td><span class="key">Tab</span></td>
+              <td>Timeskip +Xs</td>
+            </tr>
+            <tr>
+              <td><span class="key">Shift</span> + <span class="key">Tab</span></td>
+              <td>Timeskip -Xs</td>
+            </tr>
+            <tr>
+              <td><span class="key">F11</span></td>
+              <td>Fullscreen</td>
+            </tr>
+            <tr>
+              <td><span class="key">+</span> / <span class="key">-</span></td>
+              <td>Velocidad de scroll</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Requisitos -->
+  <section>
+    <div class="section-inner">
+      <h2 class="section-title"><span>✦</span> Requisitos</h2>
+      <div class="req-list">
+        <div class="req-item">
+          <i class="bi bi-windows"></i>
+          <span>Windows 10 / 11 (64-bit)</span>
+        </div>
+        <div class="req-item">
+          <i class="bi bi-box-seam"></i>
+          <span>No requiere instalar .NET — todo incluido en el exe</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Descargar -->
+  <section id="download">
+    <div class="section-inner" style="text-align:center;">
+      <h2 class="section-title" style="justify-content:center;"><span>✦</span> Descargar</h2>
+      <p style="color:var(--text-muted);margin-bottom:2rem;font-size:0.95rem;">Gratis. Sin instalación complicada. Solo descarga y ejecuta.</p>
+      <div style="display:inline-flex;flex-direction:column;align-items:center;gap:1.25rem;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:16px;padding:2.5rem 3rem;max-width:380px;width:100%;">
+        <img src="../placeholder/AnkushCat.png" alt="FunkyMakerPlayer" style="width:80px;height:80px;object-fit:contain;border-radius:14px;box-shadow:0 0 30px rgba(245,158,11,0.4);">
+        <div>
+          <div style="font-size:1.15rem;font-weight:700;margin-bottom:0.2rem;">FunkyMakerPlayer</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">v1.0.0 · Windows 64-bit · ~40 MB</div>
+        </div>
+        <a href="FunkyMakerPlayer-v1.0.0.zip" id="download-btn" class="btn-funky btn-download" style="width:100%;justify-content:center;font-size:1rem;padding:0.85rem 1.5rem;" aria-label="Descargar FunkyMakerPlayer" download>
+          <i class="bi bi-download"></i> Descargar ahora
+        </a>
+        <small style="color:var(--text-muted);font-size:0.75rem;">FunkyMakerPlayer-v1.0.0.zip · ~40 MB</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- Creditos -->
+  <section>
+    <div class="section-inner">
+      <h2 class="section-title"><span>✦</span> Créditos</h2>
+
+      <!-- KinGamesCreator banner -->
+      <div style="position:relative;border:1px solid rgba(245,158,11,0.45);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem;text-align:center;">
+        <div style="position:absolute;inset:0;background-image:url('../placeholder/FunkyMakerMobile.png');background-size:cover;background-position:center;"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,10,15,0.55) 0%,rgba(10,10,15,0.85) 60%,rgba(10,10,15,0.97) 100%);"></div>
+        <div style="position:relative;z-index:1;padding:2.5rem 2rem 2rem;">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#fcd34d;margin-bottom:0.3rem;">Creador original</div>
+          <div style="font-size:1.5rem;font-weight:700;margin-bottom:0.4rem;">KinGamesCreator</div>
+          <div style="font-size:0.88rem;color:rgba(240,240,240,0.75);max-width:480px;margin:0 auto 1.25rem;line-height:1.6;">
+            Creador de <strong style="color:#fff;">Funky Maker: Mobile!</strong> — la app original en la que se basa este reproductor de escritorio.
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;">
+            <a href="https://kingamescreator.com" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(245,158,11,0.25);border:1px solid rgba(245,158,11,0.5);border-radius:8px;padding:0.4rem 0.9rem;font-size:0.82rem;color:#fef3c7;text-decoration:none;">
+              <i class="bi bi-globe2"></i> kingamescreator.com
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=com.kingamescreator.fnmm" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(245,158,11,0.25);border:1px solid rgba(245,158,11,0.5);border-radius:8px;padding:0.4rem 0.9rem;font-size:0.82rem;color:#fef3c7;text-decoration:none;">
+              <i class="bi bi-google-play"></i> Android
+            </a>
+            <a href="https://apps.apple.com/app/funky-maker-mobile/id6504101553" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(245,158,11,0.25);border:1px solid rgba(245,158,11,0.5);border-radius:8px;padding:0.4rem 0.9rem;font-size:0.82rem;color:#fef3c7;text-decoration:none;">
+              <i class="bi bi-apple"></i> iOS
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mis creditos -->
+      <div class="credits-grid">
+        <div class="credit-card">
+          <div class="credit-role">Desarrollador (versión desktop)</div>
+          <div class="credit-name">@thisisankush</div>
+          <div class="credit-sub">Port a Windows — diseño y programación de FunkyMakerPlayer</div>
+        </div>
+      </div>
+
+      <div class="tech-pills">
+        <span style="font-size:0.78rem;color:var(--text-muted);align-self:center;">Construido con:</span>
+        <span class="tech-pill">MonoGame</span>
+        <span class="tech-pill">NVorbis</span>
+        <span class="tech-pill">ImageSharp</span>
+        <span class="tech-pill">SharpCompress</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notas -->
+  <section>
+    <div class="section-inner">
+      <h2 class="section-title"><span>✦</span> Notas</h2>
+      <div class="note-banner">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>
+          <strong>Build temprana</strong> — puede tener bugs.
+          Reporta problemas a <strong>@thisisankush</strong> en Discord.
+        </span>
+      </div>
+      <div style="margin-top:0.75rem;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius);padding:1rem 1.25rem;font-size:0.85rem;color:#fcd34d;line-height:1.7;">
+        <strong style="color:#fff;">FunkyMakerPlayer</strong> es un port fanmade no oficial de
+        <strong style="color:#fff;">Funky Maker: Mobile!</strong> para Windows, desarrollado con fines de
+        entretenimiento y sin ningún ánimo de lucro. Todo el crédito del juego original pertenece a
+        <strong style="color:#fff;">KinGamesCreator</strong>. Este proyecto no está afiliado, patrocinado
+        ni respaldado por los creadores originales. Si eres el autor y tienes algún problema con esto,
+        no dudes en contactarme.
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>FunkyMakerPlayer · Parte de <a href="../index.html">FenixLaboratory</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>
+
