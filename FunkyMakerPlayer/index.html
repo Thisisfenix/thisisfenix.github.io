@@ -571,12 +571,12 @@
         <img src="../placeholder/AnkushCat.png" alt="FunkyMakerPlayer" style="width:80px;height:80px;object-fit:contain;border-radius:14px;box-shadow:0 0 30px rgba(245,158,11,0.4);">
         <div>
           <div style="font-size:1.15rem;font-weight:700;margin-bottom:0.2rem;">FunkyMakerPlayer</div>
-          <div style="font-size:0.8rem;color:var(--text-muted);">v1.0.0 · Windows 64-bit · ~40 MB</div>
+          <div id="release-version" style="font-size:0.8rem;color:var(--text-muted);">v0.1.0 · Windows 64-bit · ~41 MB</div>
         </div>
-        <a href="FunkyMakerPlayer-v1.0.0.zip" id="download-btn" class="btn-funky btn-download" style="width:100%;justify-content:center;font-size:1rem;padding:0.85rem 1.5rem;" aria-label="Descargar FunkyMakerPlayer" download>
+        <a href="https://github.com/Thisisfenix/thisisfenix.github.io/releases/download/FunkyMakerPlayer/FunkyMakerPlayer_v0.1.0.zip" id="download-btn" class="btn-funky btn-download" style="width:100%;justify-content:center;font-size:1rem;padding:0.85rem 1.5rem;" aria-label="Descargar FunkyMakerPlayer" download>
           <i class="bi bi-download"></i> Descargar ahora
         </a>
-        <small style="color:var(--text-muted);font-size:0.75rem;">FunkyMakerPlayer-v1.0.0.zip · ~40 MB</small>
+        <small id="release-meta" style="color:var(--text-muted);font-size:0.75rem;">FunkyMakerPlayer_v0.1.0.zip · ~41 MB</small>
       </div>
     </div>
   </section>
@@ -660,6 +660,37 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    // Auto-fetch latest release from GitHub
+    const REPO = 'Thisisfenix/thisisfenix.github.io';
+
+    fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data || !data.assets) return;
+
+        // Busca el zip del FunkyMakerPlayer
+        const asset = data.assets.find(a => a.name.toLowerCase().includes('funkymakerplayer'));
+        if (!asset) return;
+
+        const version = data.tag_name || data.name || 'latest';
+        const sizeMB  = (asset.size / (1024 * 1024)).toFixed(1);
+        const url     = asset.browser_download_url;
+
+        // Actualiza botón
+        const btn = document.getElementById('download-btn');
+        if (btn) btn.href = url;
+
+        // Actualiza versión y tamaño
+        const verEl = document.getElementById('release-version');
+        if (verEl) verEl.textContent = `${version} · Windows 64-bit · ~${sizeMB} MB`;
+
+        // Actualiza texto bajo el botón
+        const metaEl = document.getElementById('release-meta');
+        if (metaEl) metaEl.textContent = `${asset.name} · ~${sizeMB} MB`;
+      })
+      .catch(() => {}); // Si falla, queda el fallback hardcodeado
+  </script>
 </body>
 </html>
 
