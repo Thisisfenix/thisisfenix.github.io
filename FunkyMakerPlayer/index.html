@@ -449,7 +449,7 @@
         <div class="feature-card">
           <div class="feature-icon">📦</div>
           <div class="feature-title">Carga de niveles</div>
-          <div class="feature-desc">Soporta archivos <strong>.FNMM</strong> (ZIP y RAR) con drag &amp; drop directo.</div>
+          <div class="feature-desc">Soporta archivos <strong>.FNMM</strong> (ZIP y RAR) con drag &amp; drop. Se guarda automáticamente en la carpeta levels.</div>
         </div>
         <div class="feature-card">
           <div class="feature-icon">🎸</div>
@@ -460,6 +460,11 @@
           <div class="feature-icon">▶️</div>
           <div class="feature-title">Autoplay y manual</div>
           <div class="feature-desc">Alterna entre modo automático y control manual en cualquier momento.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">↕️</div>
+          <div class="feature-title">Midlescroll</div>
+          <div class="feature-desc">Strumline del player centrado. El del enemigo se divide izquierda/derecha con 50% alpha.</div>
         </div>
         <div class="feature-card">
           <div class="feature-icon">⬇️</div>
@@ -483,8 +488,8 @@
         </div>
         <div class="feature-card">
           <div class="feature-icon">⚙️</div>
-          <div class="feature-title">Settings persistentes</div>
-          <div class="feature-desc">Tu configuración se guarda automáticamente entre sesiones.</div>
+          <div class="feature-title">Settings rediseñado</div>
+          <div class="feature-desc">Lista scrolleable con categorías: Gameplay, Display &amp; Audio, Song. Control de volumen y bilinear filtering.</div>
         </div>
         <div class="feature-card">
           <div class="feature-icon">💀</div>
@@ -496,6 +501,66 @@
           <div class="feature-title">Compatibilidad Psych</div>
           <div class="feature-desc">Compatible con niveles creados para Psych Engine.</div>
         </div>
+        <div class="feature-card">
+          <div class="feature-icon">🐧</div>
+          <div class="feature-title">Soporte Linux</div>
+          <div class="feature-desc">Build nativa para Linux x64. <code>run.sh</code> instala dependencias automáticamente (apt/dnf/pacman).</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Changelog -->
+  <section>
+    <div class="section-inner">
+      <h2 class="section-title"><span>✦</span> Novedades v0.1.4</h2>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+
+        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">🎮 Gameplay</div>
+          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
+            <li><strong style="color:var(--text);">Midlescroll</strong> — strumline del player centrado; enemigo dividido left/down izquierda, up/right derecha</li>
+            <li>Strumline del enemigo semi-transparente (50% alpha)</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">⚙️ Settings</div>
+          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
+            <li>Settings rediseñado con lista scrolleable y categorías (Gameplay / Display &amp; Audio / Song)</li>
+            <li>Control de volumen de música con LEFT/RIGHT</li>
+            <li>Toggle de Bilinear Filtering (suavizado de sprites)</li>
+            <li>Settings y pause menu en alta calidad (LinearClamp)</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">📦 Niveles</div>
+          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
+            <li>Al dropear un .FNMM se guarda automáticamente en la carpeta levels y aparece en el menú</li>
+            <li>Objetos fixed se adaptan al zoom de cámara sin agrandarse</li>
+            <li>Velocidad de transición de cámara corregida para easing "default"</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">🐧 Linux</div>
+          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
+            <li>Build nativa para Linux x64</li>
+            <li><code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.35rem;border-radius:4px;">run.sh</code> instala dependencias automáticamente (apt/dnf/pacman)</li>
+            <li><code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.35rem;border-radius:4px;">FunkyMakerPlayer.desktop</code> para abrir con doble-click desde el file manager</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">🔧 Fixes</div>
+          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
+            <li>Crash al abrir settings con caracteres unicode en headers</li>
+            <li>Updater compara versiones correctamente (0.1.10 &gt; 0.1.9)</li>
+            <li>Updater detecta el OS y descarga el zip correcto (win/linux)</li>
+          </ul>
+        </div>
+
       </div>
     </div>
   </section>
@@ -555,6 +620,10 @@
         <div class="req-item">
           <i class="bi bi-windows"></i>
           <span>Windows 10 / 11 (64-bit)</span>
+        </div>
+        <div class="req-item">
+          <i class="bi bi-ubuntu"></i>
+          <span>Linux x64 — Ubuntu, Fedora, Arch y derivados (dependencias auto-instaladas con <code>run.sh</code>)</span>
         </div>
         <div class="req-item">
           <i class="bi bi-box-seam"></i>
