@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>🎵 FunkyMakerPlayer</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="description" content="Un reproductor de niveles de Funky Maker para Windows. Arrastra un archivo .FNMM o .rar para cargar un nivel." />
   <link rel="icon" type="image/png" href="../placeholder/AnkushCat.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -701,37 +703,44 @@
   <script>
     const REPO = 'Thisisfenix/thisisfenix.github.io';
 
-    fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
+    function applyRelease(data) {
+      if (!data || !data.assets || !data.assets.length) return;
+
+      const version = data.tag_name || data.name || '';
+      const verEl = document.getElementById('release-version');
+      if (verEl) verEl.textContent = version ? `v${version}` : '';
+
+      const find = (kw) => data.assets.find(a => a.name.toLowerCase().includes(kw));
+
+      const win    = find('_win');
+      const linux  = find('_linux');
+      const legacy = find('_latest');
+
+      function setBtn(btnId, metaId, asset) {
+        if (!asset) return;
+        const btn  = document.getElementById(btnId);
+        const meta = document.getElementById(metaId);
+        if (btn)  { btn.href = asset.browser_download_url; }
+        if (meta) { meta.textContent = `${asset.name} · ~${(asset.size/(1024*1024)).toFixed(1)} MB`; }
+      }
+
+      setBtn('download-win',   'meta-win',   win);
+      setBtn('download-linux', 'meta-linux', linux);
+
+      if (legacy) {
+        const lb = document.getElementById('download-legacy');
+        if (lb) {
+          lb.href = legacy.browser_download_url;
+          lb.innerHTML = `<i class="bi bi-download"></i> ${legacy.name}`;
+        }
+      }
+    }
+
+    fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+      headers: { 'Accept': 'application/vnd.github+json' }
+    })
       .then(r => r.json())
-      .then(data => {
-        if (!data || !data.assets) return;
-
-        const version = data.tag_name || data.name || '';
-        const verEl = document.getElementById('release-version');
-        if (verEl && version) verEl.textContent = version;
-
-        const find = (keyword) => data.assets.find(a => a.name.toLowerCase().includes(keyword));
-
-        const win    = find('_win');
-        const linux  = find('_linux');
-        const legacy = find('_latest');
-
-        function setBtn(id, metaId, asset) {
-          if (!asset) return;
-          const btn  = document.getElementById(id);
-          const meta = document.getElementById(metaId);
-          if (btn)  btn.href = asset.browser_download_url;
-          if (meta) meta.textContent = `${asset.name} · ~${(asset.size / (1024*1024)).toFixed(1)} MB`;
-        }
-
-        setBtn('download-win',    'meta-win',    win);
-        setBtn('download-linux',  'meta-linux',  linux);
-        setBtn('download-legacy', null,          legacy);
-        if (legacy) {
-          const legacyBtn = document.getElementById('download-legacy');
-          if (legacyBtn) legacyBtn.textContent = `⬇ ${legacy.name}`;
-        }
-      })
+      .then(applyRelease)
       .catch(() => {});
   </script>
 </body>
