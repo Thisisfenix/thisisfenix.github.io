@@ -33,6 +33,7 @@
             <p>Guía completa de personajes y mecánicas</p>
         </div>
         <div class="header-right">
+            <button class="header-config-btn" id="bg-preview-btn" title="Ver fondo completo">🖼️</button>
             <button class="header-config-btn" id="config-btn" title="Configuración">⚙️</button>
             <button class="header-changes-btn" id="changes-btn" onclick="wiki.showChangelog()">📋 Cambios</button>
         </div>
@@ -177,7 +178,29 @@
         </div>
     </div>
 
+    <!-- Lightbox fondo -->
+    <div id="bg-lightbox" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;cursor:zoom-out;display:none;">
+        <img src="../../placeholder/Deadly Pursuit Fondo.png" alt="Fondo Deadly Pursuit"
+             style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:8px;box-shadow:0 0 60px rgba(0,0,0,0.8);pointer-events:none;">
+        <button id="bg-lightbox-close"
+                style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;padding:0.4rem 0.8rem;font-size:1rem;cursor:pointer;">✕</button>
+    </div>
+
     <script src="Assets/JS/config.js"></script>
     <script src="wiki.js"></script>
+    <script>
+        (function() {
+            const lightbox = document.getElementById('bg-lightbox');
+            const openBtn  = document.getElementById('bg-preview-btn');
+            const closeBtn = document.getElementById('bg-lightbox-close');
+
+            function open()  { lightbox.style.display = 'flex'; }
+            function close() { lightbox.style.display = 'none'; }
+
+            openBtn.addEventListener('click', open);
+            closeBtn.addEventListener('click', function(e) { e.stopPropagation(); close(); });
+            lightbox.addEventListener('click', close);
+        })();
+    </script>
 </body>
 </html>

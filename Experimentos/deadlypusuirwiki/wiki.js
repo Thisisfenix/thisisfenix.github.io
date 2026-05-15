@@ -1276,6 +1276,10 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         } else if (hash) {
             // Hash desconocido — mostrar página 404
             this.show404(hash);
+        } else {
+            // Sin hash — marcar Introducción como activo
+            const homeLink = document.querySelector('[data-page="home"]');
+            if (homeLink) this.updateActiveNav(homeLink);
         }
 
         window.addEventListener('popstate', (e) => {

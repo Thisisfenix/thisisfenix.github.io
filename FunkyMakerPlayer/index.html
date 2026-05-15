@@ -566,18 +566,56 @@
   <section id="download">
     <div class="section-inner" style="text-align:center;">
       <h2 class="section-title" style="justify-content:center;"><span>✦</span> Descargar</h2>
-      <p style="color:var(--text-muted);margin-bottom:2rem;font-size:0.95rem;">Gratis. Sin instalación complicada. Solo descarga y ejecuta.</p>
-      <div style="display:inline-flex;flex-direction:column;align-items:center;gap:1.25rem;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:16px;padding:2.5rem 3rem;max-width:380px;width:100%;">
-        <img src="../placeholder/AnkushCat.png" alt="FunkyMakerPlayer" style="width:80px;height:80px;object-fit:contain;border-radius:14px;box-shadow:0 0 30px rgba(245,158,11,0.4);">
-        <div>
-          <div style="font-size:1.15rem;font-weight:700;margin-bottom:0.2rem;">FunkyMakerPlayer</div>
-          <div id="release-version" style="font-size:0.8rem;color:var(--text-muted);">v0.1.0 · Windows 64-bit · ~41 MB</div>
+      <p style="color:var(--text-muted);margin-bottom:0.5rem;font-size:0.95rem;">Gratis. Sin instalación complicada. Solo descarga y ejecuta.</p>
+      <p id="release-version" style="color:var(--accent-light);font-size:0.85rem;font-weight:600;margin-bottom:2rem;">Cargando versión...</p>
+
+      <!-- Botones principales -->
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-bottom:1.5rem;">
+
+        <!-- Windows -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:14px;padding:1.75rem 2rem;min-width:220px;">
+          <div style="font-size:2rem;">🪟</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem;">Windows</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">64-bit · updater nuevo</div>
+          </div>
+          <a id="download-win" href="#" class="btn-funky btn-download" style="width:100%;justify-content:center;padding:0.7rem 1.25rem;" download>
+            <i class="bi bi-download"></i> Descargar
+          </a>
+          <small id="meta-win" style="color:var(--text-muted);font-size:0.72rem;">_win.zip</small>
         </div>
-        <a href="https://github.com/Thisisfenix/thisisfenix.github.io/releases/download/FunkyMakerPlayer/FunkyMakerPlayer_v0.1.0.zip" id="download-btn" class="btn-funky btn-download" style="width:100%;justify-content:center;font-size:1rem;padding:0.85rem 1.5rem;" aria-label="Descargar FunkyMakerPlayer" download>
-          <i class="bi bi-download"></i> Descargar ahora
-        </a>
-        <small id="release-meta" style="color:var(--text-muted);font-size:0.75rem;">FunkyMakerPlayer_v0.1.0.zip · ~41 MB</small>
+
+        <!-- Linux -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:14px;padding:1.75rem 2rem;min-width:220px;">
+          <div style="font-size:2rem;">🐧</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem;">Linux</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">64-bit</div>
+          </div>
+          <a id="download-linux" href="#" class="btn-funky btn-download" style="width:100%;justify-content:center;padding:0.7rem 1.25rem;" download>
+            <i class="bi bi-download"></i> Descargar
+          </a>
+          <small id="meta-linux" style="color:var(--text-muted);font-size:0.72rem;">_linux.zip</small>
+        </div>
+
       </div>
+
+      <!-- Legacy -->
+      <details style="max-width:420px;margin:0 auto;text-align:left;">
+        <summary style="cursor:pointer;font-size:0.82rem;color:var(--text-muted);padding:0.5rem 0;user-select:none;">
+          🕰️ Versión legacy (updater viejo)
+        </summary>
+        <div style="margin-top:0.75rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:0.88rem;font-weight:600;">Windows — updater viejo</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Mismo contenido que _win, distinto updater</div>
+          </div>
+          <a id="download-legacy" href="#" class="btn-funky btn-back" style="padding:0.5rem 1rem;font-size:0.82rem;white-space:nowrap;" download>
+            <i class="bi bi-download"></i> _latest.zip
+          </a>
+        </div>
+      </details>
+
     </div>
   </section>
 
@@ -661,7 +699,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script>
-    // Auto-fetch latest release from GitHub
     const REPO = 'Thisisfenix/thisisfenix.github.io';
 
     fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
@@ -669,27 +706,33 @@
       .then(data => {
         if (!data || !data.assets) return;
 
-        // Busca el zip del FunkyMakerPlayer
-        const asset = data.assets.find(a => a.name.toLowerCase().includes('funkymakerplayer'));
-        if (!asset) return;
-
-        const version = data.tag_name || data.name || 'latest';
-        const sizeMB  = (asset.size / (1024 * 1024)).toFixed(1);
-        const url     = asset.browser_download_url;
-
-        // Actualiza botón
-        const btn = document.getElementById('download-btn');
-        if (btn) btn.href = url;
-
-        // Actualiza versión y tamaño
+        const version = data.tag_name || data.name || '';
         const verEl = document.getElementById('release-version');
-        if (verEl) verEl.textContent = `${version} · Windows 64-bit · ~${sizeMB} MB`;
+        if (verEl && version) verEl.textContent = version;
 
-        // Actualiza texto bajo el botón
-        const metaEl = document.getElementById('release-meta');
-        if (metaEl) metaEl.textContent = `${asset.name} · ~${sizeMB} MB`;
+        const find = (keyword) => data.assets.find(a => a.name.toLowerCase().includes(keyword));
+
+        const win    = find('_win');
+        const linux  = find('_linux');
+        const legacy = find('_latest');
+
+        function setBtn(id, metaId, asset) {
+          if (!asset) return;
+          const btn  = document.getElementById(id);
+          const meta = document.getElementById(metaId);
+          if (btn)  btn.href = asset.browser_download_url;
+          if (meta) meta.textContent = `${asset.name} · ~${(asset.size / (1024*1024)).toFixed(1)} MB`;
+        }
+
+        setBtn('download-win',    'meta-win',    win);
+        setBtn('download-linux',  'meta-linux',  linux);
+        setBtn('download-legacy', null,          legacy);
+        if (legacy) {
+          const legacyBtn = document.getElementById('download-legacy');
+          if (legacyBtn) legacyBtn.textContent = `⬇ ${legacy.name}`;
+        }
       })
-      .catch(() => {}); // Si falla, queda el fallback hardcodeado
+      .catch(() => {});
   </script>
 </body>
 </html>
