@@ -6,8 +6,9 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="description" content="Un reproductor de niveles de Funky Maker para Windows. Arrastra un archivo .FNMM o .rar para cargar un nivel." />
-  <link rel="icon" type="image/png" href="../placeholder/AnkushCat.png">
+  <title>FunkyMakerPlayer — Reproductor de niveles Funky Maker para Windows y Linux</title>
+  <meta name="description" content="Un reproductor de niveles de Funky Maker para Windows y Linux. Arrastra un archivo .FNMM o .rar para cargar un nivel." />
+  <link rel="icon" type="image/png" href="../placeholder/FunkyMakerPlayer1.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -417,7 +418,7 @@
 
     <div class="hero-inner">
       <div class="hero-img-wrap">
-        <img src="../placeholder/AnkushCat.png" alt="FunkyMakerPlayer logo">
+        <img src="../placeholder/FunkyMakerPlayer1.png" alt="FunkyMakerPlayer logo">
       </div>
       <div class="hero-text">
         <div class="hero-badge">
@@ -502,6 +503,11 @@
           <div class="feature-desc">Compatible con niveles creados para Psych Engine.</div>
         </div>
         <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-title">Flechas personalizadas</div>
+          <div class="feature-desc">Cambia el skin desde Settings &gt; Arrows. Soporta formato VSlice y FNF Base. Pon tu skin en <code>notestyles/</code>.</div>
+        </div>
+        <div class="feature-card">
           <div class="feature-icon">🐧</div>
           <div class="feature-title">Soporte Linux</div>
           <div class="feature-desc">Build nativa para Linux x64. <code>run.sh</code> instala dependencias automáticamente (apt/dnf/pacman).</div>
@@ -513,55 +519,85 @@
   <!-- Changelog -->
   <section>
     <div class="section-inner">
-      <h2 class="section-title"><span>✦</span> Novedades v0.1.4</h2>
+      <h2 class="section-title"><span>✦</span> Novedades v0.1.5</h2>
       <div style="display:flex;flex-direction:column;gap:0.75rem;">
 
         <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">🎮 Gameplay</div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">� Flechas personalizadas</div>
           <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li><strong style="color:var(--text);">Midlescroll</strong> — strumline del player centrado; enemigo dividido left/down izquierda, up/right derecha</li>
-            <li>Strumline del enemigo semi-transparente (50% alpha)</li>
+            <li>Cambia el skin de las flechas desde <strong style="color:var(--text);">Settings &gt; Arrows</strong></li>
+            <li>Pon tu skin en la carpeta <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.35rem;border-radius:4px;">notestyles/</code> y aparece en la lista automáticamente</li>
+            <li>Soporta formato <strong style="color:var(--text);">VSlice</strong> y <strong style="color:var(--text);">FNF Base</strong></li>
           </ul>
         </div>
 
         <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">⚙️ Settings</div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">✨ Mejoras visuales</div>
           <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li>Settings rediseñado con lista scrolleable y categorías (Gameplay / Display &amp; Audio / Song)</li>
-            <li>Control de volumen de música con LEFT/RIGHT</li>
-            <li>Toggle de Bilinear Filtering (suavizado de sprites)</li>
-            <li>Settings y pause menu en alta calidad (LinearClamp)</li>
+            <li>Objetos fijos de la escena se adaptan correctamente al zoom de la cámara</li>
+            <li>Filtrado bilinear configurable (suavizado de sprites)</li>
+            <li>Settings y menú de pausa se ven en alta calidad</li>
           </ul>
         </div>
 
         <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">📦 Niveles</div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">� Correcciones</div>
           <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li>Al dropear un .FNMM se guarda automáticamente en la carpeta levels y aparece en el menú</li>
-            <li>Objetos fixed se adaptan al zoom de cámara sin agrandarse</li>
-            <li>Velocidad de transición de cámara corregida para easing "default"</li>
+            <li>Los eventos ya no se disparan antes de tiempo durante el 3-2-1-Go</li>
+            <li>Los stickers del final de canción ya no desaparecen antes de tiempo</li>
+            <li>Los sprites con múltiples animaciones ya no se confunden entre sí</li>
+            <li>Velocidad de animaciones corregida para todos los tipos de sprites</li>
           </ul>
         </div>
 
         <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">🐧 Linux</div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">🐧 Linux &amp; Plataforma</div>
           <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li>Build nativa para Linux x64</li>
-            <li><code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.35rem;border-radius:4px;">run.sh</code> instala dependencias automáticamente (apt/dnf/pacman)</li>
-            <li><code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.35rem;border-radius:4px;">FunkyMakerPlayer.desktop</code> para abrir con doble-click desde el file manager</li>
-          </ul>
-        </div>
-
-        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">🔧 Fixes</div>
-          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li>Crash al abrir settings con caracteres unicode en headers</li>
-            <li>Updater compara versiones correctamente (0.1.10 &gt; 0.1.9)</li>
-            <li>Updater detecta el OS y descarga el zip correcto (win/linux)</li>
+            <li>README ahora en español, inglés y portugués</li>
+            <li><code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.35rem;border-radius:4px;">run.sh</code> instala todo automáticamente</li>
+            <li>Actualizado a <strong style="color:var(--text);">.NET 10 LTS</strong> (soporte hasta 2028)</li>
           </ul>
         </div>
 
       </div>
+
+      <!-- v0.1.4 colapsado -->
+      <details style="margin-top:1rem;">
+        <summary style="cursor:pointer;font-size:0.82rem;color:var(--text-muted);padding:0.5rem 0;user-select:none;">
+          🕰️ Ver changelog v0.1.4
+        </summary>
+        <div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.75rem;">
+
+          <div style="background:var(--bg-card2);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:1.1rem 1.25rem;">
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">🎮 Gameplay</div>
+            <ul style="margin:0;padding-left:1.25rem;font-size:0.85rem;color:var(--text-muted);line-height:1.8;">
+              <li>Midlescroll — strumline del player centrado; enemigo dividido left/down izquierda, up/right derecha</li>
+              <li>Strumline del enemigo semi-transparente (50% alpha)</li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card2);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:1.1rem 1.25rem;">
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">⚙️ Settings</div>
+            <ul style="margin:0;padding-left:1.25rem;font-size:0.85rem;color:var(--text-muted);line-height:1.8;">
+              <li>Settings rediseñado con lista scrolleable y categorías</li>
+              <li>Control de volumen de música con LEFT/RIGHT</li>
+              <li>Toggle de Bilinear Filtering</li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card2);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:1.1rem 1.25rem;">
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">� Niveles &amp; Fixes</div>
+            <ul style="margin:0;padding-left:1.25rem;font-size:0.85rem;color:var(--text-muted);line-height:1.8;">
+              <li>Al dropear un .FNMM se guarda automáticamente en levels</li>
+              <li>Crash con caracteres unicode en settings — corregido</li>
+              <li>Updater compara versiones correctamente (0.1.10 &gt; 0.1.9)</li>
+              <li>Updater detecta el OS y descarga el zip correcto</li>
+            </ul>
+          </div>
+
+        </div>
+      </details>
+
     </div>
   </section>
 
@@ -814,4 +850,5 @@
   </script>
 </body>
 </html>
+
 
