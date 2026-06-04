@@ -26,10 +26,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
     :root {
-      --accent: #f59e0b;
-      --accent-dim: rgba(245,158,11,0.15);
-      --accent-border: rgba(245,158,11,0.3);
-      --accent-light: #fbbf24;
+      --accent: #e91e63;
+      --accent-dim: rgba(233,30,99,0.15);
+      --accent-border: rgba(233,30,99,0.3);
+      --accent-light: #f48fb1;
+      --accent-yellow: #ffc107;
+      --accent-yellow-dim: rgba(255,193,7,0.15);
       --bg: #0a0a0f;
       --bg-card: #111118;
       --bg-card2: #16161f;
@@ -53,8 +55,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(245,158,11,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(245,158,11,0.04) 1px, transparent 1px);
+        linear-gradient(rgba(233,30,99,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(233,30,99,0.04) 1px, transparent 1px);
       background-size: 40px 40px;
       pointer-events: none;
       z-index: 0;
@@ -68,7 +70,7 @@
       justify-content: center;
       padding: 5rem 1.5rem 3rem;
       position: relative;
-      background: radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.2) 0%, transparent 60%);
+      background: radial-gradient(ellipse at 50% 0%, rgba(233,30,99,0.2) 0%, transparent 60%);
       z-index: 1;
     }
 
@@ -91,7 +93,7 @@
       height: 160px;
       object-fit: contain;
       border-radius: 24px;
-      box-shadow: 0 0 60px rgba(245,158,11,0.5), 0 0 120px rgba(245,158,11,0.2);
+      box-shadow: 0 0 60px rgba(233,30,99,0.5), 0 0 120px rgba(233,30,99,0.2);
       display: block;
     }
 
@@ -100,7 +102,7 @@
       position: absolute;
       inset: -8px;
       border-radius: 30px;
-      border: 1px solid rgba(245,158,11,0.25);
+      border: 1px solid rgba(233,30,99,0.25);
       pointer-events: none;
     }
 
@@ -131,7 +133,7 @@
     }
 
     .hero-text h1 .accent {
-      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      background: linear-gradient(135deg, #e91e63, #ffc107);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -149,7 +151,7 @@
       align-items: center;
       gap: 0.5rem;
       background: rgba(255,255,255,0.04);
-      border: 1px dashed rgba(245,158,11,0.35);
+      border: 1px dashed rgba(233,30,99,0.35);
       border-radius: 8px;
       padding: 0.5rem 1rem;
       font-size: 0.85rem;
@@ -180,14 +182,14 @@
     }
 
     .btn-download {
-      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      background: linear-gradient(135deg, #e91e63, #ffc107);
       color: #0a0a0f;
-      box-shadow: 0 0 24px rgba(245,158,11,0.45);
+      box-shadow: 0 0 24px rgba(233,30,99,0.45);
     }
 
     .btn-download:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 40px rgba(245,158,11,0.65);
+      box-shadow: 0 0 40px rgba(233,30,99,0.65);
       color: #0a0a0f;
     }
 
@@ -252,6 +254,57 @@
     .feature-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.3rem; }
     .feature-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
 
+    /* Collapsible sections */
+    .feature-section-header {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent-light);
+      margin: 2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.75rem 1rem;
+      background: rgba(233,30,99,0.08);
+      border: 1px solid rgba(233,30,99,0.2);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .feature-section-header:hover {
+      background: rgba(233,30,99,0.12);
+      border-color: rgba(233,30,99,0.4);
+    }
+
+    .feature-section-header .icon {
+      font-size: 1.3rem;
+    }
+
+    .feature-section-header .arrow {
+      margin-left: auto;
+      transition: transform 0.3s ease;
+      font-size: 1.2rem;
+    }
+
+    .feature-section-header.collapsed .arrow {
+      transform: rotate(-90deg);
+    }
+
+    .feature-section-content {
+      max-height: 5000px;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+      opacity: 1;
+      margin-bottom: 0;
+    }
+
+    .feature-section-content.collapsed {
+      max-height: 0;
+      opacity: 0;
+      margin-bottom: -1rem;
+    }
+
     /* Controls table */
     .controls-table {
       width: 100%;
@@ -280,13 +333,13 @@
     }
 
     .controls-table tr:last-child td { border-bottom: none; }
-    .controls-table tr:hover td { background: rgba(245,158,11,0.04); }
+    .controls-table tr:hover td { background: rgba(233,30,99,0.04); }
 
     .key {
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
-      background: rgba(245,158,11,0.12);
+      background: rgba(233,30,99,0.12);
       border: 1px solid var(--accent-border);
       border-radius: 6px;
       padding: 0.15rem 0.55rem;
@@ -361,15 +414,15 @@
 
     /* Note banner */
     .note-banner {
-      background: rgba(245,158,11,0.08);
-      border: 1px solid rgba(245,158,11,0.3);
+      background: rgba(233,30,99,0.08);
+      border: 1px solid rgba(233,30,99,0.3);
       border-radius: var(--radius);
       padding: 1rem 1.25rem;
       display: flex;
       gap: 0.75rem;
       align-items: flex-start;
       font-size: 0.88rem;
-      color: #fcd34d;
+      color: #ffc107;
       line-height: 1.5;
     }
 
@@ -456,157 +509,160 @@
   <section>
     <div class="section-inner">
       <h2 class="section-title"><span>✦</span> Características</h2>
-      <div class="features-grid">
+      
+      <!-- Reproducción -->
+      <div class="feature-section-header" onclick="toggleSection(this)">
+        <span class="icon">🎮</span>
+        <span>Reproducción</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="feature-section-content">
+        <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">📦</div>
-          <div class="feature-title">Carga de niveles</div>
-          <div class="feature-desc">Soporta archivos <strong>.FNMM</strong> (ZIP y RAR) con drag &amp; drop. Se guarda automáticamente en la carpeta levels.</div>
+          <div class="feature-title">Carga de Niveles</div>
+          <div class="feature-desc">Arrastra y suelta archivos .FNMM o .rar. Importación automática.</div>
         </div>
         <div class="feature-card">
           <div class="feature-icon">🎸</div>
-          <div class="feature-title">Múltiples strumlines</div>
-          <div class="feature-desc">Soporte completo para niveles con múltiples strumlines simultáneas.</div>
+          <div class="feature-title">Múltiples Strumlines</div>
+          <div class="feature-desc">Soporte para niveles con varias pistas simultáneas.</div>
         </div>
         <div class="feature-card">
           <div class="feature-icon">▶️</div>
-          <div class="feature-title">Autoplay y manual</div>
-          <div class="feature-desc">Alterna entre modo automático y control manual en cualquier momento.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">↕️</div>
-          <div class="feature-title">Midlescroll</div>
-          <div class="feature-desc">Strumline del player centrado. El del enemigo se divide izquierda/derecha con 50% alpha.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⬇️</div>
-          <div class="feature-title">Downscroll</div>
-          <div class="feature-desc">Modo downscroll disponible para los que prefieren las notas bajando.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⏱️</div>
-          <div class="feature-title">Timer estilo Psych</div>
-          <div class="feature-desc">Timer de canción con el estilo visual de Psych Engine.</div>
+          <div class="feature-title">Autoplay</div>
+          <div class="feature-desc">Modo automático para previsualización de niveles.</div>
         </div>
         <div class="feature-card">
           <div class="feature-icon">⏩</div>
-          <div class="feature-title">Timeskip</div>
-          <div class="feature-desc">Salta hacia adelante o atrás en la canción con Tab / Shift+Tab.</div>
+          <div class="feature-title">Seek / Skip</div>
+          <div class="feature-desc">Navega a cualquier punto con Tab/Shift+Tab.</div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">❤️</div>
-          <div class="feature-title">Barra de vida</div>
-          <div class="feature-desc">Colores de la barra de vida basados en el icono del personaje.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⚙️</div>
-          <div class="feature-title">Settings rediseñado</div>
-          <div class="feature-desc">Lista scrolleable con categorías: Gameplay, Display &amp; Audio, Song. Control de volumen y bilinear filtering.</div>
+          <div class="feature-icon">🎬</div>
+          <div class="feature-title">Eventos</div>
+          <div class="feature-desc">Soporte para eventos: cámara, zooms y efectos especiales.</div>
         </div>
         <div class="feature-card">
           <div class="feature-icon">💀</div>
-          <div class="feature-title">Notas especiales</div>
-          <div class="feature-desc">Soporte para notas de daño, instakill y heal.</div>
+          <div class="feature-title">Notas Especiales</div>
+          <div class="feature-desc">Soporte para notas de daño, instakill y curación.</div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎮</div>
-          <div class="feature-title">Compatibilidad Psych</div>
-          <div class="feature-desc">Compatible con niveles creados para Psych Engine.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎯</div>
-          <div class="feature-title">Flechas personalizadas</div>
-          <div class="feature-desc">Cambia el skin desde Settings &gt; Arrows. Soporta formato VSlice y FNF Base. Pon tu skin en <code>notestyles/</code>.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🐧</div>
-          <div class="feature-title">Soporte Linux</div>
-          <div class="feature-desc">Build nativa para Linux x64. <code>run.sh</code> instala dependencias automáticamente (apt/dnf/pacman).</div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Changelog -->
-  <section>
-    <div class="section-inner">
-      <h2 class="section-title"><span>✦</span> Novedades v0.1.5</h2>
-      <div style="display:flex;flex-direction:column;gap:0.75rem;">
-
-        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">&#127919; Flechas personalizadas</div>
-          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li>Cambia el skin de las flechas desde <strong style="color:var(--text);">Settings &gt; Arrows</strong></li>
-            <li>Pon tu skin en la carpeta <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.35rem;border-radius:4px;">notestyles/</code> y aparece en la lista automáticamente</li>
-            <li>Soporta formato <strong style="color:var(--text);">VSlice</strong> y <strong style="color:var(--text);">FNF Base</strong></li>
-          </ul>
+      <!-- Gameplay -->
+      <div class="feature-section-header" onclick="toggleSection(this)">
+        <span class="icon">⚡</span>
+        <span>Gameplay</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="feature-section-content">
+        <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">↕️</div>
+          <div class="feature-title">Midlescroll / Downscroll</div>
+          <div class="feature-desc">Centra las notas o invierte su dirección.</div>
         </div>
-
-        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">✨ Mejoras visuales</div>
-          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li>Objetos fijos de la escena se adaptan correctamente al zoom de la cámara</li>
-            <li>Filtrado bilinear configurable (suavizado de sprites)</li>
-            <li>Settings y menú de pausa se ven en alta calidad</li>
-          </ul>
+        <div class="feature-card">
+          <div class="feature-icon">�</div>
+          <div class="feature-title">Sistema de Scoring</div>
+          <div class="feature-desc">Evaluación precisa con accuracy y ratings.</div>
         </div>
-
-        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">&#128295; Correcciones</div>
-          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li>Los eventos ya no se disparan antes de tiempo durante el 3-2-1-Go</li>
-            <li>Los stickers del final de canción ya no desaparecen antes de tiempo</li>
-            <li>Los sprites con múltiples animaciones ya no se confunden entre sí</li>
-            <li>Velocidad de animaciones corregida para todos los tipos de sprites</li>
-          </ul>
+        <div class="feature-card">
+          <div class="feature-icon">�</div>
+          <div class="feature-title">Opciones de Gameplay</div>
+          <div class="feature-desc">Ghost tapping, buffer, safe frames y scroll speed ajustables.</div>
         </div>
-
-        <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-light);margin-bottom:0.6rem;">🐧 Linux &amp; Plataforma</div>
-          <ul style="margin:0;padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
-            <li>README ahora en español, inglés y portugués</li>
-            <li><code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.35rem;border-radius:4px;">run.sh</code> instala todo automáticamente</li>
-            <li>Actualizado a <strong style="color:var(--text);">.NET 10 LTS</strong> (soporte hasta 2028)</li>
-          </ul>
+        <div class="feature-card">
+          <div class="feature-icon">�</div>
+          <div class="feature-title">Rebinding</div>
+          <div class="feature-desc">Personaliza los controles a tu gusto.</div>
         </div>
-
+        <div class="feature-card">
+          <div class="feature-icon">⏱️</div>
+          <div class="feature-title">Temporizador</div>
+          <div class="feature-desc">Progreso y tiempo restante. 7 esquemas de color.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">❤️</div>
+          <div class="feature-title">Healthbar</div>
+          <div class="feature-desc">Colores extraídos de los iconos de personajes.</div>
+        </div>
+        </div>
       </div>
 
-      <!-- v0.1.4 colapsado -->
-      <details style="margin-top:1rem;">
-        <summary style="cursor:pointer;font-size:0.82rem;color:var(--text-muted);padding:0.5rem 0;user-select:none;">
-          🕰️ Ver changelog v0.1.4
-        </summary>
-        <div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.75rem;">
-
-          <div style="background:var(--bg-card2);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">🎮 Gameplay</div>
-            <ul style="margin:0;padding-left:1.25rem;font-size:0.85rem;color:var(--text-muted);line-height:1.8;">
-              <li>Midlescroll — strumline del player centrado; enemigo dividido left/down izquierda, up/right derecha</li>
-              <li>Strumline del enemigo semi-transparente (50% alpha)</li>
-            </ul>
-          </div>
-
-          <div style="background:var(--bg-card2);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">⚙️ Settings</div>
-            <ul style="margin:0;padding-left:1.25rem;font-size:0.85rem;color:var(--text-muted);line-height:1.8;">
-              <li>Settings rediseñado con lista scrolleable y categorías</li>
-              <li>Control de volumen de música con LEFT/RIGHT</li>
-              <li>Toggle de Bilinear Filtering</li>
-            </ul>
-          </div>
-
-          <div style="background:var(--bg-card2);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:1.1rem 1.25rem;">
-            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">&#128230; Niveles &amp; Fixes</div>
-            <ul style="margin:0;padding-left:1.25rem;font-size:0.85rem;color:var(--text-muted);line-height:1.8;">
-              <li>Al dropear un .FNMM se guarda automáticamente en levels</li>
-              <li>Crash con caracteres unicode en settings — corregido</li>
-              <li>Updater compara versiones correctamente (0.1.10 &gt; 0.1.9)</li>
-              <li>Updater detecta el OS y descarga el zip correcto</li>
-            </ul>
-          </div>
-
+      <!-- Personalización -->
+      <div class="feature-section-header" onclick="toggleSection(this)">
+        <span class="icon">🎨</span>
+        <span>Personalización</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="feature-section-content">
+        <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">�</div>
+          <div class="feature-title">Noteskins y Splashes</div>
+          <div class="feature-desc">Soporta skins de notas y efectos personalizados.</div>
         </div>
-      </details>
+        <div class="feature-card">
+          <div class="feature-icon">🌈</div>
+          <div class="feature-title">Color Grading</div>
+          <div class="feature-desc">Filtros de color: hue, saturación, brillo y sombras.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👁️</div>
+          <div class="feature-title">Visibilidad UI</div>
+          <div class="feature-desc">Oculta strumlines, combo y otros elementos.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <div class="feature-title">Configuración</div>
+          <div class="feature-desc">Panel completo: Gameplay, Visuales, Audio, Debug.</div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Sistema -->
+      <div class="feature-section-header" onclick="toggleSection(this)">
+        <span class="icon">⚙️</span>
+        <span>Sistema</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="feature-section-content">
+        <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🪟</div>
+          <div class="feature-title">Windows y Linux</div>
+          <div class="feature-desc">Nativo para ambos sistemas. Script de auto-instalación en Linux.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Optimizado</div>
+          <div class="feature-desc">Ejecutable autónomo. Sin dependencias ni instalación.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💾</div>
+          <div class="feature-title">Persistencia</div>
+          <div class="feature-desc">Guarda configuración y progreso automáticamente.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <div class="feature-title">Multiidioma</div>
+          <div class="feature-desc">Español 🇪🇸, Inglés 🇬🇧 y Portugués 🇧🇷.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <div class="feature-title">Privacidad</div>
+          <div class="feature-desc">Sin telemetría. Todo local.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <div class="feature-title">Formatos</div>
+          <div class="feature-desc">.FNMM, .rar, .zip y recursos de la comunidad.</div>
+        </div>
+        </div>
+      </div>
 
     </div>
   </section>
@@ -742,47 +798,67 @@
       <h2 class="section-title"><span>✦</span> Créditos</h2>
 
       <!-- KinGamesCreator banner -->
-      <div style="position:relative;border:1px solid rgba(245,158,11,0.45);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem;text-align:center;">
-        <div style="position:absolute;inset:0;background-image:url('../placeholder/FunkyMakerMobile.png');background-size:cover;background-position:center;"></div>
-        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,10,15,0.55) 0%,rgba(10,10,15,0.85) 60%,rgba(10,10,15,0.97) 100%);"></div>
-        <div style="position:relative;z-index:1;padding:2.5rem 2rem 2rem;">
-          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#fcd34d;margin-bottom:0.3rem;">Creador original</div>
-          <div style="font-size:1.5rem;font-weight:700;margin-bottom:0.4rem;">KinGamesCreator</div>
-          <div style="font-size:0.88rem;color:rgba(240,240,240,0.75);max-width:480px;margin:0 auto 1.25rem;line-height:1.6;">
-            Creador de <strong style="color:#fff;">Funky Maker: Mobile!</strong> — la app original en la que se basa este reproductor de escritorio.
+      <div style="position:relative;border:2px solid rgba(233,30,99,0.5);border-radius:16px;overflow:hidden;margin-bottom:2rem;background:linear-gradient(135deg, rgba(233,30,99,0.1) 0%, rgba(255,193,7,0.08) 100%);">
+        <div style="position:absolute;inset:0;background-image:url('../placeholder/FunkyMakerMobile.png');background-size:cover;background-position:center;opacity:0.15;"></div>
+        <div style="position:relative;z-index:1;padding:3rem 2rem;">
+          <div style="text-align:center;margin-bottom:2rem;">
+            <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,193,7,0.15);border:1px solid rgba(255,193,7,0.3);border-radius:999px;padding:0.4rem 1rem;margin-bottom:1rem;">
+              <span style="font-size:1.2rem;">👑</span>
+              <span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#ffc107;">Creador Original</span>
+            </div>
+            <h3 style="font-size:2rem;font-weight:700;margin-bottom:0.5rem;background:linear-gradient(135deg, #e91e63, #ffc107);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KinGamesCreator</h3>
+            <p style="font-size:0.95rem;color:rgba(240,240,240,0.8);max-width:520px;margin:0 auto;line-height:1.6;">
+              Creador de <strong style="color:#ffc107;">Funky Maker: Mobile!</strong> — la app original disponible en Android e iOS en la que se basa este reproductor de escritorio.
+            </p>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;">
+          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;">
             <a href="https://kingamescreator.com" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(245,158,11,0.25);border:1px solid rgba(245,158,11,0.5);border-radius:8px;padding:0.4rem 0.9rem;font-size:0.82rem;color:#fef3c7;text-decoration:none;">
-              <i class="bi bi-globe2"></i> kingamescreator.com
+               style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg, rgba(233,30,99,0.2), rgba(233,30,99,0.3));border:1.5px solid rgba(233,30,99,0.6);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.88rem;font-weight:600;color:#fff;text-decoration:none;transition:all 0.2s;">
+              <i class="bi bi-globe2"></i> Sitio Web
             </a>
             <a href="https://play.google.com/store/apps/details?id=com.kingamescreator.fnmm" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(245,158,11,0.25);border:1px solid rgba(245,158,11,0.5);border-radius:8px;padding:0.4rem 0.9rem;font-size:0.82rem;color:#fef3c7;text-decoration:none;">
+               style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg, rgba(233,30,99,0.2), rgba(233,30,99,0.3));border:1.5px solid rgba(233,30,99,0.6);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.88rem;font-weight:600;color:#fff;text-decoration:none;transition:all 0.2s;">
               <i class="bi bi-google-play"></i> Android
             </a>
             <a href="https://apps.apple.com/app/funky-maker-mobile/id6504101553" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(245,158,11,0.25);border:1px solid rgba(245,158,11,0.5);border-radius:8px;padding:0.4rem 0.9rem;font-size:0.82rem;color:#fef3c7;text-decoration:none;">
+               style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg, rgba(233,30,99,0.2), rgba(233,30,99,0.3));border:1.5px solid rgba(233,30,99,0.6);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.88rem;font-weight:600;color:#fff;text-decoration:none;transition:all 0.2s;">
               <i class="bi bi-apple"></i> iOS
             </a>
           </div>
         </div>
       </div>
 
-      <!-- Mis creditos -->
-      <div class="credits-grid">
-        <div class="credit-card">
-          <div class="credit-role">Desarrollador (versión desktop)</div>
-          <div class="credit-name">@thisisankush</div>
-          <div class="credit-sub">Port a Windows — diseño y programación de FunkyMakerPlayer</div>
+      <!-- Desarrollador Desktop -->
+      <div style="background:var(--bg-card2);border:2px solid rgba(233,30,99,0.3);border-radius:16px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-20px;right:-20px;font-size:8rem;opacity:0.05;">💻</div>
+        <div style="position:relative;z-index:1;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+            <img src="../placeholder/AnkushCat.png" alt="@thisisfenix" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid rgba(233,30,99,0.5);box-shadow:0 0 20px rgba(233,30,99,0.3);flex-shrink:0;">
+            <div>
+              <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-light);margin-bottom:0.25rem;">Desarrollador Desktop</div>
+              <div style="font-size:1.4rem;font-weight:700;">@thisisfenix</div>
+              <div style="font-size:0.85rem;color:var(--text-muted);">aka @thisisankush</div>
+            </div>
+          </div>
+          <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.7;margin-bottom:1.25rem;">
+            Port a Windows y Linux — Diseño, programación y optimización de FunkyMakerPlayer. Implementación de características exclusivas y mejoras de rendimiento.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;">
+            <a href="https://github.com/thisisfenix" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg, rgba(233,30,99,0.2), rgba(233,30,99,0.3));border:1.5px solid rgba(233,30,99,0.6);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.88rem;font-weight:600;color:#fff;text-decoration:none;transition:all 0.2s;">
+              <i class="bi bi-github"></i> GitHub
+            </a>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+            <span style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">Stack tecnológico:</span>
+            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">MonoGame</span>
+            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">C#</span>
+            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">.NET 10</span>
+            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">NVorbis</span>
+            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">ImageSharp</span>
+            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">SharpCompress</span>
+          </div>
         </div>
-      </div>
-
-      <div class="tech-pills">
-        <span style="font-size:0.78rem;color:var(--text-muted);align-self:center;">Construido con:</span>
-        <span class="tech-pill">MonoGame</span>
-        <span class="tech-pill">NVorbis</span>
-        <span class="tech-pill">ImageSharp</span>
-        <span class="tech-pill">SharpCompress</span>
       </div>
     </div>
   </section>
@@ -791,20 +867,35 @@
   <section>
     <div class="section-inner">
       <h2 class="section-title"><span>✦</span> Notas</h2>
-      <div class="note-banner">
+      
+      <!-- Aviso de bugs -->
+      <div class="note-banner" style="margin-bottom:1rem;">
         <i class="bi bi-exclamation-triangle-fill"></i>
         <span>
-          <strong>Build temprana</strong> — puede tener bugs.
-          Reporta problemas a <strong>@thisisankush</strong> en Discord.
+          <strong>En desarrollo</strong> — Pueden aparecer bugs o comportamientos inesperados.
+          Reporta problemas en GitHub o contacta a <strong>@thisisankush</strong> en Discord.
         </span>
       </div>
-      <div style="margin-top:0.75rem;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius);padding:1rem 1.25rem;font-size:0.85rem;color:#fcd34d;line-height:1.7;">
-        <strong style="color:#fff;">FunkyMakerPlayer</strong> es un port fanmade no oficial de
-        <strong style="color:#fff;">Funky Maker: Mobile!</strong> para Windows, desarrollado con fines de
-        entretenimiento y sin ningún ánimo de lucro. Todo el crédito del juego original pertenece a
-        <strong style="color:#fff;">KinGamesCreator</strong>. Este proyecto no está afiliado, patrocinado
-        ni respaldado por los creadores originales. Si eres el autor y tienes algún problema con esto,
-        no dudes en contactarme.
+
+      <!-- Disclaimer legal -->
+      <div style="background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.3);border-radius:var(--radius);padding:1rem 1.25rem;font-size:0.85rem;color:#ffc107;line-height:1.7;margin-bottom:1rem;">
+        <strong style="color:#fff;">FunkyMakerPlayer</strong> es un reproductor de escritorio no oficial para niveles de
+        <strong style="color:#fff;">Funky Maker: Mobile!</strong>, desarrollado con fines educativos y de entretenimiento.
+        Todo el crédito del juego original pertenece a <strong style="color:#fff;">KinGamesCreator</strong>.
+        Este proyecto no está afiliado, patrocinado ni respaldado oficialmente. Si tienes algún problema con este proyecto,
+        contacta a <strong style="color:#fff;">@thisisfenix</strong>.
+      </div>
+
+      <!-- Compatibilidad -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:1rem 1.25rem;font-size:0.85rem;line-height:1.7;">
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+          <i class="bi bi-info-circle-fill" style="color:var(--accent-light);"></i>
+          <strong style="color:#fff;">Compatibilidad</strong>
+        </div>
+        <span style="color:var(--text-muted);">
+          Este reproductor soporta niveles en formato <strong>.FNMM</strong> y <strong>.rar/.zip</strong> creados con Funky Maker: Mobile!
+          Algunas características avanzadas o mods de la comunidad pueden no ser totalmente compatibles.
+        </span>
       </div>
     </div>
   </section>
@@ -816,6 +907,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script>
+    // Toggle de secciones colapsables
+    function toggleSection(header) {
+      header.classList.toggle('collapsed');
+      const content = header.nextElementSibling;
+      content.classList.toggle('collapsed');
+    }
+
     const REPO = 'Thisisfenix/thisisfenix.github.io';
 
     function applyRelease(data) {
@@ -842,20 +940,65 @@
       setBtn('download-win',   'meta-win',   win);
       setBtn('download-linux', 'meta-linux', linux);
 
-      if (legacy) {
-        const lb = document.getElementById('download-legacy');
-        if (lb) {
+      // Manejo especial del legacy
+      const lb = document.getElementById('download-legacy');
+      if (lb) {
+        if (legacy) {
           lb.href = legacy.browser_download_url;
           lb.innerHTML = `<i class="bi bi-download"></i> ${legacy.name}`;
+          lb.style.pointerEvents = 'auto';
+          lb.style.opacity = '1';
+        } else {
+          // Si no existe _latest, deshabilitar el botón
+          lb.href = '#';
+          lb.innerHTML = `<i class="bi bi-x-circle"></i> No disponible`;
+          lb.style.pointerEvents = 'none';
+          lb.style.opacity = '0.5';
+          lb.title = 'Esta versión no está disponible en este release';
         }
       }
     }
 
+    // Buscar en versiones tempranas si no existe en latest
+    async function findLegacyInEarlyReleases() {
+      try {
+        const response = await fetch(`https://api.github.com/repos/${REPO}/releases`, {
+          headers: { 'Accept': 'application/vnd.github+json' }
+        });
+        const releases = await response.json();
+        
+        for (const release of releases) {
+          const legacy = release.assets?.find(a => a.name.toLowerCase().includes('_latest'));
+          if (legacy) {
+            const lb = document.getElementById('download-legacy');
+            if (lb && lb.innerHTML.includes('No disponible')) {
+              lb.href = legacy.browser_download_url;
+              lb.innerHTML = `<i class="bi bi-download"></i> ${legacy.name} <small style="opacity:0.7">(${release.tag_name})</small>`;
+              lb.style.pointerEvents = 'auto';
+              lb.style.opacity = '1';
+              lb.title = `Versión de ${release.tag_name}`;
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Error buscando legacy en versiones anteriores:', e);
+      }
+    }
+
+    // Primero intentar con latest
     fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
       headers: { 'Accept': 'application/vnd.github+json' }
     })
       .then(r => r.json())
-      .then(applyRelease)
+      .then(data => {
+        applyRelease(data);
+        // Si no se encontró legacy, buscar en versiones anteriores
+        const lb = document.getElementById('download-legacy');
+        if (lb && lb.innerHTML.includes('No disponible')) {
+          findLegacyInEarlyReleases();
+        }
+      })
       .catch(() => {});
   </script>
 </body>
