@@ -1,0 +1,274 @@
+/* ═══════════════════════════════════════════════════════════════
+   🎨 NAVBAR MODERN REDESIGN - Solo Logo
+   Diseño moderno y minimalista con solo icono
+   ═══════════════════════════════════════════════════════════════ */
+
+/* FORZAR: Quitar blur del contenido del navbar */
+.navbar-brand,
+.navbar-brand *,
+.nav-link,
+.nav-link *,
+.navbar-nav,
+.navbar-nav * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* Navbar base - efecto cristalino con pseudo-elemento */
+.navbar.navbar-expand-lg {
+  border-bottom: 1px solid rgba(var(--primary-rgb), 0.2) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  padding: 0.5rem 0 !important;
+  background: transparent !important;
+}
+
+/* Fondo cristalino usando ::before para no afectar el contenido */
+.navbar.navbar-expand-lg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(var(--bg-dark), 0.85), 
+    rgba(var(--bg-light), 0.75));
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  z-index: -1;
+}
+
+/* Asegurar que el contenido esté por encima */
+.navbar .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Brand - Solo icono */
+.navbar-brand {
+  width: 50px !important;
+  height: 50px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(135deg, 
+    rgba(var(--primary-rgb), 0.2), 
+    rgba(var(--secondary-rgb), 0.15)) !important;
+  border: 2px solid rgba(var(--primary-rgb), 0.4) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: visible !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.navbar-brand::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    var(--primary), 
+    var(--secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.navbar-brand:hover {
+  transform: translateY(-3px) rotate(5deg) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 8px 25px rgba(var(--primary-rgb), 0.5) !important;
+  filter: none !important;
+}
+
+.navbar-brand:hover::before {
+  opacity: 0.2;
+}
+
+.navbar-brand i {
+  font-size: 1.8rem !important;
+  color: var(--primary) !important;
+  position: relative !important;
+  z-index: 1 !important;
+  animation: logoFloat 3s ease-in-out infinite !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+.navbar-brand:hover i {
+  animation: logoSpin 0.6s ease;
+}
+
+@keyframes logoSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Nav items - diseño moderno */
+.navbar-nav {
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.6rem 1rem !important;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 1px solid transparent;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 70%;
+  height: 2px;
+  background: var(--primary);
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary) !important;
+  background: rgba(var(--primary-rgb), 0.1);
+  border-color: rgba(var(--primary-rgb), 0.3);
+}
+
+.nav-link:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.nav-link i {
+  font-size: 1rem;
+  margin-right: 0.4rem;
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover i {
+  transform: scale(1.2);
+}
+
+/* Stats dropdown - mejorado */
+.nav-stats-trigger {
+  background: linear-gradient(135deg, 
+    rgba(var(--primary-rgb), 0.15), 
+    rgba(var(--secondary-rgb), 0.1)) !important;
+  border: 2px solid rgba(var(--primary-rgb), 0.3) !important;
+}
+
+.nav-stats-trigger:hover {
+  background: linear-gradient(135deg, 
+    rgba(var(--primary-rgb), 0.25), 
+    rgba(var(--secondary-rgb), 0.15)) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.3);
+}
+
+.nav-stats-chevron {
+  transition: transform 0.3s ease;
+}
+
+.nav-stats-dropdown.open .nav-stats-chevron {
+  transform: rotate(180deg);
+}
+
+/* Stats menu */
+.nav-stats-menu {
+  background: linear-gradient(135deg, 
+    rgba(var(--bg-dark), 0.95), 
+    rgba(var(--bg-light), 0.9));
+  border: 2px solid rgba(var(--primary-rgb), 0.3);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.nav-stats-item {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.nav-stats-item:hover {
+  background: rgba(var(--primary-rgb), 0.15);
+  border-color: var(--primary);
+  transform: translateX(4px);
+}
+
+/* Mobile responsive */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(var(--bg-dark), 0.95);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    border-radius: 12px;
+  }
+
+  .navbar-nav {
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    width: 100%;
+  }
+}
+
+/* Scroll effect */
+.navbar.scrolled::before {
+  background: linear-gradient(135deg, 
+    rgba(var(--bg-dark), 0.95), 
+    rgba(var(--bg-light), 0.85));
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+}
+
+.navbar.scrolled {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Navbar toggler */
+.navbar-toggler {
+  border: 2px solid rgba(var(--primary-rgb), 0.4) !important;
+  padding: 0.5rem !important;
+  border-radius: 10px !important;
+  background: rgba(var(--primary-rgb), 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.navbar-toggler:hover {
+  border-color: var(--primary) !important;
+  background: rgba(var(--primary-rgb), 0.2) !important;
+  box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.3) !important;
+  transform: scale(1.05) !important;
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.3) !important;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 107, 53, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Version badge */
+#version-number {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  background: linear-gradient(135deg, 
+    rgba(var(--primary-rgb), 0.2), 
+    rgba(var(--secondary-rgb), 0.15));
+  border-radius: 6px;
+  margin-left: 0.3rem;
+}

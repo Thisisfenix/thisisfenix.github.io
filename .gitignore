@@ -31,3 +31,6 @@ WIKI_PASSWORD_SYSTEM.md
 
 # Backups locales (no subir al repo)
 backups/
+
+# CSS Backup (no subir al repo)
+.css-backup/

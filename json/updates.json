@@ -1,26 +1,56 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.6.3",
-  "lastUpdate": "2026-05-03",
+  "version": "2.7.0",
+  "lastUpdate": "2026-06-20",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/",
   
   "info_version_actual": {
-    "numero": "2.6.3",
-    "fecha": "2026-05-03",
+    "numero": "2.7.0",
+    "fecha": "2026-06-20",
     "tipo": "minor",
     "estado": "estable",
     "cambios_principales": [
-      "La Wiki de Deadly Pursuit se actualizó a v1.0b con varias mejoras",
-      "Página de error 404 propia cuando un link no existe",
-      "La fuente personalizada ahora se recuerda entre sesiones",
-      "Nuevo botón para ir al juego en Roblox desde la wiki",
-      "Página de error 404 para el sitio principal"
+      "Navbar completamente rediseñado con estilo moderno y minimalista",
+      "Logo solo (sin texto) con animaciones mejoradas",
+      "Efecto glassmorphism (cristalino) en el navbar sin afectar el contenido",
+      "Nuevo diseño de botones con efectos hover mejorados",
+      "Botón hamburguesa rediseñado para móviles"
     ]
   },
   
   "updates": [
+    {
+      "version": "2.7.0",
+      "date": "2026-06-20",
+      "title": "🎨 Navbar Redesign - Estilo Moderno",
+      "type": "minor",
+      "features": [
+        "🎨 Navbar completamente rediseñado con estilo moderno y minimalista",
+        "🔮 Logo solo (icono sin texto) con animaciones de flotación y rotación",
+        "✨ Efecto glassmorphism (cristalino) que no afecta la nitidez del contenido",
+        "🎯 Nav links con línea animada inferior en hover",
+        "📱 Botón hamburguesa mejorado con efectos hover y animaciones",
+        "🌊 Navbar sticky-top - se mueve con el scroll de forma natural",
+        "💫 Transiciones suaves en todos los elementos interactivos"
+      ],
+      "que_significa": [
+        "🎨 El navbar (barra de arriba) se ve más moderno y limpio",
+        "🔮 Ahora solo ves el icono del logo, sin el texto 'FenixLaboratory'",
+        "✨ El navbar tiene un efecto de cristal/vidrio que se ve increíble",
+        "🎯 Cuando pasas el mouse por los botones, aparece una línea animada abajo",
+        "📱 En celulares, el botón de menú se ve mucho mejor con colores",
+        "🌊 El navbar ya no está fijo arriba, se mueve cuando haces scroll"
+      ],
+      "technical": [
+        "Implementado efecto glassmorphism usando pseudo-elemento ::before",
+        "backdrop-filter aplicado solo al fondo, no al contenido",
+        "Animaciones CSS: logoFloat, logoSpin, y efectos de escala",
+        "CSS modular en archivo navbar-modern.css separado",
+        "Uso de !important para sobrescribir estilos conflictivos"
+      ]
+    },
     {
       "version": "2.6.3",
       "date": "2026-05-03",
