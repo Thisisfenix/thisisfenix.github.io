@@ -122,7 +122,7 @@ function createPlushieRain() {
   for (let i = 0; i < plushieCount; i++) {
     const plushie = document.createElement('img');
     plushie.className = 'falling-plushie';
-    plushie.src = Math.random() > 0.5 ? 'placeholder/gisselplushie.png' : 'placeholder/molly plushie.png';
+    plushie.src = Math.random() > 0.5 ? 'Assets/images/gisselplushie.png' : 'Assets/images/molly plushie.png';
     plushie.style.left = Math.random() * 100 + '%';
     plushie.style.animation = `plushieFall ${Math.random() * 4 + 6}s linear infinite`;
     plushie.style.animationDelay = Math.random() * 5 + 's';
@@ -144,7 +144,7 @@ function createValentineRain() {
   for (let i = 0; i < valentineCount; i++) {
     const valentine = document.createElement('img');
     valentine.className = 'falling-valentine';
-    valentine.src = 'placeholder/AnkushCat.png';
+    valentine.src = 'Assets/images/AnkushCat.png';
     valentine.style.left = Math.random() * 100 + '%';
     valentine.style.animation = `plushieFall ${Math.random() * 4 + 6}s linear infinite`;
     valentine.style.animationDelay = Math.random() * 5 + 's';

@@ -61,7 +61,7 @@ body::after {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url('../../placeholder/Deadly Pursuit Fondo.png');
+    background-image: url('../../Assets/images/Deadly Pursuit Fondo.png');
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;

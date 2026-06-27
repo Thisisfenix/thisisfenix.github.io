@@ -141,8 +141,8 @@ class UIManager {
       }
 
       const [creditsResponse, updatesResponse] = await Promise.all([
-        fetch('json/credits.json'),
-        fetch('json/updates.json')
+        fetch('Assets/json/credits.json'),
+        fetch('Assets/json/updates.json')
       ]);
       const credits = await creditsResponse.json();
       const updates = await updatesResponse.json();
@@ -309,7 +309,7 @@ class UIManager {
         updatesSection.style.display = 'block';
       }
       
-      const response = await fetch('json/updates.json');
+      const response = await fetch('Assets/json/updates.json');
       const data = await response.json();
       
       this.renderUpdates(data);

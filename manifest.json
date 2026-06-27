@@ -24,25 +24,25 @@
   },
   "icons": [
     {
-      "src": "placeholder/AnkushCat.png",
+      "src": "Assets/images/AnkushCat.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "placeholder/AnkushCat.png",
+      "src": "Assets/images/AnkushCat.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "placeholder/AnkushCat.png",
+      "src": "Assets/images/AnkushCat.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "placeholder/AnkushCat.png",
+      "src": "Assets/images/AnkushCat.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
@@ -56,7 +56,7 @@
       "url": "./index.html#proyectos",
       "icons": [
         {
-          "src": "placeholder/AnkushCat.png",
+          "src": "Assets/images/AnkushCat.png",
           "sizes": "96x96"
         }
       ]
@@ -68,7 +68,7 @@
       "url": "./index.html#logros",
       "icons": [
         {
-          "src": "placeholder/AnkushCat.png",
+          "src": "Assets/images/AnkushCat.png",
           "sizes": "96x96"
         }
       ]
@@ -80,7 +80,7 @@
       "url": "./index.html",
       "icons": [
         {
-          "src": "placeholder/AnkushCat.png",
+          "src": "Assets/images/AnkushCat.png",
           "sizes": "96x96"
         }
       ]

@@ -146,7 +146,7 @@ class PlushieSystem {
   createPlushie(pos, index, container) {
     const basePath = pos.page ? '../' : '';
     const plushie = document.createElement('img');
-    plushie.src = basePath + (pos.type === 'gissel' ? 'placeholder/gisselplushie.png' : 'placeholder/molly plushie.png');
+    plushie.src = basePath + (pos.type === 'gissel' ? 'Assets/images/gisselplushie.png' : 'Assets/images/molly plushie.png');
     plushie.className = 'hidden-plushie';
     plushie.dataset.type = pos.type;
     plushie.dataset.index = index;
@@ -312,7 +312,7 @@ class PlushieSystem {
       localStorage.setItem('plushie-collected', JSON.stringify(collected));
       
       if (element.posData?.sound) {
-        const audio = new Audio(`placeholder/${element.posData.sound}`);
+        const audio = new Audio(`Assets/images/${element.posData.sound}`);
         audio.volume = 0.5;
         audio.play().catch(() => {});
       }
@@ -454,7 +454,7 @@ class PlushieSystem {
           📅 Inicio: 2 dic 2025 | Fin: 1 ene 2026
         </div>
         <a href="https://funkyatlas.abelitogamer.com/Hope/Hope.html" target="_blank" style="display: block; margin-top: 0.5rem;">
-          <img id="meditating-dog" src="${basePath}placeholder/ItsOut.png" style="width: 80px; height: 80px; opacity: 0; transition: opacity 5s ease; cursor: pointer; margin: 0 auto; display: block;" alt="Perro meditando">
+          <img id="meditating-dog" src="${basePath}Assets/images/ItsOut.png" style="width: 80px; height: 80px; opacity: 0; transition: opacity 5s ease; cursor: pointer; margin: 0 auto; display: block;" alt="Perro meditando">
         </a>
       </div>
     ` : '';
@@ -481,7 +481,7 @@ class PlushieSystem {
         ${timerHTML}
         <div style="margin: 1rem 0;">
           <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
-            <img src="${basePath}placeholder/gisselplushie.png" style="width: 40px; height: 40px;">
+            <img src="${basePath}Assets/images/gisselplushie.png" style="width: 40px; height: 40px;">
             <div>
               <strong>Gissel:</strong> ${this.progress.gissel}/20 encontrados
               <div style="background: var(--bg-light); height: 8px; border-radius: 4px; width: 200px; margin-top: 4px;">
@@ -490,7 +490,7 @@ class PlushieSystem {
             </div>
           </div>
           <div style="display: flex; align-items: center; gap: 1rem;">
-            <img src="${basePath}placeholder/molly plushie.png" style="width: 40px; height: 40px;">
+            <img src="${basePath}Assets/images/molly plushie.png" style="width: 40px; height: 40px;">
             <div>
               <strong>Molly:</strong> ${this.progress.molly}/20 encontrados
               <div style="background: var(--bg-light); height: 8px; border-radius: 4px; width: 200px; margin-top: 4px;">
@@ -619,8 +619,8 @@ class PlushieSystem {
       <h1 style="font-size: ${titleSize}; margin-bottom: 1rem; color: #FFD700;">¡FELICIDADES!</h1>
       <p style="font-size: ${textSize}; margin-bottom: 2rem;">Conseguiste los 40 peluches</p>
       <div style="display: flex; gap: ${isMobile ? '1rem' : '2rem'}; justify-content: center; margin-bottom: 2rem;">
-        <img src="placeholder/gisselplushie.png" style="width: ${imgSize}; height: ${imgSize}; animation: float 2s ease-in-out infinite;">
-        <img src="placeholder/molly plushie.png" style="width: ${imgSize}; height: ${imgSize}; animation: float 2s ease-in-out infinite 0.5s;">
+        <img src="Assets/images/gisselplushie.png" style="width: ${imgSize}; height: ${imgSize}; animation: float 2s ease-in-out infinite;">
+        <img src="Assets/images/molly plushie.png" style="width: ${imgSize}; height: ${imgSize}; animation: float 2s ease-in-out infinite 0.5s;">
       </div>
       <p style="font-size: ${isMobile ? '1rem' : '1.2rem'}; color: #FFD700; margin-bottom: 1rem;">🎁 ¡Desbloqueaste el tema "Plushie Rain"!</p>
       <p style="font-size: ${isMobile ? '0.8rem' : '0.9rem'}; color: #aaa;">Encuéntralo en el panel de temas</p>

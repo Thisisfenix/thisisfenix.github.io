@@ -264,19 +264,19 @@ async function generateResponse(message, character, env, image = null, customPer
   if (lowerMsg.includes('molly anderson')) {
     return {
       response: 'Molly Anderson en el campo 🌾',
-      easterEggImage: 'https://raw.githubusercontent.com/thisisfenix/FenixLaboratory/main/placeholder/image.png'
+      easterEggImage: 'https://raw.githubusercontent.com/thisisfenix/FenixLaboratory/main/Assets/images/image.png'
     };
   }
   if (lowerMsg.includes('bfmp4')) {
     return {
       response: 'Bfmp4 ha aparecido 👀',
-      easterEggImage: 'https://raw.githubusercontent.com/thisisfenix/FenixLaboratory/main/placeholder/Captura%20de%20pantalla%202025-12-10%20151911.png'
+      easterEggImage: 'https://raw.githubusercontent.com/thisisfenix/FenixLaboratory/main/Assets/images/Captura%20de%20pantalla%202025-12-10%20151911.png'
     };
   }
   if (lowerMsg.includes('abelitogamer')) {
     return {
       response: 'Abelitogamer en acción 🎮',
-      easterEggImage: 'https://raw.githubusercontent.com/thisisfenix/FenixLaboratory/main/placeholder/Captura%20de%20pantalla%202025-12-10%20152544.png'
+      easterEggImage: 'https://raw.githubusercontent.com/thisisfenix/FenixLaboratory/main/Assets/images/Captura%20de%20pantalla%202025-12-10%20152544.png'
     };
   }
   

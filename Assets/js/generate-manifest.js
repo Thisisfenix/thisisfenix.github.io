@@ -38,13 +38,13 @@ const manifest = {
       "purpose": "maskable"
     },
     {
-      "src": "placeholder/GHbDEIgXMAACVEi.jpg",
+      "src": "Assets/images/GHbDEIgXMAACVEi.jpg",
       "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "placeholder/GzyBNcWWsAEcgbH.jpg",
+      "src": "Assets/images/GzyBNcWWsAEcgbH.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any"

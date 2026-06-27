@@ -386,7 +386,7 @@
     if (versionLoaded) return; // Evitar cargas múltiples
     
     try {
-      const response = await fetch('json/updates.json');
+      const response = await fetch('Assets/json/updates.json');
       const data = await response.json();
       const versionSpan = document.getElementById('version-number');
       if (versionSpan) {

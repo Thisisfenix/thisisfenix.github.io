@@ -92,7 +92,7 @@ async function displayRepos(repos, page = 1) {
 
     const localImagePath = `img/localPreviews/${repo.name}.png`;
     const remoteImagePath = `https://raw.githubusercontent.com/${user}/${repo.name}/main/preview.png`;
-    const placeholderImage = 'placeholder/GHbDEIgXMAACVEi.jpg';
+    const placeholderImage = 'Assets/images/GHbDEIgXMAACVEi.jpg';
 
     loadImage(img, localImagePath, remoteImagePath, placeholderImage);
 
@@ -190,7 +190,7 @@ async function displayRepos(repos, page = 1) {
   const comingSoonImg = document.createElement('div');
   comingSoonImg.className = 'card-img-top';
   comingSoonImg.style.cssText = `
-    background-image: url('placeholder/GzyBNcWWsAEcgbH.jpg');
+    background-image: url('Assets/images/GzyBNcWWsAEcgbH.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

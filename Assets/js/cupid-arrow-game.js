@@ -242,7 +242,7 @@ class CupidArrowGame {
       <button onclick="cupidGame.endGame()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,20,147,0.8); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold;">
         ❌ Salir
       </button>
-      <img src="placeholder/AnkushCat.png" style="position: absolute; bottom: 20px; right: 20px; width: 150px; height: auto; opacity: 0.8; pointer-events: none;">
+      <img src="Assets/images/AnkushCat.png" style="position: absolute; bottom: 20px; right: 20px; width: 150px; height: auto; opacity: 0.8; pointer-events: none;">
     `;
 
     document.body.appendChild(gameContainer);
