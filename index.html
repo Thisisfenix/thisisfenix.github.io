@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>🔬 FenixLaboratory - Experimentos y Proyectos</title>
-  <meta name="description" content="Portfolio interactivo con juegos multijugador, guestbook artístico y sistema de logros. Deadly Pursuer y más." />
+  <title>FenixLaboratory</title>
+  <meta name="description" content="Mis proyectos personales: juegos, experimentos y cosas random que hago en mi tiempo libre." />
   <link rel="icon" type="image/png" href="Assets/images/AnkushCat.png">
   
   <!-- PWA -->
@@ -15,8 +15,8 @@
   <link rel="apple-touch-icon" href="Assets/images/AnkushCat.png">
   
   <!-- Social Media -->
-  <meta property="og:title" content="🔬 FenixLaboratory - Experimentos y Proyectos">
-  <meta property="og:description" content="Portfolio interactivo con juegos multijugador, guestbook artístico y sistema de logros." />
+  <meta property="og:title" content="FenixLaboratory">
+  <meta property="og:description" content="Proyectos personales, juegos y experimentos." />
   <meta property="og:image" content="https://thisisfenix.github.io/FenixLaboratory/preview.png">
   <meta property="og:url" content="https://thisisfenix.github.io/FenixLaboratory/">
   <meta name="twitter:card" content="summary_large_image">
@@ -47,7 +47,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
       <a class="navbar-brand" href="#" aria-label="FenixLaboratory">
-        <i class="bi bi-code-square"></i>
+        <i class="bi bi-flask"></i>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,10 +56,10 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#proyectos"><i class="bi bi-code-slash me-1"></i> Proyectos</a>
+            <a class="nav-link" href="#proyectos"><i class="bi bi-folder me-1"></i> Proyectos</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#comentarios"><i class="bi bi-chat-left-text me-1"></i> Comentarios</a>
+            <a class="nav-link" href="#comentarios"><i class="bi bi-chat-dots me-1"></i> Comentarios</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#guestbook"><i class="bi bi-palette me-1"></i> Guestbook</a>
@@ -129,10 +129,10 @@
         <!-- Lado izquierdo: texto -->
         <div class="hero-text">
           <div class="hero-badge">
-            <i class="bi bi-flask-fill"></i> FenixLaboratory
+            Soy Fenix
           </div>
           <h1 id="typewriter">THISISFENIX<br><span class="hero-accent">LABORATORY</span></h1>
-          <p>Donde subo mis experimentos raros y proyectos random</p>
+          <p class="hero-intro">Donde subo mis proyectos personales. Juegos, experimentos y cosas random que hago cuando tengo tiempo</p>
           <div class="hero-actions">
             <a href="#proyectos" class="btn btn-neon" onclick="Utils.safeScrollIntoView('proyectos'); return false;">
               <i class="bi bi-arrow-down me-2"></i>Ver Proyectos
@@ -141,69 +141,44 @@
               <i class="bi bi-palette me-2"></i>Guestbook
             </a>
           </div>
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <span class="hero-stat-value" id="hero-repos">—</span>
-              <span class="hero-stat-label">Proyectos</span>
+          <div class="hero-casual-stats">
+            <div class="casual-stat">
+              <span class="casual-emoji">💻</span>
+              <span class="casual-text"><span id="hero-repos">—</span> proyectos</span>
             </div>
-            <div class="hero-stat-divider"></div>
-            <div class="hero-stat">
-              <span class="hero-stat-value">4+</span>
-              <span class="hero-stat-label">Experimentos</span>
+            <div class="casual-stat">
+              <span class="casual-emoji">🧪</span>
+              <span class="casual-text">4+ experimentos</span>
             </div>
-            <div class="hero-stat-divider"></div>
-            <div class="hero-stat">
-              <span class="hero-stat-value">∞</span>
-              <span class="hero-stat-label">Ideas raras</span>
+            <div class="casual-stat">
+              <span class="casual-emoji">☕</span>
+              <span class="casual-text">∞ cafés</span>
             </div>
           </div>
         </div>
 
         <!-- Lado derecho: card visual -->
         <div class="hero-visual">
-          <div class="hero-card">
+          <div class="hero-card personal">
             <div class="hero-card-header">
               <span class="hero-dot red"></span>
               <span class="hero-dot yellow"></span>
               <span class="hero-dot green"></span>
-              <span class="hero-card-title">fenix.lab</span>
+              <span class="hero-card-title">working-on.txt</span>
             </div>
             <div class="hero-card-body">
-              <div class="hero-code-line">
-                <span class="code-keyword">const</span>
-                <span class="code-var"> lab</span>
-                <span class="code-op"> = </span>
-                <span class="code-string">"FenixLaboratory"</span><span class="code-op">;</span>
+              <div class="personal-note">
+                <div class="note-line">Actualmente:</div>
+                <div class="note-item">→ Deadly Pursuer</div>
+                <div class="note-item">→ Chatbot con IA</div>
+                <div class="note-item">→ Experimentos varios</div>
               </div>
-              <div class="hero-code-line">
-                <span class="code-keyword">const</span>
-                <span class="code-var"> proyectos</span>
-                <span class="code-op"> = [</span>
-              </div>
-              <div class="hero-code-line indent">
-                <span class="code-string">"Deadly Pursuer"</span><span class="code-op">,</span>
-              </div>
-              <div class="hero-code-line indent">
-                <span class="code-string">"Chatbot IA"</span><span class="code-op">,</span>
-              </div>
-              <div class="hero-code-line indent">
-                <span class="code-string">"Guestbook"</span><span class="code-op">,</span>
-              </div>
-              <div class="hero-code-line indent">
-                <span class="code-comment">// ...y más</span>
-              </div>
-              <div class="hero-code-line"><span class="code-op">];</span></div>
-              <div class="hero-code-line mt-2">
-                <span class="code-keyword">export default</span>
-                <span class="code-var"> lab</span><span class="code-op">;</span>
-              </div>
-              <div class="hero-cursor"></div>
             </div>
           </div>
           <!-- Decoración flotante -->
-          <div class="hero-float hero-float-1"><i class="bi bi-code-slash"></i></div>
-          <div class="hero-float hero-float-2"><i class="bi bi-lightning-fill"></i></div>
-          <div class="hero-float hero-float-3"><i class="bi bi-stars"></i></div>
+          <div class="hero-float hero-float-1"><span class="float-emoji">🎮</span></div>
+          <div class="hero-float hero-float-2"><span class="float-emoji">🎨</span></div>
+          <div class="hero-float hero-float-3"><span class="float-emoji">⚡</span></div>
         </div>
 
       </div>
@@ -211,7 +186,7 @@
 
   <!-- FrameForge (antes Spritemap Extractor) -->
   <section id="spritemaps" class="container">
-    <h2 style="font-family: 'Phantomuff', sans-serif; font-size: 2.5rem; letter-spacing: 2px;">🎬 FRAMEFORGE</h2>
+    <h2>🎬 FrameForge</h2>
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="card" style="text-align: center; padding: 2rem; position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(156, 39, 176, 0.05));">
@@ -223,17 +198,10 @@
               Adobe Animate · Sprites + Animaciones
             </p>
             <p class="card-text" style="color: var(--text-secondary); margin-top: 0.5rem;">
-              Extrae sprites y animaciones de personajes de Friday Night Funkin'. Funciona 100% en tu navegador, sin enviar nada a servidores.
+              Extrae sprites y animaciones de personajes de Friday Night Funkin'. 
+              Funciona en tu navegador, sin enviar nada a servidores.
             </p>
-            <div class="features-list" style="margin: 1.5rem 0; text-align: left;">
-              <div>🎞️ <strong>Animaciones FNF</strong> - Previsualiza y exporta animaciones frame a frame</div>
-              <div>📦 <strong>Sprites individuales</strong> - Descarga cada sprite por separado</div>
-              <div>🎮 <strong>Adobe Animate + XML</strong> - Soporte para formatos de Friday Night Funkin</div>
-              <div>⚙️ <strong>Configurable</strong> - Ajusta FPS, calidad, deduplicación de frames y más</div>
-              <div>📱 <strong>Sin instalación</strong> - Corre directo en el navegador, 100% local</div>
-              <div>🔒 <strong>Privado</strong> - Todo se procesa en tu dispositivo, sin subir nada</div>
-            </div>
-            <a href="https://spritemaps-extractor.pages.dev/spritemap-extractor" target="_blank" rel="noopener noreferrer" class="btn btn-neon" style="position: relative; z-index: 2; background: linear-gradient(135deg, #9c27b0, #673ab7); border: none;">
+            <a href="https://spritemaps-extractor.pages.dev/" target="_blank" rel="noopener noreferrer" class="btn btn-neon" style="position: relative; z-index: 2; background: linear-gradient(135deg, #9c27b0, #673ab7); border: none; margin-top: 1.5rem;">
               <i class="bi bi-box-arrow-up-right me-2"></i>Abrir FrameForge
             </a>
           </div>
@@ -244,7 +212,7 @@
 
   <!-- Proyectos -->
   <section id="proyectos" class="container">
-    <h2>PROYECTOS</h2>
+    <h2>Proyectos</h2>
 
     <!-- Filtros y Búsqueda -->
     <div class="filters">
@@ -284,17 +252,17 @@
             <span style="background: rgba(168,85,247,0.2); color: #c084fc; border: 1px solid rgba(168,85,247,0.4); border-radius: 999px; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.6rem; letter-spacing: 0.05em; text-transform: uppercase;">✨ Nuevo</span>
           </div>
           <p class="card-text" style="color: var(--text-secondary, #aaa); font-size: 0.9rem; margin-bottom: 0.75rem;">
-            Crea, mezcla y reproduce tus propias canciones funky. Secuenciador, mezclador e instrumentos incluidos.
+            Secuenciador para crear música funky. Incluye mezclador, instrumentos y descarga gratuita.
           </p>
           <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
             <span style="background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); border-radius: 6px; font-size: 0.75rem; padding: 0.2rem 0.55rem;">🎹 Secuenciador</span>
             <span style="background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); border-radius: 6px; font-size: 0.75rem; padding: 0.2rem 0.55rem;">🎛️ Mezclador</span>
             <span style="background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); border-radius: 6px; font-size: 0.75rem; padding: 0.2rem 0.55rem;">🎸 Instrumentos</span>
-            <span style="background: rgba(236,72,153,0.12); color: #f472b6; border: 1px solid rgba(236,72,153,0.25); border-radius: 6px; font-size: 0.75rem; padding: 0.2rem 0.55rem;">⬇️ Descarga gratis</span>
+            <span style="background: rgba(236,72,153,0.12); color: #f472b6; border: 1px solid rgba(236,72,153,0.25); border-radius: 6px; font-size: 0.75rem; padding: 0.2rem 0.55rem;">💜 Descarga gratis</span>
           </div>
         </div>
         <a href="FunkyMakerPlayer/index.html" class="btn btn-neon" style="flex-shrink: 0; background: linear-gradient(135deg, #a855f7, #ec4899); border: none; box-shadow: 0 0 20px rgba(168,85,247,0.4); color: #fff; white-space: nowrap;">
-          <i class="bi bi-download me-2"></i>Ver y Descargar
+          <i class="bi bi-download me-2"></i>Descargar
         </a>
       </div>
     </div>
@@ -355,38 +323,29 @@
   </section>
 
   <section id="comentarios" class="container">
-    <h2>💬 COMENTARIOS</h2>
+    <h2>Comentarios</h2>
     <div class="giscus" style="background: var(--bg-light); padding: 2rem; border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 8px;">
       <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">
-        🎨 Deja tu mensaje, comparte una imagen, o simplemente saluda.<br>
-        <small>Usa tu cuenta de GitHub para comentar</small>
+        Deja un comentario con tu cuenta de GitHub
       </p>
     </div>
   </section>
 
   <section id="guestbook" class="container">
-    <h2>🎨 GUESTBOOK</h2>
+    <h2>Guestbook</h2>
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="card" style="text-align: center; padding: 2rem; position: relative; overflow: hidden;">
           <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('guessbook/Preview-GuestBook.png'); background-size: cover; background-position: center; opacity: 0.1; z-index: 0;"></div>
           
           <div class="card-body" style="position: relative; z-index: 1;">
-            <h3 class="card-title">🎨 Guestbook de Dibujos v2.0.9</h3>
-            <p class="card-text">
-              ¡Deja tu huella artística en el laboratorio! Sistema completo con rankings, 
-              estadísticas en tiempo real, likes y comentarios.
+            <h3 class="card-title">Guestbook v2.0.9</h3>
+            <p class="card-text" style="font-size: 1.05rem; line-height: 1.8;">
+              Sistema de dibujo con rankings, estadísticas en tiempo real, likes y comentarios. 
+              Más de 50 herramientas: pinceles, filtros, stickers y efectos.
             </p>
-            <div class="features-list" style="margin: 1.5rem 0; text-align: left;">
-              <div>🏆 <strong>Sistema de Rankings</strong> - Top dibujos por likes, comentarios y trazos</div>
-              <div>📊 <strong>Estadísticas Avanzadas</strong> - Métricas en tiempo real</div>
-              <div>❤️ <strong>Sistema Social</strong> - Likes, comentarios y galeria pública</div>
-              <div>🎨 <strong>50+ Herramientas</strong> - Pinceles, filtros, stickers y efectos</div>
-              <div>📱 <strong>Móvil Optimizado</strong> - Touch events y responsive design</div>
-              <div>🔄 <strong>Tiempo Real</strong> - Firebase para actualizaciones instantáneas</div>
-            </div>
             <a href="guessbook/guestbook-new.html" class="btn btn-neon" style="position: relative; z-index: 2;">
-              <i class="bi bi-palette me-2"></i>Abrir Guestbook v2.0
+              <i class="bi bi-palette me-2"></i>Abrir Guestbook
             </a>
           </div>
         </div>
@@ -397,8 +356,7 @@
   
   <div class="credits-section" id="experimentos-section">
     <div class="container">
-      <h2 class="text-center mb-2">🧪 EXPERIMENTOS</h2>
-      <p class="section-subtitle">Proyectos experimentales y juegos del laboratorio</p>
+      <h2 class="text-center mb-4">Experimentos</h2>
 
       <div class="exp-showcase">
 
@@ -409,7 +367,7 @@
             <div class="exp-featured-text">
               <span class="exp-label exp-label-danger">⚠️ MULTIJUGADOR</span>
               <h3 class="exp-title exp-title-danger">DEADLY PURSUER</h3>
-              <p class="exp-desc exp-desc-danger">Juego multijugador online con Discord Friends — hasta 8 jugadores. Elige tu personaje, activa el Rage Mode y sobrevive.</p>
+              <p class="exp-desc exp-desc-danger">Juego multijugador online hasta 8 jugadores. Elige personaje, activa Rage Mode y sobrevive.</p>
               <div class="exp-pills">
                 <span class="exp-pill exp-pill-danger">💀 4 Personajes</span>
                 <span class="exp-pill exp-pill-danger">🔴 Rage Mode</span>
@@ -417,7 +375,7 @@
                 <span class="exp-pill exp-pill-danger">👥 8 jugadores</span>
               </div>
               <button onclick="showDeadlyPursuerWarning()" class="exp-btn exp-btn-danger">
-                <i class="bi bi-exclamation-triangle me-1"></i> JUGAR AHORA
+                <i class="bi bi-controller me-1"></i> JUGAR
               </button>
             </div>
             <div class="exp-featured-icons">
@@ -438,7 +396,7 @@
             <div class="exp-mini-body">
               <span class="exp-label" style="background: rgba(59,130,246,0.12); color: #3b82f6; border-color: rgba(59,130,246,0.3);">WIKI</span>
               <h3 class="exp-title">Wiki Deadly Pursuer</h3>
-              <p class="exp-desc">Guía completa de personajes, habilidades y estrategias del juego.</p>
+              <p class="exp-desc">Una guía con info de personajes, habilidades y estrategias del juego.</p>
               <div class="exp-pills">
                 <span class="exp-pill">👥 Personajes</span>
                 <span class="exp-pill">⚡ Habilidades</span>
@@ -456,7 +414,7 @@
             <div class="exp-mini-body">
               <span class="exp-label" style="background: rgba(16,185,129,0.12); color: #10b981; border-color: rgba(16,185,129,0.3);">IA</span>
               <h3 class="exp-title">Chatbot IA</h3>
-              <p class="exp-desc">Chatea con los personajes de Deadly Pursuer usando inteligencia artificial.</p>
+              <p class="exp-desc">Chatea con los personajes de Deadly Pursuer usando IA.</p>
               <div class="exp-pills">
                 <span class="exp-pill">💬 Conversación</span>
                 <span class="exp-pill">🧠 Llama 3.3</span>
@@ -464,7 +422,7 @@
               </div>
             </div>
             <a href="Experimentos/chatbot/chatbot.html" class="exp-btn exp-btn-mini">
-              <i class="bi bi-chat-dots me-1"></i> Abrir Chatbot
+              <i class="bi bi-chat-dots me-1"></i> Abrir
             </a>
           </div>
 
@@ -482,7 +440,7 @@
               </div>
             </div>
             <a href="Experimentos/ArchiveOfCreation/wiki.html" class="exp-btn exp-btn-mini">
-              <i class="bi bi-archive me-1"></i> Abrir Archive
+              <i class="bi bi-archive me-1"></i> Abrir
             </a>
           </div>
 
@@ -511,7 +469,7 @@
 
   <div class="credits-section" id="credits-section">
     <div class="container">
-      <h2 class="text-center mb-4">CRÉDITOS</h2>
+      <h2 class="text-center mb-4">Créditos</h2>
       <div class="json-viewer" id="json-viewer">
         <div class="mini-loader"></div>
         <div class="loading-text">Cargando información...</div>
@@ -521,17 +479,17 @@
 
   <div class="credits-section" id="updates-section">
     <div class="container">
-      <h2 class="text-center mb-4">🚀 ACTUALIZACIONES</h2>
+      <h2 class="text-center mb-4">Actualizaciones</h2>
       <div class="json-viewer" id="updates-viewer">
         <div class="mini-loader"></div>
-        <div class="loading-text">Cargando actualizaciones desde updates.json...</div>
+        <div class="loading-text">Cargando actualizaciones...</div>
       </div>
     </div>
   </div>
 
   <div class="credits-section" id="achievements-section">
     <div class="container">
-      <h2 class="text-center mb-4">🏆 SISTEMA DE LOGROS</h2>
+      <h2 class="text-center mb-4">Sistema de Logros</h2>
       <div class="json-viewer" id="achievements-viewer">
         <div class="row mb-3">
           <div class="col-md-3 col-6 mb-2">
@@ -1021,7 +979,7 @@
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-brand">
-        <i class="bi bi-code-square me-2"></i>
+        <i class="bi bi-flask me-2"></i>
         <span>FenixLaboratory</span>
       </div>
 

@@ -34,3 +34,4 @@ backups/
 
 # CSS Backup (no subir al repo)
 .css-backup/
+.vscode/settings.json
