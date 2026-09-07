@@ -6,11 +6,10 @@
             'ia666': { name: 'iA666', role: 'killer', icon: 'Assets/images/IA666.png' },
             'missx': { name: 'MissX', role: 'killer', icon: 'Assets/images/MissX.png' },
             'peace': { name: 'Peace', role: 'killer', icon: '../public/assets/icons/PeaceNormalIcon.png' },
+            'varkul': { name: 'Varkul', role: 'killer', icon: 'Assets/images/PlaceHolder.png' },
             'abelitogamer': { name: 'AbelitoGamer', role: 'boss', icon: 'Assets/images/AbelitoInactiveIcon.png' },
-            'molly': { name: 'Molly', role: 'survivor', icon: '../public/assets/icons/MollyNormalIcon.png', icons: { danger: '../public/assets/icons/MollyDangerIcon.png', dead: '../public/assets/icons/MollyDeadIcon.png' } },
             'gissel': { name: 'Gissel', role: 'survivor', icon: '../public/assets/icons/GisselInactiveIcon.png' },
             'ia777': { name: 'iA777', role: 'survivor', icon: '../public/assets/icons/IA777NormalIcon.png', icons: { danger: '../public/assets/icons/IA777DangerIcon.png', dead: '../public/assets/icons/IA777DeadIcon.png' } },
-            'angel': { name: 'Angel', role: 'survivor', icon: '../public/assets/icons/AngelNormalIcon.png', icons: { danger: '../public/assets/icons/AngelDangerIcon.png', dead: '../public/assets/icons/AngelDeadIcon.png' } },
             'iris': { name: 'Iris', role: 'survivor', icon: '../public/assets/icons/IrisNormalIcon.png', icons: { danger: '../public/assets/icons/IrisDangerIcon.png', dead: '../public/assets/icons/IrisDeadIcon.png' } },
             'allison': { name: 'Allison', role: 'survivor', icon: '../public/assets/icons/AllisonNormalIcon.png' },
             'luna': { name: 'Luna', role: 'survivor', icon: '../public/assets/icons/LunaNormalIcon.png', icons: { danger: '../public/assets/icons/LunaDangerIcon.png', dead: '../public/assets/icons/LunaDeadIcon.png' } },
@@ -18,6 +17,13 @@
             'anna': { name: 'Anna Moonred', role: 'survivor', icon: '../public/assets/icons/AnnaNormalIcon.png' },
             'ankush': { name: 'Ankush Moonred', role: 'survivor', icon: 'Assets/images/AnkusHNormalIcon.png', icons: { danger: '../public/assets/icons/AnkushDangerIcon.png', dead: '../public/assets/icons/AnkushDeadIcon.png' } }
         };
+        
+        // Personajes descartados (no aparecen en navegación principal)
+        this.discardedCharacters = {
+            'molly': { name: 'Molly', role: 'discarded', reason: 'Razones personales', icon: '../public/assets/icons/MollyNormalIcon.png' },
+            'angel': { name: 'Angel', role: 'discarded', reason: 'Falta de información del creador', icon: '../public/assets/icons/AngelNormalIcon.png' }
+        };
+        
         this.init();
     }
 
@@ -34,6 +40,7 @@
         const bossesNav = document.getElementById('bosses-nav');
         const survivorsNav = document.getElementById('survivors-nav');
         const npcsNav = document.getElementById('npcs-nav');
+        const discardedNav = document.getElementById('discarded-nav');
         
         Object.entries(this.characters).forEach(([id, char]) => {
             const li = document.createElement('li');
@@ -52,6 +59,19 @@
             } else {
                 survivorsNav.appendChild(li);
             }
+        });
+        
+        // Generar navegación de descartados
+        Object.entries(this.discardedCharacters).forEach(([id, char]) => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = `#${id}`;
+            a.setAttribute('data-character', id);
+            a.textContent = char.name;
+            a.style.opacity = '0.6';
+            a.title = `Descartado: ${char.reason}`;
+            li.appendChild(a);
+            discardedNav.appendChild(li);
         });
     }
 
@@ -462,7 +482,8 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
     }
 
     async showCharacter(characterId) {
-        const character = this.characters[characterId];
+        // Buscar en personajes activos y descartados
+        const character = this.characters[characterId] || this.discardedCharacters[characterId];
         if (!character) return;
 
         const content = document.getElementById('character-content');
@@ -711,6 +732,20 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                     <!-- Objetivo del Juego -->
                     <section class="gameplay-section">
                         <div class="section-header">
+                            <span class="section-icon">⚠️</span>
+                            <h2>⚠️ Aviso Importante</h2>
+                        </div>
+                        <div class="section-content">
+                            <div class="alert-box warning">
+                                <p><strong>🚧 El juego está en desarrollo activo</strong></p>
+                                <p>Las mecánicas descritas aquí pueden cambiar, eliminarse o añadirse en futuras actualizaciones. Esta wiki se actualizará constantemente para reflejar los cambios del juego.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Objetivo del Juego -->
+                    <section class="gameplay-section">
+                        <div class="section-header">
                             <span class="section-icon">🎯</span>
                             <h2>Objetivo del Juego</h2>
                         </div>
@@ -724,10 +759,10 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                         <h3>Survivors</h3>
                                     </div>
                                     <ul>
-                                        <li>Sobrevivir y escapar del mapa antes de ser eliminados</li>
-                                        <li>Encontrar y atravesar anillos de escape para salir</li>
-                                        <li>Trabajar en equipo para sobrevivir</li>
-                                        <li>Usar habilidades únicas para ventaja</li>
+                                        <li>Sobrevivir el mayor tiempo posible</li>
+                                        <li>Encontrar y escapar a través de los anillos de escape</li>
+                                        <li>Trabajar en equipo usando habilidades complementarias</li>
+                                        <li>Evitar ser eliminado por el Killer</li>
                                     </ul>
                                 </div>
                                 
@@ -738,9 +773,9 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                     </div>
                                     <ul>
                                         <li>Eliminar a todos los Survivors</li>
-                                        <li>Usar habilidades especiales para cazar</li>
-                                        <li>Controlar el mapa estratégicamente</li>
                                         <li>Impedir que los Survivors escapen por los anillos</li>
+                                        <li>Usar habilidades especiales para cazar eficientemente</li>
+                                        <li>Controlar zonas clave del mapa</li>
                                     </ul>
                                 </div>
                             </div>
@@ -756,18 +791,18 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                         <div class="section-content">
                             <div class="mechanic-list">
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">🔦</div>
+                                    <div class="mechanic-icon">🌀</div>
                                     <div class="mechanic-info">
-                                        <h4>Visibilidad</h4>
-                                        <p>Mantente en las sombras para evitar ser detectado. La luz te hace más visible.</p>
+                                        <h4>Anillos de Escape</h4>
+                                        <p>Los anillos de escape aparecen en el mapa. Encuentra uno y atraviésalo para escapar y ganar. Es la única forma de victoria para los Survivors.</p>
                                     </div>
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">🌀</div>
+                                    <div class="mechanic-icon">❤️</div>
                                     <div class="mechanic-info">
-                                        <h4>Anillos de Escape</h4>
-                                        <p>Encuentra y atraviesa los anillos de escape distribuidos por el mapa para escapar y ganar.</p>
+                                        <h4>Sistema de Salud</h4>
+                                        <p>Los Survivors tienen puntos de vida. Cada golpe del Killer reduce tu salud. Si llegas a 0 HP, serás eliminado.</p>
                                     </div>
                                 </div>
                                 
@@ -775,7 +810,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                     <div class="mechanic-icon">💊</div>
                                     <div class="mechanic-info">
                                         <h4>Curación</h4>
-                                        <p><strong>🚧 Work in Progress:</strong> El sistema de curación está siendo desarrollado y será añadido próximamente.</p>
+                                        <p><strong>🚧 En Desarrollo:</strong> El sistema de curación aún no está implementado. Actualmente no hay forma de recuperar salud perdida.</p>
                                     </div>
                                 </div>
                                 
@@ -783,7 +818,15 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                     <div class="mechanic-icon">✨</div>
                                     <div class="mechanic-info">
                                         <h4>Habilidades Únicas</h4>
-                                        <p>Cada Survivor tiene habilidades especiales que pueden ayudarte a sobrevivir y escapar.</p>
+                                        <p>Cada Survivor tiene habilidades especiales (Q, E, R, etc.) con cooldowns específicos. Úsalas estratégicamente para sobrevivir.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">🏃</div>
+                                    <div class="mechanic-info">
+                                        <h4>Movimiento</h4>
+                                        <p>Usa el entorno a tu favor: corre, esquiva obstáculos y rompe la línea de visión del Killer. No existe mecánica de ocultación en la oscuridad.</p>
                                     </div>
                                 </div>
                             </div>
@@ -801,32 +844,40 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 <div class="mechanic-item">
                                     <div class="mechanic-icon">👁️</div>
                                     <div class="mechanic-info">
-                                        <h4>Detección</h4>
-                                        <p>Usa tus sentidos mejorados para rastrear a los Survivors por sonidos y pistas visuales.</p>
+                                        <h4>Detección de Survivors</h4>
+                                        <p>Usa pistas visuales y sonidos para rastrear a los Survivors. Cada Killer tiene diferentes métodos de detección.</p>
                                     </div>
                                 </div>
                                 
                                 <div class="mechanic-item">
                                     <div class="mechanic-icon">⚔️</div>
                                     <div class="mechanic-info">
-                                        <h4>Ataque</h4>
-                                        <p>Golpea a los Survivors para herirlos. Dos golpes son necesarios para eliminarlos.</p>
+                                        <h4>Sistema de Ataque</h4>
+                                        <p>Golpea a los Survivors para reducir su salud. El daño varía según el Killer y sus habilidades activas.</p>
                                     </div>
                                 </div>
                                 
                                 <div class="mechanic-item">
                                     <div class="mechanic-icon">✨</div>
                                     <div class="mechanic-info">
-                                        <h4>Habilidad Especial</h4>
-                                        <p>Cada Killer tiene una habilidad única que define su estilo de juego.</p>
+                                        <h4>Habilidades Especiales</h4>
+                                        <p>Cada Killer tiene un set único de habilidades (Q, E, R, F, X, etc.) que definen su estilo de caza. Aprende sus cooldowns y efectos.</p>
                                     </div>
                                 </div>
                                 
                                 <div class="mechanic-item">
                                     <div class="mechanic-icon">🎯</div>
                                     <div class="mechanic-info">
-                                        <h4>Control de Mapa</h4>
-                                        <p>Patrulla áreas clave y predice los movimientos de los Survivors.</p>
+                                        <h4>Control del Mapa</h4>
+                                        <p>Patrulla zonas clave, predice movimientos de Survivors y controla el acceso a los anillos de escape.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mechanic-item">
+                                    <div class="mechanic-icon">⚡</div>
+                                    <div class="mechanic-info">
+                                        <h4>Habilidades Ultimate</h4>
+                                        <p>Algunos Killers tienen habilidades ultimate potentes con mecánicas de carga. Úsalas en momentos decisivos.</p>
                                     </div>
                                 </div>
                             </div>
@@ -837,25 +888,33 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                     <section class="gameplay-section tips-section">
                         <div class="section-header">
                             <span class="section-icon">💡</span>
-                            <h2>Tips Rápidos</h2>
+                            <h2>Tips Esenciales</h2>
                         </div>
                         <div class="section-content">
                             <div class="tips-grid">
                                 <div class="tip-card">
                                     <span class="tip-emoji">🤝</span>
-                                    <p><strong>Trabaja en equipo</strong> - La cooperación es clave para la supervivencia</p>
+                                    <p><strong>Trabaja en equipo</strong> - La cooperación es clave. Combina habilidades y rescata compañeros.</p>
                                 </div>
                                 <div class="tip-card">
                                     <span class="tip-emoji">🎧</span>
-                                    <p><strong>Usa auriculares</strong> - El audio es crucial para detectar peligros</p>
+                                    <p><strong>Usa auriculares</strong> - El audio es crucial. Escucha pasos, habilidades y heartbeats.</p>
                                 </div>
                                 <div class="tip-card">
                                     <span class="tip-emoji">🌀</span>
-                                    <p><strong>Busca los anillos</strong> - Localiza los anillos de escape para tener rutas de salida</p>
+                                    <p><strong>Localiza los anillos</strong> - Identifica dónde aparecen los anillos de escape temprano.</p>
                                 </div>
                                 <div class="tip-card">
                                     <span class="tip-emoji">⏱️</span>
-                                    <p><strong>Sobrevive</strong> - No hay objetivos que completar, solo escapa por los anillos</p>
+                                    <p><strong>Gestiona cooldowns</strong> - No gastes todas tus habilidades de golpe. Planifica su uso.</p>
+                                </div>
+                                <div class="tip-card">
+                                    <span class="tip-emoji">🗺️</span>
+                                    <p><strong>Conoce el mapa</strong> - Aprende las rutas de escape, obstáculos y zonas seguras.</p>
+                                </div>
+                                <div class="tip-card">
+                                    <span class="tip-emoji">👀</span>
+                                    <p><strong>Mantén visión</strong> - Nunca pierdas de vista al Killer si eres Survivor.</p>
                                 </div>
                             </div>
                         </div>
