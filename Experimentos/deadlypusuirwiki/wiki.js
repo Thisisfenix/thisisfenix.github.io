@@ -1,20 +1,66 @@
 ﻿class DeadlyPursuerWiki {
     constructor() {
+        // Mapa de emojis a iconos Lucide
+        this.emojiToLucide = {
+            '🎮': 'gamepad-2',
+            '🎯': 'target',
+            '⚡': 'zap',
+            '🔥': 'flame',
+            '💀': 'skull',
+            '🏃': 'person-standing',
+            '🔪': 'axe',
+            '✨': 'sparkles',
+            '💊': 'pill',
+            '❤️': 'heart',
+            '🌀': 'circle-dot',
+            '👁️': 'eye',
+            '⚔️': 'sword',
+            '💡': 'lightbulb',
+            '🤝': 'handshake',
+            '🎧': 'headphones',
+            '🗺️': 'map',
+            '⏱️': 'timer',
+            '👀': 'eye',
+            '🚧': 'construction',
+            '⚠️': 'alert-triangle',
+            '🛡️': 'shield',
+            '🔍': 'search',
+            '🌫️': 'cloud',
+            '🩸': 'droplet',
+            '🗑️': 'trash-2',
+            '🧲': 'magnet',
+            '⚙️': 'settings',
+            '📋': 'clipboard-list',
+            '🔗': 'link',
+            '🖼️': 'image',
+            '🎨': 'palette',
+            '📝': 'file-text',
+            '🆕': 'package-plus',
+            '🗂️': 'folder-open',
+            '🧹': 'eraser',
+            '🐛': 'bug',
+            '🏆': 'trophy',
+            '📖': 'book-open',
+            '📱': 'smartphone',
+            '👊': 'hand',
+            '🌊': 'waves'
+        };
+        
         this.characters = {
-            '2019x': { name: '2019X', role: 'killer', icon: '../public/assets/icons/2019XNormalIcon.png' },
+            '2019x': { name: '2019X', role: 'killer', icon: '../public/assets/icons/2019XNormalIcon.png', tags: ['rework'] },
             'bfmp4': { name: 'Bfmp4', role: 'npc', icon: '../public/assets/icons/Bfmp4Icon.png' },
             'ia666': { name: 'iA666', role: 'killer', icon: 'Assets/images/IA666.png' },
             'missx': { name: 'MissX', role: 'killer', icon: 'Assets/images/MissX.png' },
-            'peace': { name: 'Peace', role: 'killer', icon: '../public/assets/icons/PeaceNormalIcon.png' },
+            'peace': { name: 'Peace', role: 'killer', icon: '../public/assets/icons/PeaceNormalIcon.png', tags: ['wip'] },
             'varkul': { name: 'Varkul', role: 'killer', icon: 'Assets/images/PlaceHolder.png' },
             'abelitogamer': { name: 'AbelitoGamer', role: 'boss', icon: 'Assets/images/AbelitoInactiveIcon.png' },
             'gissel': { name: 'Gissel', role: 'survivor', icon: '../public/assets/icons/GisselInactiveIcon.png' },
             'ia777': { name: 'iA777', role: 'survivor', icon: '../public/assets/icons/IA777NormalIcon.png', icons: { danger: '../public/assets/icons/IA777DangerIcon.png', dead: '../public/assets/icons/IA777DeadIcon.png' } },
             'iris': { name: 'Iris', role: 'survivor', icon: '../public/assets/icons/IrisNormalIcon.png', icons: { danger: '../public/assets/icons/IrisDangerIcon.png', dead: '../public/assets/icons/IrisDeadIcon.png' } },
             'allison': { name: 'Allison', role: 'survivor', icon: '../public/assets/icons/AllisonNormalIcon.png' },
-            'luna': { name: 'Luna', role: 'survivor', icon: '../public/assets/icons/LunaNormalIcon.png', icons: { danger: '../public/assets/icons/LunaDangerIcon.png', dead: '../public/assets/icons/LunaDeadIcon.png' } },
+            'luna': { name: 'Luna', role: 'survivor', icon: '../public/assets/icons/LunaNormalIcon.png', icons: { danger: '../public/assets/icons/LunaDangerIcon.png', dead: '../public/assets/icons/LunaDeadIcon.png' }, tags: ['rework'] },
             'valem': { name: 'Valem', role: 'survivor', icon: '../public/assets/icons/ValemNormalIcon.png' },
-            'anna': { name: 'Anna Moonred', role: 'survivor', icon: '../public/assets/icons/AnnaNormalIcon.png' },
+            'anna': { name: 'Anna Moonred', role: 'survivor', icon: '../public/assets/icons/AnnaNormalIcon.png', tags: ['wip'] },
             'ankush': { name: 'Ankush Moonred', role: 'survivor', icon: 'Assets/images/AnkusHNormalIcon.png', icons: { danger: '../public/assets/icons/AnkushDangerIcon.png', dead: '../public/assets/icons/AnkushDeadIcon.png' } }
         };
         
@@ -25,6 +71,16 @@
         };
         
         this.init();
+    }
+    
+    // Método para convertir emojis a iconos Lucide
+    convertEmojisToLucide(html) {
+        let result = html;
+        for (const [emoji, icon] of Object.entries(this.emojiToLucide)) {
+            const regex = new RegExp(emoji.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+            result = result.replace(regex, `<i data-lucide="${icon}" style="width:1.25em;height:1.25em;display:inline-block;vertical-align:middle;"></i>`);
+        }
+        return result;
     }
 
     async init() {
@@ -88,14 +144,32 @@
             if (char.role === 'boss') roleLabel = 'Boss';
             if (char.role === 'npc') roleLabel = 'NPC';
             
+            // Generar tags si existen
+            let tagsHtml = '';
+            if (char.tags && char.tags.length > 0) {
+                tagsHtml = '<div class="character-tags">';
+                char.tags.forEach(tag => {
+                    if (tag === 'rework') {
+                        tagsHtml += '<span class="tag-rework" title="Habilidades serán reworkeadas"><i data-lucide="wrench"></i> Rework</span>';
+                    } else if (tag === 'wip') {
+                        tagsHtml += '<span class="tag-wip" title="En desarrollo"><i data-lucide="construction"></i> WIP</span>';
+                    }
+                });
+                tagsHtml += '</div>';
+            }
+            
             card.innerHTML = `
                 <img src="${char.icon}" alt="${char.name}" onerror="this.src='Assets/images/PlaceHolder.png'">
                 <h4>${char.name}</h4>
                 <span class="role ${char.role}">${roleLabel}</span>
+                ${tagsHtml}
             `;
             
             grid.appendChild(card);
         });
+        
+        // Initialize Lucide icons for tags
+        lucide.createIcons();
     }
 
     generateStats() {
@@ -145,7 +219,7 @@
     isWorkInProgress(characterId) {
         // Lista de personajes que están en Work in Progress
         const wipCharacters = [
-            'peace', 'valem', 'anna'
+            'peace', 'anna'
         ];
         const wipPages = ['gameplay', 'tips'];
         
@@ -590,7 +664,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                 </div>` : ''}
 
                 <button class="char-share-btn" onclick="wiki.shareCharacter('${characterId}')" title="Copiar enlace">
-                    🔗 Compartir
+                    <i data-lucide="link" style="width:1em;height:1em;margin-right:0.25em;"></i> Compartir
                 </button>
                 
                 <div class="character-details">
@@ -651,18 +725,51 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             </div>
         ` : '';
         
+        // Generar aviso basado en tags
+        let tagNoticeHtml = '';
+        if (character.tags && character.tags.length > 0) {
+            character.tags.forEach(tag => {
+                if (tag === 'rework') {
+                    tagNoticeHtml += `
+                        <div class="tag-notice rework-notice">
+                            <div class="notice-icon"><i data-lucide="wrench"></i></div>
+                            <div class="notice-content">
+                                <h4>⚠️ Rework Próximo</h4>
+                                <p>Las habilidades de <strong>${character.name}</strong> serán reworkeadas en una futura actualización. La información actual puede cambiar significativamente.</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (tag === 'wip') {
+                    tagNoticeHtml += `
+                        <div class="tag-notice wip-notice">
+                            <div class="notice-icon"><i data-lucide="construction"></i></div>
+                            <div class="notice-content">
+                                <h4>🚧 En Desarrollo</h4>
+                                <p><strong>${character.name}</strong> está en desarrollo activo. La información puede estar incompleta o cambiar frecuentemente.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
         const html = `
             <div class="character-profile active">
                 <div class="character-main ${infoBoxHtml ? '' : 'no-infobox'}">
                     <div class="markdown-content">
                         ${infoBoxHtml}
-                        ${marked.parse(markdown)}
+                        ${tagNoticeHtml}
+                        ${this.convertEmojisToLucide(marked.parse(markdown))}
                     </div>
                 </div>
             </div>
         `;
         
         content.innerHTML = html;
+        
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
         this._initLoreEffects(content);
         this._injectCharNav(characterId, content);
 
@@ -713,7 +820,12 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             markdown = await this.loadMarkdownFile(pageId);
         }
         
-        content.innerHTML = `<div class="markdown-content">${marked.parse(markdown)}</div>`;
+        // Procesar markdown y convertir emojis a iconos Lucide
+        const processedMarkdown = this.convertEmojisToLucide(marked.parse(markdown));
+        content.innerHTML = `<div class="markdown-content">${processedMarkdown}</div>`;
+        
+        // Initialize Lucide icons
+        lucide.createIcons();
         
         window.history.pushState({page: pageId}, '', `#${pageId}`);
     }
@@ -724,20 +836,20 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         content.innerHTML = `
             <div class="gameplay-page">
                 <div class="gameplay-header">
-                    <h1>🎮 Mecánicas del Juego</h1>
+                    <h1><i data-lucide="gamepad-2"></i> Mecánicas del Juego</h1>
                     <p class="gameplay-subtitle">Guía completa sobre cómo jugar Deadly Pursuit</p>
                 </div>
 
                 <div class="gameplay-content">
-                    <!-- Objetivo del Juego -->
+                    <!-- Aviso Importante -->
                     <section class="gameplay-section">
                         <div class="section-header">
-                            <span class="section-icon">⚠️</span>
-                            <h2>⚠️ Aviso Importante</h2>
+                            <span class="section-icon"><i data-lucide="alert-triangle"></i></span>
+                            <h2>Aviso Importante</h2>
                         </div>
                         <div class="section-content">
                             <div class="alert-box warning">
-                                <p><strong>🚧 El juego está en desarrollo activo</strong></p>
+                                <p><strong><i data-lucide="construction"></i> El juego está en desarrollo activo</strong></p>
                                 <p>Las mecánicas descritas aquí pueden cambiar, eliminarse o añadirse en futuras actualizaciones. Esta wiki se actualizará constantemente para reflejar los cambios del juego.</p>
                             </div>
                         </div>
@@ -746,7 +858,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                     <!-- Objetivo del Juego -->
                     <section class="gameplay-section">
                         <div class="section-header">
-                            <span class="section-icon">🎯</span>
+                            <span class="section-icon"><i data-lucide="target"></i></span>
                             <h2>Objetivo del Juego</h2>
                         </div>
                         <div class="section-content">
@@ -755,7 +867,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                             <div class="role-cards">
                                 <div class="role-card survivor-card">
                                     <div class="role-card-header">
-                                        <span class="role-icon">🏃</span>
+                                        <span class="role-icon"><i data-lucide="users"></i></span>
                                         <h3>Survivors</h3>
                                     </div>
                                     <ul>
@@ -768,7 +880,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 
                                 <div class="role-card killer-card">
                                     <div class="role-card-header">
-                                        <span class="role-icon">🔪</span>
+                                        <span class="role-icon"><i data-lucide="skull"></i></span>
                                         <h3>Killers</h3>
                                     </div>
                                     <ul>
@@ -785,13 +897,13 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                     <!-- Mecánicas de Survivors -->
                     <section class="gameplay-section">
                         <div class="section-header">
-                            <span class="section-icon">🏃</span>
+                            <span class="section-icon"><i data-lucide="person-standing"></i></span>
                             <h2>Mecánicas de Survivors</h2>
                         </div>
                         <div class="section-content">
                             <div class="mechanic-list">
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">🌀</div>
+                                    <div class="mechanic-icon"><i data-lucide="circle-dot"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Anillos de Escape</h4>
                                         <p>Los anillos de escape aparecen en el mapa. Encuentra uno y atraviésalo para escapar y ganar. Es la única forma de victoria para los Survivors.</p>
@@ -799,7 +911,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">❤️</div>
+                                    <div class="mechanic-icon"><i data-lucide="heart"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Sistema de Salud</h4>
                                         <p>Los Survivors tienen puntos de vida. Cada golpe del Killer reduce tu salud. Si llegas a 0 HP, serás eliminado.</p>
@@ -807,15 +919,15 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">💊</div>
+                                    <div class="mechanic-icon"><i data-lucide="pill"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Curación</h4>
-                                        <p><strong>🚧 En Desarrollo:</strong> El sistema de curación aún no está implementado. Actualmente no hay forma de recuperar salud perdida.</p>
+                                        <p><strong><i data-lucide="construction"></i> En Desarrollo:</strong> El sistema de curación aún no está implementado. Actualmente no hay forma de recuperar salud perdida.</p>
                                     </div>
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">✨</div>
+                                    <div class="mechanic-icon"><i data-lucide="sparkles"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Habilidades Únicas</h4>
                                         <p>Cada Survivor tiene habilidades especiales (Q, E, R, etc.) con cooldowns específicos. Úsalas estratégicamente para sobrevivir.</p>
@@ -823,7 +935,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">🏃</div>
+                                    <div class="mechanic-icon"><i data-lucide="move"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Movimiento</h4>
                                         <p>Usa el entorno a tu favor: corre, esquiva obstáculos y rompe la línea de visión del Killer. No existe mecánica de ocultación en la oscuridad.</p>
@@ -836,13 +948,13 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                     <!-- Mecánicas de Killers -->
                     <section class="gameplay-section">
                         <div class="section-header">
-                            <span class="section-icon">🔪</span>
+                            <span class="section-icon"><i data-lucide="axe"></i></span>
                             <h2>Mecánicas de Killers</h2>
                         </div>
                         <div class="section-content">
                             <div class="mechanic-list">
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">👁️</div>
+                                    <div class="mechanic-icon"><i data-lucide="eye"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Detección de Survivors</h4>
                                         <p>Usa pistas visuales y sonidos para rastrear a los Survivors. Cada Killer tiene diferentes métodos de detección.</p>
@@ -850,7 +962,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">⚔️</div>
+                                    <div class="mechanic-icon"><i data-lucide="sword"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Sistema de Ataque</h4>
                                         <p>Golpea a los Survivors para reducir su salud. El daño varía según el Killer y sus habilidades activas.</p>
@@ -858,7 +970,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">✨</div>
+                                    <div class="mechanic-icon"><i data-lucide="sparkles"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Habilidades Especiales</h4>
                                         <p>Cada Killer tiene un set único de habilidades (Q, E, R, F, X, etc.) que definen su estilo de caza. Aprende sus cooldowns y efectos.</p>
@@ -866,7 +978,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">🎯</div>
+                                    <div class="mechanic-icon"><i data-lucide="map-pin"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Control del Mapa</h4>
                                         <p>Patrulla zonas clave, predice movimientos de Survivors y controla el acceso a los anillos de escape.</p>
@@ -874,7 +986,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 </div>
                                 
                                 <div class="mechanic-item">
-                                    <div class="mechanic-icon">⚡</div>
+                                    <div class="mechanic-icon"><i data-lucide="zap"></i></div>
                                     <div class="mechanic-info">
                                         <h4>Habilidades Ultimate</h4>
                                         <p>Algunos Killers tienen habilidades ultimate potentes con mecánicas de carga. Úsalas en momentos decisivos.</p>
@@ -887,33 +999,33 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                     <!-- Tips Rápidos -->
                     <section class="gameplay-section tips-section">
                         <div class="section-header">
-                            <span class="section-icon">💡</span>
+                            <span class="section-icon"><i data-lucide="lightbulb"></i></span>
                             <h2>Tips Esenciales</h2>
                         </div>
                         <div class="section-content">
                             <div class="tips-grid">
                                 <div class="tip-card">
-                                    <span class="tip-emoji">🤝</span>
+                                    <span class="tip-emoji"><i data-lucide="handshake"></i></span>
                                     <p><strong>Trabaja en equipo</strong> - La cooperación es clave. Combina habilidades y rescata compañeros.</p>
                                 </div>
                                 <div class="tip-card">
-                                    <span class="tip-emoji">🎧</span>
+                                    <span class="tip-emoji"><i data-lucide="headphones"></i></span>
                                     <p><strong>Usa auriculares</strong> - El audio es crucial. Escucha pasos, habilidades y heartbeats.</p>
                                 </div>
                                 <div class="tip-card">
-                                    <span class="tip-emoji">🌀</span>
+                                    <span class="tip-emoji"><i data-lucide="circle-dot"></i></span>
                                     <p><strong>Localiza los anillos</strong> - Identifica dónde aparecen los anillos de escape temprano.</p>
                                 </div>
                                 <div class="tip-card">
-                                    <span class="tip-emoji">⏱️</span>
+                                    <span class="tip-emoji"><i data-lucide="timer"></i></span>
                                     <p><strong>Gestiona cooldowns</strong> - No gastes todas tus habilidades de golpe. Planifica su uso.</p>
                                 </div>
                                 <div class="tip-card">
-                                    <span class="tip-emoji">🗺️</span>
+                                    <span class="tip-emoji"><i data-lucide="map"></i></span>
                                     <p><strong>Conoce el mapa</strong> - Aprende las rutas de escape, obstáculos y zonas seguras.</p>
                                 </div>
                                 <div class="tip-card">
-                                    <span class="tip-emoji">👀</span>
+                                    <span class="tip-emoji"><i data-lucide="eye"></i></span>
                                     <p><strong>Mantén visión</strong> - Nunca pierdas de vista al Killer si eres Survivor.</p>
                                 </div>
                             </div>
@@ -922,6 +1034,9 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                 </div>
             </div>
         `;
+        
+        // Initialize Lucide icons
+        lucide.createIcons();
     }
 
     showHome() {

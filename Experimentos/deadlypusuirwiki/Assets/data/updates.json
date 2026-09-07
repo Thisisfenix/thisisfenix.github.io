@@ -1,92 +1,90 @@
 {
-  "currentVersion": "1.0.3",
+  "currentVersion": "1.0.3a",
   "updates": [
+    {
+      "version": "1.0.3a",
+      "date": "2026-09-06",
+      "title": "[icon:tag] Sistema de Tags y Avisos",
+      "type": "patch",
+      "changes": [
+        {
+          "category": "[icon:tag] Sistema de Tags",
+          "items": [
+            "Nuevo sistema de tags para personajes (rework, wip)",
+            "Tags visibles en las tarjetas de personajes en home",
+            "Avisos automáticos al abrir personajes con tags",
+            "Luna, 2019X marcados como 'rework' (habilidades serán cambiadas)",
+            "Peace, Anna marcados como 'wip' (en desarrollo)"
+          ]
+        },
+        {
+          "category": "[icon:sparkles] Mejoras Visuales",
+          "items": [
+            "Avisos destacados con diseño card y gradientes",
+            "Iconos Lucide para tags (llave inglesa, construcción)",
+            "Colores diferenciados: naranja para rework, azul para wip",
+            "Tooltips informativos en badges de tags"
+          ]
+        }
+      ],
+      "notes": "Sistema de tags implementado. Ahora es fácil marcar personajes que recibirán cambios o están en desarrollo."
+    },
     {
       "version": "1.0.3",
       "date": "2026-09-06",
-      "title": "🎨 Rediseño Visual y Nuevos Personajes",
+      "title": "[icon:palette] Rediseño Visual y Nuevos Personajes",
       "type": "minor",
       "changes": [
         {
-          "category": "✨ Mejoras Visuales",
+          "category": "[icon:sparkles] Mejoras Visuales",
           "items": [
-            "Rediseño completo del CSS con estética más moderna y pulida",
-            "Character cards con efectos de elevación, sombras dinámicas y glow en hover",
-            "Wiki intro con gradientes sutiles y stats interactivos con hover",
-            "Markdown content con mejor jerarquía visual y gradientes en títulos",
-            "Character infobox mejorado con sombras múltiples y efectos de profundidad",
-            "Role badges con colores más vibrantes y efectos de glow al hover",
-            "Transiciones suaves con cubic-bezier para movimientos naturales"
+            "Rediseño completo del CSS con estética moderna",
+            "Character cards con sombras dinámicas y efectos hover mejorados",
+            "Gradientes sutiles en intro y stats",
+            "Infobox con sombras múltiples y profundidad visual",
+            "Role badges más vibrantes con efectos de glow",
+            "Transiciones suaves en toda la interfaz"
           ]
         },
         {
           "category": "🆕 Nuevos Personajes",
           "items": [
-            "Varkul añadido como Killer con todas sus habilidades documentadas",
-            "Ataque básico: 18 daño, 1.5s CD, sistema de hitbox asimétrica",
-            "Pasiva Bloodlust: +5% velocidad/daño por hit (máx 3 stacks)",
-            "Q - Counter Strike: bloquea stuns y contraataca (5s duración, 15s CD)",
-            "E - Bloodhound: revela survivors heridos por 6 segundos",
-            "R - Phantom Strike: teleport con sistema de advertencia azul/naranja",
-            "F - Grab: agarre con daño por segundo (cancelable por stuns)",
-            "X - Rage Mode: x2 daño, +30% velocidad, carga con stuns recibidos",
-            "Sistema de diálogos: risas automáticas al tumbar survivors",
-            "Valem actualizada con información completa de habilidades",
-            "Máscara del Rastreador: rastreo ilimitado en primera vida, limitado en segunda",
-            "Q - Camuflaje Temporal: 22s CD, 10s duración, 70-90% efectividad",
-            "E - Campo Gravitacional: 28s CD, 1.75s stun en cono de 30 studs",
-            "Pasiva Impulso: +15% velocidad por 2s al salir de invisibilidad"
+            "Varkul añadido: Killer con 7 habilidades + pasiva documentadas",
+            "Varkul: Sistema de Rage Mode que carga con stuns recibidos",
+            "Varkul: Diálogos automáticos al eliminar survivors",
+            "Valem actualizada: 3 habilidades activas + 1 pasiva completas",
+            "Valem: Máscara del Rastreador con mecánica de degradación"
           ]
         },
         {
-          "category": "🗂️ Nueva Sección: Descartados",
+          "category": "🗂️ Sección Descartados",
           "items": [
-            "Sección especial en el sidebar para personajes descartados",
-            "Molly movida a Descartados: razones personales",
-            "Angel movido a Descartados: falta de información del creador",
-            "Estilo visual diferenciado: opacidad reducida, texto en cursiva",
-            "Tooltips informativos con razón del descarte",
-            "Separación visual con borde superior"
+            "Nueva sección en sidebar para personajes descartados",
+            "Molly y Angel movidos a Descartados con razones explicadas",
+            "Estilo visual diferenciado: opacidad y cursiva"
           ]
         },
         {
-          "category": "🎮 Mecánicas Reelaboradas",
+          "category": "🎮 Mecánicas Corregidas",
           "items": [
-            "Eliminada mecánica falsa de 'ocultación en la oscuridad'",
-            "Corregido sistema de daño: ya no son 'dos golpes', varía por Killer",
-            "Sistema de salud clarificado: HP variable según personaje",
-            "Sistema de curación marcado correctamente como 'En Desarrollo'",
-            "Nueva sección de aviso: juego en desarrollo activo",
-            "Alert box naranja para advertencias importantes",
-            "Mecánicas de Killers expandidas con habilidades Ultimate",
-            "Tips esenciales aumentados de 4 a 6 con más detalle"
+            "Eliminada mecánica falsa de 'ocultación en oscuridad'",
+            "Sistema de daño corregido: varía por Killer, no son 2 golpes fijos",
+            "Alert box naranja advirtiendo que el juego está en desarrollo",
+            "Curación marcada correctamente como 'En Desarrollo'",
+            "Tips expandidos de 4 a 6 con más detalle"
           ]
         },
         {
-          "category": "📝 Actualizaciones de Personajes",
+          "category": "📝 iA666 Actualizado",
           "items": [
-            "iA666 actualizado con Niebla Tóxica (35-50 studs, 2 HP/5s, ceguera)",
-            "iA666: Localizador ahora es habilidad activa con 25s CD",
-            "iA666: Pisotón buffed - 16 daño en radio de 6 studs",
-            "iA666: Removidas habilidades Atracción, Counter y Minions a descartados",
-            "Todas las habilidades de iA666 con stats precisos y cooldowns"
-          ]
-        },
-        {
-          "category": "🎨 Mejoras de CSS Detalladas",
-          "items": [
-            "Character cards: borde animado superior, transform scale en imágenes",
-            "Stats con efecto hover: translateY(-2px) y cambio de fondo",
-            "Títulos H1 con gradiente de texto (primary → accent)",
-            "H2 con barra lateral con gradiente vertical rojo-púrpura",
-            "H3 con fondos más intensos y desplazamiento en hover",
-            "Infobox portrait: 140px con glow rojo y efecto de escala en hover",
-            "Info items con hover interactivo y cambio de padding",
-            "Blockquotes con borde interior sutil y mejor contraste"
+            "Nueva habilidad: Niebla Tóxica (2 HP cada 5s, ceguera)",
+            "Localizador ahora es habilidad activa (25s CD)",
+            "Pisotón buffed: 16 daño en 6 studs",
+            "Removidas: Atracción, Counter y Minions a descartados"
           ]
         }
       ],
-      "notes": "Gran actualización visual y de contenido. La wiki ahora luce mucho más profesional con efectos modernos y dos personajes nuevos completamente documentados. Las mecánicas fueron corregidas para reflejar el estado real del juego."
+      "notes": "Actualización visual y de contenido. Mecánicas corregidas para reflejar el estado real del juego. Dos personajes nuevos documentados."
     },
     {
       "version": "1.0.2",

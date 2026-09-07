@@ -807,6 +807,44 @@ body::after {
     color: var(--accent-primary);
 }
 
+/* Character Tags */
+.character-tags {
+    display: flex;
+    gap: 0.375rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.character-tags span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.character-tags i[data-lucide] {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.tag-rework {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ffa726;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.tag-wip {
+    background: rgba(33, 150, 243, 0.15);
+    color: #42a5f5;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
 .role {
     display: inline-block;
     padding: 0.25rem 0.625rem;
@@ -1052,6 +1090,70 @@ body::after {
     font-size: 0.9375rem;
     overflow: auto;
     box-shadow: var(--shadow-md);
+}
+
+/* Tag Notices - Avisos de estado del personaje */
+.tag-notice {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 2rem;
+    border: 2px solid;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.tag-notice .notice-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+}
+
+.tag-notice .notice-icon i[data-lucide] {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.tag-notice .notice-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.tag-notice .notice-content p {
+    font-size: 0.875rem;
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.tag-notice .notice-content strong {
+    color: var(--text-primary);
+}
+
+.rework-notice {
+    border-color: rgba(255, 152, 0, 0.5);
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 193, 7, 0.1));
+}
+
+.rework-notice .notice-icon {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ffa726;
+}
+
+.wip-notice {
+    border-color: rgba(33, 150, 243, 0.5);
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.15), rgba(3, 169, 244, 0.1));
+}
+
+.wip-notice .notice-icon {
+    background: rgba(33, 150, 243, 0.2);
+    color: #42a5f5;
 }
 
 .markdown-content h1 {
@@ -1348,6 +1450,39 @@ body::after {
     max-width: 1400px;
     margin: 0 auto;
     animation: fadeIn 0.5s ease;
+}
+
+/* Lucide icons styling */
+.gameplay-page i[data-lucide] {
+    width: 1.25rem;
+    height: 1.25rem;
+    vertical-align: middle;
+}
+
+.gameplay-header h1 i[data-lucide] {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.5rem;
+}
+
+.section-icon i[data-lucide] {
+    width: 2rem;
+    height: 2rem;
+}
+
+.mechanic-icon i[data-lucide] {
+    width: 2rem;
+    height: 2rem;
+}
+
+.tip-emoji i[data-lucide] {
+    width: 2rem;
+    height: 2rem;
+}
+
+.role-icon i[data-lucide] {
+    width: 2rem;
+    height: 2rem;
 }
 
 /* Alert Box - Warning */
