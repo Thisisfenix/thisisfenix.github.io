@@ -21,23 +21,22 @@
   <meta name="twitter:image" content="https://thisisfenix.github.io/FenixLaboratory/Assets/images/FunkyMakerPlayer1.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
-      --accent: #e91e63;
-      --accent-dim: rgba(233,30,99,0.15);
-      --accent-border: rgba(233,30,99,0.3);
-      --accent-light: #f48fb1;
-      --accent-yellow: #ffc107;
-      --accent-yellow-dim: rgba(255,193,7,0.15);
-      --bg: #0a0a0f;
-      --bg-card: #111118;
-      --bg-card2: #16161f;
-      --text: #f0f0f0;
-      --text-muted: #888;
-      --radius: 12px;
+      --accent: #d81b60;
+      --accent-dim: rgba(216,27,96,0.1);
+      --accent-border: rgba(216,27,96,0.25);
+      --accent-light: #ec407a;
+      --accent-cyan: #00bcd4;
+      --accent-yellow: #ffa726;
+      --bg: #0d0d12;
+      --bg-card: #14141a;
+      --bg-card2: #1a1a22;
+      --text: #e8e8ee;
+      --text-muted: #9696a4;
+      --radius: 10px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,93 +46,60 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    /* Grid bg */
+    /* Grid bg más sutil */
     .grid-bg {
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(233,30,99,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(233,30,99,0.04) 1px, transparent 1px);
-      background-size: 40px 40px;
+        linear-gradient(rgba(216,27,96,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(216,27,96,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Hero */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 5rem 1.5rem 3rem;
+    /* Container principal */
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
       position: relative;
-      background: radial-gradient(ellipse at 50% 0%, rgba(233,30,99,0.2) 0%, transparent 60%);
       z-index: 1;
     }
 
-    .hero-inner {
-      display: flex;
-      flex-wrap: wrap;
+    /* Hero compacto */
+    .hero {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 2rem;
       align-items: center;
-      gap: 3rem;
-      max-width: 960px;
-      width: 100%;
+      padding: 2rem;
+      background: radial-gradient(ellipse at 50% 50%, rgba(216,27,96,0.12) 0%, transparent 70%);
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(216,27,96,0.15);
     }
 
-    .hero-img-wrap {
-      flex-shrink: 0;
-      position: relative;
-    }
-
-    .hero-img-wrap img {
-      width: 160px;
-      height: 160px;
+    .hero-img {
+      width: 120px;
+      height: 120px;
       object-fit: contain;
-      border-radius: 24px;
-      box-shadow: 0 0 60px rgba(233,30,99,0.5), 0 0 120px rgba(233,30,99,0.2);
-      display: block;
-    }
-
-    .hero-img-wrap::after {
-      content: '';
-      position: absolute;
-      inset: -8px;
-      border-radius: 30px;
-      border: 1px solid rgba(233,30,99,0.25);
-      pointer-events: none;
-    }
-
-    .hero-text { flex: 1; min-width: 260px; }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: var(--accent-dim);
-      border: 1px solid var(--accent-border);
-      color: var(--accent-light);
-      padding: 0.3rem 0.9rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(216,27,96,0.3);
     }
 
     .hero-text h1 {
-      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-size: 2.5rem;
       font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.75rem;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
     }
 
     .hero-text h1 .accent {
-      background: linear-gradient(135deg, #e91e63, #ffc107);
+      background: linear-gradient(120deg, #d81b60, #00bcd4);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -141,56 +107,55 @@
 
     .hero-text p {
       color: var(--text-muted);
-      font-size: 1rem;
-      line-height: 1.6;
-      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
     }
 
     .drag-hint {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px dashed rgba(233,30,99,0.35);
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(216,27,96,0.3);
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
       color: var(--accent-light);
-      margin: 1rem 0 1.5rem;
     }
 
     .hero-actions {
       display: flex;
+      flex-direction: column;
       gap: 0.75rem;
-      flex-wrap: wrap;
     }
 
-    /* Buttons */
     .btn-funky {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.5rem;
-      padding: 0.7rem 1.6rem;
+      padding: 0.7rem 1.4rem;
       border-radius: 8px;
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
       text-decoration: none;
       border: none;
+      white-space: nowrap;
     }
 
     .btn-download {
-      background: linear-gradient(135deg, #e91e63, #ffc107);
-      color: #0a0a0f;
-      box-shadow: 0 0 24px rgba(233,30,99,0.45);
+      background: linear-gradient(120deg, #d81b60, #00bcd4);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(216,27,96,0.25);
     }
 
     .btn-download:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 40px rgba(233,30,99,0.65);
-      color: #0a0a0f;
+      box-shadow: 0 6px 24px rgba(216,27,96,0.35);
+      color: #fff;
     }
 
     .btn-back {
@@ -201,271 +166,372 @@
 
     .btn-back:hover {
       background: var(--accent-dim);
-      transform: translateY(-2px);
-      color: var(--accent-light);
-    }
-
-    /* Sections */
-    section {
-      position: relative;
-      z-index: 1;
-      padding: 4rem 1.5rem;
-    }
-
-    section:nth-child(even) { background: var(--bg-card); }
-
-    .section-inner {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 1.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .section-title span { color: var(--accent); }
-
-    /* Features grid */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    .feature-card {
-      background: var(--bg-card2);
-      border: 1px solid var(--accent-border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .feature-card:hover {
       border-color: var(--accent);
-      transform: translateY(-3px);
+      color: var(--accent-light);
     }
 
-    .feature-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
-    .feature-icon i { width: 1.6rem; height: 1.6rem; }
-    .feature-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.3rem; }
-    .feature-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+    /* Secciones en grid horizontal */
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
 
-    /* Collapsible sections */
-    .feature-section-header {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--accent-light);
-      margin: 2rem 0 1rem;
+    .content-grid.full {
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      cursor: pointer;
-      padding: 0.75rem 1rem;
-      background: rgba(233,30,99,0.08);
-      border: 1px solid rgba(233,30,99,0.2);
-      border-radius: 10px;
-      transition: all 0.3s ease;
-      user-select: none;
+      color: var(--text);
     }
 
-    .feature-section-header:hover {
-      background: rgba(233,30,99,0.12);
-      border-color: rgba(233,30,99,0.4);
+    .card-title span { color: var(--accent); }
+
+    /* Features en columnas */
+    .features-cols {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
     }
 
-    .feature-section-header .icon {
-      font-size: 1.3rem;
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.75rem;
+      background: var(--bg-card2);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.04);
+      transition: all 0.2s;
     }
 
-    .feature-section-header .arrow {
-      margin-left: auto;
-      transition: transform 0.3s ease;
-      font-size: 1.2rem;
+    .feature-item:hover {
+      border-color: var(--accent);
+      transform: translateX(3px);
     }
 
-    .feature-section-header.collapsed .arrow {
-      transform: rotate(-90deg);
-    }
-
-    .feature-section-content {
-      max-height: 5000px;
-      overflow: hidden;
-      transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
-      opacity: 1;
-      margin-bottom: 0;
-    }
-
-    .feature-section-content.collapsed {
-      max-height: 0;
-      opacity: 0;
-      margin-bottom: -1rem;
-    }
-
-    /* Controls table */
-    .controls-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    .controls-table thead tr {
-      border-bottom: 1px solid var(--accent-border);
-    }
-
-    .controls-table th {
-      text-align: left;
-      padding: 0.6rem 1rem;
+    .feature-item i {
       color: var(--accent-light);
-      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+    }
+
+    .feature-item strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+      color: var(--text);
+    }
+
+    .feature-item span {
       font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .controls-table td {
-      padding: 0.65rem 1rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
       color: var(--text-muted);
+      line-height: 1.4;
     }
 
-    .controls-table tr:last-child td { border-bottom: none; }
-    .controls-table tr:hover td { background: rgba(233,30,99,0.04); }
+    /* Tabs para features */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 0.5rem 1rem;
+      background: var(--bg-card2);
+      border: 1px solid rgba(216,27,96,0.2);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: rgba(216,27,96,0.1);
+      color: var(--accent-light);
+    }
+
+    .tab.active {
+      background: rgba(216,27,96,0.15);
+      border-color: var(--accent);
+      color: var(--accent-light);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Controles table compacta */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .control-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.8rem;
+      background: var(--bg-card2);
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
 
     .key {
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
-      background: rgba(233,30,99,0.12);
+      background: rgba(216,27,96,0.12);
       border: 1px solid var(--accent-border);
-      border-radius: 6px;
-      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
       font-family: monospace;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--accent-light);
       white-space: nowrap;
     }
 
-    /* Requirements */
-    .req-list {
+    /* Download section horizontal */
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .download-card {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .req-item {
-      display: flex;
       align-items: center;
       gap: 0.75rem;
-      background: var(--bg-card2);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      font-size: 0.9rem;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1rem;
+      text-align: center;
     }
 
-    .req-item i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; }
+    .download-card i {
+      width: 2.5rem;
+      height: 2.5rem;
+      color: var(--accent-light);
+    }
 
-    /* Credits */
+    .download-card strong {
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .download-card small {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .download-card .btn-funky {
+      width: 100%;
+      font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+    }
+
+    /* Credits horizontal */
     .credits-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.5rem;
     }
 
     .credit-card {
       background: var(--bg-card2);
-      border: 1px solid var(--accent-border);
+      border: 2px solid rgba(216,27,96,0.25);
       border-radius: var(--radius);
-      padding: 1.25rem;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
     }
 
-    .credit-role {
-      font-size: 0.72rem;
+    .credit-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .credit-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      flex-shrink: 0;
+    }
+
+    .credit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(255,167,38,0.12);
+      border: 1px solid rgba(255,167,38,0.25);
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.65rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--accent-light);
+      letter-spacing: 0.06em;
+      color: #ffa726;
       margin-bottom: 0.3rem;
     }
 
-    .credit-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
-    .credit-sub { font-size: 0.8rem; color: var(--text-muted); }
+    .credit-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
 
-    /* Tech pills */
-    .tech-pills {
+    .credit-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .credit-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .credit-links {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
+    }
+
+    .credit-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(216,27,96,0.15);
+      border: 1px solid rgba(216,27,96,0.3);
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .credit-link:hover {
+      background: rgba(216,27,96,0.25);
+      transform: translateY(-1px);
+      color: #fff;
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
       margin-top: 1rem;
     }
 
-    .tech-pill {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px;
-      padding: 0.25rem 0.65rem;
-      font-size: 0.78rem;
+    .tech-tag {
+      background: rgba(216,27,96,0.12);
+      border: 1px solid rgba(216,27,96,0.25);
+      border-radius: 4px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.75rem;
+      color: var(--accent-light);
+      font-weight: 600;
+    }
+
+    /* Notes compact */
+    .note {
+      background: rgba(216,27,96,0.06);
+      border: 1px solid rgba(216,27,96,0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
       color: var(--text-muted);
     }
 
-    /* Note banner */
-    .note-banner {
-      background: rgba(233,30,99,0.08);
-      border: 1px solid rgba(233,30,99,0.3);
-      border-radius: var(--radius);
-      padding: 1rem 1.25rem;
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-      font-size: 0.88rem;
-      color: #ffc107;
-      line-height: 1.5;
+    .note strong {
+      color: var(--text);
     }
 
-    .note-banner i { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .note.warning {
+      border-color: rgba(255,167,38,0.3);
+      background: rgba(255,167,38,0.06);
+    }
+
+    .note.warning strong {
+      color: var(--accent-yellow);
+    }
 
     /* Footer */
     footer {
-      position: relative;
-      z-index: 1;
       text-align: center;
-      padding: 2rem;
+      padding: 1.5rem;
       color: var(--text-muted);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: 2rem;
     }
 
-    footer a { color: var(--accent); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-
-    /* Float notes */
-    .float-note {
-      position: absolute;
-      font-size: 1.4rem;
-      opacity: 0.1;
-      animation: floatNote 7s ease-in-out infinite;
-      pointer-events: none;
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
     }
 
-    .float-note:nth-child(1) { top: 12%; left: 5%;    animation-delay: 0s; }
-    .float-note:nth-child(2) { top: 20%; right: 7%;   animation-delay: 2s; }
-    .float-note:nth-child(3) { bottom: 18%; left: 9%; animation-delay: 4s; }
-    .float-note:nth-child(4) { bottom: 25%; right: 5%; animation-delay: 1s; }
-
-    @keyframes floatNote {
-      0%, 100% { transform: translateY(0) rotate(-4deg); }
-      50%       { transform: translateY(-16px) rotate(4deg); }
+    footer a:hover {
+      text-decoration: underline;
     }
 
-    @media (max-width: 600px) {
-      .hero-inner { flex-direction: column; align-items: center; text-align: center; }
-      .hero-actions { justify-content: center; }
-      .drag-hint { text-align: center; }
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+      .download-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .credits-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero-actions {
+        width: 100%;
+      }
+      .features-cols,
+      .controls-grid,
+      .download-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -473,448 +539,431 @@
 
   <div class="grid-bg"></div>
 
-  <!-- Hero -->
-  <div class="hero">
-    <span class="float-note"><i data-lucide="music" style="width:1.4rem;height:1.4rem;"></i></span>
-    <span class="float-note"><i data-lucide="headphones" style="width:1.4rem;height:1.4rem;"></i></span>
-    <span class="float-note"><i data-lucide="guitar" style="width:1.4rem;height:1.4rem;"></i></span>
-    <span class="float-note"><i data-lucide="drum" style="width:1.4rem;height:1.4rem;"></i></span>
-
-    <div class="hero-inner">
-      <div class="hero-img-wrap">
-        <img src="../Assets/images/FunkyMakerPlayer1.png" alt="FunkyMakerPlayer logo">
-      </div>
+  <div class="main-container">
+    
+    <!-- Hero compacto -->
+    <div class="hero">
+      <img src="../Assets/images/FunkyMakerPlayer1.png" alt="FunkyMakerPlayer" class="hero-img">
       <div class="hero-text">
-        <div class="hero-badge">
-          <i data-lucide="flask-conical"></i> FenixLaboratory
-        </div>
-        <h1>FUNKY MAKER<br><span class="accent">PLAYER</span></h1>
-        <p>Un reproductor de niveles de Funky Maker para Windows y Linux.</p>
+        <h1>FUNKY MAKER <span class="accent">PLAYER</span></h1>
+        <p>Reproductor de niveles de Funky Maker para Windows y Linux</p>
         <div class="drag-hint">
           <i data-lucide="file-down"></i>
-          Arrastra un archivo <strong>.FNMM</strong> o <strong>.rar</strong> a la ventana para cargar un nivel
+          Arrastra <strong>.FNMM</strong> o <strong>.rar</strong> para cargar un nivel
         </div>
-        <div class="hero-actions">
-          <a href="#download" class="btn-funky btn-download">
-            <i data-lucide="download"></i> Descargar
-          </a>
-          <a href="../index.html" class="btn-funky btn-back">
-            <i data-lucide="arrow-left"></i> Volver al Lab
-          </a>
-        </div>
+      </div>
+      <div class="hero-actions">
+        <a href="#download" class="btn-funky btn-download">
+          <i data-lucide="download"></i> Descargar
+        </a>
+        <a href="../index.html" class="btn-funky btn-back">
+          <i data-lucide="arrow-left"></i> Volver
+        </a>
       </div>
     </div>
-  </div>
 
-  <!-- Caracteristicas -->
-  <section>
-    <div class="section-inner">
-      <h2 class="section-title"><span>✦</span> Características</h2>
-      
-      <!-- Reproducción -->
-      <div class="feature-section-header" onclick="toggleSection(this)">
-        <span class="icon">🎮</span>
-        <span>Reproducción</span>
-        <span class="arrow">▼</span>
-      </div>
-      <div class="feature-section-content">
-        <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="package-open"></i></div>
-          <div class="feature-title">Carga de Niveles</div>
-          <div class="feature-desc">Arrastra y suelta archivos .FNMM o .rar. Importación automática.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="guitar"></i></div>
-          <div class="feature-title">Múltiples Strumlines</div>
-          <div class="feature-desc">Soporte para niveles con varias pistas simultáneas.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="play"></i></div>
-          <div class="feature-title">Autoplay</div>
-          <div class="feature-desc">Modo automático para previsualización de niveles.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="fast-forward"></i></div>
-          <div class="feature-title">Seek / Skip</div>
-          <div class="feature-desc">Navega a cualquier punto con Tab/Shift+Tab.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="clapperboard"></i></div>
-          <div class="feature-title">Eventos</div>
-          <div class="feature-desc">Soporte para eventos: cámara, zooms y efectos especiales.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="skull"></i></div>
-          <div class="feature-title">Notas Especiales</div>
-          <div class="feature-desc">Soporte para notas de daño, instakill y curación.</div>
-        </div>
-        </div>
-      </div>
-
-      <!-- Gameplay -->
-      <div class="feature-section-header" onclick="toggleSection(this)">
-        <span class="icon">⚡</span>
-        <span>Gameplay</span>
-        <span class="arrow">▼</span>
-      </div>
-      <div class="feature-section-content">
-        <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="arrows-up-down"></i></div>
-          <div class="feature-title">Midlescroll / Downscroll</div>
-          <div class="feature-desc">Centra las notas o invierte su dirección.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="target"></i></div>
-          <div class="feature-title">Sistema de Scoring</div>
-          <div class="feature-desc">Evaluación precisa con accuracy y ratings.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="sliders-horizontal"></i></div>
-          <div class="feature-title">Opciones de Gameplay</div>
-          <div class="feature-desc">Ghost tapping, buffer, safe frames y scroll speed ajustables.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="keyboard"></i></div>
-          <div class="feature-title">Rebinding</div>
-          <div class="feature-desc">Personaliza los controles a tu gusto.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="timer"></i></div>
-          <div class="feature-title">Temporizador</div>
-          <div class="feature-desc">Progreso y tiempo restante. 7 esquemas de color.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="heart"></i></div>
-          <div class="feature-title">Healthbar</div>
-          <div class="feature-desc">Colores extraídos de los iconos de personajes.</div>
-        </div>
-        </div>
-      </div>
-
-      <!-- Personalización -->
-      <div class="feature-section-header" onclick="toggleSection(this)">
-        <span class="icon">🎨</span>
-        <span>Personalización</span>
-        <span class="arrow">▼</span>
-      </div>
-      <div class="feature-section-content">
-        <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="brush"></i></div>
-          <div class="feature-title">Noteskins y Splashes</div>
-          <div class="feature-desc">Soporta skins de notas y efectos personalizados.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="rainbow"></i></div>
-          <div class="feature-title">Color Grading</div>
-          <div class="feature-desc">Filtros de color: hue, saturación, brillo y sombras.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="eye"></i></div>
-          <div class="feature-title">Visibilidad UI</div>
-          <div class="feature-desc">Oculta strumlines, combo y otros elementos.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="settings"></i></div>
-          <div class="feature-title">Configuración</div>
-          <div class="feature-desc">Panel completo: Gameplay, Visuales, Audio, Debug.</div>
-        </div>
-        </div>
-      </div>
-
-      <!-- Sistema -->
-      <div class="feature-section-header" onclick="toggleSection(this)">
-        <span class="icon">⚙️</span>
-        <span>Sistema</span>
-        <span class="arrow">▼</span>
-      </div>
-      <div class="feature-section-content">
-        <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="monitor"></i></div>
-          <div class="feature-title">Windows y Linux</div>
-          <div class="feature-desc">Nativo para ambos sistemas. Script de auto-instalación en Linux.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="zap"></i></div>
-          <div class="feature-title">Optimizado</div>
-          <div class="feature-desc">Ejecutable autónomo. Sin dependencias ni instalación.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="save"></i></div>
-          <div class="feature-title">Persistencia</div>
-          <div class="feature-desc">Guarda configuración y progreso automáticamente.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="book"></i></div>
-          <div class="feature-title">Multiidioma</div>
-          <div class="feature-desc">Español 🇪🇸, Inglés 🇬🇧 y Portugués 🇧🇷.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="lock"></i></div>
-          <div class="feature-title">Privacidad</div>
-          <div class="feature-desc">Sin telemetría. Todo local.</div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-lucide="globe"></i></div>
-          <div class="feature-title">Formatos</div>
-          <div class="feature-desc">.FNMM, .rar, .zip y recursos de la comunidad.</div>
-        </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Controles -->
-  <section>
-    <div class="section-inner">
-      <h2 class="section-title"><span>✦</span> Controles</h2>
-      <div style="background:var(--bg-card2);border:1px solid var(--accent-border);border-radius:var(--radius);overflow:hidden;">
-        <table class="controls-table">
-          <thead>
-            <tr>
-              <th>Tecla</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="key">↑ ↓ ← →</span> / <span class="key">WASD</span></td>
-              <td>Notas (configurable)</td>
-            </tr>
-            <tr>
-              <td><span class="key">ESC</span></td>
-              <td>Pausa / Settings</td>
-            </tr>
-            <tr>
-              <td><span class="key">P</span></td>
-              <td>Pausar</td>
-            </tr>
-            <tr>
-              <td><span class="key">Tab</span></td>
-              <td>Timeskip +Xs</td>
-            </tr>
-            <tr>
-              <td><span class="key">Shift</span> + <span class="key">Tab</span></td>
-              <td>Timeskip -Xs</td>
-            </tr>
-            <tr>
-              <td><span class="key">F11</span></td>
-              <td>Fullscreen</td>
-            </tr>
-            <tr>
-              <td><span class="key">+</span> / <span class="key">-</span></td>
-              <td>Velocidad de scroll</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- Requisitos -->
-  <section>
-    <div class="section-inner">
-      <h2 class="section-title"><span>✦</span> Requisitos</h2>
-      <div class="req-list">
-        <div class="req-item">
-          <i data-lucide="monitor"></i>
-          <span>Windows 10 / 11 (64-bit)</span>
-        </div>
-        <div class="req-item">
-          <i data-lucide="package"></i>
-          <span>Linux x64 — Ubuntu, Fedora, Arch y derivados (dependencias auto-instaladas con <code>run.sh</code>)</span>
-        </div>
-        <div class="req-item">
-          <i data-lucide="box"></i>
-          <span>No requiere instalar .NET — todo incluido en el exe</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Descargar -->
-  <section id="download">
-    <div class="section-inner" style="text-align:center;">
-      <h2 class="section-title" style="justify-content:center;"><span>✦</span> Descargar</h2>
-      <p style="color:var(--text-muted);margin-bottom:0.5rem;font-size:0.95rem;">Gratis. Sin instalación complicada. Solo descarga y ejecuta.</p>
-      <p id="release-version" style="color:var(--accent-light);font-size:0.85rem;font-weight:600;margin-bottom:2rem;">Cargando versión...</p>
-
-      <!-- Botones principales -->
-      <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-bottom:1.5rem;">
-
-        <!-- Windows -->
-        <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:14px;padding:1.75rem 2rem;min-width:220px;">
-          <div style="font-size:2rem;"><i data-lucide="monitor" style="width:2rem;height:2rem;"></i></div>
-          <div>
-            <div style="font-weight:700;font-size:1rem;">Windows</div>
-            <div style="font-size:0.75rem;color:var(--text-muted);">64-bit · updater nuevo</div>
-          </div>
-          <a id="download-win" href="#" class="btn-funky btn-download" style="width:100%;justify-content:center;padding:0.7rem 1.25rem;" download>
-            <i data-lucide="download"></i> Descargar
-          </a>
-          <small id="meta-win" style="color:var(--text-muted);font-size:0.72rem;">_win.zip</small>
+    <!-- Features con tabs -->
+    <div class="content-grid full">
+      <div class="card">
+        <h2 class="card-title"><span>✦</span> Características</h2>
+        
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('reproduccion')">🎮 Reproducción</div>
+          <div class="tab" onclick="switchTab('gameplay')">⚡ Gameplay</div>
+          <div class="tab" onclick="switchTab('personalizacion')">🎨 Personalización</div>
+          <div class="tab" onclick="switchTab('sistema')">⚙️ Sistema</div>
         </div>
 
-        <!-- Linux -->
-        <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:14px;padding:1.75rem 2rem;min-width:220px;">
-          <div style="font-size:2rem;"><i data-lucide="package" style="width:2rem;height:2rem;"></i></div>
-          <div>
-            <div style="font-weight:700;font-size:1rem;">Linux</div>
-            <div style="font-size:0.75rem;color:var(--text-muted);">64-bit</div>
-          </div>
-          <a id="download-linux" href="#" class="btn-funky btn-download" style="width:100%;justify-content:center;padding:0.7rem 1.25rem;" download>
-            <i data-lucide="download"></i> Descargar
-          </a>
-          <small id="meta-linux" style="color:var(--text-muted);font-size:0.72rem;">_linux.zip</small>
-        </div>
-
-      </div>
-
-      <!-- Legacy -->
-      <details style="max-width:420px;margin:0 auto;text-align:left;">
-        <summary style="cursor:pointer;font-size:0.82rem;color:var(--text-muted);padding:0.5rem 0;user-select:none;">
-          <i data-lucide="clock" style="width:1rem;height:1rem;display:inline-block;vertical-align:middle;"></i> Versión legacy (updater viejo)
-        </summary>
-        <div style="margin-top:0.75rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
-          <div>
-            <div style="font-size:0.88rem;font-weight:600;">Windows — updater viejo</div>
-            <div style="font-size:0.75rem;color:var(--text-muted);">Mismo contenido que _win, distinto updater</div>
-          </div>
-          <a id="download-legacy" href="#" class="btn-funky btn-back" style="padding:0.5rem 1rem;font-size:0.82rem;white-space:nowrap;" download>
-            <i data-lucide="download"></i> _latest.zip
-          </a>
-        </div>
-      </details>
-
-    </div>
-  </section>
-
-  <!-- Creditos -->
-  <section>
-    <div class="section-inner">
-      <h2 class="section-title"><span>✦</span> Créditos</h2>
-
-      <!-- KinGamesCreator banner -->
-      <div style="position:relative;border:2px solid rgba(233,30,99,0.5);border-radius:16px;overflow:hidden;margin-bottom:2rem;background:linear-gradient(135deg, rgba(233,30,99,0.1) 0%, rgba(255,193,7,0.08) 100%);">
-        <div style="position:absolute;inset:0;background-image:url('../Assets/images/FunkyMakerMobile.png');background-size:cover;background-position:center;opacity:0.15;"></div>
-        <div style="position:relative;z-index:1;padding:3rem 2rem;">
-          <div style="text-align:center;margin-bottom:2rem;">
-            <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,193,7,0.15);border:1px solid rgba(255,193,7,0.3);border-radius:999px;padding:0.4rem 1rem;margin-bottom:1rem;">
-              <span style="font-size:1.2rem;"><i data-lucide="crown" style="width:1.2rem;height:1.2rem;"></i></span>
-              <span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#ffc107;">Creador Original</span>
+        <div class="tab-content active" id="reproduccion">
+          <div class="features-cols">
+            <div class="feature-item">
+              <i data-lucide="package-open"></i>
+              <div>
+                <strong>Carga de Niveles</strong>
+                <span>Arrastra archivos .FNMM o .rar</span>
+              </div>
             </div>
-            <h3 style="font-size:2rem;font-weight:700;margin-bottom:0.5rem;background:linear-gradient(135deg, #e91e63, #ffc107);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KinGamesCreator</h3>
-            <p style="font-size:0.95rem;color:rgba(240,240,240,0.8);max-width:520px;margin:0 auto;line-height:1.6;">
-              Creador de <strong style="color:#ffc107;">Funky Maker: Mobile!</strong> — la app original disponible en Android e iOS en la que se basa este reproductor de escritorio.
-            </p>
+            <div class="feature-item">
+              <i data-lucide="guitar"></i>
+              <div>
+                <strong>Múltiples Strumlines</strong>
+                <span>Varias pistas simultáneas</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="play"></i>
+              <div>
+                <strong>Autoplay</strong>
+                <span>Modo automático</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="fast-forward"></i>
+              <div>
+                <strong>Seek / Skip</strong>
+                <span>Tab/Shift+Tab para navegar</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="clapperboard"></i>
+              <div>
+                <strong>Eventos</strong>
+                <span>Cámara, zooms y efectos</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="skull"></i>
+              <div>
+                <strong>Notas Especiales</strong>
+                <span>Daño, instakill y curación</span>
+              </div>
+            </div>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;">
-            <a href="https://kingamescreator.com" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg, rgba(233,30,99,0.2), rgba(233,30,99,0.3));border:1.5px solid rgba(233,30,99,0.6);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.88rem;font-weight:600;color:#fff;text-decoration:none;transition:all 0.2s;">
-              <i data-lucide="globe"></i> Sitio Web
-            </a>
-            <a href="https://play.google.com/store/apps/details?id=com.kingamescreator.fnmm" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg, rgba(233,30,99,0.2), rgba(233,30,99,0.3));border:1.5px solid rgba(233,30,99,0.6);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.88rem;font-weight:600;color:#fff;text-decoration:none;transition:all 0.2s;">
-              <i data-lucide="smartphone"></i> Android
-            </a>
-            <a href="https://apps.apple.com/app/funky-maker-mobile/id6504101553" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg, rgba(233,30,99,0.2), rgba(233,30,99,0.3));border:1.5px solid rgba(233,30,99,0.6);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.88rem;font-weight:600;color:#fff;text-decoration:none;transition:all 0.2s;">
-              <i data-lucide="apple"></i> iOS
-            </a>
+        </div>
+
+        <div class="tab-content" id="gameplay">
+          <div class="features-cols">
+            <div class="feature-item">
+              <i data-lucide="arrows-up-down"></i>
+              <div>
+                <strong>Midlescroll / Downscroll</strong>
+                <span>Centra o invierte notas</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="target"></i>
+              <div>
+                <strong>Sistema de Scoring</strong>
+                <span>Accuracy y ratings precisos</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="sliders-horizontal"></i>
+              <div>
+                <strong>Opciones Avanzadas</strong>
+                <span>Ghost tapping, buffer, safe frames</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="keyboard"></i>
+              <div>
+                <strong>Rebinding</strong>
+                <span>Personaliza los controles</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="timer"></i>
+              <div>
+                <strong>Temporizador</strong>
+                <span>7 esquemas de color</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="heart"></i>
+              <div>
+                <strong>Healthbar</strong>
+                <span>Colores de iconos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="personalizacion">
+          <div class="features-cols">
+            <div class="feature-item">
+              <i data-lucide="brush"></i>
+              <div>
+                <strong>Noteskins y Splashes</strong>
+                <span>Skins y efectos personalizados</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="rainbow"></i>
+              <div>
+                <strong>Color Grading</strong>
+                <span>Hue, saturación, brillo</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="eye"></i>
+              <div>
+                <strong>Visibilidad UI</strong>
+                <span>Oculta elementos</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="settings"></i>
+              <div>
+                <strong>Configuración Completa</strong>
+                <span>Gameplay, Visuales, Audio, Debug</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="sistema">
+          <div class="features-cols">
+            <div class="feature-item">
+              <i data-lucide="monitor"></i>
+              <div>
+                <strong>Windows y Linux</strong>
+                <span>Nativo para ambos sistemas</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="zap"></i>
+              <div>
+                <strong>Optimizado</strong>
+                <span>Sin dependencias externas</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="save"></i>
+              <div>
+                <strong>Persistencia</strong>
+                <span>Guarda configuración automáticamente</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="book"></i>
+              <div>
+                <strong>Multiidioma</strong>
+                <span>Español, Inglés y Portugués</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="lock"></i>
+              <div>
+                <strong>Privacidad</strong>
+                <span>Sin telemetría. Todo local.</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <i data-lucide="globe"></i>
+              <div>
+                <strong>Formatos</strong>
+                <span>.FNMM, .rar, .zip</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles y Requisitos lado a lado -->
+    <div class="content-grid">
+      <div class="card">
+        <h2 class="card-title"><span>✦</span> Controles</h2>
+        <div class="controls-grid">
+          <div class="control-item">
+            <span><span class="key">↑↓←→</span> / <span class="key">WASD</span></span>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Notas</span>
+          </div>
+          <div class="control-item">
+            <span><span class="key">ESC</span></span>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Pausa/Settings</span>
+          </div>
+          <div class="control-item">
+            <span><span class="key">Tab</span></span>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Timeskip +Xs</span>
+          </div>
+          <div class="control-item">
+            <span><span class="key">Shift</span>+<span class="key">Tab</span></span>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Timeskip -Xs</span>
+          </div>
+          <div class="control-item">
+            <span><span class="key">F11</span></span>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Fullscreen</span>
+          </div>
+          <div class="control-item">
+            <span><span class="key">+</span> / <span class="key">-</span></span>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Scroll speed</span>
           </div>
         </div>
       </div>
 
-      <!-- Desarrollador Desktop -->
-      <div style="background:var(--bg-card2);border:2px solid rgba(233,30,99,0.3);border-radius:16px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:-20px;right:-20px;font-size:8rem;opacity:0.05;">💻</div>
-        <div style="position:relative;z-index:1;">
-          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
-            <img src="../Assets/images/AnkushCat.png" alt="@thisisfenix" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid rgba(233,30,99,0.5);box-shadow:0 0 20px rgba(233,30,99,0.3);flex-shrink:0;">
+      <div class="card">
+        <h2 class="card-title"><span>✦</span> Requisitos</h2>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div class="feature-item">
+            <i data-lucide="monitor"></i>
             <div>
-              <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-light);margin-bottom:0.25rem;">Desarrollador Desktop</div>
-              <div style="font-size:1.4rem;font-weight:700;">@thisisfenix</div>
-              <div style="font-size:0.85rem;color:var(--text-muted);">aka @thisisankush</div>
+              <strong>Windows 10 / 11</strong>
+              <span>64-bit</span>
             </div>
           </div>
-          <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.7;margin-bottom:1.25rem;">
-            Port a Windows y Linux — Diseño, programación y optimización de FunkyMakerPlayer. Implementación de características exclusivas y mejoras de rendimiento.
-          </p>
-          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;">
-            <a href="https://github.com/thisisfenix" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg, rgba(233,30,99,0.2), rgba(233,30,99,0.3));border:1.5px solid rgba(233,30,99,0.6);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.88rem;font-weight:600;color:#fff;text-decoration:none;transition:all 0.2s;">
-              <i data-lucide="github"></i> GitHub
+          <div class="feature-item">
+            <i data-lucide="package"></i>
+            <div>
+              <strong>Linux x64</strong>
+              <span>Ubuntu, Fedora, Arch y derivados</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <i data-lucide="box"></i>
+            <div>
+              <strong>Sin instalar .NET</strong>
+              <span>Todo incluido en el exe</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download -->
+    <div class="content-grid full" id="download">
+      <div class="card">
+        <h2 class="card-title"><span>✦</span> Descargar</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">Gratis. Sin instalación complicada. Solo descarga y ejecuta.</p>
+        <p id="release-version" style="color: var(--accent-light); font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem;">Cargando versión...</p>
+        
+        <div class="download-grid">
+          <div class="download-card">
+            <i data-lucide="monitor"></i>
+            <div>
+              <strong>Windows</strong>
+              <small>64-bit · updater nuevo</small>
+            </div>
+            <a id="download-win" href="#" class="btn-funky btn-download" download>
+              <i data-lucide="download"></i> Descargar
             </a>
+            <small id="meta-win" style="color: var(--text-muted); font-size: 0.7rem;">_win.zip</small>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
-            <span style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">Stack tecnológico:</span>
-            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">MonoGame</span>
-            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">C#</span>
-            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">.NET 10</span>
-            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">NVorbis</span>
-            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">ImageSharp</span>
-            <span style="background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--accent-light);font-weight:600;">SharpCompress</span>
+
+          <div class="download-card">
+            <i data-lucide="package"></i>
+            <div>
+              <strong>Linux</strong>
+              <small>64-bit</small>
+            </div>
+            <a id="download-linux" href="#" class="btn-funky btn-download" download>
+              <i data-lucide="download"></i> Descargar
+            </a>
+            <small id="meta-linux" style="color: var(--text-muted); font-size: 0.7rem;">_linux.zip</small>
+          </div>
+
+          <div class="download-card">
+            <i data-lucide="clock"></i>
+            <div>
+              <strong>Legacy</strong>
+              <small>Updater viejo</small>
+            </div>
+            <a id="download-legacy" href="#" class="btn-funky btn-back" download>
+              <i data-lucide="download"></i> Descargar
+            </a>
+            <small style="color: var(--text-muted); font-size: 0.7rem;">_latest.zip</small>
           </div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- Notas -->
-  <section>
-    <div class="section-inner">
-      <h2 class="section-title"><span>✦</span> Notas</h2>
-      
-      <!-- Aviso de bugs -->
-      <div class="note-banner" style="margin-bottom:1rem;">
-        <i data-lucide="triangle-alert"></i>
-        <span>
-          <strong>En desarrollo</strong> — Pueden aparecer bugs o comportamientos inesperados.
-          Reporta problemas en GitHub o contacta a <strong>@thisisankush</strong> en Discord.
-        </span>
-      </div>
+    <!-- Credits horizontal -->
+    <div class="content-grid full">
+      <div class="card">
+        <h2 class="card-title"><span>✦</span> Créditos</h2>
+        
+        <div class="credits-grid">
+          <!-- KinGamesCreator -->
+          <div class="credit-card" style="background: linear-gradient(135deg, rgba(216,27,96,0.08) 0%, rgba(255,167,38,0.06) 100%);">
+            <div style="position: absolute; inset: 0; background-image: url('../Assets/images/FunkyMakerMobile.png'); background-size: cover; background-position: center; opacity: 0.12; border-radius: 10px;"></div>
+            <div style="position: absolute; top: -20px; right: -20px; font-size: 6rem; opacity: 0.04;">👑</div>
+            <div style="position: relative; z-index: 1;">
+              <div class="credit-badge">
+                <i data-lucide="crown" style="width: 0.9rem; height: 0.9rem;"></i>
+                Creador Original
+              </div>
+              <div class="credit-name" style="background: linear-gradient(120deg, #d81b60, #ffa726); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                KinGamesCreator
+              </div>
+              <div class="credit-desc">
+                Creador de <strong>Funky Maker: Mobile!</strong> — la app original disponible en Android e iOS en la que se basa este reproductor de escritorio.
+              </div>
+              <div class="credit-links">
+                <a href="https://kingamescreator.com" target="_blank" rel="noopener noreferrer" class="credit-link">
+                  <i data-lucide="globe"></i> Sitio Web
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.kingamescreator.fnmm" target="_blank" rel="noopener noreferrer" class="credit-link">
+                  <i data-lucide="smartphone"></i> Android
+                </a>
+                <a href="https://apps.apple.com/us/app/funky-maker-mobile/id6761866418" target="_blank" rel="noopener noreferrer" class="credit-link">
+                  <i data-lucide="apple"></i> iOS
+                </a>
+              </div>
+            </div>
+          </div>
 
-      <!-- Disclaimer legal -->
-      <div style="background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.3);border-radius:var(--radius);padding:1rem 1.25rem;font-size:0.85rem;color:#ffc107;line-height:1.7;margin-bottom:1rem;">
-        <strong style="color:#fff;">FunkyMakerPlayer</strong> es un reproductor de escritorio no oficial para niveles de
-        <strong style="color:#fff;">Funky Maker: Mobile!</strong>, desarrollado con fines educativos y de entretenimiento.
-        Todo el crédito del juego original pertenece a <strong style="color:#fff;">KinGamesCreator</strong>.
-        Este proyecto no está afiliado, patrocinado ni respaldado oficialmente. Si tienes algún problema con este proyecto,
-        contacta a <strong style="color:#fff;">@thisisfenix</strong>.
-      </div>
-
-      <!-- Compatibilidad -->
-      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:1rem 1.25rem;font-size:0.85rem;line-height:1.7;">
-        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
-          <i data-lucide="info" style="color:var(--accent-light);"></i>
-          <strong style="color:#fff;">Compatibilidad</strong>
+          <!-- @thisisfenix -->
+          <div class="credit-card">
+            <div style="position: absolute; top: -20px; right: -20px; font-size: 6rem; opacity: 0.04;">💻</div>
+            <div style="position: relative; z-index: 1;">
+              <div class="credit-header">
+                <img src="../Assets/images/AnkushCat.png" alt="@thisisfenix" class="credit-avatar">
+                <div>
+                  <div class="credit-badge" style="background: rgba(216,27,96,0.12); border-color: rgba(216,27,96,0.25); color: var(--accent-light);">
+                    <i data-lucide="code" style="width: 0.9rem; height: 0.9rem;"></i>
+                    Desarrollador Desktop
+                  </div>
+                  <div class="credit-name">@thisisfenix</div>
+                  <div class="credit-sub">aka @thisisankush</div>
+                </div>
+              </div>
+              <div class="credit-desc">
+                Port a Windows y Linux — Diseño, programación y optimización de FunkyMakerPlayer. Implementación de características exclusivas y mejoras de rendimiento.
+              </div>
+              <div class="credit-links">
+                <a href="https://github.com/thisisfenix" target="_blank" rel="noopener noreferrer" class="credit-link">
+                  <i data-lucide="github"></i> GitHub
+                </a>
+              </div>
+              <div class="tech-tags">
+                <span class="tech-tag">MonoGame</span>
+                <span class="tech-tag">C#</span>
+                <span class="tech-tag">.NET 10</span>
+                <span class="tech-tag">NVorbis</span>
+                <span class="tech-tag">ImageSharp</span>
+                <span class="tech-tag">SharpCompress</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <span style="color:var(--text-muted);">
-          Este reproductor soporta niveles en formato <strong>.FNMM</strong> y <strong>.rar/.zip</strong> creados con Funky Maker: Mobile!
-          Algunas características avanzadas o mods de la comunidad pueden no ser totalmente compatibles.
-        </span>
       </div>
     </div>
-  </section>
+
+    <!-- Notas -->
+    <div class="content-grid">
+      <div class="card">
+        <h2 class="card-title"><span>✦</span> Aviso</h2>
+        <div class="note warning">
+          <strong>En desarrollo</strong> — Pueden aparecer bugs o comportamientos inesperados. Reporta problemas en GitHub o contacta a <strong>@thisisankush</strong> en Discord.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title"><span>✦</span> Disclaimer</h2>
+        <div class="note">
+          <strong>FunkyMakerPlayer</strong> es un reproductor no oficial para niveles de <strong>Funky Maker: Mobile!</strong>, desarrollado con fines educativos. Todo el crédito del juego original pertenece a <strong>KinGamesCreator</strong>. No está afiliado oficialmente.
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   <!-- Footer -->
   <footer>
     <p>FunkyMakerPlayer · Parte de <a href="../index.html">FenixLaboratory</a></p>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script>
-    // Toggle de secciones colapsables
-    function toggleSection(header) {
-      header.classList.toggle('collapsed');
-      const content = header.nextElementSibling;
-      content.classList.toggle('collapsed');
+    // Tabs
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabName).classList.add('active');
     }
 
+    // GitHub API
     const REPO = 'Thisisfenix/thisisfenix.github.io';
 
     function applyRelease(data) {
@@ -941,28 +990,24 @@
       setBtn('download-win',   'meta-win',   win);
       setBtn('download-linux', 'meta-linux', linux);
 
-      // Manejo especial del legacy
       const lb = document.getElementById('download-legacy');
       if (lb) {
         if (legacy) {
           lb.href = legacy.browser_download_url;
-          lb.innerHTML = `<i data-lucide="download"></i> ${legacy.name}`;
+          lb.innerHTML = `<i data-lucide="download"></i> Descargar`;
           lb.style.pointerEvents = 'auto';
           lb.style.opacity = '1';
-          lucide.createIcons(); // Reinicializar Lucide
+          lucide.createIcons();
         } else {
-          // Si no existe _latest, deshabilitar el botón
           lb.href = '#';
           lb.innerHTML = `<i data-lucide="x-circle"></i> No disponible`;
           lb.style.pointerEvents = 'none';
           lb.style.opacity = '0.5';
-          lb.title = 'Esta versión no está disponible en este release';
-          lucide.createIcons(); // Reinicializar Lucide
+          lucide.createIcons();
         }
       }
     }
 
-    // Buscar en versiones tempranas si no existe en latest
     async function findLegacyInEarlyReleases() {
       try {
         const response = await fetch(`https://api.github.com/repos/${REPO}/releases`, {
@@ -976,28 +1021,25 @@
             const lb = document.getElementById('download-legacy');
             if (lb && lb.innerHTML.includes('No disponible')) {
               lb.href = legacy.browser_download_url;
-              lb.innerHTML = `<i data-lucide="download"></i> ${legacy.name} <small style="opacity:0.7">(${release.tag_name})</small>`;
+              lb.innerHTML = `<i data-lucide="download"></i> Descargar`;
               lb.style.pointerEvents = 'auto';
               lb.style.opacity = '1';
-              lb.title = `Versión de ${release.tag_name}`;
-              lucide.createIcons(); // Reinicializar Lucide
+              lucide.createIcons();
             }
             return;
           }
         }
       } catch (e) {
-        console.error('Error buscando legacy en versiones anteriores:', e);
+        console.error('Error buscando legacy:', e);
       }
     }
 
-    // Primero intentar con latest
     fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
       headers: { 'Accept': 'application/vnd.github+json' }
     })
       .then(r => r.json())
       .then(data => {
         applyRelease(data);
-        // Si no se encontró legacy, buscar en versiones anteriores
         const lb = document.getElementById('download-legacy');
         if (lb && lb.innerHTML.includes('No disponible')) {
           findLegacyInEarlyReleases();
@@ -1006,13 +1048,8 @@
       .catch(() => {});
   </script>
   
-  <!-- Inicializar Lucide Icons -->
   <script>
     lucide.createIcons();
   </script>
 </body>
 </html>
-
-
-
-
