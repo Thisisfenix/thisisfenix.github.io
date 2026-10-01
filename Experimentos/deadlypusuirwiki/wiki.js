@@ -48,26 +48,29 @@
         
         this.characters = {
             '2019x': { name: '2019X', role: 'killer', icon: '../public/assets/icons/2019XNormalIcon.png', tags: ['rework'] },
-            'bfmp4': { name: 'Bfmp4', role: 'npc', icon: '../public/assets/icons/Bfmp4Icon.png' },
+            'bfmp4': { name: 'Bfmp4', role: 'npc', icon: '../public/assets/icons/Bfmp4Icon.png', tags: ['dev'] },
             'ia666': { name: 'iA666', role: 'killer', icon: 'Assets/images/IA666.png' },
             'missx': { name: 'MissX', role: 'killer', icon: 'Assets/images/MissX.png' },
             'peace': { name: 'Peace', role: 'killer', icon: '../public/assets/icons/PeaceNormalIcon.png', tags: ['wip'] },
-            'varkul': { name: 'Varkul', role: 'killer', icon: 'Assets/images/PlaceHolder.png' },
-            'abelitogamer': { name: 'AbelitoGamer', role: 'boss', icon: 'Assets/images/AbelitoInactiveIcon.png' },
-            'gissel': { name: 'Gissel', role: 'survivor', icon: '../public/assets/icons/GisselInactiveIcon.png' },
+            'varkul': { name: 'Varkul', role: 'killer', icon: 'Assets/images/PlaceHolder.png', tags: ['dev'] },
+            'abelitogamer': { name: 'AbelitoGamer', role: 'boss', icon: 'Assets/images/AbelitoInactiveIcon.png', tags: ['rework'] },
+            'gissel': { name: 'Gissel', role: 'survivor', icon: '../public/assets/icons/GisselInactiveIcon.png', tags: ['rework'] },
             'ia777': { name: 'iA777', role: 'survivor', icon: '../public/assets/icons/IA777NormalIcon.png', icons: { danger: '../public/assets/icons/IA777DangerIcon.png', dead: '../public/assets/icons/IA777DeadIcon.png' } },
             'iris': { name: 'Iris', role: 'survivor', icon: '../public/assets/icons/IrisNormalIcon.png', icons: { danger: '../public/assets/icons/IrisDangerIcon.png', dead: '../public/assets/icons/IrisDeadIcon.png' } },
             'allison': { name: 'Allison', role: 'survivor', icon: '../public/assets/icons/AllisonNormalIcon.png' },
             'luna': { name: 'Luna', role: 'survivor', icon: '../public/assets/icons/LunaNormalIcon.png', icons: { danger: '../public/assets/icons/LunaDangerIcon.png', dead: '../public/assets/icons/LunaDeadIcon.png' }, tags: ['rework'] },
             'valem': { name: 'Valem', role: 'survivor', icon: '../public/assets/icons/ValemNormalIcon.png' },
             'anna': { name: 'Anna Moonred', role: 'survivor', icon: '../public/assets/icons/AnnaNormalIcon.png', tags: ['wip'] },
-            'ankush': { name: 'Ankush Moonred', role: 'survivor', icon: 'Assets/images/AnkusHNormalIcon.png', icons: { danger: '../public/assets/icons/AnkushDangerIcon.png', dead: '../public/assets/icons/AnkushDeadIcon.png' } }
+            'ankush': { name: 'Ankush Moonred', role: 'survivor', icon: 'Assets/images/AnkusHNormalIcon.png', icons: { danger: '../public/assets/icons/AnkushDangerIcon.png', dead: '../public/assets/icons/AnkushDeadIcon.png' }, tags: ['rework'] },
+            'umbra': { name: 'Umbra', role: 'survivor', icon: 'Assets/images/PlaceHolder.png', tags: ['dev'] },
+            'pom': { name: 'Pom', role: 'survivor', icon: 'Assets/images/PlaceHolder.png', tags: ['dev'] },
+            'tips': { name: 'Tips y Trucos', role: 'guide', hideFromGrid: true, tags: ['rework'] }
         };
         
         // Personajes descartados (no aparecen en navegación principal)
         this.discardedCharacters = {
-            'molly': { name: 'Molly', role: 'discarded', reason: 'Razones personales', icon: '../public/assets/icons/MollyNormalIcon.png' },
-            'angel': { name: 'Angel', role: 'discarded', reason: 'Falta de información del creador', icon: '../public/assets/icons/AngelNormalIcon.png' }
+            'molly': { name: 'Molly', role: 'discarded', reason: 'Razones personales', icon: '../public/assets/icons/MollyNormalIcon.png', tags: ['discarded'] },
+            'angel': { name: 'Angel', role: 'discarded', reason: 'Falta de información del creador', icon: '../public/assets/icons/AngelNormalIcon.png', tags: ['discarded'] }
         };
         
         this.init();
@@ -135,6 +138,9 @@
         const grid = document.getElementById('character-grid');
         
         Object.entries(this.characters).forEach(([id, char]) => {
+            // Saltar personajes que no deben aparecer en la grilla
+            if (char.hideFromGrid) return;
+            
             const card = document.createElement('div');
             card.className = 'character-card';
             card.setAttribute('data-character', id);
@@ -153,6 +159,10 @@
                         tagsHtml += '<span class="tag-rework" title="Habilidades serán reworkeadas"><i data-lucide="wrench"></i> Rework</span>';
                     } else if (tag === 'wip') {
                         tagsHtml += '<span class="tag-wip" title="En desarrollo"><i data-lucide="construction"></i> WIP</span>';
+                    } else if (tag === 'dev') {
+                        tagsHtml += '<span class="tag-dev" title="En desarrollo"><i data-lucide="code"></i> Dev</span>';
+                    } else if (tag === 'discarded') {
+                        tagsHtml += '<span class="tag-discarded" title="Personaje descartado"><i data-lucide="archive"></i> Descartado</span>';
                     }
                 });
                 tagsHtml += '</div>';
@@ -174,11 +184,13 @@
 
     generateStats() {
         const stats = document.getElementById('intro-stats');
-        const total = Object.keys(this.characters).length;
-        const killers = Object.values(this.characters).filter(c => c.role === 'killer').length;
-        const bosses = Object.values(this.characters).filter(c => c.role === 'boss').length;
-        const survivors = Object.values(this.characters).filter(c => c.role === 'survivor').length;
-        const npcs = Object.values(this.characters).filter(c => c.role === 'npc').length;
+        // Filtrar personajes que no deben aparecer en stats
+        const visibleChars = Object.values(this.characters).filter(c => !c.hideFromGrid);
+        const total = visibleChars.length;
+        const killers = visibleChars.filter(c => c.role === 'killer').length;
+        const bosses = visibleChars.filter(c => c.role === 'boss').length;
+        const survivors = visibleChars.filter(c => c.role === 'survivor').length;
+        const npcs = visibleChars.filter(c => c.role === 'npc').length;
         
         stats.innerHTML = `
             <div class="stat-item">
@@ -213,30 +225,6 @@
             console.error('Error cargando markdown:', error);
             return `# Error\n\nNo se pudo cargar la información de ${filename}`;
         }
-    }
-
-    // Function to check if content should be hidden (Work in Progress)
-    isWorkInProgress(characterId) {
-        // Lista de personajes que están en Work in Progress
-        const wipCharacters = [
-            'peace', 'anna'
-        ];
-        const wipPages = ['gameplay', 'tips'];
-        
-        return wipCharacters.includes(characterId) || wipPages.includes(characterId);
-    }
-
-    getWorkInProgressContent(name) {
-        return `# ${name}
-
-## 🚧 Work in Progress
-
-Esta página está siendo actualizada con nueva información. Vuelve pronto para ver el contenido completo sobre este personaje.
-
----
-
-**Estado:** En desarrollo  
-**Última actualización:** Pendiente`;
     }
 
     setupEventListeners() {
@@ -563,13 +551,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         const content = document.getElementById('character-content');
         content.innerHTML = this._randomLoading();
 
-        // Check if this character is Work in Progress
-        let markdown;
-        if (this.isWorkInProgress(characterId)) {
-            markdown = this.getWorkInProgressContent(character.name);
-        } else {
-            markdown = await this.loadMarkdownFile(characterId);
-        }
+        const markdown = await this.loadMarkdownFile(characterId);
         
         const charInfo = this.getCharacterInfo(characterId);
         
@@ -749,6 +731,26 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                             </div>
                         </div>
                     `;
+                } else if (tag === 'dev') {
+                    tagNoticeHtml += `
+                        <div class="tag-notice dev-notice">
+                            <div class="notice-icon"><i data-lucide="code"></i></div>
+                            <div class="notice-content">
+                                <h4>💻 En Desarrollo</h4>
+                                <p><strong>${character.name}</strong> está siendo desarrollado actualmente. La información mostrada es preliminar y puede cambiar.</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (tag === 'discarded') {
+                    tagNoticeHtml += `
+                        <div class="tag-notice discarded-notice">
+                            <div class="notice-icon"><i data-lucide="archive"></i></div>
+                            <div class="notice-content">
+                                <h4>📦 Personaje Descartado</h4>
+                                <p><strong>${character.name}</strong> fue descartado del desarrollo activo. Razón: <em>${character.reason || 'No especificada'}</em>. La información aquí es histórica.</p>
+                            </div>
+                        </div>
+                    `;
                 }
             });
         }
@@ -809,16 +811,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
         
         content.innerHTML = this._randomLoading();
         
-        // Check if this page is Work in Progress
-        let markdown;
-        if (this.isWorkInProgress(pageId)) {
-            const pageTitles = {
-                'tips': 'Tips & Trucos'
-            };
-            markdown = this.getWorkInProgressContent(pageTitles[pageId] || pageId);
-        } else {
-            markdown = await this.loadMarkdownFile(pageId);
-        }
+        const markdown = await this.loadMarkdownFile(pageId);
         
         // Procesar markdown y convertir emojis a iconos Lucide
         const processedMarkdown = this.convertEmojisToLucide(marked.parse(markdown));
@@ -1556,27 +1549,34 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             const res = await fetch('Assets/data/updates.json?v=' + Date.now());
             const data = await res.json();
 
+            // Función para procesar [icon:nombre] a iconos Lucide
+            const processIcons = (text) => {
+                return text.replace(/\[icon:([^\]]+)\]/g, (match, iconName) => {
+                    return `<i data-lucide="${iconName}" style="width:1em;height:1em;display:inline-block;vertical-align:middle;margin:0 0.2em;"></i>`;
+                });
+            };
+
             const renderEntry = (update) => {
                 const date = new Date(update.date).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
                 return `
                     <div class="changelog-entry" style="margin-bottom:1rem;">
                         <div class="changelog-entry-header">
                             <span class="changelog-version">v${update.version}</span>
-                            <span class="changelog-title">${update.title}</span>
+                            <span class="changelog-title">${processIcons(update.title)}</span>
                             <span class="changelog-type-badge ${update.type}">${update.type}</span>
                             <span class="changelog-date">${date}</span>
                         </div>
                         <div class="changelog-changes">
                             ${update.changes.map(c => `
                                 <div style="margin-bottom:0.6rem;">
-                                    <div class="changelog-category">${c.category}</div>
+                                    <div class="changelog-category">${processIcons(c.category)}</div>
                                     <ul class="changelog-items">
-                                        ${c.items.map(i => `<li>${i}</li>`).join('')}
+                                        ${c.items.map(i => `<li>${processIcons(i)}</li>`).join('')}
                                     </ul>
                                 </div>
                             `).join('')}
                         </div>
-                        ${update.notes ? `<div class="changelog-notes">📝 ${update.notes}</div>` : ''}
+                        ${update.notes ? `<div class="changelog-notes">📝 ${processIcons(update.notes)}</div>` : ''}
                     </div>
                 `;
             };
@@ -1605,7 +1605,7 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
                                 <span class="roadmap-version">v${r.version}</span>
                                 <span class="roadmap-status ${r.status}">${r.status}</span>
                                 <ul class="roadmap-features">
-                                    ${r.features.map(f => `<li>${f}</li>`).join('')}
+                                    ${r.features.map(f => `<li>${processIcons(f)}</li>`).join('')}
                                 </ul>
                             </div>
                         `).join('')}
@@ -1615,6 +1615,9 @@ Esta página está siendo actualizada con nueva información. Vuelve pronto para
             }
 
             body.innerHTML = html;
+            
+            // Inicializar iconos Lucide después de renderizar
+            lucide.createIcons();
 
         } catch (e) {
             body.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No se pudo cargar el historial de cambios.</p>';

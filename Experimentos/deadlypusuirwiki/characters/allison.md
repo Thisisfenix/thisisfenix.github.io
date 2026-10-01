@@ -1,15 +1,25 @@
-# Allison Moon - La Eco del Pasado
+# <lucide-ear class="icon-inline"></lucide-ear> Allison Moon
 
-## 🎯 Habilidades
+**Rol**: Survivor | Información / Detección  
+**Dificultad**: ★★★★☆ (Alta)
 
-### 👂 Habilidad Principal (Q) — Eco Permanente
+---
 
-Allison escucha recuerdos atrapados en el ambiente, detectando eventos pasados y presencias.
+## <lucide-user class="icon-header"></lucide-user> Descripción
 
-- **Tipo:** Detección / Información
-- **Cooldown:** 35 segundos
-- **Duración:** 6 segundos
-- **Radio:** 20 metros
+Allison Moon es una survivor con habilidades paranormales que le permiten escuchar ecos del pasado. Su sensibilidad sobrenatural le otorga información única, pero cada uso de sus habilidades la aleja del mundo real. Una survivor de alto riesgo y alta recompensa con una conexión misteriosa con Vortex.
+
+---
+
+## <lucide-zap class="icon-header"></lucide-zap> Habilidades
+
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Eco Permanente (Q)
+
+**Tipo**: Detección / Información
+
+- **Cooldown**: 35 segundos
+- **Duración**: 6 segundos
+- **Radio**: 20 metros
 
 **Efectos:**
 - Escucha ecos de eventos pasados en el área
@@ -17,20 +27,19 @@ Allison escucha recuerdos atrapados en el ambiente, detectando eventos pasados y
 - Revela ubicaciones donde murieron otros jugadores
 - Puede escuchar fragmentos de diálogos del pasado
 
-**Precio:** Cada uso debilita tu propio latido, haciéndote más vulnerable a detección.
+**Precio**: Cada uso debilita tu propio latido, haciéndote más vulnerable a detección.
 
-**Estrategia:** Úsalo para anticipar rutas de ejecutores y evitar zonas peligrosas. La información del pasado te da ventaja táctica.
+**Uso estratégico**: Anticipa rutas de ejecutores y evita zonas peligrosas.
 
 ---
 
-### ✨ Habilidad Secundaria (E) — Hechizo Defensivo
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Hechizo Defensivo (E)
 
-Un destello azul que detiene enemigos brevemente, aprendido por curiosidad en su adolescencia.
+**Tipo**: Escape / Defensa
 
-- **Tipo:** Escape / Defensa
-- **Cooldown:** 70 segundos
-- **Duración:** 1.5 segundos
-- **Radio:** 8 metros
+- **Cooldown**: 70 segundos
+- **Duración**: 1.5 segundos
+- **Radio**: 8 metros
 
 **Efectos:**
 - Destello azul que congela ejecutores en su lugar
@@ -38,20 +47,19 @@ Un destello azul que detiene enemigos brevemente, aprendido por curiosidad en su
 - Te da tiempo para crear distancia
 - Efecto visual distintivo (luz azul brillante)
 
-**Limitación:** Solo funciona por un segundo y medio - el timing es crucial.
+**Limitación**: Solo funciona por segundo y medio - el timing es crucial.
 
-**Estrategia:** Guárdalo para momentos críticos. Úsalo en ventanas, pallets o cuando estés acorralada. No lo desperdicies.
+**Uso estratégico**: Guárdalo para momentos críticos en ventanas, pallets o cuando estés acorralada.
 
 ---
 
-### 🌀 Habilidad Especial (R) — Resonancia Umbral
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Resonancia Umbral (R)
 
-Allison se conecta profundamente con los ecos del Bosque Umbral, obteniendo información vital.
+**Tipo**: Información Global / Riesgo Alto
 
-- **Tipo:** Información Global / Riesgo Alto
-- **Cooldown:** 90 segundos
-- **Duración:** 10 segundos
-- **Alcance:** Todo el mapa
+- **Cooldown**: 90 segundos
+- **Duración**: 10 segundos
+- **Alcance**: Todo el mapa
 
 **Efectos:**
 - Revela la ubicación exacta de todos los ejecutores
@@ -59,17 +67,15 @@ Allison se conecta profundamente con los ecos del Bosque Umbral, obteniendo info
 - Detecta anomalías activas del bosque
 - Escucha susurros del bosque con advertencias
 
-**Riesgo:** Cada uso te aleja más del mundo real. Después de 3 usos, tu latido es audible a mayor distancia.
+**Riesgo**: Cada uso te aleja más del mundo real. Después de 3 usos, tu latido es audible a mayor distancia.
 
-**Estrategia:** Úsalo en momentos decisivos: fase final, cuando el equipo está perdido, o para planear rutas de escape. El costo es alto.
+**Uso estratégico**: Úsalo en momentos decisivos: fase final, equipo perdido, o para planear rutas de escape.
 
 ---
 
-## 🌟 Pasivas
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Latido Debilitado (Pasiva)
 
-### 💔 Latido Debilitado
-
-El uso de habilidades sobrenaturales debilita la conexión de Allison con el mundo real.
+**Tipo**: Debuff Acumulativo
 
 **Efectos:**
 - Cada habilidad usada aumenta el radio de tu latido (+2m por uso)
@@ -77,27 +83,25 @@ El uso de habilidades sobrenaturales debilita la conexión de Allison con el mun
 - El efecto se reinicia al completar un anillo o ser rescatada
 - Indicador visual: tu corazón brilla más tenue con cada uso
 
-**Gestión:** Balancea el uso de habilidades con completar anillos para resetear el debuff.
+**Gestión**: Balancea el uso de habilidades con completar anillos.
 
 ---
 
-### 🔮 Sensibilidad Paranormal
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Sensibilidad Paranormal (Pasiva)
 
-Allison tiene una conexión natural con lo sobrenatural desde antes de entrar al bosque.
+**Tipo**: Percepción Aumentada
 
 **Efectos:**
-- Detecta presencias sobrenaturales antes que otros (aura leve)
+- Detectas presencias sobrenaturales antes que otros (aura leve)
 - Los ecos del bosque te susurran advertencias sutiles
 - Puedes sentir cuando un ejecutor usa una habilidad global
 - Vortex y otras entidades reaccionan diferente cerca de ti
 
-**Ventaja:** Te da micro-ventajas de información que otros survivors no tienen.
-
 ---
 
-### 🌙 Eco Compartido con Vortex
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Eco Compartido con Vortex (Pasiva)
 
-Existe una conexión misteriosa entre Allison y Vortex que ninguno comprende.
+**Tipo**: Conexión Misteriosa
 
 **Efectos:**
 - El instinto asesino de Vortex titubea cerca de ti
@@ -105,9 +109,11 @@ Existe una conexión misteriosa entre Allison y Vortex que ninguno comprende.
 - Puedes escuchar sus pensamientos fragmentados
 - Esta conexión puede salvarte... o condenarte
 
-**Misterio:** Compartes un eco que no debería existir. ¿Por qué?
+**Misterio**: Compartes un eco que no debería existir. ¿Por qué?
 
-## 📖 Historia
+---
+
+## <lucide-book-open class="icon-header"></lucide-book-open> Historia
 
 <div class="lore-dialog" id="lore-allison">
   <div class="lore-page" hidden><span class="lore-yellow">Allison</span> siempre había vivido con una calma que rara vez se quiebra en la vida de alguien. Su mundo era pequeño: un café cada mañana, caminatas tranquilas, exploraciones urbanas con su cámara barata y ese brillo curioso que siempre encendía cuando encontraba un edificio abandonado.</div>
@@ -132,7 +138,9 @@ Existe una conexión misteriosa entre Allison y Vortex que ninguno comprende.
   </div>
 </div>
 
-## 🎮 Estrategias de Juego
+---
+
+## <lucide-gamepad-2 class="icon-header"></lucide-gamepad-2> Estrategias
 
 ### Como Allison:
 
@@ -188,7 +196,9 @@ Existe una conexión misteriosa entre Allison y Vortex que ninguno comprende.
 - Juega sigiloso y estratégico
 - Ideal para jugadores pacientes
 
-## 💡 Tips Avanzados
+---
+
+## <lucide-lightbulb class="icon-header"></lucide-lightbulb> Tips
 
 ### Gestión del Latido Debilitado:
 - **Contador Mental:** Lleva cuenta de cuántas habilidades has usado (máx 5 antes de penalización severa)
@@ -234,13 +244,17 @@ Existe una conexión misteriosa entre Allison y Vortex que ninguno comprende.
 - **Hechizo + Ventana:** Congela al ejecutor, salta ventana, ganas 5+ metros
 - **Reset + Resonancia:** Completa anillo para resetear latido, luego usa Resonancia sin miedo
 
-## 🗺️ Mejores Mapas
+---
+
+## <lucide-map class="icon-header"></lucide-map> Mejores Mapas
 
 > 🚧 **Work in Progress**
 > 
 > Los mejores mapas para Allison están siendo analizados y serán añadidos próximamente.
 
-## ⚔️ Matchups
+---
+
+## <lucide-swords class="icon-header"></lucide-swords> Matchups
 
 ### Vs Killers:
 
@@ -312,3 +326,18 @@ Existe una conexión misteriosa entre Allison y Vortex que ninguno comprende.
 - Ambas son más soporte que agresivas
 - Necesitan un tercer jugador agresivo en el equipo
 - **Riesgo:** Doble soporte puede ser lento para completar objetivos
+
+
+---
+
+## <lucide-star class="icon-header"></lucide-star> Curiosidades
+
+> 🚧 **Work in Progress**
+> 
+> Curiosidades sobre Allison próximamente.
+
+---
+
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026
+</div>

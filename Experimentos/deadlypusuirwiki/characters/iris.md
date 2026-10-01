@@ -1,54 +1,79 @@
-# Iris Afton Miller - La Telequinética
+# <lucide-cat class="icon-inline"></lucide-cat> Iris Afton Miller
 
-## 🌟 Pasiva
+**Rol**: Survivor | Control a Distancia  
+**Dificultad**: ★★★☆☆ (Media)
 
-### 🛡️ Barra de Esquive
-- **Capacidad:** 75 puntos
-- **Resistencia:** Aguanta 2 golpes del killer
-- **Regeneración:** Se regenera gradualmente con el tiempo
-- **Descripción:** Iris tiene una barra de esquive especial que absorbe daño antes de afectar su HP
+---
 
-## 🎯 Habilidades
+## <lucide-user class="icon-header"></lucide-user> Descripción
 
-### 🪨 Lanzar Piedra (Q)
-- **Cooldown:** 20 segundos
-- **Tipo:** Ataque a distancia
-- **Efecto:** Lanza una piedra que stunea al killer
-- **Descripción:** Iris lanza una piedra en línea recta. Si impacta al killer, lo stunea temporalmente.
-- **Uso:** Control a distancia, interrumpir persecuciones
+Iris Afton Miller es una survivor telequinética que destaca por su versatilidad en el combate. Con una barra de esquive única que absorbe daño y un arsenal de habilidades para todas las distancias, Iris puede mantener a los killers a raya con piedras, empujarlos con telekinesis, o defenderse en combate cercano con su cuchillo.
 
-### 🧠 Telekinesis (E)
-- **Cooldown:** 25 segundos
-- **Rango:** Medio metro (aproximadamente)
-- **Duración:** 5 segundos
-- **Efecto:** Empuja al killer hacia adelante
-- **Descripción:** Solo funciona si el killer está en un rango de medio metro. Empuja al killer un poco lejos usando poderes telequinéticos.
-- **Uso:** Crear distancia, interrumpir ataques
+---
 
-### 🔪 Cuchillo (R)
-- **Cooldown:** TBD
-- **Tipo:** Ataque cuerpo a cuerpo
-- **Stun:** 3 segundos
-- **Bonus:** Impulso de velocidad por 2 segundos
-- **Descripción:** Iris hace un ataque recto con un cuchillo. Si acierta, stunea al killer por 3 segundos y obtiene un pequeño impulso de velocidad.
-- **Uso:** Defensa cercana, escape rápido
+## <lucide-zap class="icon-header"></lucide-zap> Habilidades
 
-### � Curación (Habilidad Anterior - Referencia)
-> **Nota:** Esta habilidad fue reemplazada por "Lanzar Piedra"
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Lanzar Piedra (Q)
+
+**Tipo**: Ataque a Distancia
+
+- **Cooldown**: 20 segundos
+- **Efecto**: Lanza una piedra que stunea al killer
+- **Descripción**: Iris lanza una piedra en línea recta. Si impacta al killer, lo stunea temporalmente.
+
+**Uso estratégico**: Control a distancia, interrumpir persecuciones.
+
+---
+
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Telekinesis (E)
+
+**Tipo**: Control / Empuje
+
+- **Cooldown**: 25 segundos
+- **Rango**: Medio metro
+- **Duración**: 5 segundos
+- **Efecto**: Empuja al killer hacia adelante
+
+**Descripción**: Solo funciona si el killer está en un rango de medio metro. Empuja al killer usando poderes telequinéticos.
+
+**Uso estratégico**: Crear distancia, interrumpir ataques.
+
+---
+
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Cuchillo (R)
+
+**Tipo**: Ataque Cuerpo a Cuerpo
+
+- **Cooldown**: TBD
+- **Stun**: 3 segundos
+- **Bonus**: Impulso de velocidad por 2 segundos
+- **Descripción**: Iris hace un ataque recto con un cuchillo. Si acierta, stunea al killer por 3 segundos y obtiene un pequeño impulso de velocidad.
+
+**Uso estratégico**: Defensa cercana, escape rápido.
+
+---
+
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Barra de Esquive (Pasiva)
+
+**Tipo**: Defensa Pasiva
+
+- **Capacidad**: 75 puntos
+- **Resistencia**: Aguanta 2 golpes del killer
+- **Regeneración**: Se regenera gradualmente con el tiempo
+
+**Descripción**: Iris tiene una barra de esquive especial que absorbe daño antes de afectar su HP.
+
+---
+
+> **Habilidades Anteriores (Referencia)**
 > 
-> - Curaba 10-20 HP a ella misma
-> - Curaba 15 HP cada 3 segundos a aliados
-> - Duraba 20 segundos si alguien se curaba, 5 segundos si no
-> - Cooldown: 20 segundos
-
-### ⚡ Dash (Habilidad Anterior - Referencia)
-> **Nota:** Esta habilidad puede estar integrada o reemplazada
+> **Curación**: Curaba 10-20 HP a ella misma, 15 HP cada 3s a aliados. Reemplazada por Lanzar Piedra.
 > 
-> - Alejaba del killer
-> - Stuneaba por 2 segundos
-> - Recargaba 25 de la barra de esquive
+> **Dash**: Alejaba del killer, stuneaba 2s, recargaba 25 de esquive. Posiblemente integrada o reemplazada.
 
-## 📖 Historia
+---
+
+## <lucide-book-open class="icon-header"></lucide-book-open> Historia
 
 <div class="lore-dialog" id="lore-iris">
   <div class="lore-page" hidden><span class="lore-yellow">Iris Afton Miller</span> estaba ayudando a <span class="lore-blue">iA777</span> a derrotar a un robot de Maxwell durante una batalla crucial.</div>
@@ -62,7 +87,9 @@
   </div>
 </div>
 
-## 🎮 Estrategias de Juego
+---
+
+## <lucide-gamepad-2 class="icon-header"></lucide-gamepad-2> Estrategias
 
 ### Como Iris:
 - **Gestión de esquive:** Tu barra de 75 puntos te permite tanquear 2 hits, úsala estratégicamente
@@ -76,7 +103,9 @@
 - **Esquive Tank:** Aprovecha tu barra de esquive para tanquear hits estratégicamente
 - **Híbrido Ofensivo:** Balance entre Piedra, Telekinesis y Cuchillo
 
-## 💡 Tips Avanzados
+---
+
+## <lucide-lightbulb class="icon-header"></lucide-lightbulb> Tips
 
 ### Mecánicas Especiales:
 - **Barra de esquive única:** 75 puntos que aguantan 2 golpes te hacen más resistente que otros survivors
@@ -104,13 +133,17 @@
 - **Cuchillo (TBD CD):** Último recurso cuando el killer te alcance
 - **Barra de Esquive:** Regenera con tiempo, úsala para tanquear hits críticos
 
-## 🗺️ Mejores Mapas
+---
+
+## <lucide-map class="icon-header"></lucide-map> Mejores Mapas
 
 > 🚧 **Work in Progress**
 > 
 > Los mejores mapas para Iris están siendo analizados y serán añadidos próximamente.
 
-## ⚔️ Matchups
+---
+
+## <lucide-swords class="icon-header"></lucide-swords> Matchups
 
 ### Vs Killers:
 - **2019X:** Lanzar Piedra puede interrumpir su stealth, Telekinesis cuando aparezca cerca
@@ -125,7 +158,9 @@
 - **Angel:** Trabaja con él para mantener al equipo vivo
 - **Luna:** Tu control permite que ella use sus habilidades ofensivas
 
-## 🎭 Relaciones
+---
+
+## <lucide-users class="icon-header"></lucide-users> Relaciones
 
 ### iA777:
 - **Relación:** Compañero/Amigo
@@ -135,3 +170,10 @@
 ### Maxwell:
 - **Relación:** Enemigo
 - **Descripción:** Enemigo de su mundo original, creador de los robots que combatían
+
+
+---
+
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026
+</div>

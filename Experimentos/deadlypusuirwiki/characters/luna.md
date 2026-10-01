@@ -1,109 +1,163 @@
-# Luna Vélez - La Guerrera Energética
+# Luna Vélez | Survivor
 
-## 🌟 Estadísticas Especiales
+**Rol:** Survivor  
+**Dificultad:** ★★★★☆ (Alta)  
+**HP:** 85 (sobre el promedio)  
+**Tipo:** Guerrera Agresiva
 
-### 💪 Stats Base
-- **HP:** 85 (por encima del promedio)
-- **Resistencia Especial:** Se activa al llegar a 30 HP
-- **Descripción:** Cuando Luna llega a 30 HP o menos, obtiene resistencia adicional para sobrevivir
+---
 
-## 🎯 Habilidades
+## <span data-lucide="user"></span> Descripción
 
-### ⚡ Energy Juice (Q)
-- **Cooldown:** 20 segundos
-- **Usos:** 3 cargas máximas
-- **Efecto:** Velocidad II por 10 segundos
-- **Descripción:** Luna bebe un Energy Juice que le otorga un boost masivo de velocidad (Velocidad II) durante 10 segundos. Tiene 3 usos antes de necesitar recarga.
-- **Uso:** Escape rápido, rescates, kiting agresivo
+Luna Vélez es una guerrera energética con 85 HP que la hace más resistente que el promedio. Su estilo agresivo combina alta movilidad con auto-curación y control del killer. Tiene una resistencia especial que se activa al llegar a 30 HP o menos, dándole una segunda oportunidad de sobrevivir.
 
-### 👊 Punch (E)
-- **Cooldown:** 25 segundos
-- **Efecto:** Golpe que cura a Luna y stunea al killer
-- **Descripción:** Luna lanza un golpe poderoso al killer. Si impacta, stunea al killer temporalmente y Luna recupera vida.
-- **Uso:** Combate cuerpo a cuerpo, auto-curación, defensa
+---
 
-### 😈 Taunt (R)
-- **Cooldown:** 12 segundos
-- **Duración:** 3 segundos
-- **Efecto:** Nubla/oscurece la pantalla del killer
-- **Descripción:** Luna provoca al killer, nublando completamente su pantalla por 3 segundos. El killer no puede ver nada durante este tiempo.
-- **Uso:** Distracción, rescates, escape del equipo
+## <span data-lucide="zap"></span> Primera Habilidad | Energy Juice
+**Tipo:** Movilidad  
+**Cooldown:** 20 segundos  
+**Duración:** 10 segundos  
+**Cargas:** 3 usos máximos  
+**Tecla:** Q
 
-## 📖 Historia
+Luna bebe un Energy Juice que le otorga **Velocidad II** por 10 segundos. Tiene 3 cargas antes de necesitar recarga.
 
-> 🚧 **Work in Progress**
-> 
-> La historia de Luna Vélez está siendo desarrollada y será añadida próximamente.
+### **Efectos:**
+- <span data-lucide="wind"></span> Velocidad II durante 10 segundos
+- <span data-lucide="battery-charging"></span> 3 cargas máximas
+- <span data-lucide="clock"></span> Cooldown de 20s por carga
+- <span data-lucide="rocket"></span> Ideal para escape, rescates y kiting agresivo
 
-## 🎮 Estrategias de Juego
+---
 
-### Como Luna:
-- **Guerrera agresiva:** Con 85 HP puedes tanquear más hits que otros survivors
-- **Energy Juice para movilidad:** 3 usos de Velocidad II te hacen extremadamente rápida
-- **Punch para sustento:** Usa tu golpe para curarte mientras peleas
-- **Taunt para equipo:** Ciega al killer para que tus compañeros escapen
-- **Resistencia de emergencia:** Al llegar a 30 HP, tu resistencia especial te da una segunda oportunidad
+## <span data-lucide="hand"></span> Segunda Habilidad | Punch
+**Tipo:** Ataque / Curación  
+**Cooldown:** 25 segundos  
+**Tecla:** E
 
-### Builds Recomendados:
-- **Tank Fighter:** Maximiza tu HP y resistencia para peleas prolongadas
-- **Energy Master:** Gestiona tus 3 Energy Juice para movilidad constante
-- **Team Protector:** Usa Taunt para proteger aliados en situaciones críticas
+Luna lanza un golpe poderoso al killer. Si impacta, **stunea al killer** y **Luna recupera vida**.
 
-## 💡 Tips Avanzados
+### **Efectos:**
+- <span data-lucide="hand"></span> Golpe cuerpo a cuerpo al killer
+- <span data-lucide="pause-circle"></span> Stunea al killer temporalmente
+- <span data-lucide="heart-pulse"></span> Luna se cura con el golpe
+- <span data-lucide="shield"></span> Único survivor que se cura atacando
 
-### Mecánicas Especiales:
-- **85 HP base:** Puedes aguantar más hits que la mayoría de survivors
-- **Velocidad II:** Es MUY rápida, úsala para kiting imposible
-- **Punch con curación:** Único survivor que se cura atacando al killer
-- **Taunt de 3 segundos:** Suficiente tiempo para que el equipo escape o rescate
-- **Resistencia a 30 HP:** Tu "segunda vida" te hace difícil de eliminar
+---
 
-### Interacciones Únicas:
-- **Energy Juice × 3:** Puedes usar los 3 seguidos para 30 segundos de Velocidad II
-- **Punch timing:** Practica el timing para golpear justo antes de que el killer ataque
-- **Taunt estratégico:** Úsalo cuando el killer esté persiguiendo a un compañero
-- **Resistencia pasiva:** Juega más agresivo cuando estés cerca de 30 HP
+## <span data-lucide="eye-off"></span> Tercera Habilidad | Taunt
+**Tipo:** Control / Ceguera  
+**Cooldown:** 12 segundos  
+**Duración:** 3 segundos  
+**Tecla:** R
 
-### Combos Devastadores:
-1. **Taunt** (ciega 3s) → **Energy Juice** → escapar a máxima velocidad
-2. **Punch** (cura + stun) → **Energy Juice** → reposicionamiento
-3. **Energy Juice** → **Punch** → golpear mientras eres muy rápida
-4. **Taunt** → rescate de compañero → **Energy Juice** → ambos escapan
-5. Llegar a 30 HP → **Punch** (curarse) → **Energy Juice** (escape con resistencia)
+Luna provoca al killer, **nublando/oscureciendo completamente su pantalla** por 3 segundos. El killer no puede ver nada durante este tiempo.
 
-### Gestión de Recursos:
-- **Energy Juice (20s CD, 3 usos):** Úsalo frecuentemente, se recarga relativamente rápido
-- **Punch (25s CD):** Guárdalo para cuando necesites curación o stun crítico
-- **Taunt (12s CD):** Spam para proteger al equipo, CD muy bajo
-- **HP y Resistencia:** Juega agresivo, tienes más HP y resistencia especial
+### **Efectos:**
+- <span data-lucide="eye-off"></span> Ciega completamente al killer
+- <span data-lucide="timer"></span> Duración de 3 segundos
+- <span data-lucide="clock"></span> Cooldown muy bajo (12s)
+- <span data-lucide="users"></span> Perfecto para rescates y proteger al equipo
 
-## 🗺️ Mejores Mapas
+---
 
-> 🚧 **Work in Progress**
-> 
-> Los mejores mapas para Luna están siendo analizados y serán añadidos próximamente.
+## <span data-lucide="shield"></span> Pasiva | Resistencia de Emergencia
 
-## ⚔️ Matchups
+Cuando Luna llega a **30 HP o menos**, obtiene **resistencia adicional** para sobrevivir.
 
-### Vs Killers:
-- **2019X:** Taunt lo ciega incluso en stealth, Punch interrumpe sus ataques
-- **iA666:** Tu 85 HP + resistencia aguanta sus combos, Energy Juice para evadir
-- **MissX:** Taunt durante su Modo Vuelo, Punch cuando use Ecrimer
-- **Peace:** Energy Juice para escapar, Taunt para proteger al equipo
+### **Efectos:**
+- <span data-lucide="heart"></span> Se activa al llegar a 30 HP
+- <span data-lucide="shield-check"></span> Resistencia especial aumentada
+- <span data-lucide="life-buoy"></span> Te da una "segunda vida"
 
-### Vs Otros Survivors:
-- **iA777:** Sinergia perfecta - él tanquea con 165 HP, tú con 85 HP + resistencia
-- **Molly:** Dos guerreras agresivas = equipo imparable
-- **Iris:** Tu Taunt + su control = killer completamente neutralizado
-- **Angel:** Protégelo con Taunt mientras él cura al equipo
-- **Gissel:** Tu agresividad permite que ella use sus habilidades libremente
+---
 
-## 🎭 Relaciones
+## <span data-lucide="book-open"></span> Historia
 
-### Nogales:
-- **Relación:** Amigo
-- **Descripción:** Compañero cercano de Luna
+Luna Vélez es una guerrera del Funky Maker Server, conocida por su energía inagotable y espíritu combativo. Su historia completa está siendo desarrollada.
 
-### Funky Maker Server:
-- **Afiliación:** Miembro
-- **Descripción:** Parte de la comunidad Funky Maker Server
+**Relaciones:**
+- **Nogales** - Amigo cercano
+- **Funky Maker Server** - Miembro activa
+
+---
+
+## <span data-lucide="gamepad-2"></span> Estrategia de Juego
+
+### **Estilo de Juego:**
+Luna es una **guerrera agresiva** que puede tanquear más hits que otros survivors gracias a sus 85 HP. Combina alta movilidad (Energy Juice), auto-curación ofensiva (Punch) y control del killer (Taunt).
+
+### **Puntos Fuertes:**
+- <span data-lucide="check"></span> **85 HP** - Más resistente que el promedio
+- <span data-lucide="check"></span> **3 Energy Juice** - Velocidad II × 3 = 30 segundos totales
+- <span data-lucide="check"></span> **Auto-curación** - Se cura atacando con Punch
+- <span data-lucide="check"></span> **Taunt spam** - CD de solo 12s
+- <span data-lucide="check"></span> **Resistencia especial** - Segunda vida a 30 HP
+
+### **Puntos Débiles:**
+- <span data-lucide="x"></span> Punch requiere acercarse al killer
+- <span data-lucide="x"></span> Energy Juice tiene cargas limitadas
+- <span data-lucide="x"></span> Estilo agresivo = más riesgo
+
+---
+
+## <span data-lucide="lightbulb"></span> Tips Avanzados
+
+- <span data-lucide="star"></span> **Energy Juice:** Puedes usar los 3 seguidos para 30 segundos de Velocidad II
+- <span data-lucide="star"></span> **Punch Timing:** Practica golpear justo antes de que el killer ataque
+- <span data-lucide="star"></span> **Taunt Estratégico:** Úsalo cuando el killer persiga a un compañero
+- <span data-lucide="star"></span> **Juega Agresivo:** Con 85 HP + resistencia a 30 HP, puedes arriesgar más
+- <span data-lucide="star"></span> **Combo Devastador:** Taunt (ciega 3s) → Energy Juice → escape imposible de seguir
+
+### **Gestión de Recursos:**
+- **Energy Juice (20s CD, 3 usos):** Úsalo frecuentemente, se recarga rápido
+- **Punch (25s CD):** Guárdalo para curación o stun crítico
+- **Taunt (12s CD):** Spam para proteger al equipo constantemente
+
+---
+
+## <span data-lucide="map"></span> Mejores Mapas
+
+Los mejores mapas para Luna están siendo analizados. Su alta movilidad funciona bien en mapas grandes donde puede usar Energy Juice para cruzar distancias rápidamente.
+
+---
+
+## <span data-lucide="swords"></span> Matchups vs Killers
+
+### **Bueno contra:**
+- <span data-lucide="shield-check"></span> **2019X:** Taunt lo ciega incluso en stealth, Punch interrumpe ataques
+- <span data-lucide="shield-check"></span> **iA666:** 85 HP + resistencia aguanta sus combos, Energy Juice evade
+- <span data-lucide="shield-check"></span> **MissX:** Taunt durante Modo Vuelo, Punch cuando use Ecrimer
+
+### **Difícil contra:**
+- <span data-lucide="shield-alert"></span> **Peace:** Requiere timing perfecto de Taunt y Punch
+
+---
+
+## <span data-lucide="users"></span> Sinergia con Otros Survivors
+
+### **Buena sinergia:**
+- <span data-lucide="users-round"></span> **iA777:** Ambos tanques (85 HP + 165 HP) = equipo imparable
+- <span data-lucide="users-round"></span> **Iris:** Tu Taunt + su control = killer neutralizado
+- <span data-lucide="users-round"></span> **Angel:** Protégelo con Taunt mientras él cura al equipo
+- <span data-lucide="users-round"></span> **Gissel:** Tu agresividad permite que use habilidades libremente
+
+---
+
+## <span data-lucide="users"></span> Relaciones
+
+- **Nogales:** Amigo cercano y compañero
+- **Funky Maker Server:** Miembro activa de la comunidad
+
+---
+
+## <span data-lucide="sparkles"></span> Curiosidades
+
+- <span data-lucide="info"></span> Es la única survivor que se cura atacando al killer
+- <span data-lucide="info"></span> Tiene 85 HP, por encima del promedio estándar
+- <span data-lucide="info"></span> Su Taunt tiene el cooldown más bajo de todas las habilidades de control (12s)
+- <span data-lucide="info"></span> Puede acumular hasta 30 segundos de Velocidad II con sus 3 Energy Juice
+
+---
+
+**Creado por:** Comunidad Funky Maker Server

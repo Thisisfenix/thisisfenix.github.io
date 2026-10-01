@@ -1,15 +1,25 @@
-# Ankush Moonred - El Superviviente Estratégico
+# <lucide-flame class="icon-inline"></lucide-flame> Ankush Moonred
 
-## 🎯 Habilidades
+**Rol**: Survivor | Información / Estratega  
+**Dificultad**: ★★★★☆ (Alta)
 
-### 🔍 Habilidad Principal (Q) — Escáner Umbral
+---
 
-Dispositivo tecnológico creado por Ankush para detectar las irregularidades del Bosque Umbral.
+## <lucide-user class="icon-header"></lucide-user> Descripción
 
-- **Tipo:** Detección / Soporte
-- **Cooldown:** 45 segundos
-- **Duración:** 8 segundos
-- **Radio:** 25 metros
+Ankush Moonred es un superviviente estratégico que usa tecnología y habilidades térmicas para detectar peligros y sobrevivir. Su cuerpo genera calor constantemente, otorgándole ventajas a costa de gestión cuidadosa. Experto en detección de anomalías y con un dispositivo de último recurso que lo salva de la muerte.
+
+---
+
+## <lucide-zap class="icon-header"></lucide-zap> Habilidades
+
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Escáner Umbral (Q)
+
+**Tipo**: Detección / Soporte
+
+- **Cooldown**: 45 segundos
+- **Duración**: 8 segundos
+- **Radio**: 25 metros
 
 **Efectos:**
 - Marca zonas peligrosas en el mapa
@@ -17,18 +27,17 @@ Dispositivo tecnológico creado por Ankush para detectar las irregularidades del
 - Revela rastros térmicos de anillos y objetos interactivos
 - Puede revelar caminos ocultos temporalmente
 
-**Estrategia:** Úsalo antes de entrar a zonas desconocidas o cuando sospeches que un ejecutor está cerca. Comparte la información con tu equipo.
+**Uso estratégico**: Úsalo antes de entrar a zonas desconocidas o cuando sospeches que un ejecutor está cerca.
 
 ---
 
-### 🔥 Habilidad Secundaria (E) — Pulso Calórico
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Pulso Calórico (E)
 
-Libera una onda de calor desde sus dispositivos que interfiere con las anomalías del bosque.
+**Tipo**: Utilidad / Defensa
 
-- **Tipo:** Utilidad / Defensa
-- **Cooldown:** 60 segundos
-- **Radio:** 12 metros
-- **Duración:** 4 segundos
+- **Cooldown**: 60 segundos
+- **Radio**: 12 metros
+- **Duración**: 4 segundos
 
 **Efectos:**
 - Distorsiona la visión de ejecutores cercanos
@@ -36,17 +45,16 @@ Libera una onda de calor desde sus dispositivos que interfiere con las anomalía
 - Debilita anomalías temporalmente
 - Puede desorientar ejecutores durante persecuciones
 
-**Estrategia:** Úsalo en momentos críticos durante persecuciones o para interrumpir habilidades de ejecutores. El timing es crucial.
+**Uso estratégico**: Úsalo en momentos críticos durante persecuciones o para interrumpir habilidades de ejecutores.
 
 ---
 
-### � Habilidad Especial (R) — Núcleo Fénix
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Núcleo Fénix (R)
 
-El calor dentro de Ankush reacciona automáticamente cuando está cerca de morir, protegiéndolo de daños letales.
+**Tipo**: Supervivencia / Pasiva Activable
 
-- **Tipo:** Supervivencia / Pasiva Activable
-- **Cooldown:** Una vez por ciclo (se reinicia al escapar o morir)
-- **Duración:** 6 segundos
+- **Cooldown**: Una vez por ciclo (se reinicia al escapar o morir)
+- **Duración**: 6 segundos
 
 **Efectos:**
 - Sobrevive automáticamente a un golpe letal
@@ -54,15 +62,13 @@ El calor dentro de Ankush reacciona automáticamente cuando está cerca de morir
 - Produce cenizas densas alrededor que reducen visibilidad
 - Los ejecutores experimentan interferencia cerca de él
 
-**Estrategia:** Esta habilidad se activa automáticamente cuando recibirías daño letal. Aprovecha los 6 segundos de velocidad extra para escapar o llegar a una zona segura.
+**Uso estratégico**: Se activa automáticamente cuando recibirías daño letal. Aprovecha los 6 segundos para escapar.
 
 ---
 
-## 🌟 Pasivas
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Memoria Fragmentada (Pasiva)
 
-### 🧠 Memoria Fragmentada
-
-Ankush conserva fragmentos de recuerdos entre ciclos, permitiéndole detectar anomalías que otros no perciben.
+**Tipo**: Información / Percepción
 
 **Efectos:**
 - Reconoce lugares ya recorridos (mini-mapa mejorado)
@@ -71,15 +77,13 @@ Ankush conserva fragmentos de recuerdos entre ciclos, permitiéndole detectar an
 - Escucha ecos o diálogos que otros jugadores no perciben
 - Recibe pistas visuales cuando el bosque está "observando"
 
-**Ventaja:** Te da información crucial sobre el estado del mapa y comportamiento de ejecutores.
-
 ---
 
-### �️ Sobrecalentamiento
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Sobrecalentamiento (Pasiva)
 
-El cuerpo de Ankush acumula temperatura conforme usa habilidades y corre.
+**Tipo**: Gestión de Recursos
 
-**Medidor de Calor:** 0% → 100%
+**Medidor de Calor**: 0% → 100%
 
 **Ventajas (50-100% calor):**
 - +5% velocidad de movimiento
@@ -87,7 +91,7 @@ El cuerpo de Ankush acumula temperatura conforme usa habilidades y corre.
 - Gadgets y dispositivos son más eficientes
 
 **Desventajas (75-100% calor):**
-- Visión ligeramente distorsionada (efecto de calor)
+- Visión ligeramente distorsionada
 - Sonidos ambientales alterados
 - Riesgo de colapso térmico si alcanza 100%
 
@@ -96,22 +100,20 @@ El cuerpo de Ankush acumula temperatura conforme usa habilidades y corre.
 - No puede usar habilidades por 5 segundos
 - Emite humo visible para ejecutores
 
-**Gestión:** El calor se disipa lentamente cuando no corres ni usas habilidades. Aprende a balancear agresividad con descanso.
-
 ---
 
-### 💨 Ceniza Residual (Efecto Visual Pasivo)
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Ceniza Residual (Pasiva Visual)
 
-Al correr o recibir daño, Ankush deja partículas de ceniza caliente.
+**Tipo**: Efecto de Rastro
 
 **Efectos:**
 - Deja rastros de ceniza que reducen velocidad enemiga (-8%)
 - Puede crear rastros falsos para confundir persecuciones
 - Efecto visual constante que refuerza su identidad
 
-**Nota:** Este efecto es siempre activo y no consume un slot de habilidad.
+---
 
-## 📖 Historia
+## <lucide-book-open class="icon-header"></lucide-book-open> Historia
 
 <div class="lore-dialog" id="lore-ankush">
   <div class="lore-page" hidden><span class="lore-yellow">Ankush Moonred</span> comenzó a interesarse en el Bosque Umbral después de detectar múltiples <span class="lore-red">anomalías imposibles de explicar</span> mediante tecnología convencional.</div>
@@ -132,7 +134,9 @@ Al correr o recibir daño, Ankush deja partículas de ceniza caliente.
   </div>
 </div>
 
-## 🎮 Estrategias de Juego
+---
+
+## <lucide-gamepad-2 class="icon-header"></lucide-gamepad-2> Estrategias
 
 ### Como Ankush:
 
@@ -176,7 +180,9 @@ Al correr o recibir daño, Ankush deja partículas de ceniza caliente.
 - Guarda todas las habilidades para emergencias
 - Ideal para jugadores nuevos con Ankush
 
-## 💡 Tips Avanzados
+---
+
+## <lucide-lightbulb class="icon-header"></lucide-lightbulb> Tips
 
 ### Gestión de Sobrecalentamiento:
 - **Zona Óptima:** 50-70% de calor = máximo beneficio, mínimo riesgo
@@ -208,13 +214,17 @@ Al correr o recibir daño, Ankush deja partículas de ceniza caliente.
 - La reducción de velocidad enemiga es pequeña pero acumulativa
 - Úsala para ayudar a compañeros en persecución (corre cerca del killer)
 
-## 🗺️ Mejores Mapas
+---
+
+## <lucide-map class="icon-header"></lucide-map> Mejores Mapas
 
 > 🚧 **Work in Progress**
 > 
 > Los mejores mapas para Ankush están siendo analizados y serán añadidos próximamente.
 
-## ⚔️ Matchups
+---
+
+## <lucide-swords class="icon-header"></lucide-swords> Matchups
 
 ### Vs Killers:
 
@@ -281,3 +291,18 @@ Al correr o recibir daño, Ankush deja partículas de ceniza caliente.
 - Ambos son más soporte que agresivos
 - Necesitan un tercer jugador agresivo
 - **Combo:** Doble información puede ser redundante, diversifiquen roles
+
+
+---
+
+## <lucide-star class="icon-header"></lucide-star> Curiosidades
+
+> 🚧 **Work in Progress**
+> 
+> Curiosidades sobre Ankush próximamente.
+
+---
+
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026
+</div>

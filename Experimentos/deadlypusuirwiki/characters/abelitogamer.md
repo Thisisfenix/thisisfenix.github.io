@@ -1,125 +1,115 @@
-# AbelitoGamer - El Boss Definitivo
+# <lucide-crown class="icon-inline"></lucide-crown> AbelitoGamer
 
-## � Estadísticas Base
+**Rol**: Boss | April Fools Permanente  
+**Dificultad**: ★★★★★ (Muy Alta)
 
-### 👹 Stats de Boss
+---
+
+## <lucide-user class="icon-header"></lucide-user> Descripción
+
+AbelitoGamer es el boss definitivo de Deadly Pursuit. Originalmente creado como broma de April Fools, se quedó permanentemente porque "le dio paja quitarlo". Con 2200 HP, tres fases progresivas, y doce habilidades devastadoras, es el desafío más grande del juego.
+
+---
+
+## <lucide-bar-chart class="icon-header"></lucide-bar-chart> Estadísticas Base
+
+### Stats de Boss:
 - **HP:** 2200 (extremadamente alto)
 - **Velocidad Fase 1:** 12
 - **Velocidad Fase 2:** 17 (+5)
 - **Velocidad Fase 3:** 22 (+10)
 - **Rango de Ataque:** 11 studs
 - **Rango de Agro:** 55 studs
-- **Dificultad:** ⭐⭐⭐⭐⭐ (Muy Alta)
 
-### 🛡️ Pasivas Especiales
+### <lucide-shield class="icon-inline"></lucide-shield> Pasivas Especiales:
 - **Inmune al Stun:** No puede ser stuneado por habilidades de survivors
 - **Regeneración de Caída:** Si cae del mapa, respawnea automáticamente
 - **Patrullaje:** Cuando no hay targets, patrulla el mapa buscando survivors
 - **Resistencia:** Inmune a efectos de control como PlatformStand
 
-## 🎯 Habilidades
+---
 
-### 👊 Ataques Básicos
+## <lucide-zap class="icon-header"></lucide-zap> Habilidades
 
-#### Melee
+### Ataques Básicos
+
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Melee
 - **Cooldown:** 7 segundos
 - **Daño:** 9
 - **Rango:** 11 studs
-- **Descripción:** Ataque cuerpo a cuerpo básico
-- **Uso:** Combate cercano constante
 
-#### Empujón
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Empujón
 - **Cooldown:** 2 segundos
-- **Efecto:** Empuja survivors muy cercanos
-- **Descripción:** Empuja automáticamente a survivors que estén demasiado cerca
-- **Uso:** Control de espacio personal
+- **Efecto:** Empuja survivors muy cercanos automáticamente
 
-### ⚡ Ataques de Fase 1 (100%-60% HP)
+---
 
-#### Onda de Choque Direccional
+### Ataques de Fase 1 (100%-60% HP)
+
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Onda de Choque Direccional
 - **Cooldown:** 18 segundos
 - **Daño:** 14
 - **Rango:** 45 studs
 - **Tipo:** Proyectil lineal
-- **Descripción:** Proyectil que viaja en línea recta hacia el target
-- **Uso:** Ataque a distancia media
 
-#### Dash
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Dash
 - **Cooldown:** 25 segundos
 - **Daño:** 12
 - **Rango:** 35 studs
 - **Tipo:** Embestida
-- **Descripción:** Embestida rápida hacia el target
-- **Uso:** Cierre de distancia rápido
 
-#### Shockwave
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Shockwave
 - **Cooldown:** 40 segundos
 - **Daño:** 7
 - **Radio:** 30 studs
 - **Efecto:** Inmoviliza
-- **Descripción:** Explosión de área que inmoviliza a todos los survivors cercanos
-- **Uso:** Control de área masivo
 
-### 🔥 Ataques de Fase 2+ (60%-0% HP)
+---
 
-#### Ráfaga de Proyectiles
+### Ataques de Fase 2+ (60%-0% HP)
+
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Ráfaga de Proyectiles
 - **Cooldown:** 16 segundos
 - **Daño:** 11 por proyectil
-- **Cantidad:** 3 proyectiles
-- **Patrón:** Abanico
-- **Descripción:** Dispara 3 proyectiles en patrón de abanico
-- **Uso:** Cobertura de área amplia
+- **Cantidad:** 3 proyectiles en abanico
 
-#### Teletransporte
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Teletransporte
 - **Cooldown:** 24 segundos
 - **Daño:** 16
 - **Radio de explosión:** 12 studs
-- **Descripción:** Se teletransporta detrás del target y causa una explosión
-- **Uso:** Ataque sorpresa devastador
+- **Efecto:** Se teletransporta detrás del target
 
-#### Lluvia de Proyectiles
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Lluvia de Proyectiles
 - **Cooldown:** 35 segundos
 - **Daño:** 15 por proyectil
 - **Cantidad:** 12 proyectiles
 - **Radio:** 40 studs
-- **Descripción:** 12 proyectiles caen desde arriba en un área amplia
-- **Uso:** Ataque de área masivo
 
-#### Rayo Láser
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Rayo Láser
 - **Cooldown:** 28 segundos
 - **Daño:** 18
 - **Rango:** 60 studs
-- **Descripción:** Láser que barre el área horizontalmente
-- **Uso:** Ataque de largo alcance
+- **Efecto:** Láser que barre horizontalmente
 
-#### Minas Explosivas
+#### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Minas Explosivas
 - **Cooldown:** 22 segundos
 - **Daño:** 20
 - **Radio de explosión:** 8 studs
-- **Descripción:** Despliega minas que explotan al contacto con survivors
-- **Uso:** Control de zona y trampas
+- **Efecto:** Despliega minas que explotan al contacto
 
-## 🌟 Sistema de Fases
+---
+
+## <lucide-layers class="icon-header"></lucide-layers> Sistema de Fases
 
 ### Fase 1 (100%-60% HP)
 - **Velocidad:** 12
-- **Ataques disponibles:**
-  - Melee
-  - Empujón
-  - Onda de Choque Direccional
-  - Dash
-  - Shockwave
+- **Ataques:** Melee, Empujón, Onda de Choque, Dash, Shockwave
 - **Comportamiento:** Agresivo pero predecible
 
 ### Fase 2 (60%-30% HP)
 - **Velocidad:** 17 (+5)
-- **Ataques desbloqueados:**
-  - Ráfaga de Proyectiles
-  - Teletransporte
-  - Lluvia de Proyectiles
-  - Rayo Láser
-  - Minas Explosivas
-- **Comportamiento:** Mucho más agresivo y impredecible
+- **Ataques desbloqueados:** Ráfaga, Teletransporte, Lluvia, Láser, Minas
+- **Comportamiento:** Mucho más agresivo e impredecible
 
 ### Fase 3 (30%-0% HP)
 - **Velocidad:** 22 (+10)
@@ -127,7 +117,9 @@
 - **Todos los ataques disponibles**
 - **Comportamiento:** Extremadamente agresivo, spam de habilidades
 
-## 📖 Historia
+---
+
+## <lucide-book-open class="icon-header"></lucide-book-open> Historia
 
 <div class="lore-dialog" id="lore-abelito">
   <div class="lore-page" hidden>Era <span class="lore-yellow">1 de Abril</span>. April Fools. El día perfecto para hacer pendejadas.</div>
@@ -153,7 +145,9 @@
   </div>
 </div>
 
-## 🎮 Estrategias de Juego
+---
+
+## <lucide-gamepad-2 class="icon-header"></lucide-gamepad-2> Estrategias
 
 ### Contra AbelitoGamer:
 - **Fase 1 (100%-60%):**
@@ -182,7 +176,9 @@
 - **Healer Build:** Curación para mantener al equipo vivo
 - **DPS Build:** Máximo daño para pasar las fases rápidamente
 
-## 💡 Tips Avanzados
+---
+
+## <lucide-lightbulb class="icon-header"></lucide-lightbulb> Tips
 
 ### Mecánicas Especiales:
 - **Inmune al Stun:** No gastes habilidades de stun, son inútiles
@@ -207,13 +203,17 @@
 - **Fase 3:** Usa TODO, es supervivencia pura
 - **Revivir:** Prioriza revivir en Fase 1, es más seguro
 
-## �️ Mejores Estrategias por Mapa
+---
+
+## <lucide-map class="icon-header"></lucide-map> Mejores Estrategias por Mapa
 
 > 🚧 **Work in Progress**
 > 
 > Las mejores estrategias por mapa están siendo analizadas y serán añadidas próximamente.
 
-## ⚔️ Matchups
+---
+
+## <lucide-swords class="icon-header"></lucide-swords> Matchups
 
 ### Mejores Survivors contra AbelitoGamer:
 
@@ -266,7 +266,9 @@
 - **Allison:** Sus ecos no ayudan mucho contra un boss
 - **Survivors de control:** Habilidades de stun/control son inútiles
 
-## 🎭 Relaciones
+---
+
+## <lucide-users class="icon-header"></lucide-users> Relaciones
 
 ### Tipo:
 - **Rol:** Boss Especial
@@ -277,7 +279,9 @@
 > 
 > Las relaciones de AbelitoGamer con otros personajes están siendo desarrolladas y serán añadidas próximamente.
 
-## 📊 Tabla de Daño Rápida
+---
+
+## <lucide-table class="icon-header"></lucide-table> Tabla de Daño Rápida
 
 | Ataque | Daño | Cooldown | Fase |
 |--------|------|----------|------|
@@ -292,3 +296,22 @@
 | Minas | 20 | 22s | 2+ |
 
 **Nota:** En Fase 3, todos los cooldowns se reducen 40%
+
+
+---
+
+## <lucide-star class="icon-header"></lucide-star> Curiosidades
+
+- Creado originalmente como broma de April Fools (1 de Abril)
+- Se quedó permanentemente porque "le dio paja quitarlo"
+- Es el único personaje que existe por **pura hueva**
+- Boss más difícil del juego con 2200 HP
+- Tiene más habilidades que cualquier otro personaje (12 ataques diferentes)
+- Inmune a todos los efectos de control
+- La historia más honesta y absurda de todos los personajes
+
+---
+
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026 | <lucide-crown class="icon-inline"></lucide-crown> Boss
+</div>

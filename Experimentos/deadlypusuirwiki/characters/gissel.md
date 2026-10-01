@@ -1,58 +1,131 @@
-# Gissel - La Sanadora del Equipo
+# Gissel Flare | Survivor
 
-## 🎯 Habilidades
+**Rol:** Survivor  
+**Dificultad:** ★★★☆☆ (Media)  
+**HP:** 100 (160 en LMS)  
+**Tipo:** Ágil / Combate
 
-### Sharp Wings (Q)
-- **Cooldown:** 15 segundos
-- **Efecto:** Despliega alas afiladas para atacar
-- **Uso:** Ataque especial con alcance extendido
+---
 
-## 📖 Historia
+## <span data-lucide="user"></span> Descripción
 
-<div class="lore-dialog" id="lore-gissel">
-  <div class="lore-page" hidden><span class="lore-yellow">Gissel</span> es la survivor más ágil del roster. Su habilidad <span class="lore-purple">Sharp Wings</span> la convierte en una luchadora capaz de enfrentar killers directamente.</div>
-  <div class="lore-page" hidden>Es especialmente poderosa en situaciones de <span class="lore-red">Last Man Standing</span>, donde recibe un boost significativo de HP que la transforma en una amenaza real para cualquier killer.</div>
-  <div class="lore-dialog-text"></div>
-  <div class="lore-dialog-footer">
-    <span class="lore-dialog-counter"></span>
-    <button class="lore-dialog-next"></button>
-  </div>
-</div>
+Gissel es la survivor más ágil del roster. Con su habilidad Sharp Wings puede enfrentar killers directamente. Es especialmente poderosa en situaciones de Last Man Standing, donde recibe un boost significativo de HP (+60) que la transforma en una amenaza real para cualquier killer.
 
-## 🎮 Estrategias de Juego
+---
 
-### Como Gissel:
-1. **Mantente viva** - Eres crucial para el equipo
-2. **Posicionamiento** - Mantén distancia segura pero accesible
-3. **Timing** - Usa habilidades en momentos críticos
-4. **Comunicación** - Coordina con tu equipo
+## <span data-lucide="zap"></span> Habilidad | Sharp Wings
+**Tipo:** Ataque / Control  
+**Cooldown:** 18 segundos  
+**Tecla:** Q
 
-### Builds Recomendados:
-- **Soporte Puro:** Maximizar curación y escudos
-- **Híbrido:** Balance entre soporte y supervivencia personal
-- **Escape Artist:** Enfoque en movilidad y evasión
+Gissel despliega alas afiladas para atacar al killer con alcance extendido.
 
-## 💡 Tips Avanzados
+### **Efectos:**
+- <span data-lucide="sword"></span> 3 golpes consecutivos
+- <span data-lucide="move"></span> Empuja al killer hacia atrás
+- <span data-lucide="pause-circle"></span> Stunea al killer
+- <span data-lucide="crosshair"></span> Alcance extendido de ataque
 
-### Gestión de Habilidades:
-- **Sharp Wings** 3 golpes que empujan y stunean al killer (18s CD)
-- Pasiva LMS: +60 HP cuando queda 1 survivor
-- 100 HP base, 160 HP en Last Man Standing
-- Velocidad ágil para escapar de killers
+---
 
-### Interacciones con Otros Personajes:
+## <span data-lucide="sparkles"></span> Pasiva | Last Man Standing Boost
 
-**Sinergia con:**
-- **iA777:** Combo perfecto tech + heal
-- **Angel:** Doble soporte para máxima supervivencia
-- **Iris:** Stealth + heal para rescates seguros
+Cuando Gissel es la **última survivor viva**, recibe un boost masivo de HP.
 
-**Vulnerable contra:**
-- **Vortex:** Sus habilidades de control limitan tu movilidad
-- **Molly:** Su agresividad puede eliminarte rápidamente
-- **2019X:** Difícil de detectar para aplicar curaciones preventivas
+### **Efectos:**
+- <span data-lucide="heart-pulse"></span> **+60 HP** al quedar sola
+- <span data-lucide="shield"></span> Total: **160 HP** en LMS
+- <span data-lucide="sword"></span> Se convierte en amenaza real para el killer
+- <span data-lucide="zap"></span> Mantiene su velocidad ágil
 
-## 🗺️ Mejores Mapas
-- **Haunted Mansion:** Múltiples rutas para rescates seguros
-- **Abandoned Factory:** Cobertura para curaciones
-- **Discord Server:** Balance entre seguridad y accesibilidad
+---
+
+## <span data-lucide="book-open"></span> Historia
+
+Gissel Flare es una diseñadora gráfica de 26 años. Su agilidad y capacidad de combate la hacen destacar como survivor. Su relación con Sfexceed y su pasado con Aaron son parte de su historia.
+
+**Datos:**
+- **Edad:** 26 años
+- **Cumpleaños:** 29/09/1999
+- **Ocupación:** Diseñadora gráfica
+- **Relaciones:** Sfexceed (pareja), Gis Flare (amiga), Aaron (ex pareja)
+
+---
+
+## <span data-lucide="gamepad-2"></span> Estrategia de Juego
+
+### **Estilo de Juego:**
+Gissel es una survivor **ágil y combativa**. Su Sharp Wings le permite enfrentar al killer directamente, especialmente efectiva en Last Man Standing donde su HP se duplica casi.
+
+### **Puntos Fuertes:**
+- <span data-lucide="check"></span> **Velocidad ágil** - Fácil de escapar
+- <span data-lucide="check"></span> **Sharp Wings** - 3 golpes que stunean
+- <span data-lucide="check"></span> **LMS Queen** - 160 HP cuando queda sola
+- <span data-lucide="check"></span> **Combate** - Puede enfrentar killers directamente
+
+### **Puntos Débiles:**
+- <span data-lucide="x"></span> Solo 100 HP fuera de LMS
+- <span data-lucide="x"></span> Sharp Wings tiene CD de 18s
+- <span data-lucide="x"></span> Requiere acercarse al killer
+
+---
+
+## <span data-lucide="lightbulb"></span> Tips Avanzados
+
+- <span data-lucide="star"></span> **Sharp Wings:** Úsalo para crear distancia después de los 3 golpes
+- <span data-lucide="star"></span> **Velocidad Ágil:** Aprovecha tu movilidad para kiting
+- <span data-lucide="star"></span> **LMS Beast:** Si quedas sola, con 160 HP puedes pelear al killer
+- <span data-lucide="star"></span> **Positioning:** Mantén distancia óptima para usar Sharp Wings
+- <span data-lucide="star"></span> **CD Management:** 18s es largo, úsalo estratégicamente
+
+---
+
+## <span data-lucide="map"></span> Mejores Mapas
+
+- <span data-lucide="map-pin"></span> **Haunted Mansion:** Múltiples rutas para escapar después de usar Sharp Wings
+- <span data-lucide="map-pin"></span> **Abandoned Factory:** Cobertura para preparar ataques
+- <span data-lucide="map-pin"></span> **Discord Server:** Balance entre espacios abiertos y cover
+
+---
+
+## <span data-lucide="swords"></span> Matchups vs Killers
+
+### **Bueno contra:**
+- <span data-lucide="shield-check"></span> **Killers lentos:** Tu velocidad ágil + Sharp Wings los domina
+
+### **Difícil contra:**
+- <span data-lucide="shield-alert"></span> **2019X:** Difícil de detectar para atacar preventivamente
+- <span data-lucide="shield-alert"></span> **Vortex:** Sus habilidades de control limitan tu movilidad
+
+---
+
+## <span data-lucide="users"></span> Sinergia con Otros Survivors
+
+### **Buena sinergia:**
+- <span data-lucide="users-round"></span> **iA777:** Combo perfecto tech + combate ágil
+- <span data-lucide="users-round"></span> **Angel:** Soporte mutuo para máxima supervivencia
+- <span data-lucide="users-round"></span> **Iris:** Stealth + combate para rescates
+
+### **Anti-sinergia:**
+- <span data-lucide="user-x"></span> **Molly:** Su agresividad puede ponerte en peligro
+
+---
+
+## <span data-lucide="users"></span> Relaciones
+
+- **Sfexceed:** Pareja actual
+- **Gis Flare:** Amiga cercana
+- **Aaron:** Ex pareja
+
+---
+
+## <span data-lucide="sparkles"></span> Curiosidades
+
+- <span data-lucide="info"></span> Es la survivor más ágil del roster
+- <span data-lucide="info"></span> Su HP casi se duplica en LMS (100 → 160)
+- <span data-lucide="info"></span> Sharp Wings es una de las pocas habilidades de ataque directo de survivors
+- <span data-lucide="info"></span> Diseñadora gráfica en la vida real
+
+---
+
+**Creado por:** Comunidad

@@ -1,70 +1,120 @@
-# MissX - La Entidad Glitcheada
+# <lucide-skull class="icon-inline"></lucide-skull> MissX
 
-## 🎬 Introducción de Partida
+**Rol**: Killer | Glitch / Teletransporte  
+**Dificultad**: ★★★★☆ (Alta)
 
-Al iniciar la partida, antes de empezar aparece un mensaje en **negro con ojos rojos brillantes** y un mensaje abajo mientras MissX dice:
+---
+
+## <lucide-user class="icon-header"></lucide-user> Descripción
+
+MissX es una entidad glitcheada que domina el campo con teletransporte, vuelo y efectos de distorsión. Su Modo Furia convierte los stuns recibidos en poder devastador, haciéndola más peligrosa cuanto más la ataquen. Una killer de alta movilidad y daño escalable.
+
+---
+
+## <lucide-zap class="icon-header"></lucide-zap> Habilidades
+
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Ataque Normal (Click)
+
+**Tipo**: Ataque Cuerpo a Cuerpo
+
+- **Daño**: 28 por golpe
+- **Descripción**: Con solo un click, MissX atacará a la víctima causando daño directo.
+
+---
+
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Modo Vuelo (Q)
+
+**Tipo**: Movilidad / Ataque
+
+- **Duración**: 8 segundos
+- **Daño**: 20 (si atrapa a la víctima)
+
+**Animación**: MissX camina lentamente, parpadea 6 veces con un chasquido rojo en todo su cuerpo. Cuando termina el parpadeo, sale volando acompañado de un grito.
+
+**Al atrapar:**
+- La pantalla de la víctima se glitchea
+- La víctima cae al suelo por 2 segundos
+- MissX no puede atacar hasta que la víctima se levante
+- Daño recibido: 20
+
+**Uso estratégico**: Atraviesa obstáculos, alcanza survivors en lugares altos.
+
+---
+
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> "Ecrimer" - Teletransporte (E)
+
+**Tipo**: Teletransporte / Jumpscare
+
+- **Cooldown**: Variable
+- **Daño**: 0 (no causa daño)
+
+**Efecto**: MissX se teletransporta a la víctima más cercana. Hace un pequeño jumpscare con animación de burla.
+
+**Efectos en la víctima:**
+- Pantalla distorsionada por 4 segundos
+- Efecto de sonido glitch
+
+**Durante la animación:**
+- MissX puede moverse
+- No puede atacar hasta que termine la animación de burla
+
+**Uso estratégico**: Presión constante, interrumpir acciones, sorprender survivors.
+
+---
+
+### <lucide-circle-dot class="icon-ability"></lucide-circle-dot> Modo Furia (R)
+
+**Tipo**: Potenciador / Transformación
+
+**Activación**: Barra de furia que se llena al ser estuneada
+
+- **Duración**: 1 minuto exacto
+
+**Efectos:**
+- **Ataque Normal**: 50 de daño (aumentado de 28)
+- **Modo Vuelo**: 30 de daño (aumentado de 20)
+- Velocidad de movimiento aumentada
+- Ojos completamente negros
+
+**Mecánica especial:**
+- Al iniciar, revela ubicación a los supervivientes por 4 segundos
+- Desaparece después de la revelación
+- Se revela nuevamente al atacar
+
+**Uso estratégico**: Activa cuando múltiples survivors estén cerca para maximizar el impacto.
+
+---
+
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Barra de Furia (Pasiva)
+
+**Tipo**: Acumulación Progresiva
+
+- Se llena cuando MissX es estuneada
+- Al llenarse completamente, permite activar Modo Furia
+
+---
+
+### <lucide-sparkles class="icon-ability"></lucide-sparkles> Presencia Glitcheada (Pasiva)
+
+**Tipo**: Efectos Visuales
+
+- Efectos visuales de glitch en las víctimas
+- Distorsión de pantalla al usar habilidades
+- Efectos de sonido únicos
+
+---
+
+## <lucide-film class="icon-header"></lucide-film> Introducción de Partida
+
+Al iniciar la partida, antes de empezar aparece un mensaje en **negro con ojos rojos brillantes** mientras MissX dice:
 
 > **"Welcome back..."**
 
 Concluyendo con una risa siniestra, iniciando la partida.
 
-## 🎯 Habilidades
+---
 
-### � Ataque Normal (Click)
-- **Daño:** 28 por golpe
-- **Tipo:** Ataque cuerpo a cuerpo
-- **Descripción:** Con solo un click, MissX atacará a la víctima causando daño directo.
-
-### ✈️ Modo Vuelo (Q)
-- **Duración:** 8 segundos
-- **Daño:** 20 (si atrapa a la víctima)
-- **Animación:** MissX camina lentamente, parpadea 6 veces con un chasquido rojo en todo su cuerpo
-- **Efecto:** Cuando termina el parpadeo, sale volando acompañado de un grito
-- **Al atrapar:**
-  - La pantalla de la víctima se glitchea
-  - La víctima cae al suelo por 2 segundos
-  - MissX no puede atacar hasta que la víctima se levante
-  - Daño recibido: 20
-
-### 📡 "Ecrimer" - Teletransporte (E)
-- **Cooldown:** Variable
-- **Daño:** 0 (no causa daño)
-- **Efecto:** MissX se teletransporta a la víctima más cercana
-- **Jumpscare:** Hace un pequeño jumpscare con animación de burla
-- **Efectos en la víctima:**
-  - Pantalla distorsionada por 4 segundos
-  - Efecto de sonido glitch
-- **Durante la animación:**
-  - MissX puede moverse
-  - No puede atacar hasta que termine la animación de burla
-
-### 😈 Modo Furia (R)
-- **Activación:** Barra de furia que se llena al ser estuneada
-- **Duración:** 1 minuto exacto
-- **Efectos:**
-  - **Ataque Normal:** 50 de daño (aumentado de 28)
-  - **Modo Vuelo:** 30 de daño (aumentado de 20)
-  - Velocidad de movimiento aumentada
-  - Ojos completamente negros
-- **Mecánica especial:**
-  - Al iniciar, revela ubicación a los supervivientes por 4 segundos
-  - Desaparece después de la revelación
-  - Se revela nuevamente al atacar
-- **Nota:** El tiempo no se detiene, solo potencia habilidades y movimientos
-
-## 🌟 Pasivas
-
-### Barra de Furia
-- Se llena cuando MissX es estuneada
-- Al llenarse completamente, permite activar Modo Furia
-- Sistema de acumulación progresiva
-
-### Presencia Glitcheada
-- Efectos visuales de glitch en las víctimas
-- Distorsión de pantalla al usar habilidades
-- Efectos de sonido únicos
-
-## 📖 Historia
+## <lucide-book-open class="icon-header"></lucide-book-open> Historia
 
 <div class="lore-dialog" id="lore-missx">
   <div class="lore-page" hidden>Después de tanto tiempo dominando su propio mundo, <span class="lore-yellow">MissX se aburrió</span>. Años y años torturando a las mismas víctimas, jugando siempre el mismo juego, todo se había vuelto predecible y monótono.</div>
@@ -79,7 +129,9 @@ Concluyendo con una risa siniestra, iniciando la partida.
   </div>
 </div>
 
-## 🎮 Estrategias de Juego
+---
+
+## <lucide-gamepad-2 class="icon-header"></lucide-gamepad-2> Estrategias
 
 ### Como MissX:
 - **Gestión de Furia:** Acumula stuns estratégicamente para activar Modo Furia en momentos clave
@@ -93,7 +145,9 @@ Concluyendo con una risa siniestra, iniciando la partida.
 - **Acosadora Glitch:** Usa Ecrimer constantemente para mantener a los survivors nerviosos
 - **Voladora Letal:** Enfócate en dominar el Modo Vuelo para ataques aéreos
 
-## 💡 Tips Avanzados
+---
+
+## <lucide-lightbulb class="icon-header"></lucide-lightbulb> Tips
 
 ### Mecánicas Especiales:
 - **Invulnerabilidad temporal:** Durante la animación de burla de Ecrimer, puedes moverte para posicionarte mejor
@@ -113,13 +167,17 @@ Concluyendo con una risa siniestra, iniciando la partida.
 3. **Modo Vuelo** (derribar) → esperar 2 segundos → **Ataque Normal** cuando se levante
 4. **Ecrimer** (distorsión) → **Modo Vuelo** mientras están confundidos
 
-## 🗺️ Mejores Mapas
+---
+
+## <lucide-map class="icon-header"></lucide-map> Mejores Mapas
 
 > 🚧 **Work in Progress**
 > 
 > Los mejores mapas para MissX están siendo analizados y serán añadidos próximamente.
 
-## ⚔️ Matchups
+---
+
+## <lucide-swords class="icon-header"></lucide-swords> Matchups
 
 ### Vs Otros Killers:
 > 🚧 **Work in Progress**
@@ -137,3 +195,26 @@ Concluyendo con una risa siniestra, iniciando la partida.
 - **Valem:** Modo Furia para eliminar rápidamente antes de que use habilidades
 - **Anna Moonred:** Ecrimer para mantener presión constante
 - **Ankush Moonred:** Modo Vuelo para alcanzarlo en posiciones elevadas
+
+
+---
+
+## <lucide-users class="icon-header"></lucide-users> Relaciones
+
+> 🚧 **Work in Progress**
+> 
+> Las relaciones de MissX con otros personajes serán reveladas pronto.
+
+---
+
+## <lucide-star class="icon-header"></lucide-star> Curiosidades
+
+> 🚧 **Work in Progress**
+> 
+> Curiosidades sobre MissX próximamente.
+
+---
+
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026
+</div>

@@ -1,10 +1,31 @@
-# Anna Moonred
+# Anna Moonred | Survivor
 
-## 🚧 Work in Progress
-
-Esta página está siendo actualizada con nueva información. Vuelve pronto para ver el contenido completo sobre este personaje.
+**Rol:** Survivor  
+**Dificultad:** TBD  
+**Relación:** Hermana mayor de Ankush Moonred
 
 ---
 
-**Estado:** En desarrollo  
-**Última actualización:** Pendiente
+## <span data-lucide="info"></span> Información General
+
+Anna Moonred es la hermana mayor de Ankush Moonred. Su información está siendo desarrollada actualmente.
+
+---
+
+## <span data-lucide="zap"></span> Habilidades
+
+Las habilidades de Anna serán añadidas próximamente.
+
+---
+
+## <span data-lucide="users"></span> Relaciones
+
+- **Ankush Moonred** - Hermano menor
+- **Lexa** - Hermana menor
+
+---
+
+## <span data-lucide="info"></span> Notas
+
+- Personaje en desarrollo activo
+- Más información será añadida próximamente

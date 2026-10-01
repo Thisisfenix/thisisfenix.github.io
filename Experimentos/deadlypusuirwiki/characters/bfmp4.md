@@ -1,71 +1,84 @@
-# Bfmp4 - El Dealer de la Tienda
+# <lucide-store class="icon-inline"></lucide-store> Bfmp4
 
-## 🛒 Rol en el Juego
+**Rol**: NPC | Dealer de la Tienda  
+**Tipo**: Personaje No Jugable
+
+---
+
+## <lucide-user class="icon-header"></lucide-user> Descripción
 
 Bfmp4 es el **dealer oficial de la tienda** en Deadly Pursuit. Es un NPC (personaje no jugable) que gestiona todas las transacciones y ventas dentro del juego.
 
-## 📖 Descripción
+> 🚧 **La descripción detallada de Bfmp4 está siendo desarrollada.**
 
-> 🚧 **Work in Progress**
-> 
-> La descripción detallada de Bfmp4 está siendo desarrollada y será añadida próximamente.
+---
 
-## 🏪 Función en la Tienda
+## <lucide-shopping-bag class="icon-header"></lucide-shopping-bag> Función en la Tienda
 
 ### Servicios Ofrecidos:
 
-Bfmp4 es el dealer oficial de la tienda de Deadly Pursuit, donde los jugadores pueden adquirir items cosméticos y expresivos.
-
-#### 🎭 Emotes
-- **Disponibilidad:** Actualmente disponibles
+#### <lucide-smile class="icon-inline"></lucide-smile> Emotes
+- **Disponibilidad:** ✅ Actualmente disponibles
 - **Descripción:** Emotes para expresarte durante las partidas
 - **Catálogo:** Variedad de emotes para personalizar tu experiencia
 
-#### 👕 Cosméticos
+#### <lucide-shirt class="icon-inline"></lucide-shirt> Cosméticos
 - **Estado:** 🚧 Próximamente
 - **Descripción:** Skins, accesorios y personalizaciones para tus personajes
-- **Nota:** El sistema de cosméticos está siendo desarrollado y será añadido en futuras actualizaciones
-
-### Items Disponibles:
-- ✅ **Emotes** - Disponibles ahora
-- 🚧 **Cosméticos** - Próximamente
+- **Nota:** El sistema de cosméticos está siendo desarrollado
 
 ### Sistema de Moneda:
 
-La moneda del juego se obtiene al ganar partidas, ya sea como **Killer** o como **Survivor**. Esta moneda se utiliza para comprar items en la tienda de Bfmp4.
+La moneda del juego se obtiene al ganar partidas, ya sea como **Killer** o como **Survivor**.
 
-#### 💰 Cómo Obtener Moneda:
+#### <lucide-coins class="icon-inline"></lucide-coins> Cómo Obtener Moneda:
 - **Ganar como Survivor:** Obtén moneda al escapar exitosamente
 - **Ganar como Killer:** Obtén moneda al eliminar a los survivors
 
-> 🚧 **Precios y cantidades específicas están siendo documentados y serán añadidos próximamente.**
+> 🚧 **Precios y cantidades específicas están siendo documentados.**
 
-## 💬 Diálogos y Personalidad
+---
 
-> 🚧 **Work in Progress**
-> 
-> Los diálogos y la personalidad de Bfmp4 están siendo desarrollados y serán añadidos próximamente.
-
-## 🎨 Apariencia
+## <lucide-message-circle class="icon-header"></lucide-message-circle> Diálogos y Personalidad
 
 > 🚧 **Work in Progress**
 > 
-> La descripción de la apariencia de Bfmp4 está siendo desarrollada y será añadida próximamente.
+> Los diálogos y la personalidad de Bfmp4 están siendo desarrollados.
 
-## 📍 Ubicación
+---
 
-> 🚧 **Work in Progress**
-> 
-> La ubicación de la tienda de Bfmp4 en el mapa está siendo documentada y será añadida próximamente.
-
-## 💡 Tips para Interactuar
+## <lucide-palette class="icon-header"></lucide-palette> Apariencia
 
 > 🚧 **Work in Progress**
 > 
-> Los tips para interactuar eficientemente con Bfmp4 y su tienda están siendo desarrollados y serán añadidos próximamente.
+> La descripción de la apariencia de Bfmp4 está siendo desarrollada.
 
-## 🎭 Curiosidades
+---
+
+## <lucide-map-pin class="icon-header"></lucide-map-pin> Ubicación
 
 > 🚧 **Work in Progress**
 > 
-> Las curiosidades sobre Bfmp4 están siendo recopiladas y serán añadidas próximamente.
+> La ubicación de la tienda de Bfmp4 en el mapa está siendo documentada.
+
+---
+
+## <lucide-lightbulb class="icon-header"></lucide-lightbulb> Tips
+
+> 🚧 **Work in Progress**
+> 
+> Los tips para interactuar eficientemente con Bfmp4 están siendo desarrollados.
+
+---
+
+## <lucide-star class="icon-header"></lucide-star> Curiosidades
+
+> 🚧 **Work in Progress**
+> 
+> Las curiosidades sobre Bfmp4 están siendo recopiladas.
+
+---
+
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026
+</div>

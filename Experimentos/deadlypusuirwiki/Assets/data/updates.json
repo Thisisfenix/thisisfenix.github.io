@@ -1,6 +1,63 @@
 {
-  "currentVersion": "1.0.3a",
+  "currentVersion": "1.0.4",
   "updates": [
+    {
+      "version": "1.0.4",
+      "date": "2026-08-02",
+      "title": "[icon:layout] Estandarización de Personajes",
+      "type": "minor",
+      "changes": [
+        {
+          "category": "[icon:sparkles] Diseño Modernizado",
+          "items": [
+            "Todos los 17 personajes ahora usan iconos Lucide en lugar de emojis",
+            "Headers estandarizados con iconos consistentes",
+            "Formato unificado en todas las páginas de personajes",
+            "Footer con fecha de actualización en cada personaje",
+            "Diseño menos 'AI-looking', más wiki profesional"
+          ]
+        },
+        {
+          "category": "[icon:tag] Sistema de Tags Mejorado",
+          "items": [
+            "Añadido tag 'dev' (morado) para personajes en desarrollo temprano",
+            "Añadido tag 'discarded' (gris) para personajes descartados",
+            "AbelitoGamer marcado como 'rework'",
+            "Umbra, Pom, Varkul, Bfmp4 marcados como 'dev'",
+            "Avisos automáticos generados para tags dev y discarded",
+            "Removida función isWorkInProgress() - ahora todo se carga desde MD"
+          ]
+        },
+        {
+          "category": "[icon:file-text] Plantillas Estándar",
+          "items": [
+            "Creadas 3 plantillas: _TEMPLATE.md, _TEMPLATE_KILLER.md, _TEMPLATE_SURVIVOR.md",
+            "Estructura consistente: Header → Descripción → Habilidades → Historia → Estrategias → Tips → Mapas → Matchups → Relaciones → Curiosidades → Footer",
+            "Todos los personajes migrados al formato estándar",
+            "Personajes descartados (Angel, Molly) con formato especial"
+          ]
+        },
+        {
+          "category": "[icon:users] Personajes Estandarizados",
+          "items": [
+            "Survivors: Luna, Gissel, iA777, Iris, Valem, Ankush, Allison",
+            "Killers: MissX, Varkul, iA666, 2019x",
+            "Especiales: Bfmp4 (NPC), AbelitoGamer (Boss)",
+            "Descartados: Angel, Molly",
+            "En desarrollo: Pom, Umbra, Anna, Peace"
+          ]
+        },
+        {
+          "category": "[icon:settings] Configuración",
+          "items": [
+            "Botón de configuración restaurado en el header",
+            "Ahora se puede acceder al panel de configuración correctamente",
+            "Panel incluye: tema, Ankush Gato, gravedad, modo DVD, modo Conejo, fuente personalizada"
+          ]
+        }
+      ],
+      "notes": "Gran actualización de estandarización. Todos los personajes ahora tienen un formato consistente y profesional con iconos Lucide, sistema de tags mejorado y templates estándar para futuros personajes."
+    },
     {
       "version": "1.0.3a",
       "date": "2026-09-06",
