@@ -160,4 +160,6 @@ Los mejores mapas para Luna están siendo analizados. Su alta movilidad funciona
 
 ---
 
-**Creado por:** Comunidad Funky Maker Server
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026
+</div>

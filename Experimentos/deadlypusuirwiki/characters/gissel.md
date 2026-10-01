@@ -1,4 +1,4 @@
-# Gissel Flare | Survivor
+# Gissel Fischer | Survivor
 
 **Rol:** Survivor  
 **Dificultad:** ★★★☆☆ (Media)  
@@ -42,13 +42,12 @@ Cuando Gissel es la **última survivor viva**, recibe un boost masivo de HP.
 
 ## <span data-lucide="book-open"></span> Historia
 
-Gissel Flare es una diseñadora gráfica de 26 años. Su agilidad y capacidad de combate la hacen destacar como survivor. Su relación con Sfexceed y su pasado con Aaron son parte de su historia.
+Gissel Fischer es una diseñadora gráfica de 26 años. Su agilidad y capacidad de combate la hacen destacar como survivor.
 
 **Datos:**
 - **Edad:** 26 años
 - **Cumpleaños:** 29/09/1999
 - **Ocupación:** Diseñadora gráfica
-- **Relaciones:** Sfexceed (pareja), Gis Flare (amiga), Aaron (ex pareja)
 
 ---
 
@@ -111,15 +110,7 @@ Gissel es una survivor **ágil y combativa**. Su Sharp Wings le permite enfrenta
 
 ---
 
-## <span data-lucide="users"></span> Relaciones
-
-- **Sfexceed:** Pareja actual
-- **Gis Flare:** Amiga cercana
-- **Aaron:** Ex pareja
-
----
-
-## <span data-lucide="sparkles"></span> Curiosidades
+## <lucide-sparkles class="icon-header"></lucide-sparkles> Curiosidades
 
 - <span data-lucide="info"></span> Es la survivor más ágil del roster
 - <span data-lucide="info"></span> Su HP casi se duplica en LMS (100 → 160)
@@ -128,4 +119,6 @@ Gissel es una survivor **ágil y combativa**. Su Sharp Wings le permite enfrenta
 
 ---
 
-**Creado por:** Comunidad
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026
+</div>

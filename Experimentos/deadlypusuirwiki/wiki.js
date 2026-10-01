@@ -306,12 +306,11 @@
                 voice: 'Damian Albor (El loco Damián)'
             },
             'gissel': {
-                fullName: 'Gissel Flare',
+                fullName: 'Gissel Fischer',
                 aliases: ['Perra sucia', 'Gisselita', 'Gisado', 'Yisel.'],
                 gender: 'Mujer',
                 pronouns: 'She/Her',
                 orientation: 'Heterosexual',
-                relationships: ['Sfexceed (pareja)', 'Gis Flare (Amiga)', 'Aaron (Ex pareja)'],
                 affiliation: 'N/A',
                 occupation: 'Diseñadora gráfica',
                 age: '26',

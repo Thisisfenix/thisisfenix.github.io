@@ -125,5 +125,6 @@
 
 ---
 
-**Creado por:** [Nombre del creador]  
-**Última actualización:** [Fecha]
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: [Fecha]
+</div>

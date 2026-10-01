@@ -111,4 +111,6 @@ Umbra ajusta sus estadísticas según la **proximidad al Killer**:
 
 ---
 
-**Creado por:** Carosbrine [TF2]
+<div class="character-footer">
+<lucide-info class="icon-inline"></lucide-info> Última actualización: 2 de agosto de 2026
+</div>
