@@ -93,6 +93,9 @@ body {
   flex-direction: column;
   overflow: hidden;
   backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 100;
+  transition: width 0.3s ease;
 }
 
 .achievements-sidebar.hidden {

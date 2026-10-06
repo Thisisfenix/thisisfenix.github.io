@@ -587,93 +587,6 @@
     }
 
     // ========================================
-    // GESTOR DE PANELES - Sistema centralizado
-    // ========================================
-    
-    const PanelManager = {
-      activePanel: null,
-      
-      panels: {
-        settings: {
-          element: () => document.getElementById('settingsModal'),
-          open: () => {
-            const modal = document.getElementById('settingsModal');
-            modal.classList.add('active');
-            loadSettings();
-          },
-          close: () => {
-            const modal = document.getElementById('settingsModal');
-            modal.classList.remove('active');
-          }
-        },
-        achievements: {
-          element: () => document.getElementById('achievementsSidebar'),
-          open: () => {
-            const sidebar = document.getElementById('achievementsSidebar');
-            sidebar.classList.remove('hidden');
-            loadAchievementsSidebar();
-          },
-          close: () => {
-            const sidebar = document.getElementById('achievementsSidebar');
-            sidebar.classList.add('hidden');
-          }
-        },
-        music: {
-          element: () => document.getElementById('musicPlayerPanel'),
-          open: () => {
-            if (window.musicPlayer) {
-              window.musicPlayer.show();
-            }
-          },
-          close: () => {
-            if (window.musicPlayer) {
-              window.musicPlayer.hide();
-            }
-          }
-        }
-      },
-      
-      openPanel(panelName) {
-        console.log(`🔓 Abriendo panel: ${panelName}`);
-        
-        // Cerrar panel activo actual
-        if (this.activePanel && this.activePanel !== panelName) {
-          this.closePanel(this.activePanel);
-        }
-        
-        // Abrir nuevo panel
-        if (this.panels[panelName]) {
-          this.panels[panelName].open();
-          this.activePanel = panelName;
-        }
-      },
-      
-      closePanel(panelName) {
-        console.log(`🔒 Cerrando panel: ${panelName}`);
-        
-        if (this.panels[panelName]) {
-          this.panels[panelName].close();
-          if (this.activePanel === panelName) {
-            this.activePanel = null;
-          }
-        }
-      },
-      
-      togglePanel(panelName) {
-        if (this.activePanel === panelName) {
-          this.closePanel(panelName);
-        } else {
-          this.openPanel(panelName);
-        }
-      }
-    };
-    
-    // Exponer funciones globales para compatibilidad
-    window.openSettings = () => PanelManager.openPanel('settings');
-    window.closeSettings = () => PanelManager.closePanel('settings');
-    window.toggleAchievementsSidebar = () => PanelManager.togglePanel('achievements');
-    
-    // ========================================
     // SISTEMA DE NAVEGACIÓN - REESCRITO DESDE CERO
     // ========================================
     
@@ -697,15 +610,19 @@
         },
         music: {
           element: null,
-          action: () => PanelManager.togglePanel('music')
+          action: () => {
+            if (window.musicPlayer) {
+              window.musicPlayer.togglePanel();
+            }
+          }
         },
         settings: {
           element: null,
-          action: () => PanelManager.openPanel('settings')
+          action: () => openSettings()
         },
         achievements: {
           element: null,
-          action: () => PanelManager.togglePanel('achievements')
+          action: () => toggleAchievementsSidebar()
         }
       },
       
@@ -722,12 +639,11 @@
               e.preventDefault();
               console.log(`🔘 Ejecutando: ${action}`);
               this.buttons[action].action();
-            }, { capture: true }); // Usar capture para prioridad
+            });
           }
         });
         
         console.log('✅ SidebarNav inicializado');
-        console.log('✅ PanelManager inicializado');
       }
     };
     
@@ -1245,9 +1161,22 @@
       if (e.key === 'Enter') sendMessage();
     });
 
-    // Settings functions (ahora usan PanelManager)
-    // openSettings y closeSettings están definidos globalmente arriba
-    
+    // Settings functions
+    function openSettings() {
+      // Cerrar sidebar de logros si está abierto
+      const achievementsSidebar = document.getElementById('achievementsSidebar');
+      if (achievementsSidebar && !achievementsSidebar.classList.contains('hidden')) {
+        achievementsSidebar.classList.add('hidden');
+      }
+      
+      document.getElementById('settingsModal').classList.add('active');
+      loadSettings();
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsModal').classList.remove('active');
+    }
+
     function loadSettings() {
       document.getElementById('userName').value = localStorage.getItem('userName') || '';
       document.getElementById('soundSelect').value = localStorage.getItem('sound') || 'on';
@@ -1980,8 +1909,20 @@
       document.getElementById('achievementsModal').style.display = 'none';
     }
 
-    // Achievements functions (ahora usan PanelManager)
-    // toggleAchievementsSidebar está definido globalmente arriba
+    function toggleAchievementsSidebar() {
+      // Cerrar modal de settings si está abierto
+      const settingsModal = document.getElementById('settingsModal');
+      if (settingsModal && settingsModal.classList.contains('active')) {
+        settingsModal.classList.remove('active');
+      }
+      
+      const sidebar = document.getElementById('achievementsSidebar');
+      sidebar.classList.toggle('hidden');
+      
+      if (!sidebar.classList.contains('hidden')) {
+        loadAchievementsSidebar();
+      }
+    }
 
     async function loadAchievementsSidebar() {
       const list = document.getElementById('achievementsSidebarList');
