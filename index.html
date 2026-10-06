@@ -1,44 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FenixLaboratory</title>
-  <meta name="description" content="Mis proyectos personales: juegos, experimentos y cosas random que hago en mi tiempo libre." />
+  <meta name="description" content="Subo lo que hago cuando me aburro. Juegos, experimentos y weas random.">
   <link rel="icon" type="image/png" href="Assets/images/AnkushCat.png">
   
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff6b35">
-  <meta name="mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="Assets/images/AnkushCat.png">
   
-  <!-- Social Media -->
+  <!-- Social -->
   <meta property="og:title" content="FenixLaboratory">
-  <meta property="og:description" content="Proyectos personales, juegos y experimentos." />
+  <meta property="og:description" content="Juegos y experimentos que hago en mi tiempo libre">
   <meta property="og:image" content="https://thisisfenix.github.io/FenixLaboratory/preview.png">
   <meta property="og:url" content="https://thisisfenix.github.io/FenixLaboratory/">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://thisisfenix.github.io/FenixLaboratory/preview.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap"
-    rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   
-  <!-- Phantomuff Font -->
   <style>
     @font-face {
       font-family: 'Phantomuff';
       src: url('Assets/fonts/Phantomuff Difficult Font.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
     }
   </style>
   
-  <!-- Custom Styles -->
   <link rel="stylesheet" href="Assets/css/styles.css">
   <link rel="stylesheet" href="Assets/css/navbar-modern.css">
 </head>
@@ -46,11 +35,8 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
-      <a class="navbar-brand" href="#" aria-label="FenixLaboratory">
-        <i class="bi bi-flask"></i>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand" href="#"><i class="bi bi-flask"></i></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -59,994 +45,640 @@
             <a class="nav-link" href="#proyectos"><i class="bi bi-folder me-1"></i> Proyectos</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#comentarios"><i class="bi bi-chat-dots me-1"></i> Comentarios</a>
+            <a class="nav-link" href="#experimentos"><i class="bi bi-flask me-1"></i> Experimentos</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#guestbook"><i class="bi bi-palette me-1"></i> Guestbook</a>
           </li>
           <li class="nav-item">
-            <button id="experimentos-btn" class="nav-link" aria-label="Ver experimentos">
-              <i class="bi bi-flask me-1"></i> Experimentos
+            <button id="theme-btn" class="nav-link"><i class="bi bi-palette me-1"></i> Temas</button>
+          </li>
+          <li class="nav-item">
+            <button id="achievements-btn-nav" class="nav-link">
+              <i class="bi bi-trophy me-1"></i> <span id="points-nav">0</span> pts
             </button>
           </li>
           <li class="nav-item">
-            <button id="credits-btn" class="nav-link" aria-label="Ver créditos">
-              <i class="bi bi-info-circle me-1"></i> Créditos
-            </button>
-          </li>
-          <li class="nav-item">
-            <button id="theme-panel-btn" class="nav-link" aria-label="Panel de temas">
-              <i class="bi bi-palette me-1"></i> Temas
-            </button>
-          </li>
-          <li class="nav-item">
-            <button id="updates-btn" class="nav-link" aria-label="Ver actualizaciones">
-              <i class="bi bi-arrow-up-circle me-1"></i> <span id="version-number"></span>
-            </button>
-          </li>
-          <!-- Dropdown de Stats -->
-          <li class="nav-item nav-stats-dropdown" id="nav-stats-item">
-            <button class="nav-link nav-stats-trigger" id="nav-stats-btn" aria-label="Stats y logros" aria-expanded="false">
-              <i class="bi bi-bar-chart-fill me-1"></i>
-              <span class="nav-stats-label">Stats</span>
-              <i class="bi bi-chevron-down nav-stats-chevron"></i>
-            </button>
-            <div class="nav-stats-menu" id="nav-stats-menu" role="menu">
-              <button id="achievements-btn" class="nav-stats-item" role="menuitem" aria-label="Logros">
-                <i class="bi bi-trophy"></i>
-                <div class="nav-stats-info">
-                  <span class="nav-stats-name">Logros</span>
-                  <span class="nav-stats-val"><span id="points-display">0</span> pts <span class="streak-indicator" id="streak-indicator"></span></span>
-                </div>
-              </button>
-              <button id="plushie-btn" class="nav-stats-item" role="menuitem" aria-label="Peluches">
-                <span class="nav-stats-emoji">🧸</span>
-                <div class="nav-stats-info">
-                  <span class="nav-stats-name">Plushies</span>
-                  <span class="nav-stats-val"><span id="plushie-progress">0/40</span></span>
-                </div>
-              </button>
-              <button id="cupid-btn" class="nav-stats-item" role="menuitem" aria-label="Cupid Game">
-                <span class="nav-stats-emoji">🎹</span>
-                <div class="nav-stats-info">
-                  <span class="nav-stats-name">Cupid Score</span>
-                  <span class="nav-stats-val"><span id="cupid-score">0</span></span>
-                </div>
-              </button>
-            </div>
+            <span id="sync-indicator" class="nav-link" style="opacity: 0; transition: opacity 0.3s; pointer-events: none;">
+              <i class="bi bi-cloud-check" style="color: var(--primary);"></i>
+            </span>
           </li>
         </ul>
       </div>
     </div>
   </nav>
-  
-  <div class="main-content" id="main-content">
-    <!-- Hero -->
-    <section class="hero">
-      <div class="particles" id="particles"></div>
-      <div class="container hero-container">
 
-        <!-- Lado izquierdo: texto -->
-        <div class="hero-text">
-          <div class="hero-badge">
-            Soy Fenix
+  <div class="main-content">
+    <!-- FunkyMaker Player destacado -->
+    <section class="container" style="padding-top: 6rem;">
+      <div class="card funky-featured-card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(236,72,153,0.06)); border-color: rgba(168,85,247,0.5);">
+        <div class="card-body" style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+          <img src="Assets/images/FunkyMakerPlayer1.png" alt="FunkyMakerPlayer" style="width:64px;height:64px;border-radius:12px;">
+          <div style="flex: 1; min-width: 200px;">
+            <h3 style="margin: 0 0 0.5rem 0;">FunkyMakerPlayer</h3>
+            <p style="color: var(--text-secondary); margin: 0;">Reproduce niveles de Funky Maker en PC. Windows, Linux y Android.</p>
           </div>
-          <h1 id="typewriter">THISISFENIX<br><span class="hero-accent">LABORATORY</span></h1>
-          <p class="hero-intro">Aquí subo lo que hago en mi tiempo libre. Juegos, experimentos y proyectos random.</p>
-          <div class="hero-actions">
-            <a href="#proyectos" class="btn btn-neon" onclick="Utils.safeScrollIntoView('proyectos'); return false;">
-              <i class="bi bi-arrow-down me-2"></i>Ver Proyectos
-            </a>
-            <a href="#guestbook" class="btn btn-neon-ghost" onclick="Utils.safeScrollIntoView('guestbook'); return false;">
-              <i class="bi bi-palette me-2"></i>Guestbook
-            </a>
-          </div>
-          <div class="hero-casual-stats">
-            <div class="casual-stat">
-              <span class="casual-emoji">💻</span>
-              <span class="casual-text"><span id="hero-repos">—</span> proyectos</span>
-            </div>
-            <div class="casual-stat">
-              <span class="casual-emoji">🧪</span>
-              <span class="casual-text">4+ experimentos</span>
-            </div>
-            <div class="casual-stat">
-              <span class="casual-emoji">☕</span>
-              <span class="casual-text">∞ cafés</span>
-            </div>
-          </div>
+          <a href="FunkyMakerPlayer/index.html" class="btn btn-neon">
+            <i class="bi bi-download me-2"></i>Descargar
+          </a>
         </div>
-
-        <!-- Lado derecho: card visual -->
-        <div class="hero-visual">
-          <div class="hero-card personal">
-            <div class="hero-card-header">
-              <span class="hero-dot red"></span>
-              <span class="hero-dot yellow"></span>
-              <span class="hero-dot green"></span>
-              <span class="hero-card-title">working-on.txt</span>
-            </div>
-            <div class="hero-card-body">
-              <div class="personal-note">
-                <div class="note-line">Actualmente:</div>
-                <div class="note-item">→ Deadly Pursuer</div>
-                <div class="note-item">→ Chatbot con IA</div>
-                <div class="note-item">→ Experimentos varios</div>
-              </div>
-            </div>
-          </div>
-          <!-- Decoración flotante -->
-          <div class="hero-float hero-float-1"><span class="float-emoji">🎮</span></div>
-          <div class="hero-float hero-float-2"><span class="float-emoji">🎨</span></div>
-          <div class="hero-float hero-float-3"><span class="float-emoji">⚡</span></div>
-        </div>
-
       </div>
     </section>
 
-  <!-- FrameForge (antes Spritemap Extractor) -->
-  <section id="spritemaps" class="container">
-    <h2>🎬 FrameForge</h2>
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card" style="text-align: center; padding: 2rem; position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(156, 39, 176, 0.05));">
-          <div class="card-body" style="position: relative; z-index: 1;">
-            <h3 class="card-title" style="font-family: 'Phantomuff', sans-serif; font-size: 2rem; color: #9c27b0; text-shadow: 0 0 20px rgba(156, 39, 176, 0.5);">
-              🎬 FrameForge
-            </h3>
-            <p class="card-text" style="font-size: 1.1rem; margin-top: 1rem;">
-              Adobe Animate · Sprites + Animaciones
-            </p>
-            <p class="card-text" style="color: var(--text-secondary); margin-top: 0.5rem;">
-              Extrae sprites y animaciones de FNF directamente en tu navegador. Todo es local, nada se sube a ningún lado.
-            </p>
-            <a href="https://spritemaps-extractor.pages.dev/" target="_blank" rel="noopener noreferrer" class="btn btn-neon" style="position: relative; z-index: 2; background: linear-gradient(135deg, #9c27b0, #673ab7); border: none; margin-top: 1.5rem;">
-              <i class="bi bi-box-arrow-up-right me-2"></i>Abrir FrameForge
-            </a>
+    <!-- Proyectos GitHub -->
+    <section id="proyectos" class="container">
+      <h2>Proyectos</h2>
+      
+      <div class="filters">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <input type="text" class="form-control search-box" id="search-input" placeholder="Buscar...">
+          </div>
+          <div class="col-md-6">
+            <select class="form-control search-box" id="sort-select">
+              <option value="updated">Más recientes</option>
+              <option value="stars">Más estrellas</option>
+              <option value="name">Nombre</option>
+            </select>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Proyectos -->
-  <section id="proyectos" class="container">
-    <h2>Proyectos</h2>
+      <div id="repos-container">
+        <div class="card">
+          <div class="card-img-top skeleton"></div>
+          <div class="card-body">
+            <h3 class="card-title skeleton skeleton-text" style="width: 70%"></h3>
+            <p class="card-text">
+              <span class="skeleton skeleton-text"></span>
+              <span class="skeleton skeleton-text"></span>
+            </p>
+          </div>
+        </div>
+      </div>
 
-    <!-- Filtros y Búsqueda -->
-    <div class="filters">
-      <div class="row mb-3">
+      <div class="pagination" id="pagination"></div>
+    </section>
+
+    <!-- Experimentos -->
+    <section id="experimentos" class="container">
+      <h2>Experimentos</h2>
+
+      <div class="row g-3">
+        <!-- Deadly Pursuer -->
         <div class="col-md-6">
-          <input type="text" class="form-control search-box" id="search-input" placeholder="Buscar proyectos..."
-            aria-label="Buscar proyectos">
-        </div>
-        <div class="col-md-6">
-          <select class="form-control search-box" id="sort-select" aria-label="Ordenar por">
-            <option value="updated">Más recientes</option>
-            <option value="stars">Más estrellas</option>
-            <option value="name">Nombre A-Z</option>
-            <option value="created">Más antiguos</option>
-          </select>
-        </div>
-      </div>
-      <div class="text-center">
-        <button class="filter-btn active" data-filter="all">Todos</button>
-        <button class="filter-btn" data-filter="javascript">JavaScript</button>
-        <button class="filter-btn" data-filter="html">HTML</button>
-        <button class="filter-btn" data-filter="css">CSS</button>
-        <button class="filter-btn" data-filter="python">Python</button>
-      </div>
-    </div>
-
-    <!-- FunkyMakerPlayer — Tarjeta destacada fija -->
-    <div class="card funky-featured-card" style="margin-bottom: 1.5rem; position: relative; overflow: hidden; border-color: rgba(168,85,247,0.5); background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(236,72,153,0.06));">
-      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(168,85,247,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(168,85,247,0.04) 1px, transparent 1px); background-size: 30px 30px; pointer-events: none;"></div>
-      <div class="card-body" style="position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; padding: 1.75rem;">
-        <div style="font-size: 3rem; line-height: 1; flex-shrink: 0;">
-          <img src="Assets/images/FunkyMakerPlayer.png" alt="FunkyMakerPlayer" style="width:64px;height:64px;object-fit:contain;border-radius:12px;box-shadow:0 0 18px rgba(168,85,247,0.4);">
-        </div>
-        <div style="flex: 1; min-width: 200px;">
-          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-            <h3 class="card-title" style="margin: 0; font-size: 1.3rem; font-weight: 700;">FunkyMakerPlayer</h3>
-            <span style="background: rgba(168,85,247,0.2); color: #c084fc; border: 1px solid rgba(168,85,247,0.4); border-radius: 999px; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.6rem; letter-spacing: 0.05em; text-transform: uppercase;">✨ Nuevo</span>
-          </div>
-          <p class="card-text" style="color: var(--text-secondary, #aaa); font-size: 0.9rem; margin-bottom: 0.75rem;">
-            Reproducción de niveles de Funky Maker en PC. Windows, Linux y ahora también Android.
-          </p>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
-            <span style="background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); border-radius: 6px; font-size: 0.75rem; padding: 0.2rem 0.55rem;">🎹 Reproductor</span>
-            <span style="background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); border-radius: 6px; font-size: 0.75rem; padding: 0.2rem 0.55rem;">🎸 .FNMM</span>
-            <span style="background: rgba(236,72,153,0.12); color: #f472b6; border: 1px solid rgba(236,72,153,0.25); border-radius: 6px; font-size: 0.75rem; padding: 0.2rem 0.55rem;">� 3 plataformas</span>
-          </div>
-        </div>
-        <a href="FunkyMakerPlayer/index.html" class="btn btn-neon" style="flex-shrink: 0; background: linear-gradient(135deg, #a855f7, #ec4899); border: none; box-shadow: 0 0 20px rgba(168,85,247,0.4); color: #fff; white-space: nowrap;">
-          <i class="bi bi-download me-2"></i>Descargar
-        </a>
-      </div>
-    </div>
-
-    <div id="repos-container">
-      <!-- Skeleton loader mientras carga -->
-      <div class="card">
-        <div class="card-img-top skeleton"></div>
-        <div class="card-body">
-          <h3 class="card-title skeleton skeleton-text" style="width: 70%"></h3>
-          <p class="card-text">
-            <span class="skeleton skeleton-text"></span>
-            <span class="skeleton skeleton-text"></span>
-            <span class="skeleton skeleton-text" style="width: 80%"></span>
-          </p>
-          <div class="btn-group">
-            <button class="btn btn-outline-neon skeleton" style="width: 100px;"></button>
-            <button class="btn btn-outline-neon skeleton" style="width: 100px;"></button>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-img-top skeleton"></div>
-        <div class="card-body">
-          <h3 class="card-title skeleton skeleton-text" style="width: 70%"></h3>
-          <p class="card-text">
-            <span class="skeleton skeleton-text"></span>
-            <span class="skeleton skeleton-text"></span>
-            <span class="skeleton skeleton-text" style="width: 80%"></span>
-          </p>
-          <div class="btn-group">
-            <button class="btn btn-outline-neon skeleton" style="width: 100px;"></button>
-            <button class="btn btn-outline-neon skeleton" style="width: 100px;"></button>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-img-top skeleton"></div>
-        <div class="card-body">
-          <h3 class="card-title skeleton skeleton-text" style="width: 70%"></h3>
-          <p class="card-text">
-            <span class="skeleton skeleton-text"></span>
-            <span class="skeleton skeleton-text"></span>
-            <span class="skeleton skeleton-text" style="width: 80%"></span>
-          </p>
-          <div class="btn-group">
-            <button class="btn btn-outline-neon skeleton" style="width: 100px;"></button>
-            <button class="btn btn-outline-neon skeleton" style="width: 100px;"></button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Paginación -->
-    <div class="pagination" id="pagination">
-      <!-- Se llenará dinámicamente -->
-    </div>
-  </section>
-
-  <section id="comentarios" class="container">
-    <h2>Comentarios</h2>
-    <div class="giscus" style="background: var(--bg-light); padding: 2rem; border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 8px;">
-      <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">
-        Deja un comentario con tu cuenta de GitHub
-      </p>
-    </div>
-  </section>
-
-  <section id="guestbook" class="container">
-    <h2>Guestbook</h2>
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card" style="text-align: center; padding: 2rem; position: relative; overflow: hidden;">
-          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('guessbook/Preview-GuestBook.png'); background-size: cover; background-position: center; opacity: 0.1; z-index: 0;"></div>
-          
-          <div class="card-body" style="position: relative; z-index: 1;">
-            <h3 class="card-title">Guestbook v2.0.9</h3>
-            <p class="card-text" style="font-size: 1.05rem; line-height: 1.8;">
-              Dibuja lo que quieras, sube tu arte y compite con otros. Rankings, likes, comentarios y un montón de herramientas.
-            </p>
-            <a href="guessbook/guestbook-new.html" class="btn btn-neon" style="position: relative; z-index: 2;">
-              <i class="bi bi-palette me-2"></i>Abrir Guestbook
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  </div>
-  
-  <div class="credits-section" id="experimentos-section">
-    <div class="container">
-      <h2 class="text-center mb-4">Experimentos</h2>
-
-      <div class="exp-showcase">
-
-        <!-- Deadly Pursuer — featured horizontal -->
-        <div class="exp-card exp-featured deadly-pursuer-card">
-          <div class="exp-bg" style="background-image: url('Experimentos/public/assets/loading-screen.png');"></div>
-          <div class="exp-featured-inner">
-            <div class="exp-featured-text">
-              <span class="exp-label exp-label-danger">⚠️ MULTIJUGADOR</span>
-              <h3 class="exp-title exp-title-danger">DEADLY PURSUER</h3>
-              <p class="exp-desc exp-desc-danger">Juego online hasta 8 jugadores. Escoge tu personaje y sobrevive al Pursuer con Rage Mode activado.</p>
-              <div class="exp-pills">
-                <span class="exp-pill exp-pill-danger">💀 4 Personajes</span>
-                <span class="exp-pill exp-pill-danger">🔴 Rage Mode</span>
-                <span class="exp-pill exp-pill-danger">🎮 Gamepad</span>
-                <span class="exp-pill exp-pill-danger">👥 8 jugadores</span>
+          <div class="card" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(185, 28, 28, 0.05)); border-color: rgba(220, 38, 38, 0.3);">
+            <div class="card-body">
+              <h3 class="card-title">💀 Deadly Pursuer</h3>
+              <p class="card-text">Juego multijugador. 8 personas, sobrevive o mata, depende del rol. Incluye Rage Mode y gamepad.</p>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="badge bg-danger">8 jugadores</span>
+                <span class="badge bg-danger">Gamepad</span>
+                <span class="badge bg-danger">Rage Mode</span>
               </div>
-              <button onclick="showDeadlyPursuerWarning()" class="exp-btn exp-btn-danger">
-                <i class="bi bi-controller me-1"></i> JUGAR
+              <button onclick="showDeadlyPursuerWarning()" class="btn btn-neon">
+                <i class="bi bi-controller me-1"></i> Jugar
               </button>
             </div>
-            <div class="exp-featured-icons">
-              <img src="Experimentos/public/assets/icons/AngelNormalIcon.png"  class="exp-char-icon" alt="Angel">
-              <img src="Experimentos/public/assets/icons/LunaNormalIcon.png"   class="exp-char-icon" alt="Luna">
-              <img src="Experimentos/public/assets/icons/MollyNormalIcon.png"  class="exp-char-icon" alt="Molly">
-              <img src="Experimentos/public/assets/icons/IA777NormalIcon.png"  class="exp-char-icon" alt="IA777">
-            </div>
           </div>
         </div>
 
-        <!-- Grid de los demás -->
-        <div class="exp-grid">
-
-          <!-- Wiki -->
-          <div class="exp-card exp-mini" style="--exp-accent: #3b82f6;">
-            <div class="exp-mini-icon">📖</div>
-            <div class="exp-mini-body">
-              <span class="exp-label" style="background: rgba(59,130,246,0.12); color: #3b82f6; border-color: rgba(59,130,246,0.3);">WIKI</span>
-              <h3 class="exp-title">Wiki Deadly Pursuer</h3>
-              <p class="exp-desc">Info de todos los personajes, sus habilidades y algunas estrategias para no morir tan rápido.</p>
-              <div class="exp-pills">
-                <span class="exp-pill">👥 Personajes</span>
-                <span class="exp-pill">⚡ Habilidades</span>
-                <span class="exp-pill">📊 Tips</span>
+        <!-- Wiki -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">📖 Wiki</h3>
+              <p class="card-text">Info de personajes, habilidades y tips para no morir tan rápido en Deadly Pursuer.</p>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="badge bg-primary">Personajes</span>
+                <span class="badge bg-primary">Habilidades</span>
+                <span class="badge bg-primary">Tips</span>
               </div>
+              <a href="Experimentos/deadlypusuirwiki/index.html" class="btn btn-neon">
+                <i class="bi bi-book me-1"></i> Ver Wiki
+              </a>
             </div>
-            <a href="Experimentos/deadlypusuirwiki/index.html" class="exp-btn exp-btn-mini">
-              <i class="bi bi-book me-1"></i> Ver Wiki
-            </a>
           </div>
+        </div>
 
-          <!-- Chatbot -->
-          <div class="exp-card exp-mini" style="--exp-accent: #10b981;">
-            <div class="exp-mini-icon">🤖</div>
-            <div class="exp-mini-body">
-              <span class="exp-label" style="background: rgba(16,185,129,0.12); color: #10b981; border-color: rgba(16,185,129,0.3);">IA</span>
-              <h3 class="exp-title">Chatbot IA</h3>
-              <p class="exp-desc">Conversa con Angel, Luna, Molly o IA777. Usan Llama 3.3 así que a veces dicen cosas raras.</p>
-              <div class="exp-pills">
-                <span class="exp-pill">💬 Conversación</span>
-                <span class="exp-pill">🧠 Llama 3.3</span>
-                <span class="exp-pill">🎵 Música</span>
+        <!-- Chatbot -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">🤖 Chatbot IA</h3>
+              <p class="card-text">Habla con Angel, Luna, Molly o IA777. Usa Llama 3.3 así que a veces dice estupideces.</p>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="badge bg-success">IA</span>
+                <span class="badge bg-success">Conversación</span>
+                <span class="badge bg-success">Música</span>
               </div>
+              <a href="Experimentos/chatbot/chatbot.html" class="btn btn-neon">
+                <i class="bi bi-chat-dots me-1"></i> Abrir
+              </a>
             </div>
-            <a href="Experimentos/chatbot/chatbot.html" class="exp-btn exp-btn-mini">
-              <i class="bi bi-chat-dots me-1"></i> Abrir
-            </a>
           </div>
+        </div>
 
-          <!-- Archive of Creation -->
-          <div class="exp-card exp-mini" style="--exp-accent: #a855f7;">
-            <div class="exp-mini-icon">📝</div>
-            <div class="exp-mini-body">
-              <span class="exp-label" style="background: rgba(168,85,247,0.12); color: #a855f7; border-color: rgba(168,85,247,0.3);">WIKI</span>
-              <h3 class="exp-title">Archive of Creation</h3>
-              <p class="exp-desc">Wiki donde la gente puede subir sus personajes y mundos. Todavía en desarrollo.</p>
-              <div class="exp-pills">
-                <span class="exp-pill">🎭 Personajes</span>
-                <span class="exp-pill">🖼️ Galerías</span>
-                <span class="exp-pill">🔥 Firebase</span>
+        <!-- Archive of Creation -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">📝 Archive of Creation</h3>
+              <p class="card-text">Wiki donde la gente sube sus personajes y mundos. Todavía en desarrollo.</p>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="badge bg-purple">Personajes</span>
+                <span class="badge bg-purple">Galerías</span>
+                <span class="badge bg-purple">Firebase</span>
               </div>
+              <a href="Experimentos/ArchiveOfCreation/wiki.html" class="btn btn-neon">
+                <i class="bi bi-archive me-1"></i> Abrir
+              </a>
             </div>
-            <a href="Experimentos/ArchiveOfCreation/wiki.html" class="exp-btn exp-btn-mini">
-              <i class="bi bi-archive me-1"></i> Abrir
-            </a>
           </div>
+        </div>
 
-          <!-- Friday Night Cooking -->
-          <div class="exp-card exp-mini" style="--exp-accent: #f59e0b;">
-            <div class="exp-mini-icon">🍳</div>
-            <div class="exp-mini-body">
-              <span class="exp-label" style="background: rgba(245,158,11,0.12); color: #f59e0b; border-color: rgba(245,158,11,0.3);">JUEGO</span>
-              <h3 class="exp-title">Friday Night Cooking</h3>
-              <p class="exp-desc">Motor experimental inspirado en FNF pero de cocina. Sí, cocinar al ritmo de música. Por qué no.</p>
-              <div class="exp-pills">
-                <span class="exp-pill">🎵 Ritmo</span>
-                <span class="exp-pill">🍳 Cooking</span>
-                <span class="exp-pill">🎮 Engine</span>
+        <!-- FrameForge -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">🎬 FrameForge</h3>
+              <p class="card-text">Extrae sprites y animaciones de Adobe Animate. Todo local, no se sube nada.</p>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="badge bg-purple">Sprites</span>
+                <span class="badge bg-purple">Animaciones</span>
+                <span class="badge bg-purple">Local</span>
               </div>
+              <a href="https://spritemaps-extractor.pages.dev/" target="_blank" class="btn btn-neon">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Abrir
+              </a>
             </div>
-            <a href="Experimentos/FNCengine/index.html" class="exp-btn exp-btn-mini">
-              <i class="bi bi-controller me-1"></i> Jugar
-            </a>
           </div>
-
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="credits-section" id="credits-section">
-    <div class="container">
-      <h2 class="text-center mb-4">Créditos</h2>
-      <div class="json-viewer" id="json-viewer">
-        <div class="mini-loader"></div>
-        <div class="loading-text">Cargando información...</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="credits-section" id="updates-section">
-    <div class="container">
-      <h2 class="text-center mb-4">Actualizaciones</h2>
-      <div class="json-viewer" id="updates-viewer">
-        <div class="mini-loader"></div>
-        <div class="loading-text">Cargando actualizaciones...</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="credits-section" id="achievements-section">
-    <div class="container">
-      <h2 class="text-center mb-4">Sistema de Logros</h2>
-      <div class="json-viewer" id="achievements-viewer">
-        <div class="row mb-3">
-          <div class="col-md-3 col-6 mb-2">
-            <div class="card text-center" style="padding: 0.75rem;">
-              <div class="card-body" style="padding: 0;">
-                <div class="points-badge mb-1" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">Puntos: <span id="total-points">0</span></div>
-                <small class="text-muted" style="font-size: 0.65rem;">Total acumulado</small>
+        <!-- Friday Night Cooking -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">🍳 Friday Night Cooking</h3>
+              <p class="card-text">Motor experimental tipo FNF pero de cocina. Sí, cocinar al ritmo de música.</p>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="badge bg-warning">Ritmo</span>
+                <span class="badge bg-warning">Experimental</span>
               </div>
+              <a href="Experimentos/FNCengine/index.html" class="btn btn-neon">
+                <i class="bi bi-controller me-1"></i> Jugar
+              </a>
             </div>
-          </div>
-          <div class="col-md-3 col-6 mb-2">
-            <div class="card text-center" style="padding: 0.75rem;">
-              <div class="card-body" style="padding: 0;">
-                <div class="points-badge mb-1" style="background: #dc2626; font-size: 0.7rem; padding: 0.2rem 0.4rem;">Título: <span id="user-title">🔰 Novato</span></div>
-                <small class="text-muted" style="font-size: 0.65rem;">Rango actual</small>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 col-6 mb-2">
-            <div class="card text-center" style="padding: 0.75rem;">
-              <div class="card-body" style="padding: 0;">
-                <div class="points-badge mb-1" style="background: #8b5cf6; font-size: 0.7rem; padding: 0.2rem 0.4rem;">Nivel: <span id="level-display">1</span></div>
-                <small class="text-muted" style="font-size: 0.65rem;">Progreso</small>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 col-6 mb-2">
-            <div class="card text-center" style="padding: 0.75rem;">
-              <div class="card-body" style="padding: 0;">
-                <div class="points-badge mb-1" id="streak-badge" style="background: #f97316; font-size: 0.7rem; padding: 0.2rem 0.4rem;">Racha: <span id="streak-display">0</span> días</div>
-                <small class="text-muted" style="font-size: 0.65rem;">Consecutivos</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="mb-4" id="special-events"></div>
-        <div class="mb-4" id="event-badge-container"></div>
-        <div class="mb-3" style="display: flex; gap: 0.5rem;">
-          <button onclick="toggleAchievementsView('achievements')" id="btn-view-achievements" class="btn btn-outline-neon" style="flex: 1; font-size: 0.8rem; padding: 0.5rem;">🎯 Ver Logros</button>
-          <button onclick="toggleAchievementsView('leaderboard')" id="btn-view-leaderboard" class="btn btn-outline-neon" style="flex: 1; font-size: 0.8rem; padding: 0.5rem;">🏆 Leaderboard</button>
-        </div>
-        <div id="achievements-view">
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <div id="daily-challenges"></div>
-          </div>
-          <div class="col-md-6">
-            <div id="weekly-challenges"></div>
-          </div>
-        </div>
-        <div class="mb-4" id="badges-display"></div>
-        <div class="mb-4">
-          <h4 style="color: var(--primary); margin-bottom: 1rem;">🎯 Todos los Logros</h4>
-          <div id="achievements-list"></div>
-        </div>
-        </div>
-        <div id="leaderboard-view" style="display: none;">
-        <div class="mb-4">
-          <h4 style="color: var(--primary); margin-bottom: 1rem;">🏆 Leaderboard Global</h4>
-          <div id="leaderboard-display"></div>
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <button id="btn-top" aria-label="Volver arriba">
-    <i class="bi bi-arrow-up"></i>
-  </button>
-  
-  <button class="nerd-btn" id="nerd-btn" aria-label="Información técnica">
-    <i class="bi bi-terminal"></i>
-  </button>
-  
-  <div class="panel-overlay" id="theme-overlay"></div>
-  <div class="theme-panel" id="theme-panel">
-    <div class="theme-panel-header">
-      <div class="theme-panel-title">
-        <span class="theme-panel-icon">🎨</span>
-        <h3>Selector de Temas</h3>
-      </div>
-      <button class="close-panel" id="close-theme-panel" aria-label="Cerrar panel">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-    
-    <div class="theme-panel-body">
-      <!-- Puntos disponibles -->
-      <div class="theme-points-display">
-        <div class="points-info">
-          <span class="points-icon">💰</span>
-          <div class="points-text">
-            <span class="points-label">Puntos Disponibles</span>
-            <span class="points-value" id="theme-points-display">0</span>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Clásicos -->
-      <div class="theme-section">
-        <div class="theme-category">
-          <span class="category-icon">🌟</span>
-          <span class="category-name">Clásicos</span>
-          <span class="category-badge">Gratis</span>
-        </div>
-        <div class="theme-grid">
-          <div class="theme-card" data-theme="dark">
-            <div class="theme-preview preview-dark"></div>
-            <div class="theme-info">
-              <div class="theme-name">Oscuro</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card" data-theme="light">
-            <div class="theme-preview preview-light"></div>
-            <div class="theme-info">
-              <div class="theme-name">Claro</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card" data-theme="neon">
-            <div class="theme-preview preview-neon"></div>
-            <div class="theme-info">
-              <div class="theme-name">Neón</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card" data-theme="funkyatlas">
-            <div class="theme-preview preview-funkyatlas"></div>
-            <div class="theme-info">
-              <div class="theme-name">FunkyAtlas</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card seasonal-theme" data-theme="funkyatlas-christmas">
-            <div class="theme-preview preview-funkyatlas-christmas"></div>
-            <div class="theme-info">
-              <div class="theme-name">FunkyAtlas Xmas</div>
-              <div class="theme-status">🎄 Especial</div>
+    <!-- Guestbook -->
+    <section id="guestbook" class="container">
+      <h2>Guestbook</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card" style="text-align: center; padding: 2rem;">
+            <div class="card-body">
+              <h3>Guestbook v2.0.9</h3>
+              <p>Dibuja lo que quieras, compite con otros, likes y comentarios.</p>
+              <a href="guessbook/guestbook-new.html" class="btn btn-neon">
+                <i class="bi bi-palette me-2"></i>Abrir Guestbook
+              </a>
             </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Futuristas -->
-      <div class="theme-section">
-        <div class="theme-category">
-          <span class="category-icon">🚀</span>
-          <span class="category-name">Futuristas</span>
-          <span class="category-badge">Mixto</span>
-        </div>
-        <div class="theme-grid">
-          <div class="theme-card" data-theme="cyberpunk">
-            <div class="theme-preview preview-cyberpunk"></div>
-            <div class="theme-info">
-              <div class="theme-name">Cyberpunk</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="cyberpunk2077" data-cost="800">
-            <div class="theme-preview preview-cyberpunk2077"></div>
-            <div class="theme-info">
-              <div class="theme-name">Cyberpunk 2077</div>
-              <div class="theme-cost">💎 800 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card" data-theme="matrix">
-            <div class="theme-preview preview-matrix"></div>
-            <div class="theme-info">
-              <div class="theme-name">Matrix</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="terminal-hacker" data-cost="600">
-            <div class="theme-preview preview-terminal-hacker"></div>
-            <div class="theme-info">
-              <div class="theme-name">Terminal Hacker</div>
-              <div class="theme-cost">💎 600 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card" data-theme="synthwave">
-            <div class="theme-preview preview-synthwave"></div>
-            <div class="theme-info">
-              <div class="theme-name">Synthwave</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="retro-synthwave" data-cost="700">
-            <div class="theme-preview preview-retro-synthwave"></div>
-            <div class="theme-info">
-              <div class="theme-name">Retro Synthwave</div>
-              <div class="theme-cost">💎 700 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
+    <!-- Comentarios -->
+    <section id="comentarios" class="container">
+      <h2>Comentarios</h2>
+      <div class="giscus" style="background: var(--bg-light); padding: 2rem; border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 8px;">
+        <p style="text-align: center; color: var(--text-secondary);">
+          Deja un comentario con tu cuenta de GitHub
+        </p>
+      </div>
+    </section>
+
+    <!-- Créditos -->
+    <section id="credits" class="container" style="display: none;">
+      <h2>✨ Créditos</h2>
+      <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Gente increíble que hizo esto posible
+      </p>
+      <div id="credits-content">
+        <div style="text-align: center; color: var(--primary); padding: 2rem;">
+          <i class="bi bi-hourglass-split" style="font-size: 2rem;"></i>
+          <p>Cargando créditos...</p>
         </div>
       </div>
+    </section>
 
-      <!-- Naturales -->
-      <div class="theme-section">
-        <div class="theme-category">
-          <span class="category-icon">🌍</span>
-          <span class="category-name">Naturales</span>
-          <span class="category-badge">Gratis</span>
-        </div>
-        <div class="theme-grid">
-          <div class="theme-card" data-theme="ocean">
-            <div class="theme-preview preview-ocean"></div>
-            <div class="theme-info">
-              <div class="theme-name">Océano</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card" data-theme="forest">
-            <div class="theme-preview preview-forest"></div>
-            <div class="theme-info">
-              <div class="theme-name">Bosque</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card" data-theme="sunset">
-            <div class="theme-preview preview-sunset"></div>
-            <div class="theme-info">
-              <div class="theme-name">Atardecer</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
+    <!-- Updates -->
+    <section id="updates" class="container" style="display: none;">
+      <h2>🚀 Actualizaciones</h2>
+      <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Historial completo de cambios y mejoras
+      </p>
+      <div id="updates-content">
+        <div style="text-align: center; color: var(--primary); padding: 2rem;">
+          <i class="bi bi-hourglass-split" style="font-size: 2rem;"></i>
+          <p>Cargando actualizaciones...</p>
         </div>
       </div>
-
-      <!-- Épocas Especiales -->
-      <div class="theme-section">
-        <div class="theme-category">
-          <span class="category-icon">🎄</span>
-          <span class="category-name">Épocas Especiales</span>
-          <span class="seasonal-indicator" id="seasonal-indicator"></span>
-        </div>
-        <div class="theme-settings">
-          <label class="theme-setting-item">
-            <input type="checkbox" id="auto-seasonal" checked>
-            <span class="setting-icon">🔄</span>
-            <span class="setting-text">Cambiar tema automáticamente por fechas especiales</span>
-          </label>
-          <label class="theme-setting-item">
-            <input type="checkbox" id="push-notifications" checked>
-            <span class="setting-icon">🔔</span>
-            <span class="setting-text">Notificaciones de racha diaria</span>
-          </label>
-          <label class="theme-setting-item">
-            <input type="checkbox" id="auto-day-night">
-            <span class="setting-icon">🌓</span>
-            <span class="setting-text">Modo automático día/noche</span>
-          </label>
-        </div>
-        <div class="theme-grid">
-          <div class="theme-card seasonal-theme" data-theme="christmas">
-            <div class="theme-preview preview-christmas"></div>
-            <div class="theme-info">
-              <div class="theme-name">Navidad</div>
-              <div class="theme-status">🎄 Especial</div>
-            </div>
-          </div>
-          <div class="theme-card seasonal-theme" data-theme="halloween">
-            <div class="theme-preview preview-halloween"></div>
-            <div class="theme-info">
-              <div class="theme-name">Halloween</div>
-              <div class="theme-status">🎃 Especial</div>
-            </div>
-          </div>
-          <div class="theme-card seasonal-theme" data-theme="valentine">
-            <div class="theme-preview preview-valentine"></div>
-            <div class="theme-info">
-              <div class="theme-name">San Valentín</div>
-              <div class="theme-status">💝 Especial</div>
-            </div>
-          </div>
-          <div class="theme-card seasonal-theme" data-theme="easter">
-            <div class="theme-preview preview-easter"></div>
-            <div class="theme-info">
-              <div class="theme-name">Pascua</div>
-              <div class="theme-status">🐰 Especial</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Estaciones -->
-      <div class="theme-section">
-        <div class="theme-category">
-          <span class="category-icon">🌤️</span>
-          <span class="category-name">Estaciones</span>
-          <span class="category-badge">Gratis</span>
-        </div>
-        <div class="theme-grid">
-          <div class="theme-card" data-theme="summer">
-            <div class="theme-preview preview-summer"></div>
-            <div class="theme-info">
-              <div class="theme-name">Verano</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-          <div class="theme-card" data-theme="autumn">
-            <div class="theme-preview preview-autumn"></div>
-            <div class="theme-info">
-              <div class="theme-name">Otoño</div>
-              <div class="theme-status">✓ Gratis</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Temas Premium -->
-      <div class="theme-section">
-        <div class="theme-category">
-          <span class="category-icon">💰</span>
-          <span class="category-name">Temas Premium</span>
-          <span class="category-badge premium">Premium</span>
-        </div>
-        <div class="theme-grid">
-          <div class="theme-card premium-theme" data-theme="galaxy" data-cost="100">
-            <div class="theme-preview preview-galaxy"></div>
-            <div class="theme-info">
-              <div class="theme-name">Galaxia</div>
-              <div class="theme-cost">💎 100 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="gold" data-cost="150">
-            <div class="theme-preview preview-gold"></div>
-            <div class="theme-info">
-              <div class="theme-name">Oro</div>
-              <div class="theme-cost">💎 150 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="rainbow" data-cost="200">
-            <div class="theme-preview preview-rainbow"></div>
-            <div class="theme-info">
-              <div class="theme-name">Arcoíris</div>
-              <div class="theme-cost">💎 200 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="diamond" data-cost="300">
-            <div class="theme-preview preview-diamond"></div>
-            <div class="theme-info">
-              <div class="theme-name">Diamante</div>
-              <div class="theme-cost">💎 300 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="glassmorphism" data-cost="900">
-            <div class="theme-preview preview-glassmorphism"></div>
-            <div class="theme-info">
-              <div class="theme-name">Glassmorphism</div>
-              <div class="theme-cost">💎 900 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="pastel-kawaii" data-cost="500">
-            <div class="theme-preview preview-pastel-kawaii"></div>
-            <div class="theme-info">
-              <div class="theme-name">Pastel Kawaii</div>
-              <div class="theme-cost">💎 500 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="custom" data-cost="500">
-            <div class="theme-preview preview-custom" id="custom-preview"></div>
-            <div class="theme-info">
-              <div class="theme-name">Custom</div>
-              <div class="theme-cost">💎 500 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Temas Épicos -->
-      <div class="theme-section">
-        <div class="theme-category">
-          <span class="category-icon">🔥</span>
-          <span class="category-name">Temas Épicos</span>
-          <span class="category-badge epic">Épico</span>
-        </div>
-        <div class="theme-grid">
-          <div class="theme-card premium-theme" data-theme="vaporwave" data-cost="400">
-            <div class="theme-preview preview-vaporwave"></div>
-            <div class="theme-info">
-              <div class="theme-name">Vaporwave</div>
-              <div class="theme-cost">💎 400 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="hacker" data-cost="500">
-            <div class="theme-preview preview-hacker"></div>
-            <div class="theme-info">
-              <div class="theme-name">Hacker Elite</div>
-              <div class="theme-cost">💎 500 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="neon-city" data-cost="600">
-            <div class="theme-preview preview-neon-city"></div>
-            <div class="theme-info">
-              <div class="theme-name">Ciudad Neón</div>
-              <div class="theme-cost">💎 600 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-          <div class="theme-card premium-theme" data-theme="space" data-cost="700">
-            <div class="theme-preview preview-space"></div>
-            <div class="theme-info">
-              <div class="theme-name">Espacio</div>
-              <div class="theme-cost">💎 700 pts</div>
-            </div>
-            <div class="theme-lock">🔒</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="parallax-bg" id="parallax-bg"></div>
-
-  <div class="credits-mini-panel" id="credits-mini-panel">
-    <button class="close-credits" id="close-credits">&times;</button>
-    <h4>🎨 Tema FunkyAtlas</h4>
-    <p>Creado por <a href="https://funkyatlas.abelitogamer.com/" target="_blank">AbelitoGamer</a></p>
-    <p>Sitio: <a href="https://funkyatlas.abelitogamer.com/" target="_blank">FunkyAtlas</a></p>
+    </section>
   </div>
 
-  <!-- Notificación de logro -->
-  <div class="achievement-notification" id="achievement-notification">
-    <div class="d-flex align-items-center gap-2">
-      <i class="bi bi-trophy"></i>
-      <div>
-        <div class="fw-bold">¡Logro desbloqueado!</div>
-        <div id="notification-text"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="nerd-panel" id="name-panel">
-    <button class="close-panel" id="close-name-panel">&times;</button>
-    <h3>🏆 LEADERBOARD</h3>
-    <p>Ingresa tu nombre y foto de perfil para aparecer en el ranking global:</p>
-    <input type="text" id="name-input" class="search-box" placeholder="Tu nombre" maxlength="20" style="width: 100%; margin-bottom: 1rem;">
-    <div style="margin-bottom: 1rem;">
-      <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">📸 Foto de perfil:</label>
-      <input type="file" id="avatar-file" accept="image/*" style="width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 6px; color: var(--text-primary); cursor: pointer;">
-      <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
-        💡 O pega una URL: <input type="url" id="avatar-input" class="search-box" placeholder="https://..." style="width: 100%; margin-top: 0.25rem;">
-      </div>
-    </div>
-    <div id="avatar-preview" style="display: none; text-align: center; margin-bottom: 1rem;">
-      <img id="preview-img" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary);" alt="Preview">
-    </div>
-    <div class="btn-group">
-      <button class="btn btn-outline-neon" onclick="submitName()">💾 Guardar</button>
-      <button class="btn btn-outline-neon" onclick="hideNamePanel()">❌ Cancelar</button>
-    </div>
-  </div>
-  
-  <div class="panel-overlay" id="panel-overlay"></div>
-  <div class="nerd-panel" id="nerd-panel">
-    <button class="close-panel" id="close-panel">&times;</button>
-    <h3>🤓 INFO TÉCNICA</h3>
-    <div class="nerd-info">🌐 <strong>Navegador:</strong> <span id="browser-info"></span></div>
-    <div class="nerd-info">📱 <strong>Dispositivo:</strong> <span id="device-info"></span></div>
-    <div class="nerd-info">🖥️ <strong>Resolución:</strong> <span id="resolution-info"></span></div>
-    <div class="nerd-info">🔧 <strong>JavaScript:</strong> <span id="js-info"></span></div>
-    <div class="nerd-info">🎨 <strong>CSS:</strong> <span id="css-info"></span></div>
-    <div class="nerd-info">🔌 <strong>APIs:</strong> <span id="api-info"></span></div>
-    <div class="nerd-info">🏠 <strong>Hosting:</strong> <span id="hosting-info"></span></div>
-    <div class="nerd-info">⚡ <strong>Performance:</strong> <span id="performance-info"></span></div>
-    <div class="nerd-info">🔍 <strong>SEO:</strong> <span id="seo-info"></span></div>
-    <div class="nerd-info">♿ <strong>Accesibilidad:</strong> <span id="accessibility-info"></span></div>
-  </div>
-  
-  <!-- Indicador de sincronización -->
-  <div class="sync-indicator" id="sync-indicator">
-    <i class="bi bi-cloud-check"></i> Sincronizado
-  </div>
+  <!-- Footer -->
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-brand">
-        <i class="bi bi-flask me-2"></i>
-        <span>FenixLaboratory</span>
+        <i class="bi bi-flask me-2"></i>FenixLaboratory
       </div>
-
-      <nav class="footer-links" aria-label="Links rápidos">
-        <a href="#proyectos" onclick="Utils.safeScrollIntoView('proyectos'); return false;">Proyectos</a>
-        <a href="#guestbook" onclick="Utils.safeScrollIntoView('guestbook'); return false;">Guestbook</a>
-        <a href="https://github.com/thisisfenix" target="_blank" rel="noopener">GitHub</a>
-      </nav>
-
+      <div class="footer-links">
+        <a href="https://github.com/ThisIsFenix" target="_blank">GitHub</a>
+        <a href="https://twitter.com/ThisIsFenix_" target="_blank">Twitter</a>
+        <button onclick="showCredits()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 0.85rem; padding: 0; transition: color 0.2s ease;">
+          Créditos
+        </button>
+        <button onclick="showUpdates()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 0.85rem; padding: 0; transition: color 0.2s ease;">
+          Updates
+        </button>
+      </div>
       <div class="footer-meta">
-        <span class="footer-version" id="footer-version"></span>
-        <span class="footer-sep">·</span>
-        <span>© <span id="current-year"></span> <a href="https://github.com/thisisfenix" target="_blank" rel="noopener">ThisIsFenix</a></span>
+        <span id="footer-version" class="footer-version">v2.7.0</span>
+        <span class="footer-sep">•</span>
+        <span>&copy; <span id="current-year">2026</span> Fenix</span>
       </div>
     </div>
   </footer>
+
+  <!-- Panel de logros -->
+  <div class="theme-panel" id="achievements-panel">
+    <div class="theme-panel-header">
+      <div class="theme-panel-title">
+        <span class="theme-panel-icon">🏆</span>
+        <h3>Logros</h3>
+      </div>
+      <button class="close-panel" id="close-achievements-panel">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="theme-panel-body">
+      <div class="theme-points-display">
+        <div class="points-info">
+          <div class="points-icon">💰</div>
+          <div class="points-text">
+            <div class="points-label">Puntos totales</div>
+            <div class="points-value" id="achievements-points-display">0</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats resumen -->
+      <div class="achievements-stats">
+        <div class="achievement-stat-card">
+          <div class="stat-icon">🎖️</div>
+          <div class="stat-info">
+            <div class="stat-label">Nivel</div>
+            <div class="stat-value" id="panel-level">1</div>
+          </div>
+        </div>
+        <div class="achievement-stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-info">
+            <div class="stat-label">Racha</div>
+            <div class="stat-value" id="panel-streak">0</div>
+          </div>
+        </div>
+        <div class="achievement-stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="stat-label">Desbloqueados</div>
+            <div class="stat-value" id="panel-unlocked">0/67</div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="achievements-container"></div>
+    </div>
+  </div>
+
+  <!-- Botón volver arriba -->
+  <button id="btn-top" aria-label="Volver arriba">
+    <i class="bi bi-arrow-up"></i>
+  </button>
+
+  <!-- Overlay -->
+  <div class="panel-overlay" id="theme-overlay"></div>
+
+  <!-- Panel de temas -->
+  <div class="theme-panel" id="theme-panel">
+    <div class="theme-panel-header">
+      <h3>Temas</h3>
+      <button class="close-panel" id="close-theme-panel">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="theme-panel-body">
+      <div class="theme-points-display">
+        <span>Puntos: <span id="theme-points-display">0</span></span>
+      </div>
+      <div id="themes-container"></div>
+    </div>
+  </div>
+
+  <!-- Panel de logros -->
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="Assets/js/firebase-config.js"></script>
+  
+  <!-- App Scripts -->
+  <script src="Assets/js/utils.js"></script>
+  <script src="Assets/js/repos.js"></script>
+  <script src="Assets/js/themes.js"></script>
+  <script src="Assets/js/achievements.js"></script>
+  <script src="Assets/js/main.js"></script>
+
+  <!-- Deadly Pursuer Warning -->
+  <script>
+    function showDeadlyPursuerWarning() {
+      if (confirm('⚠️ Deadly Pursuer es multijugador y requiere conexión.\n\n¿Continuar?')) {
+        window.location.href = 'Experimentos/public/index.html';
+      }
+    }
+    
+    // Mostrar Créditos JSON
+    async function showCredits() {
+      try {
+        const response = await fetch('Assets/json/credits.json');
+        const data = await response.json();
+        showJSONModal('Créditos', data);
+      } catch (error) {
+        alert('Error cargando créditos: ' + error.message);
+      }
+    }
+    
+    // Mostrar Updates JSON
+    async function showUpdates() {
+      try {
+        const response = await fetch('Assets/json/updates.json');
+        const data = await response.json();
+        showJSONModal('Updates / Changelog', data);
+      } catch (error) {
+        alert('Error cargando updates: ' + error.message);
+      }
+    }
+    
+    // Modal para mostrar JSON
+    function showJSONModal(title, data) {
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      `;
+      
+      const content = document.createElement('div');
+      content.style.cssText = `
+        background: var(--bg-dark);
+        border: 2px solid var(--primary);
+        border-radius: 12px;
+        max-width: 800px;
+        width: 100%;
+        max-height: 80vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      `;
+      
+      content.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-bottom: 2px solid rgba(var(--primary-rgb, 255,107,53), 0.2);">
+          <h3 style="margin: 0; color: var(--primary); font-size: 1.5rem;">${title}</h3>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="background: rgba(var(--primary-rgb, 255,107,53), 0.1); border: 1px solid var(--primary); color: var(--primary); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;">×</button>
+        </div>
+        <div style="padding: 1.5rem; overflow-y: auto;">
+          <pre style="background: var(--bg-light); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary); font-size: 0.85rem; line-height: 1.6;">${JSON.stringify(data, null, 2)}</pre>
+        </div>
+      `;
+      
+      modal.appendChild(content);
+      document.body.appendChild(modal);
+      
+      // Cerrar al hacer click fuera del contenido
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    }
+    
+    // Mostrar sección de Créditos
+    async function showCredits() {
+      // Ocultar todas las secciones
+      document.querySelectorAll('.main-content > section').forEach(s => s.style.display = 'none');
+      
+      // Mostrar sección de créditos
+      const creditsSection = document.getElementById('credits');
+      creditsSection.style.display = 'block';
+      
+      // Scroll suave a la sección
+      creditsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+      // Cargar datos si no están cargados
+      if (creditsSection.dataset.loaded !== 'true') {
+        try {
+          const response = await fetch('Assets/json/credits.json');
+          const data = await response.json();
+          
+          const container = document.getElementById('credits-content');
+          container.innerHTML = '';
+          
+          // Crear cards por categoría
+          const categories = {
+            desarrollo: { icon: 'bi-code-slash', title: 'Desarrollo' },
+            arte: { icon: 'bi-palette', title: 'Arte y Diseño' },
+            musica: { icon: 'bi-music-note-beamed', title: 'Música' },
+            testing: { icon: 'bi-bug', title: 'Testing' },
+            agradecimientos: { icon: 'bi-heart-fill', title: 'Agradecimientos Especiales' }
+          };
+          
+          Object.entries(categories).forEach(([key, cat]) => {
+            if (data[key]?.length) {
+              const card = document.createElement('div');
+              card.className = 'card';
+              card.style.marginBottom = '2rem';
+              
+              card.innerHTML = `
+                <div class="card-body">
+                  <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="bi ${cat.icon}"></i> ${cat.title}
+                  </h3>
+                  <div style="display: grid; gap: 1rem;">
+                    ${data[key].map(person => `
+                      <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
+                        <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">${person.nombre}</h4>
+                        <p style="color: var(--text-secondary); margin: 0;">${person.rol || person.razon || ''}</p>
+                        ${person.link ? `<a href="${person.link}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; margin-top: 0.5rem;"><i class="bi bi-link-45deg"></i> ${person.link}</a>` : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+              
+              container.appendChild(card);
+            }
+          });
+          
+          creditsSection.dataset.loaded = 'true';
+        } catch (error) {
+          console.error('Error cargando créditos:', error);
+          document.getElementById('credits-content').innerHTML = `
+            <div class="card">
+              <div class="card-body" style="text-align: center; padding: 2rem;">
+                <i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: var(--primary);"></i>
+                <p style="margin-top: 1rem;">Error al cargar créditos</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+    }
+    
+    // Mostrar sección de Updates
+    async function showUpdates() {
+      // Ocultar todas las secciones
+      document.querySelectorAll('.main-content > section').forEach(s => s.style.display = 'none');
+      
+      // Mostrar sección de updates
+      const updatesSection = document.getElementById('updates');
+      updatesSection.style.display = 'block';
+      
+      // Scroll suave a la sección
+      updatesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+      // Cargar datos si no están cargados
+      if (updatesSection.dataset.loaded !== 'true') {
+        try {
+          const response = await fetch('Assets/json/updates.json');
+          const data = await response.json();
+          
+          const container = document.getElementById('updates-content');
+          container.innerHTML = '';
+          
+          // Ordenar por fecha (más reciente primero)
+          const sortedUpdates = data.updates.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+          
+          sortedUpdates.forEach(update => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.marginBottom = '2rem';
+            
+            let contentHTML = '';
+            
+            const sections = {
+              nuevo: { icon: 'bi-plus-circle-fill', title: 'Nuevas características', color: 'var(--primary)' },
+              mejoras: { icon: 'bi-arrow-up-circle-fill', title: 'Mejoras', color: '#10b981' },
+              correcciones: { icon: 'bi-bug-fill', title: 'Correcciones', color: '#f59e0b' },
+              eliminado: { icon: 'bi-trash-fill', title: 'Eliminado', color: '#ef4444' }
+            };
+            
+            Object.entries(sections).forEach(([key, sec]) => {
+              if (update[key]?.length) {
+                contentHTML += `
+                  <h4 style="color: ${sec.color}; margin: 1.5rem 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="bi ${sec.icon}"></i> ${sec.title}
+                  </h4>
+                  <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+                    ${update[key].map(item => `
+                      <li style="padding: 0.75rem 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid ${sec.color}; border-radius: 8px;">
+                        ${item}
+                      </li>
+                    `).join('')}
+                  </ul>
+                `;
+              }
+            });
+            
+            const typeColors = {
+              major: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+              minor: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
+              patch: 'linear-gradient(135deg, #10b981, #059669)'
+            };
+            
+            card.innerHTML = `
+              <div class="card-body">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                  <div>
+                    <h3 style="color: var(--primary); margin: 0;">${update.version}</h3>
+                    <p style="color: var(--text-secondary); margin: 0.25rem 0 0 0; font-size: 0.9rem;">
+                      ${new Date(update.fecha).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                  </div>
+                  <span style="background: ${typeColors[update.tipo] || typeColors.patch}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; text-transform: uppercase;">
+                    ${update.tipo}
+                  </span>
+                </div>
+                ${contentHTML}
+              </div>
+            `;
+            
+            container.appendChild(card);
+          });
+          
+          updatesSection.dataset.loaded = 'true';
+        } catch (error) {
+          console.error('Error cargando updates:', error);
+          document.getElementById('updates-content').innerHTML = `
+            <div class="card">
+              <div class="card-body" style="text-align: center; padding: 2rem;">
+                <i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: var(--primary);"></i>
+                <p style="margin-top: 1rem;">Error al cargar actualizaciones</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+    }
+    
+    // Debug temporal - verificar estado
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        console.log('=== DEBUG FENIXLAB ===');
+        console.log('AchievementSystem:', window.AchievementSystem ? '✅' : '❌');
+        console.log('achievementSystem:', window.achievementSystem ? '✅' : '❌');
+        console.log('gameData:', window.gameData);
+        console.log('gameData.points:', window.gameData?.points);
+        console.log('points-nav element:', document.getElementById('points-nav'));
+        console.log('===================');
+      }, 2000);
+    });
+  </script>
+
   <!-- Giscus Comments -->
   <script src="https://giscus.app/client.js"
-          data-repo="Thisisfenix/thisisfenix.github.io"
-          data-repo-id="R_kgDOOxHAIg"
-          data-category="General"
-          data-category-id="DIC_kwDOOxHAIs4Crvbl"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="preferred_color_scheme"
-          data-lang="es"
-          crossorigin="anonymous"
-          async>
+    data-repo="ThisIsFenix/FenixLaboratory"
+    data-repo-id="R_kgDONZ5oqQ"
+    data-category="General"
+    data-category-id="DIC_kwDONZ5oqc4Ck45b"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="dark"
+    data-lang="es"
+    crossorigin="anonymous"
+    async>
   </script>
-  
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-  
-  <!-- Firebase Scripts -->
-  <script src="Assets/js/firebase-config.js?v=2.6.4"></script>
-  
-  <!-- Scripts -->
-  <!-- Utilidades y helpers -->
-  <script src="Assets/js/utils.js?v=2.6"></script>
-  
-  <!-- Sistemas core -->
-  <script src="Assets/js/achievements.js?v=2.6.6"></script>
-  <script src="Assets/js/achievements-display.js?v=2.6"></script>
-  <script src="Assets/js/plushie-system.js?v=2.6"></script>
-  <script src="Assets/js/cupid-arrow-game.js?v=2.6"></script>
-  <script src="Assets/js/repos.js?v=2.6"></script>
-  <script src="Assets/js/themes.js?v=2.6.7"></script>
-  
-  <!-- UI y efectos -->
-  <script src="Assets/js/ui-manager.js?v=2.6"></script>
-  <script src="Assets/js/effects.js?v=2.6"></script>
-  <script src="Assets/js/nerd-panel.js?v=2.6"></script>
-  <script src="Assets/js/deadly-pursuer.js?v=2.6"></script>
-  
-  <!-- Inicialización principal -->
-  <script src="Assets/js/main.js?v=2.6"></script>
-  
-  <!-- Event listeners específicos -->
-  <script src="Assets/js/event-listeners.js?v=2.6"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
-
-
 </html>

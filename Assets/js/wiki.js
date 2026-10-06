@@ -8,6 +8,81 @@ if (typeof firebase !== 'undefined') {
 let allCharacters = [];
 let currentCharacter = null;
 
+// === Funciones de Slug ===
+
+/**
+ * Genera un slug URL-friendly a partir del nombre del personaje
+ * Ejemplo: "Luna Valkyrie" → "luna-valkyrie"
+ */
+function generateSlug(nombre) {
+  return nombre
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Elimina acentos
+    .replace(/[^a-z0-9]+/g, '-')      // Reemplaza caracteres especiales con guiones
+    .replace(/(^-|-$)/g, '');         // Elimina guiones al inicio/final
+}
+
+/**
+ * Verifica si un slug ya existe y retorna uno único si es necesario
+ * Ejemplo: si "luna-valkyrie" existe, retorna "luna-valkyrie-2"
+ */
+async function ensureUniqueSlug(baseSlug, collection = 'characters') {
+  let slug = baseSlug;
+  let counter = 2;
+  
+  while (true) {
+    const snapshot = await wikiDb.collection(collection)
+      .where('slug', '==', slug)
+      .limit(1)
+      .get();
+    
+    if (snapshot.empty) {
+      return slug;
+    }
+    
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+}
+
+/**
+ * Busca un personaje por slug en todas las colecciones
+ */
+async function findCharacterBySlug(slug) {
+  // Buscar en characters
+  let snapshot = await wikiDb.collection('characters')
+    .where('slug', '==', slug)
+    .limit(1)
+    .get();
+  
+  if (!snapshot.empty) {
+    return { doc: snapshot.docs[0], collection: 'characters' };
+  }
+  
+  // Buscar en pending_characters
+  snapshot = await wikiDb.collection('pending_characters')
+    .where('slug', '==', slug)
+    .limit(1)
+    .get();
+  
+  if (!snapshot.empty) {
+    return { doc: snapshot.docs[0], collection: 'pending_characters' };
+  }
+  
+  // Buscar en rejected_characters
+  snapshot = await wikiDb.collection('rejected_characters')
+    .where('slug', '==', slug)
+    .limit(1)
+    .get();
+  
+  if (!snapshot.empty) {
+    return { doc: snapshot.docs[0], collection: 'rejected_characters' };
+  }
+  
+  return null;
+}
+
 function setupEventListeners() {
   const searchBox = document.getElementById('search-box');
   const categoryFilter = document.getElementById('category-filter');
@@ -76,13 +151,25 @@ async function loadUserEntries() {
       entries.map(entry => {
         const icon = entry.status === 'approved' ? '✅' : entry.status === 'pending' ? '⏳' : '❌';
         const text = entry.status === 'approved' ? 'Aprobado' : entry.status === 'pending' ? 'Pendiente' : 'Rechazado';
-        return `<option value="${entry.id}" data-status="${entry.status}">${icon} ${entry.nombre} (${text})</option>`;
+        const identifier = entry.slug || entry.id; // Preferir slug, caer back a ID
+        return `<option value="${identifier}" data-status="${entry.status}">${icon} ${entry.nombre} (${text})</option>`;
       }).join('');
     
     select.addEventListener('change', async function(event) {
       const option = event.target.options[event.target.selectedIndex];
       if (option.getAttribute('data-status') === 'rejected') {
-        const doc = await wikiDb.collection('rejected_characters').doc(event.target.value).get();
+        const identifierOrSlug = event.target.value;
+        
+        // Intentar encontrar por ID o slug
+        let doc = await wikiDb.collection('rejected_characters').doc(identifierOrSlug).get();
+        
+        if (!doc.exists) {
+          const result = await findCharacterBySlug(identifierOrSlug);
+          if (result && result.collection === 'rejected_characters') {
+            doc = result.doc;
+          }
+        }
+        
         if (doc.exists) {
           alert('❌ Esta entrada fue rechazada\n\nRazón: ' + (doc.data().rejectionReason || 'No especificada'));
         }
@@ -127,8 +214,10 @@ function displayCharacters(characters) {
     return;
   }
   
-  grid.innerHTML = characters.map(char => `
-    <div onclick="showCharacterDetail('${char.id}')" style="position: relative; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: var(--bg-dark); border: 2px solid transparent; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateX(10px)'; this.style.boxShadow='0 0 20px var(--primary)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateX(0)'; this.style.boxShadow='none'">
+  grid.innerHTML = characters.map(char => {
+    const identifier = char.slug || char.id; // Preferir slug, caer back a ID
+    return `
+    <div onclick="showCharacterDetail('${identifier}')" style="position: relative; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: var(--bg-dark); border: 2px solid transparent; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateX(10px)'; this.style.boxShadow='0 0 20px var(--primary)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateX(0)'; this.style.boxShadow='none'">
       <div style="position: absolute; inset: 0; background: linear-gradient(90deg, var(--primary), transparent); opacity: 0; transition: opacity 0.3s ease;" onmouseover="this.style.opacity='0.1'"></div>
       <img src="${char.iconos?.[0] || 'https://via.placeholder.com/80'}" 
            alt="${char.nombre}" 
@@ -139,7 +228,8 @@ function displayCharacters(characters) {
       </div>
       <i class="bi bi-chevron-right" style="color: var(--primary); font-size: 1.5rem; position: relative; z-index: 1;"></i>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function filterCharacters() {
@@ -157,8 +247,15 @@ function filterCharacters() {
   displayCharacters(filtered);
 }
 
-async function showCharacterDetail(id) {
-  const char = allCharacters.find(c => c.id === id);
+async function showCharacterDetail(idOrSlug) {
+  // Intentar encontrar por ID primero (compatibilidad con entradas antiguas)
+  let char = allCharacters.find(c => c.id === idOrSlug);
+  
+  // Si no se encuentra por ID, intentar por slug
+  if (!char) {
+    char = allCharacters.find(c => c.slug === idOrSlug);
+  }
+  
   if (!char) return;
   
   currentCharacter = char;
@@ -570,23 +667,40 @@ async function handleFormSubmit(e) {
   try {
     // Si es actualización, verificar dispositivo
     if (tipoAporte === 'actualizacion') {
-      const entryId = formData.get('entrada_modificar');
-      if (!entryId) {
+      const entryIdOrSlug = formData.get('entrada_modificar');
+      if (!entryIdOrSlug) {
         alert('❌ Selecciona una entrada para actualizar');
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="bi bi-send"></i> Enviar Entrada';
         return;
       }
       
-      let entryDoc = await wikiDb.collection('characters').doc(entryId).get();
-      let collection = 'characters';
+      let entryDoc = null;
+      let collection = null;
       
-      if (!entryDoc.exists) {
-        entryDoc = await wikiDb.collection('pending_characters').doc(entryId).get();
-        collection = 'pending_characters';
+      // Intentar buscar por ID (compatibilidad con entradas antiguas)
+      entryDoc = await wikiDb.collection('characters').doc(entryIdOrSlug).get();
+      if (entryDoc.exists) {
+        collection = 'characters';
       }
       
-      if (!entryDoc.exists) {
+      if (!entryDoc || !entryDoc.exists) {
+        entryDoc = await wikiDb.collection('pending_characters').doc(entryIdOrSlug).get();
+        if (entryDoc.exists) {
+          collection = 'pending_characters';
+        }
+      }
+      
+      // Si no se encontró por ID, buscar por slug
+      if (!entryDoc || !entryDoc.exists) {
+        const result = await findCharacterBySlug(entryIdOrSlug);
+        if (result) {
+          entryDoc = result.doc;
+          collection = result.collection;
+        }
+      }
+      
+      if (!entryDoc || !entryDoc.exists) {
         alert('❌ Entrada no encontrada');
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="bi bi-send"></i> Enviar Entrada';
@@ -623,6 +737,15 @@ async function handleFormSubmit(e) {
     characterData.timestamp = firebase.firestore.FieldValue.serverTimestamp();
     characterData.deviceId = deviceId;
     
+    // Generar slug único basado en el nombre
+    if (characterData.nombre) {
+      const baseSlug = generateSlug(characterData.nombre);
+      const targetCollection = tipoAporte === 'adicion' ? 'pending_characters' : 'pending_characters';
+      const uniqueSlug = await ensureUniqueSlug(baseSlug, targetCollection);
+      characterData.slug = uniqueSlug;
+      console.log(`✨ Slug generado: ${uniqueSlug}`);
+    }
+    
     if (characterData.opiniones) {
       characterData.opiniones_parsed = parseOpiniones(characterData.opiniones);
     }
@@ -643,10 +766,14 @@ async function handleFormSubmit(e) {
       
       // Mostrar modal con código
       showRecoveryCodeModal(recoveryCode);
+      
+      // Log del slug generado
+      console.log(`✨ Entrada creada con slug: ${characterData.slug}`);
     } else {
       characterData.status = 'pending';
-      await wikiDb.collection('pending_characters').add(characterData);
-      alert('✅ ¡Actualización enviada! Espera aprobación.');
+      const docRef = await wikiDb.collection('pending_characters').add(characterData);
+      alert(`✅ ¡Actualización enviada! Espera aprobación.\n\nSlug: ${characterData.slug}`);
+      console.log(`✨ Actualización enviada con slug: ${characterData.slug}`);
     }
     
     if (typeof clearFormProgress === 'function') clearFormProgress();
