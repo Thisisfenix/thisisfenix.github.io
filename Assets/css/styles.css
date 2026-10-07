@@ -4129,3 +4129,33 @@
     height: 32px !important;
   }
 }
+
+
+/* ===== LEADERBOARD CARDS ESPECÍFICAS ===== */
+.leaderboard-card-small {
+  background: var(--bg-light) !important;
+  border: 1px solid rgba(var(--primary-rgb), 0.3) !important;
+  border-radius: 12px !important;
+  margin-bottom: 0.5rem !important;
+  transition: all 0.3s ease !important;
+  overflow: hidden !important;
+  min-height: auto !important;
+  max-height: 70px !important;
+}
+
+.leaderboard-card-small:hover {
+  border-color: var(--primary) !important;
+  transform: translateX(5px) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3) !important;
+}
+
+.leaderboard-card-small .card-body {
+  padding: 0.75rem !important;
+  min-height: auto !important;
+  height: auto !important;
+}
+
+.leaderboard-card-small.current-user {
+  border-color: var(--primary) !important;
+  background: rgba(var(--primary-rgb), 0.05) !important;
+}

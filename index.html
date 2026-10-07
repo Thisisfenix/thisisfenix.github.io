@@ -1193,8 +1193,8 @@
             const isCurrentUser = user.userId === currentUserId || user.name === currentUserName;
             
             html += `
-              <div class="card" style="margin-bottom: 0.5rem; ${isCurrentUser ? 'border-color: var(--primary); background: rgba(255,107,53,0.05);' : ''}">
-                <div class="card-body" style="padding: 0.75rem;">
+              <div class="leaderboard-card-small ${isCurrentUser ? 'current-user' : ''}">
+                <div class="card-body">
                   <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <span style="font-weight: bold; color: var(--text-secondary); min-width: 35px; font-size: 0.95rem;">#${position}</span>
                     <img src="${avatar}" 
