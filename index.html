@@ -424,12 +424,33 @@
         </div>
         <div class="modal-body" style="padding: 2rem;">
           <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-            Ingresa tu nombre para aparecer en el leaderboard global y competir con otros usuarios.
+            Ingresa tu nombre y foto de perfil para aparecer en el leaderboard global.
           </p>
+          
+          <!-- Preview de avatar -->
+          <div class="text-center mb-3">
+            <img id="avatar-preview" 
+                 src="https://ui-avatars.com/api/?name=User&background=random&size=128" 
+                 style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; margin-bottom: 0.5rem;"
+                 alt="Avatar preview">
+            <div>
+              <label for="avatar-file-input" class="btn btn-sm btn-outline-primary" style="cursor: pointer;">
+                <i class="bi bi-upload"></i> Subir Foto
+              </label>
+              <input type="file" 
+                     id="avatar-file-input" 
+                     accept="image/*" 
+                     style="display: none;"
+                     onchange="previewAvatar(this)">
+            </div>
+            <div class="form-text" style="font-size: 0.75rem; margin-top: 0.5rem;">
+              Máximo 500KB. Se convertirá automáticamente.
+            </div>
+          </div>
           
           <div class="mb-3">
             <label for="leaderboard-name-input" class="form-label" style="color: var(--text); font-weight: bold;">
-              Tu Nombre
+              Tu Nombre *
             </label>
             <input 
               type="text" 
@@ -437,27 +458,44 @@
               id="leaderboard-name-input" 
               placeholder="Ejemplo: AntiAnkush" 
               maxlength="20"
-              style="background: var(--bg-light); border: 2px solid var(--primary); color: var(--text); padding: 0.75rem;">
+              required
+              style="background: var(--bg-light); border: 2px solid var(--primary); color: var(--text); padding: 0.75rem;"
+              oninput="updateAvatarPreview(this.value)">
           </div>
           
           <div class="mb-3">
-            <label for="avatar-input" class="form-label" style="color: var(--text); font-weight: bold;">
-              Avatar (URL - Opcional)
+            <label class="form-label" style="color: var(--text); font-weight: bold;">
+              Avatar (Opcional)
             </label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="avatar-option" id="avatar-upload" checked>
+              <label class="btn btn-outline-primary" for="avatar-upload" style="font-size: 0.85rem;">
+                <i class="bi bi-upload"></i> Subir
+              </label>
+              
+              <input type="radio" class="btn-check" name="avatar-option" id="avatar-url" onclick="toggleAvatarInput('url')">
+              <label class="btn btn-outline-primary" for="avatar-url" style="font-size: 0.85rem;">
+                <i class="bi bi-link-45deg"></i> URL
+              </label>
+              
+              <input type="radio" class="btn-check" name="avatar-option" id="avatar-auto" onclick="toggleAvatarInput('auto')">
+              <label class="btn btn-outline-primary" for="avatar-auto" style="font-size: 0.85rem;">
+                <i class="bi bi-star"></i> Auto
+              </label>
+            </div>
+            
             <input 
               type="url" 
-              class="form-control" 
-              id="avatar-input" 
-              placeholder="https://example.com/tu-avatar.png"
-              style="background: var(--bg-light); border: 2px solid var(--primary); color: var(--text); padding: 0.75rem;">
-            <div class="form-text" style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 0.5rem;">
-              Si no proporcionas una URL, se generará un avatar automático con tu nombre.
-            </div>
+              class="form-control mt-2" 
+              id="avatar-url-input" 
+              placeholder="https://example.com/avatar.png"
+              style="background: var(--bg-light); border: 2px solid var(--primary); color: var(--text); padding: 0.5rem; display: none;"
+              oninput="updateAvatarFromUrl(this.value)">
           </div>
           
           <div style="background: rgba(255,107,53,0.1); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--primary); margin-bottom: 1.5rem;">
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
-              <i class="bi bi-info-circle"></i> Tu nombre aparecerá en el ranking público. Asegúrate de usar un nombre apropiado.
+              <i class="bi bi-info-circle"></i> Tu perfil aparecerá en el ranking público.
             </p>
           </div>
           
@@ -490,6 +528,105 @@
   <script src="Assets/js/event-listeners.js"></script>
   <script src="Assets/js/leaderboard-panel.js"></script>
   <script src="Assets/js/main.js"></script>
+
+  <!-- Avatar Upload Functions -->
+  <script>
+    let uploadedAvatarBase64 = null;
+    
+    // Preview de avatar al subir archivo
+    window.previewAvatar = function(input) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      // Validar tamaño (max 500KB)
+      if (file.size > 500 * 1024) {
+        alert('⚠️ La imagen es muy grande. Máximo 500KB');
+        input.value = '';
+        return;
+      }
+      
+      // Validar tipo
+      if (!file.type.startsWith('image/')) {
+        alert('⚠️ Solo se permiten imágenes');
+        input.value = '';
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          // Redimensionar si es muy grande
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxSize = 200;
+          
+          if (width > height) {
+            if (width > maxSize) {
+              height *= maxSize / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width *= maxSize / height;
+              height = maxSize;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Convertir a base64 con calidad reducida
+          uploadedAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          
+          // Mostrar preview
+          document.getElementById('avatar-preview').src = uploadedAvatarBase64;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+    
+    // Actualizar preview con nombre
+    window.updateAvatarPreview = function(name) {
+      if (!uploadedAvatarBase64 && !document.getElementById('avatar-url-input').value) {
+        const preview = document.getElementById('avatar-preview');
+        preview.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=random&size=128`;
+      }
+    };
+    
+    // Actualizar desde URL
+    window.updateAvatarFromUrl = function(url) {
+      if (url && url.trim()) {
+        document.getElementById('avatar-preview').src = url;
+        uploadedAvatarBase64 = null; // Limpiar base64 si usa URL
+      }
+    };
+    
+    // Toggle entre opciones
+    window.toggleAvatarInput = function(type) {
+      const urlInput = document.getElementById('avatar-url-input');
+      const fileInput = document.getElementById('avatar-file-input');
+      const name = document.getElementById('leaderboard-name-input').value;
+      
+      if (type === 'url') {
+        urlInput.style.display = 'block';
+        uploadedAvatarBase64 = null;
+        fileInput.value = '';
+      } else if (type === 'auto') {
+        urlInput.style.display = 'none';
+        urlInput.value = '';
+        uploadedAvatarBase64 = null;
+        fileInput.value = '';
+        document.getElementById('avatar-preview').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=random&size=128`;
+      } else {
+        urlInput.style.display = 'none';
+      }
+    };
+  </script>
 
   <!-- Deadly Pursuer Warning -->
   <script>
@@ -866,6 +1003,19 @@
         const currentUserPoints = window.gameData?.points || 0;
         const currentUserAvatar = window.gameData?.avatar || '';
         
+        // Asignar nombres placeholder a usuarios sin nombre
+        let placeholderCounter = 1;
+        leaderboardData = leaderboardData.map(user => {
+          if (!user.name || user.name.trim() === '') {
+            return {
+              ...user,
+              name: `Usuario ${placeholderCounter++}`,
+              isPlaceholder: true
+            };
+          }
+          return user;
+        });
+        
         let html = '';
         
         // Card del usuario actual
@@ -888,7 +1038,8 @@
           const userIndex = leaderboardData.findIndex(u => u.userId === currentUserId || u.name === currentUserName);
           const position = userIndex + 1;
           const medal = position === 1 ? '🥇' : position === 2 ? '🥈' : position === 3 ? '🥉' : '';
-          const avatar = currentUserAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserName)}&background=random&size=128`;
+          const avatarName = currentUserName || 'User';
+          const avatar = currentUserAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarName)}&background=random&size=128`;
           
           html += `
             <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(247,147,30,0.1)); border-color: var(--primary);">
@@ -898,7 +1049,7 @@
                 </h5>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                   <img src="${avatar}" 
-                       onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserName)}&background=random&size=128'"
+                       onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(avatarName)}&background=random&size=128'"
                        style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover;" 
                        alt="${currentUserName}">
                   <div style="flex: 1;">
@@ -934,7 +1085,8 @@
           podiumOrder.forEach(idx => {
             if (!top3[idx]) return;
             const user = top3[idx];
-            const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random&size=128`;
+            const userName = user.name || 'Usuario';
+            const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128`;
             const heights = ['200px', '160px', '130px'];
             
             html += `
@@ -942,10 +1094,10 @@
                 <div class="card-body" style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
                   <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${medals[idx]}</div>
                   <img src="${avatar}" 
-                       onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random&size=128'"
+                       onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128'"
                        style="width: 70px; height: 70px; border-radius: 50%; border: 3px solid ${colors[idx]}; object-fit: cover; margin: 0 auto 0.75rem;" 
-                       alt="${user.name || 'Usuario'}">
-                  <h5 style="color: white; margin: 0 0 0.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${user.name || 'Anónimo'}</h5>
+                       alt="${userName}">
+                  <h5 style="color: white; margin: 0 0 0.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${userName}</h5>
                   <p style="color: rgba(255,255,255,0.9); font-weight: bold; font-size: 1.1rem; margin: 0;">${user.points} pts</p>
                 </div>
               </div>
@@ -962,7 +1114,8 @@
           
           rest.forEach((user, idx) => {
             const position = idx + 4;
-            const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random&size=128`;
+            const userName = user.name || 'Usuario';
+            const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128`;
             const isCurrentUser = user.userId === currentUserId || user.name === currentUserName;
             
             html += `
@@ -971,12 +1124,12 @@
                   <div style="display: flex; align-items: center; gap: 1rem;">
                     <span style="font-weight: bold; color: var(--text-secondary); min-width: 40px; font-size: 1.1rem;">#${position}</span>
                     <img src="${avatar}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random&size=128'"
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128'"
                          style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover;" 
-                         alt="${user.name || 'Usuario'}">
+                         alt="${userName}">
                     <div style="flex: 1;">
                       <h6 style="margin: 0; color: var(--text);">
-                        ${user.name || 'Anónimo'} ${isCurrentUser ? '<span style="color: var(--primary);">(Tú)</span>' : ''}
+                        ${userName} ${isCurrentUser ? '<span style="color: var(--primary);">(Tú)</span>' : ''}
                       </h6>
                       <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">${user.points} puntos</p>
                     </div>
