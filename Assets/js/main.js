@@ -16,9 +16,14 @@
   }, true);
 
   window.addEventListener('unhandledrejection', function(e) {
-    if (!e.reason?.message?.includes('extension')) {
-      console.error('Promise rechazada:', e.reason);
+    // Ignorar errores de extensiones y errores conocidos de Firebase
+    if (e.reason?.message?.includes('extension') || 
+        e.reason?.message?.includes('M_ID') ||
+        e.reason?.stack?.includes('200.js')) {
+      e.preventDefault();
+      return;
     }
+    console.error('Promise rechazada:', e.reason);
     e.preventDefault();
   });
 
