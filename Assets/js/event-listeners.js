@@ -169,8 +169,58 @@
 
   // Funciones globales necesarias
   window.showNamePanel = function() {
-    document.getElementById('panel-overlay')?.classList.add('show');
-    document.getElementById('name-panel')?.classList.add('show');
+    const modal = new bootstrap.Modal(document.getElementById('name-panel'));
+    modal.show();
+  };
+
+  window.submitLeaderboardName = async function() {
+    const nameInput = document.getElementById('leaderboard-name-input');
+    const avatarInput = document.getElementById('avatar-input');
+    const name = nameInput?.value.trim();
+    
+    if (!name) {
+      alert('Por favor ingresa un nombre válido');
+      return;
+    }
+    
+    const avatar = avatarInput?.value.trim();
+    
+    if (window.gameData) {
+      window.gameData.leaderboardName = name;
+      
+      if (avatar && avatar.trim() !== '') {
+        window.gameData.avatar = avatar;
+        localStorage.setItem('avatar', avatar);
+      }
+      
+      localStorage.setItem('leaderboardName', name);
+      if (window.saveGameData) saveGameData();
+    }
+    
+    // Cerrar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('name-panel'));
+    if (modal) modal.hide();
+    
+    // Actualizar en Firebase
+    if (window.firebasePoints && window.firebasePoints.updateLeaderboard) {
+      const avatarToSend = avatar && avatar.trim() !== '' ? avatar : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=128`;
+      await window.firebasePoints.updateLeaderboard(name, window.gameData?.points || 0, avatarToSend);
+    }
+    
+    // Mostrar notificación
+    if (window.showAchievementNotification) {
+      showAchievementNotification({ 
+        name: `🏆 ¡Bienvenido al leaderboard, ${name}!`, 
+        points: 25,
+        icon: '🎉'
+      });
+    }
+    if (window.addPoints) addPoints(25);
+    
+    // Refrescar leaderboard
+    if (window.updateLeaderboardDisplay) {
+      setTimeout(() => updateLeaderboardDisplay(), 1000);
+    }
   };
 
   window.hideNamePanel = function() {

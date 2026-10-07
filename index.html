@@ -299,7 +299,7 @@
       </div>
       <div class="footer-links">
         <a href="https://github.com/ThisIsFenix" target="_blank">GitHub</a>
-        <a href="https://twitter.com/ThisIsFenix_" target="_blank">Twitter</a>
+        <a href="https://twitter.com/AntiAnkush" target="_blank">Twitter</a>
         <button onclick="showCredits()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 0.85rem; padding: 0; transition: color 0.2s ease;">
           Créditos
         </button>
@@ -390,6 +390,67 @@
     </div>
   </div>
 
+  <!-- Panel de Nombre/Username -->
+  <div class="panel-overlay" id="panel-overlay" onclick="this.classList.remove('show'); document.getElementById('name-panel')?.classList.remove('show');"></div>
+  <div class="modal fade" id="name-panel" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 12px;">
+        <div class="modal-header" style="border-bottom: 1px solid var(--primary);">
+          <h5 class="modal-title" style="color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+            <i class="bi bi-person-badge"></i> Únete al Leaderboard
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+        </div>
+        <div class="modal-body" style="padding: 2rem;">
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Ingresa tu nombre para aparecer en el leaderboard global y competir con otros usuarios.
+          </p>
+          
+          <div class="mb-3">
+            <label for="leaderboard-name-input" class="form-label" style="color: var(--text); font-weight: bold;">
+              Tu Nombre
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="leaderboard-name-input" 
+              placeholder="Ejemplo: AntiAnkush" 
+              maxlength="20"
+              style="background: var(--bg-light); border: 2px solid var(--primary); color: var(--text); padding: 0.75rem;">
+          </div>
+          
+          <div class="mb-3">
+            <label for="avatar-input" class="form-label" style="color: var(--text); font-weight: bold;">
+              Avatar (URL - Opcional)
+            </label>
+            <input 
+              type="url" 
+              class="form-control" 
+              id="avatar-input" 
+              placeholder="https://example.com/tu-avatar.png"
+              style="background: var(--bg-light); border: 2px solid var(--primary); color: var(--text); padding: 0.75rem;">
+            <div class="form-text" style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 0.5rem;">
+              Si no proporcionas una URL, se generará un avatar automático con tu nombre.
+            </div>
+          </div>
+          
+          <div style="background: rgba(255,107,53,0.1); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--primary); margin-bottom: 1.5rem;">
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+              <i class="bi bi-info-circle"></i> Tu nombre aparecerá en el ranking público. Asegúrate de usar un nombre apropiado.
+            </p>
+          </div>
+          
+          <button 
+            onclick="submitLeaderboardName()" 
+            class="btn btn-primary w-100" 
+            style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; padding: 0.75rem; font-weight: bold; font-size: 1rem;">
+            <i class="bi bi-check-circle"></i> Registrar y Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Panel de logros -->
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -404,6 +465,7 @@
   <script src="Assets/js/repos.js"></script>
   <script src="Assets/js/themes.js"></script>
   <script src="Assets/js/achievements.js"></script>
+  <script src="Assets/js/achievements-display.js"></script>
   <script src="Assets/js/main.js"></script>
 
   <!-- Deadly Pursuer Warning -->
@@ -414,8 +476,8 @@
       }
     }
     
-    // Mostrar sección de Créditos
-    async function showCredits() {
+    // Mostrar sección de Créditos (Global)
+    window.showCredits = async function() {
       // Ocultar todas las secciones
       document.querySelectorAll('.main-content > section').forEach(s => s.style.display = 'none');
       
@@ -437,7 +499,7 @@
           });
         creditsSection.dataset.loaded = 'true';
       }
-    }
+    };
     
     // Fallback si falla el import
     async function loadCreditsLegacy() {
@@ -448,43 +510,122 @@
           const container = document.getElementById('credits-content');
           container.innerHTML = '';
           
-          // Crear cards por categoría
-          const categories = {
-            desarrollo: { icon: 'bi-code-slash', title: 'Desarrollo' },
-            arte: { icon: 'bi-palette', title: 'Arte y Diseño' },
-            musica: { icon: 'bi-music-note-beamed', title: 'Música' },
-            testing: { icon: 'bi-bug', title: 'Testing' },
-            agradecimientos: { icon: 'bi-heart-fill', title: 'Agradecimientos Especiales' }
-          };
-          
-          Object.entries(categories).forEach(([key, cat]) => {
-            if (data[key]?.length) {
-              const card = document.createElement('div');
-              card.className = 'card';
-              card.style.marginBottom = '2rem';
-              
-              card.innerHTML = `
-                <div class="card-body">
-                  <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="bi ${cat.icon}"></i> ${cat.title}
-                  </h3>
-                  <div style="display: grid; gap: 1rem;">
-                    ${data[key].map(person => `
-                      <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
-                        <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">${person.nombre}</h4>
-                        <p style="color: var(--text-secondary); margin: 0;">${person.rol || person.razon || ''}</p>
-                        ${person.link ? `<a href="${person.link}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; margin-top: 0.5rem;"><i class="bi bi-link-45deg"></i> ${person.link}</a>` : ''}
-                      </div>
-                    `).join('')}
+          // Card del creador principal
+          if (data.el_wey_que_hizo_esto) {
+            const creator = data.el_wey_que_hizo_esto;
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.marginBottom = '2rem';
+            
+            card.innerHTML = `
+              <div class="card-body">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="bi bi-code-slash"></i> Creador
+                </h3>
+                <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                  <img src="${creator.foto_perfil}" alt="${creator.quien_soy}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary);">
+                  <div style="flex: 1; min-width: 200px;">
+                    <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">${creator.quien_soy}</h4>
+                    <p style="color: var(--text-secondary); margin: 0 0 1rem 0;">${creator.descripcion_personal}</p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                      ${Object.entries(creator.redes).map(([red, url]) => `
+                        <a href="${url}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                          <i class="bi bi-${red === 'github' ? 'github' : red === 'twitter' ? 'twitter-x' : 'music-note'}"></i> ${red.charAt(0).toUpperCase() + red.slice(1)}
+                        </a>
+                      `).join('')}
+                    </div>
                   </div>
                 </div>
-              `;
-              
-              container.appendChild(card);
-            }
-          });
+              </div>
+            `;
+            container.appendChild(card);
+          }
           
-          creditsSection.dataset.loaded = 'true';
+          // Card de inspiración
+          if (data.creditos?.inspiracion) {
+            const insp = data.creditos.inspiracion;
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.marginBottom = '2rem';
+            
+            card.innerHTML = `
+              <div class="card-body">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="bi bi-lightbulb-fill"></i> Inspiración
+                </h3>
+                <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                  <img src="${insp.imagen}" alt="${insp.autor}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary);">
+                  <div style="flex: 1; min-width: 200px;">
+                    <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">${insp.autor}</h4>
+                    <p style="color: var(--text-secondary); margin: 0 0 1rem 0;">${insp.texto}</p>
+                    <a href="${insp.url}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                      <i class="bi bi-link-45deg"></i> Funky Atlas
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+            container.appendChild(card);
+          }
+          
+          // Card de tecnologías
+          if (data.creditos?.tecnologias) {
+            const tech = data.creditos.tecnologias;
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.marginBottom = '2rem';
+            
+            card.innerHTML = `
+              <div class="card-body">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="bi bi-tools"></i> Tecnologías
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                  ${tech.frontend ? `
+                    <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
+                      <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">Frontend</h4>
+                      <ul style="margin: 0; padding-left: 1.25rem; color: var(--text-secondary);">
+                        ${tech.frontend.map(item => `<li>${item}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                  ${tech.frameworks ? `
+                    <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
+                      <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">Frameworks</h4>
+                      <ul style="margin: 0; padding-left: 1.25rem; color: var(--text-secondary);">
+                        ${tech.frameworks.map(item => `<li>${item}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                  ${tech.apis ? `
+                    <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
+                      <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">APIs</h4>
+                      <ul style="margin: 0; padding-left: 1.25rem; color: var(--text-secondary);">
+                        ${tech.apis.map(item => `<li>${item}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+            container.appendChild(card);
+          }
+          
+          // Card de mensaje final
+          if (data.mensaje_final) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.marginBottom = '2rem';
+            
+            card.innerHTML = `
+              <div class="card-body" style="text-align: center; padding: 2rem;">
+                <i class="bi bi-emoji-smile" style="font-size: 2rem; color: var(--primary);"></i>
+                <p style="margin-top: 1rem; color: var(--text);">${data.mensaje_final}</p>
+              </div>
+            `;
+            container.appendChild(card);
+          }
+          
         } catch (error) {
           console.error('Error cargando créditos:', error);
           document.getElementById('credits-content').innerHTML = `
@@ -497,10 +638,10 @@
           `;
         }
       }
-    }
     
-    // Mostrar sección de Updates
-    async function showUpdates() {
+    
+    // Mostrar sección de Updates (Global)
+    window.showUpdates = async function() {
       // Ocultar todas las secciones
       document.querySelectorAll('.main-content > section').forEach(s => s.style.display = 'none');
       
@@ -520,20 +661,60 @@
           const container = document.getElementById('updates-content');
           container.innerHTML = '';
           
-          // Ordenar por fecha (más reciente primero)
-          const sortedUpdates = data.updates.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+          // Normalizar campos para soportar ambos formatos
+          const fecha = data.fecha || data.lastUpdate;
+          const version = data.version;
           
-          sortedUpdates.forEach(update => {
+          // Botón para mostrar/ocultar versiones antiguas
+          const toggleButton = document.createElement('button');
+          toggleButton.id = 'toggle-old-versions';
+          toggleButton.className = 'btn btn-outline-primary';
+          toggleButton.style.cssText = 'margin-bottom: 2rem; width: 100%;';
+          toggleButton.innerHTML = '<i class="bi bi-clock-history"></i> Mostrar versiones antiguas';
+          toggleButton.onclick = function() {
+            const oldVersions = document.querySelectorAll('.update-card.old-version');
+            const isHidden = oldVersions[0]?.style.display === 'none';
+            
+            oldVersions.forEach(card => {
+              card.style.display = isHidden ? 'block' : 'none';
+            });
+            
+            this.innerHTML = isHidden 
+              ? '<i class="bi bi-clock-history"></i> Ocultar versiones antiguas'
+              : '<i class="bi bi-clock-history"></i> Mostrar versiones antiguas';
+          };
+          
+          container.appendChild(toggleButton);
+          
+          // Ordenar por fecha (más reciente primero)
+          const sortedUpdates = data.updates.sort((a, b) => {
+            const dateB = new Date(b.fecha || b.date);
+            const dateA = new Date(a.fecha || a.date);
+            return dateB - dateA;
+          });
+          
+          sortedUpdates.forEach((update, index) => {
+            // Normalizar campos para soportar ambos formatos
+            const fecha = update.fecha || update.date;
+            const tipo = update.tipo || update.type;
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = 'card update-card';
             card.style.marginBottom = '2rem';
+            
+            // Ocultar versiones antiguas (después de las primeras 3)
+            if (index >= 3) {
+              card.classList.add('old-version');
+              card.style.display = 'none';
+            }
             
             let contentHTML = '';
             
             const sections = {
               nuevo: { icon: 'bi-plus-circle-fill', title: 'Nuevas características', color: 'var(--primary)' },
+              features: { icon: 'bi-plus-circle-fill', title: 'Nuevas características', color: 'var(--primary)' },
               mejoras: { icon: 'bi-arrow-up-circle-fill', title: 'Mejoras', color: '#10b981' },
               correcciones: { icon: 'bi-bug-fill', title: 'Correcciones', color: '#f59e0b' },
+              fixes: { icon: 'bi-bug-fill', title: 'Correcciones', color: '#f59e0b' },
               eliminado: { icon: 'bi-trash-fill', title: 'Eliminado', color: '#ef4444' }
             };
             
@@ -557,7 +738,9 @@
             const typeColors = {
               major: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
               minor: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
-              patch: 'linear-gradient(135deg, #10b981, #059669)'
+              patch: 'linear-gradient(135deg, #10b981, #059669)',
+              hotfix: 'linear-gradient(135deg, #f59e0b, #ef4444)',
+              new: 'linear-gradient(135deg, #10b981, #3b82f6)'
             };
             
             card.innerHTML = `
@@ -566,11 +749,11 @@
                   <div>
                     <h3 style="color: var(--primary); margin: 0;">${update.version}</h3>
                     <p style="color: var(--text-secondary); margin: 0.25rem 0 0 0; font-size: 0.9rem;">
-                      ${new Date(update.fecha).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      ${fecha ? new Date(fecha).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Fecha no disponible'}
                     </p>
                   </div>
-                  <span style="background: ${typeColors[update.tipo] || typeColors.patch}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; text-transform: uppercase;">
-                    ${update.tipo}
+                  <span style="background: ${typeColors[tipo] || typeColors.patch}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; text-transform: uppercase;">
+                    ${tipo || 'patch'}
                   </span>
                 </div>
                 ${contentHTML}
@@ -593,7 +776,7 @@
           `;
         }
       }
-    }
+    };
     
     // Debug temporal - verificar estado
     window.addEventListener('load', () => {
