@@ -1092,18 +1092,19 @@
           html += `
             <style>
               @keyframes trophy-spin {
-                0%, 100% { transform: translateY(0) rotateY(0deg); }
-                50% { transform: translateY(-10px) rotateY(180deg); }
+                0% { transform: translateY(0) rotateY(0deg); }
+                50% { transform: translateY(-15px) rotateY(180deg); }
+                100% { transform: translateY(0) rotateY(360deg); }
               }
               @keyframes mini-trophy-bounce {
-                0%, 100% { transform: translateY(0) scale(1); }
-                50% { transform: translateY(-15px) scale(1.2); }
+                0%, 100% { transform: translateY(0) translateX(-50%) scale(1) rotate(-5deg); }
+                50% { transform: translateY(-20px) translateX(-50%) scale(1.3) rotate(5deg); }
               }
               .podium-container {
                 display: flex;
                 align-items: flex-end;
                 justify-content: center;
-                gap: 1.5rem;
+                gap: 2rem;
                 margin: 2rem 0;
                 flex-wrap: wrap;
               }
@@ -1113,7 +1114,7 @@
                 transition: transform 0.3s ease;
               }
               .podium-card:hover {
-                transform: translateY(-10px);
+                transform: translateY(-10px) scale(1.05);
               }
               .podium-large { order: 1; }
               .podium-medium { order: 2; }
@@ -1132,27 +1133,27 @@
             const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128`;
             const rank = pos.idx + 1;
             
-            // Tamaños según posición
+            // Tamaños según posición - MÁS DRAMÁTICOS
             const sizes = {
-              large: { width: '200px', avatarSize: '90px', fontSize: '1.1rem', cardHeight: '260px' },
-              medium: { width: '160px', avatarSize: '70px', fontSize: '1rem', cardHeight: '220px' },
-              small: { width: '140px', avatarSize: '60px', fontSize: '0.95rem', cardHeight: '200px' }
+              large: { width: '280px', avatarSize: '110px', fontSize: '1.3rem', cardHeight: '320px' },
+              medium: { width: '180px', avatarSize: '75px', fontSize: '1rem', cardHeight: '240px' },
+              small: { width: '150px', avatarSize: '60px', fontSize: '0.9rem', cardHeight: '200px' }
             };
             const size = sizes[pos.size];
             
             html += `
               <div class="podium-card podium-${pos.size}">
                 ${pos.size === 'large' ? `
-                  <div style="position: relative; margin-bottom: 0.5rem;">
-                    <i class="bi bi-trophy-fill" style="font-size: 2.5rem; color: ${colors[pos.idx]}; animation: trophy-spin 3s ease-in-out infinite;"></i>
+                  <div style="position: relative; margin-bottom: 1rem;">
+                    <i class="bi bi-trophy-fill" style="font-size: 4rem; color: ${colors[pos.idx]}; animation: trophy-spin 3s ease-in-out infinite; filter: drop-shadow(0 8px 16px rgba(255,215,0,0.5));"></i>
                   </div>
                 ` : ''}
                 
                 <div class="card" style="width: ${size.width}; background: linear-gradient(135deg, ${colors[pos.idx]}, rgba(${pos.idx === 0 ? '255,215,0,0.3' : pos.idx === 1 ? '192,192,192,0.3' : '205,127,50,0.3'})); border: 2px solid ${colors[pos.idx]}; border-radius: 16px; overflow: visible; box-shadow: 0 8px 25px rgba(0,0,0,0.2);">
                   <div class="card-body" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: ${size.cardHeight};">
                     ${pos.size === 'large' ? `
-                      <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); animation: mini-trophy-bounce 2s ease-in-out infinite;">
-                        <i class="bi bi-trophy" style="font-size: 1.5rem; color: ${colors[pos.idx]}; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></i>
+                      <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); animation: mini-trophy-bounce 2s ease-in-out infinite; z-index: 10;">
+                        <i class="bi bi-trophy" style="font-size: 2.5rem; color: ${colors[pos.idx]}; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));"></i>
                       </div>
                     ` : ''}
                     
