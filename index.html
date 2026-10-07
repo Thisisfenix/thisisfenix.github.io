@@ -54,7 +54,7 @@
             <button id="theme-btn" class="nav-link"><i class="bi bi-palette me-1"></i> Temas</button>
           </li>
           <li class="nav-item">
-            <button id="leaderboard-btn-nav" class="nav-link" title="Ver Ranking Global">
+            <button id="leaderboard-btn-nav" class="nav-link" onclick="showLeaderboard()" title="Ver Ranking Global">
               <i class="bi bi-trophy-fill me-1"></i> Leaderboard
             </button>
           </li>
@@ -294,6 +294,22 @@
         </div>
       </div>
     </section>
+
+    <!-- Leaderboard -->
+    <section id="leaderboard" class="container" style="display: none;">
+      <h2>🏆 Leaderboard Global</h2>
+      <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Ranking de los mejores jugadores
+      </p>
+      <div id="leaderboard-content">
+        <div style="text-align: center; color: var(--primary); padding: 2rem;">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p style="margin-top: 1rem;">Cargando ranking...</p>
+        </div>
+      </div>
+    </section>
   </div>
 
   <!-- Footer -->
@@ -450,49 +466,6 @@
             class="btn btn-primary w-100" 
             style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; padding: 0.75rem; font-weight: bold; font-size: 1rem;">
             <i class="bi bi-check-circle"></i> Registrar y Guardar
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Panel de Leaderboard -->
-  <div class="modal fade" id="leaderboard-panel" tabindex="-1" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content" style="background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 12px;">
-        <div class="modal-header" style="border-bottom: 1px solid var(--primary);">
-          <h5 class="modal-title" style="color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
-            <i class="bi bi-trophy-fill"></i> Leaderboard Global
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
-        </div>
-        <div class="modal-body" style="padding: 0; max-height: 70vh; overflow-y: auto;">
-          <!-- Header con usuario actual -->
-          <div id="current-user-card" style="padding: 1.5rem; background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(247,147,30,0.1)); border-bottom: 2px solid var(--primary);">
-            <!-- Se llenará dinámicamente -->
-          </div>
-          
-          <!-- Top 3 con podio -->
-          <div id="top-3-podium" style="padding: 2rem 1rem; background: linear-gradient(180deg, rgba(255,215,0,0.05), transparent);">
-            <!-- Se llenará dinámicamente -->
-          </div>
-          
-          <!-- Resto del ranking -->
-          <div id="leaderboard-list" style="padding: 1rem;">
-            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Cargando...</span>
-              </div>
-              <p style="margin-top: 1rem;">Cargando ranking...</p>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer" style="border-top: 1px solid var(--primary); padding: 1rem; background: var(--bg-light);">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-            <i class="bi bi-x-circle"></i> Cerrar
-          </button>
-          <button type="button" class="btn btn-primary" onclick="refreshLeaderboard()" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none;">
-            <i class="bi bi-arrow-clockwise"></i> Actualizar
           </button>
         </div>
       </div>
@@ -826,6 +799,207 @@
         }
       }
     };
+    
+    // Mostrar sección de Leaderboard (Global)
+    window.showLeaderboard = async function() {
+      // Ocultar todas las secciones
+      document.querySelectorAll('.main-content > section').forEach(s => s.style.display = 'none');
+      
+      // Mostrar sección de leaderboard
+      const leaderboardSection = document.getElementById('leaderboard');
+      leaderboardSection.style.display = 'block';
+      
+      // Scroll suave
+      leaderboardSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+      // Cargar datos
+      if (leaderboardSection.dataset.loaded !== 'true') {
+        await loadLeaderboardPage();
+        leaderboardSection.dataset.loaded = 'true';
+      }
+    };
+    
+    // Cargar contenido del leaderboard
+    async function loadLeaderboardPage() {
+      const container = document.getElementById('leaderboard-content');
+      
+      try {
+        let leaderboardData = [];
+        
+        // Obtener desde Firebase
+        if (window.firebasePoints && window.firebasePoints.getLeaderboard) {
+          try {
+            leaderboardData = await window.firebasePoints.getLeaderboard();
+          } catch (error) {
+            console.warn('Error obteniendo leaderboard:', error);
+          }
+        }
+        
+        // Fallback a localStorage
+        if (leaderboardData.length === 0) {
+          leaderboardData = JSON.parse(localStorage.getItem('fenix-global-leaderboard') || '[]');
+        }
+        
+        // Si no hay datos
+        if (leaderboardData.length === 0) {
+          container.innerHTML = `
+            <div class="card">
+              <div class="card-body" style="text-align: center; padding: 3rem;">
+                <i class="bi bi-trophy" style="font-size: 4rem; color: var(--text-secondary);"></i>
+                <h3 style="margin: 1.5rem 0 1rem; color: var(--text);">Leaderboard Vacío</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Sé el primero en registrarte</p>
+                ${!window.gameData?.leaderboardName ? `
+                  <button onclick="showNamePanel()" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1.1rem;">
+                    <i class="bi bi-person-plus"></i> Registrar Nombre
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          `;
+          return;
+        }
+        
+        // Renderizar contenido
+        const currentUserId = window.Utils ? Utils.getUserId() : localStorage.getItem('userId');
+        const currentUserName = window.gameData?.leaderboardName;
+        const currentUserPoints = window.gameData?.points || 0;
+        const currentUserAvatar = window.gameData?.avatar || '';
+        
+        let html = '';
+        
+        // Card del usuario actual
+        if (!currentUserName) {
+          html += `
+            <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(247,147,30,0.1)); border-color: var(--primary);">
+              <div class="card-body" style="text-align: center; padding: 2rem;">
+                <i class="bi bi-person-circle" style="font-size: 3rem; color: var(--text-secondary);"></i>
+                <h4 style="margin: 1rem 0 0.5rem; color: var(--text);">No estás en el ranking</h4>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                  Registra tu nombre para aparecer en el leaderboard
+                </p>
+                <button onclick="showNamePanel()" class="btn btn-primary">
+                  <i class="bi bi-person-plus"></i> Registrar Nombre
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          const userIndex = leaderboardData.findIndex(u => u.userId === currentUserId || u.name === currentUserName);
+          const position = userIndex + 1;
+          const medal = position === 1 ? '🥇' : position === 2 ? '🥈' : position === 3 ? '🥉' : '';
+          const avatar = currentUserAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserName)}&background=random&size=128`;
+          
+          html += `
+            <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(247,147,30,0.1)); border-color: var(--primary);">
+              <div class="card-body">
+                <h5 style="color: var(--primary); margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="bi bi-person-circle"></i> Tu Posición
+                </h5>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                  <img src="${avatar}" 
+                       onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserName)}&background=random&size=128'"
+                       style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover;" 
+                       alt="${currentUserName}">
+                  <div style="flex: 1;">
+                    <h4 style="color: var(--text); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                      ${currentUserName}
+                      ${position > 0 ? `<span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.9rem;">#${position} ${medal}</span>` : ''}
+                    </h4>
+                    <p style="color: var(--primary); font-weight: bold; font-size: 1.2rem; margin: 0.5rem 0 0;">
+                      <i class="bi bi-award"></i> ${currentUserPoints} pts
+                    </p>
+                  </div>
+                  <button onclick="showNamePanel()" class="btn btn-outline-primary btn-sm" title="Editar perfil">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        // Top 3 Podio
+        const top3 = leaderboardData.slice(0, 3);
+        if (top3.length > 0) {
+          const medals = ['🥇', '🥈', '🥉'];
+          const colors = ['#FFD700', '#C0C0C0', '#CD7F32'];
+          const podiumOrder = top3.length === 3 ? [1, 0, 2] : top3.length === 2 ? [1, 0] : [0];
+          
+          html += `<h3 style="color: var(--primary); margin: 2rem 0 1.5rem; text-align: center;">
+            <i class="bi bi-trophy-fill"></i> Top 3
+          </h3>`;
+          html += '<div style="display: flex; align-items: flex-end; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">';
+          
+          podiumOrder.forEach(idx => {
+            if (!top3[idx]) return;
+            const user = top3[idx];
+            const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random&size=128`;
+            const heights = ['200px', '160px', '130px'];
+            
+            html += `
+              <div class="card" style="flex: 1; max-width: 220px; min-width: 180px; background: linear-gradient(135deg, ${colors[idx]}, rgba(${idx === 0 ? '255,215,0' : idx === 1 ? '192,192,192' : '205,127,50'},0.2)); border-color: ${colors[idx]}; height: ${heights[idx]};">
+                <div class="card-body" style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                  <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${medals[idx]}</div>
+                  <img src="${avatar}" 
+                       onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random&size=128'"
+                       style="width: 70px; height: 70px; border-radius: 50%; border: 3px solid ${colors[idx]}; object-fit: cover; margin: 0 auto 0.75rem;" 
+                       alt="${user.name || 'Usuario'}">
+                  <h5 style="color: white; margin: 0 0 0.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${user.name || 'Anónimo'}</h5>
+                  <p style="color: rgba(255,255,255,0.9); font-weight: bold; font-size: 1.1rem; margin: 0;">${user.points} pts</p>
+                </div>
+              </div>
+            `;
+          });
+          
+          html += '</div>';
+        }
+        
+        // Resto del ranking
+        const rest = leaderboardData.slice(3);
+        if (rest.length > 0) {
+          html += '<h4 style="color: var(--primary); margin: 2rem 0 1rem;"><i class="bi bi-list-ol"></i> Resto del Ranking</h4>';
+          
+          rest.forEach((user, idx) => {
+            const position = idx + 4;
+            const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random&size=128`;
+            const isCurrentUser = user.userId === currentUserId || user.name === currentUserName;
+            
+            html += `
+              <div class="card" style="margin-bottom: 0.75rem; ${isCurrentUser ? 'border-color: var(--primary); background: rgba(255,107,53,0.05);' : ''}">
+                <div class="card-body" style="padding: 1rem;">
+                  <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-weight: bold; color: var(--text-secondary); min-width: 40px; font-size: 1.1rem;">#${position}</span>
+                    <img src="${avatar}" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random&size=128'"
+                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover;" 
+                         alt="${user.name || 'Usuario'}">
+                    <div style="flex: 1;">
+                      <h6 style="margin: 0; color: var(--text);">
+                        ${user.name || 'Anónimo'} ${isCurrentUser ? '<span style="color: var(--primary);">(Tú)</span>' : ''}
+                      </h6>
+                      <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">${user.points} puntos</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+        }
+        
+        container.innerHTML = html;
+        
+      } catch (error) {
+        console.error('Error cargando leaderboard:', error);
+        container.innerHTML = `
+          <div class="card">
+            <div class="card-body" style="text-align: center; padding: 2rem;">
+              <i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: #dc3545;"></i>
+              <p style="margin-top: 1rem;">Error al cargar el ranking</p>
+            </div>
+          </div>
+        `;
+      }
+    }
     
     // Debug temporal - verificar estado
     window.addEventListener('load', () => {
