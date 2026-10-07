@@ -175,7 +175,7 @@
 
   window.submitLeaderboardName = async function() {
     const nameInput = document.getElementById('leaderboard-name-input');
-    const avatarInput = document.getElementById('avatar-input');
+    const urlInput = document.getElementById('avatar-url-input');
     const name = nameInput?.value.trim();
     
     if (!name) {
@@ -183,17 +183,21 @@
       return;
     }
     
-    const avatar = avatarInput?.value.trim();
+    // Determinar avatar (base64, URL, o auto)
+    let avatar = '';
+    if (window.uploadedAvatarBase64) {
+      avatar = window.uploadedAvatarBase64;
+    } else if (urlInput && urlInput.value.trim()) {
+      avatar = urlInput.value.trim();
+    } else {
+      avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=128`;
+    }
     
     if (window.gameData) {
       window.gameData.leaderboardName = name;
-      
-      if (avatar && avatar.trim() !== '') {
-        window.gameData.avatar = avatar;
-        localStorage.setItem('avatar', avatar);
-      }
-      
+      window.gameData.avatar = avatar;
       localStorage.setItem('leaderboardName', name);
+      localStorage.setItem('avatar', avatar);
       if (window.saveGameData) saveGameData();
     }
     
@@ -203,8 +207,7 @@
     
     // Actualizar en Firebase
     if (window.firebasePoints && window.firebasePoints.updateLeaderboard) {
-      const avatarToSend = avatar && avatar.trim() !== '' ? avatar : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=128`;
-      await window.firebasePoints.updateLeaderboard(name, window.gameData?.points || 0, avatarToSend);
+      await window.firebasePoints.updateLeaderboard(name, window.gameData?.points || 0, avatar);
     }
     
     // Mostrar notificación
@@ -217,9 +220,15 @@
     }
     if (window.addPoints) addPoints(25);
     
-    // Refrescar leaderboard
-    if (window.updateLeaderboardDisplay) {
-      setTimeout(() => updateLeaderboardDisplay(), 1000);
+    // Limpiar base64 global
+    window.uploadedAvatarBase64 = null;
+    
+    // Refrescar leaderboard si está abierto
+    if (document.getElementById('leaderboard').style.display === 'block') {
+      setTimeout(() => {
+        document.getElementById('leaderboard').dataset.loaded = 'false';
+        showLeaderboard();
+      }, 500);
     }
   };
 

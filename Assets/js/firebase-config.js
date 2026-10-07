@@ -343,14 +343,22 @@ const updateLeaderboard = async (name, points, avatar = '') => {
 // Obtener leaderboard desde Firebase
 const getLeaderboard = async () => {
   try {
-    const snapshot = await db.collection('leaderboard')
+    // Obtener todos los usuarios ordenados por puntos
+    const snapshot = await db.collection('users')
       .orderBy('points', 'desc')
-      .limit(10)
+      .limit(50) // Aumentado de 10 a 50
       .get();
     
     const leaderboard = [];
     snapshot.forEach(doc => {
-      leaderboard.push(doc.data());
+      const data = doc.data();
+      leaderboard.push({
+        userId: doc.id,
+        name: data.name || '', // Puede estar vacío
+        points: data.points || 0,
+        avatar: data.avatar || '',
+        lastUpdate: data.lastSync || data.lastUpdate || Date.now()
+      });
     });
     
     return leaderboard;

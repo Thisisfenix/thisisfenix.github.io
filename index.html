@@ -35,7 +35,7 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
-      <a class="navbar-brand" href="#"><i class="bi bi-flask"></i></a>
+      <a class="navbar-brand" href="#"><i class="bi bi-flask"></i> FenixLaboratory</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -968,6 +968,7 @@
         if (window.firebasePoints && window.firebasePoints.getLeaderboard) {
           try {
             leaderboardData = await window.firebasePoints.getLeaderboard();
+            console.log('📊 Firebase leaderboard raw:', leaderboardData);
           } catch (error) {
             console.warn('Error obteniendo leaderboard:', error);
           }
@@ -976,6 +977,7 @@
         // Fallback a localStorage
         if (leaderboardData.length === 0) {
           leaderboardData = JSON.parse(localStorage.getItem('fenix-global-leaderboard') || '[]');
+          console.log('💾 LocalStorage leaderboard:', leaderboardData);
         }
         
         // Si no hay datos
@@ -1014,6 +1016,13 @@
             };
           }
           return user;
+        });
+        
+        console.log('🎯 Leaderboard Debug:', {
+          total: leaderboardData.length,
+          data: leaderboardData,
+          top3: leaderboardData.slice(0, 3),
+          rest: leaderboardData.slice(3)
         });
         
         let html = '';
