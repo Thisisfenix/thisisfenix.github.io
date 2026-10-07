@@ -4159,3 +4159,36 @@
   border-color: var(--primary) !important;
   background: rgba(var(--primary-rgb), 0.05) !important;
 }
+
+
+/* ===== PODIO TOP 3 CARDS ESPECÍFICAS ===== */
+.podium-card-large,
+.podium-card-medium,
+.podium-card-small {
+  min-height: auto !important;
+  max-height: fit-content !important;
+}
+
+.podium-card-large .card-body {
+  padding: 1.5rem !important;
+  padding-top: 70px !important;
+  min-height: 200px !important;
+  max-height: 200px !important;
+  height: 200px !important;
+}
+
+.podium-card-medium .card-body {
+  padding: 1.25rem !important;
+  padding-top: 60px !important;
+  min-height: 160px !important;
+  max-height: 160px !important;
+  height: 160px !important;
+}
+
+.podium-card-small .card-body {
+  padding: 1rem !important;
+  padding-top: 55px !important;
+  min-height: 140px !important;
+  max-height: 140px !important;
+  height: 140px !important;
+}
