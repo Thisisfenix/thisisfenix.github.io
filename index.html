@@ -1079,35 +1079,99 @@
           `;
         }
         
-        // Top 3 Podio
+        // Top 3 Podio - Diseño especial
         const top3 = leaderboardData.slice(0, 3);
         if (top3.length > 0) {
-          const medals = ['🥇', '🥈', '🥉'];
           const colors = ['#FFD700', '#C0C0C0', '#CD7F32'];
-          const podiumOrder = top3.length === 3 ? [1, 0, 2] : top3.length === 2 ? [1, 0] : [0];
+          const positions = [
+            { idx: 1, size: 'medium', order: 1 },  // Top 2 (derecha)
+            { idx: 0, size: 'large', order: 0 },   // Top 1 (centro)
+            { idx: 2, size: 'small', order: 2 }    // Top 3 (izquierda)
+          ];
           
-          html += `<h3 style="color: var(--primary); margin: 2rem 0 1.5rem; text-align: center;">
-            <i class="bi bi-trophy-fill"></i> Top 3
-          </h3>`;
-          html += '<div style="display: flex; align-items: flex-end; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">';
+          html += `
+            <style>
+              @keyframes trophy-spin {
+                0%, 100% { transform: translateY(0) rotateY(0deg); }
+                50% { transform: translateY(-10px) rotateY(180deg); }
+              }
+              @keyframes mini-trophy-bounce {
+                0%, 100% { transform: translateY(0) scale(1); }
+                50% { transform: translateY(-15px) scale(1.2); }
+              }
+              .podium-container {
+                display: flex;
+                align-items: flex-end;
+                justify-content: center;
+                gap: 1.5rem;
+                margin: 2rem 0;
+                flex-wrap: wrap;
+              }
+              .podium-card {
+                position: relative;
+                text-align: center;
+                transition: transform 0.3s ease;
+              }
+              .podium-card:hover {
+                transform: translateY(-10px);
+              }
+              .podium-large { order: 1; }
+              .podium-medium { order: 2; }
+              .podium-small { order: 0; }
+            </style>
+            <h3 style="color: var(--primary); margin: 2rem 0 1rem; text-align: center; font-size: 1.5rem;">
+              <i class="bi bi-trophy-fill"></i> Top 3
+            </h3>
+            <div class="podium-container">
+          `;
           
-          podiumOrder.forEach(idx => {
-            if (!top3[idx]) return;
-            const user = top3[idx];
+          positions.forEach(pos => {
+            if (!top3[pos.idx]) return;
+            const user = top3[pos.idx];
             const userName = user.name || 'Usuario';
             const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128`;
-            const heights = ['200px', '160px', '130px'];
+            const rank = pos.idx + 1;
+            
+            // Tamaños según posición
+            const sizes = {
+              large: { width: '200px', avatarSize: '90px', fontSize: '1.1rem', cardHeight: '260px' },
+              medium: { width: '160px', avatarSize: '70px', fontSize: '1rem', cardHeight: '220px' },
+              small: { width: '140px', avatarSize: '60px', fontSize: '0.95rem', cardHeight: '200px' }
+            };
+            const size = sizes[pos.size];
             
             html += `
-              <div class="card" style="flex: 1; max-width: 220px; min-width: 180px; background: linear-gradient(135deg, ${colors[idx]}, rgba(${idx === 0 ? '255,215,0' : idx === 1 ? '192,192,192' : '205,127,50'},0.2)); border-color: ${colors[idx]}; height: ${heights[idx]};">
-                <div class="card-body" style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                  <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${medals[idx]}</div>
-                  <img src="${avatar}" 
-                       onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128'"
-                       style="width: 70px; height: 70px; border-radius: 50%; border: 3px solid ${colors[idx]}; object-fit: cover; margin: 0 auto 0.75rem;" 
-                       alt="${userName}">
-                  <h5 style="color: white; margin: 0 0 0.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${userName}</h5>
-                  <p style="color: rgba(255,255,255,0.9); font-weight: bold; font-size: 1.1rem; margin: 0;">${user.points} pts</p>
+              <div class="podium-card podium-${pos.size}">
+                ${pos.size === 'large' ? `
+                  <div style="position: relative; margin-bottom: 0.5rem;">
+                    <i class="bi bi-trophy-fill" style="font-size: 2.5rem; color: ${colors[pos.idx]}; animation: trophy-spin 3s ease-in-out infinite;"></i>
+                  </div>
+                ` : ''}
+                
+                <div class="card" style="width: ${size.width}; background: linear-gradient(135deg, ${colors[pos.idx]}, rgba(${pos.idx === 0 ? '255,215,0,0.3' : pos.idx === 1 ? '192,192,192,0.3' : '205,127,50,0.3'})); border: 2px solid ${colors[pos.idx]}; border-radius: 16px; overflow: visible; box-shadow: 0 8px 25px rgba(0,0,0,0.2);">
+                  <div class="card-body" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: ${size.cardHeight};">
+                    ${pos.size === 'large' ? `
+                      <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); animation: mini-trophy-bounce 2s ease-in-out infinite;">
+                        <i class="bi bi-trophy" style="font-size: 1.5rem; color: ${colors[pos.idx]}; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></i>
+                      </div>
+                    ` : ''}
+                    
+                    <div style="font-size: ${pos.size === 'large' ? '3rem' : pos.size === 'medium' ? '2.5rem' : '2rem'}; margin-bottom: 0.5rem;">
+                      #${rank}
+                    </div>
+                    
+                    <div style="position: relative; margin-bottom: 1rem;">
+                      <img src="${avatar}" 
+                           onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128'"
+                           style="width: ${size.avatarSize}; height: ${size.avatarSize}; border-radius: 50%; border: 3px solid white; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" 
+                           alt="${userName}">
+                    </div>
+                    
+                    <h5 style="color: #ffffff; margin: 0 0 0.5rem; font-size: ${size.fontSize}; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">${userName}</h5>
+                    <p style="color: #ffffff; font-weight: bold; font-size: ${pos.size === 'large' ? '1.3rem' : '1.1rem'}; margin: 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.7);">
+                      <i class="bi bi-award"></i> ${user.points} pts
+                    </p>
+                  </div>
                 </div>
               </div>
             `;
@@ -1119,7 +1183,7 @@
         // Resto del ranking
         const rest = leaderboardData.slice(3);
         if (rest.length > 0) {
-          html += '<h4 style="color: var(--primary); margin: 2rem 0 1rem;"><i class="bi bi-list-ol"></i> Resto del Ranking</h4>';
+          html += '<h4 style="color: var(--primary); margin: 2rem 0 1rem; font-size: 1.2rem;"><i class="bi bi-list-ol"></i> Resto del Ranking</h4>';
           
           rest.forEach((user, idx) => {
             const position = idx + 4;
@@ -1128,19 +1192,19 @@
             const isCurrentUser = user.userId === currentUserId || user.name === currentUserName;
             
             html += `
-              <div class="card" style="margin-bottom: 0.75rem; ${isCurrentUser ? 'border-color: var(--primary); background: rgba(255,107,53,0.05);' : ''}">
-                <div class="card-body" style="padding: 1rem;">
-                  <div style="display: flex; align-items: center; gap: 1rem;">
-                    <span style="font-weight: bold; color: var(--text-secondary); min-width: 40px; font-size: 1.1rem;">#${position}</span>
+              <div class="card" style="margin-bottom: 0.5rem; ${isCurrentUser ? 'border-color: var(--primary); background: rgba(255,107,53,0.05);' : ''}">
+                <div class="card-body" style="padding: 0.75rem;">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-weight: bold; color: var(--text-secondary); min-width: 35px; font-size: 0.95rem;">#${position}</span>
                     <img src="${avatar}" 
                          onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=128'"
-                         style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover;" 
+                         style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover;" 
                          alt="${userName}">
                     <div style="flex: 1;">
-                      <h6 style="margin: 0; color: var(--text);">
+                      <h6 style="margin: 0; color: var(--text); font-size: 0.95rem;">
                         ${userName} ${isCurrentUser ? '<span style="color: var(--primary);">(Tú)</span>' : ''}
                       </h6>
-                      <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">${user.points} puntos</p>
+                      <p style="margin: 0; color: var(--text-secondary); font-size: 0.85rem;">${user.points} puntos</p>
                     </div>
                   </div>
                 </div>
