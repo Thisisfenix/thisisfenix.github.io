@@ -1,4 +1,11 @@
 {
+  "name": "fenixlaboratory",
+  "version": "2.7.0",
+  "description": "FenixLaboratory - Personal portfolio and experiments",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "update-manifest": "node generate-manifest.js"
   },
