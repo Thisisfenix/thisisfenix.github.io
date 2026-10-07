@@ -328,9 +328,19 @@ class PlushieSystem {
       
       if (this.progress.gissel === 20 && this.progress.molly === 20) {
         this.showNotification('¡Colección completa! 🏆');
-        if (typeof checkAchievement === 'function') checkAchievement('plushie-collector');
+        if (window.achievementSystem) {
+          window.achievementSystem.checkAchievement('plushie-collector');
+        }
         this.showCompletionCelebration();
         setTimeout(() => this.registerCompletion(), 1000);
+      } else {
+        // Verificar logros individuales
+        if (this.progress.gissel === 20 && window.achievementSystem) {
+          window.achievementSystem.checkAchievement('gissel-fan');
+        }
+        if (this.progress.molly === 20 && window.achievementSystem) {
+          window.achievementSystem.checkAchievement('molly-hunter');
+        }
       }
     }
   }
@@ -630,8 +640,8 @@ class PlushieSystem {
     document.body.appendChild(overlay);
     
     // Desbloquear tema
-    if (typeof gameData !== 'undefined') {
-      gameData.unlockedThemes.add('plushie-rain');
+    if (typeof window.gameData !== 'undefined') {
+      window.gameData.unlockedThemes.add('plushie-rain');
       if (typeof saveGameData === 'function') saveGameData();
     }
     localStorage.setItem('plushie-theme-unlocked', 'true');

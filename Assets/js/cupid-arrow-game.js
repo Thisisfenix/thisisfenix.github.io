@@ -366,12 +366,12 @@ class CupidArrowGame {
 
     if (this.score >= 500) {
       localStorage.setItem('valentine-theme-unlocked', 'true');
-      if (typeof gameData !== 'undefined') {
-        gameData.unlockedThemes.add('valentines-love');
+      if (typeof window.gameData !== 'undefined') {
+        window.gameData.unlockedThemes.add('valentines-love');
         if (typeof saveGameData === 'function') saveGameData();
       }
-      if (typeof achievementSystem !== 'undefined') {
-        achievementSystem.checkAchievement('cupid-master');
+      if (typeof window.achievementSystem !== 'undefined') {
+        window.achievementSystem.checkAchievement('cupid-master');
       }
     }
 
