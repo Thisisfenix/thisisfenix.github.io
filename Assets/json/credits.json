@@ -5,18 +5,16 @@
   "hosting": "GitHub Pages",
   "preview_image": "preview.png",
   "favicon": "favicon.svg",
-  
   "el_wey_que_hizo_esto": {
     "quien_soy": "ThisIsFenix",
     "foto_perfil": "https://github.com/Thisisfenix.png",
     "descripcion_personal": "Solo soy alguien que le gusta hacer cosas raras en internet. A veces funcionan, a veces no, pero siempre es divertido intentarlo.",
     "redes": {
       "github": "https://github.com/thisisfenix",
-      "twitter": "https://twitter.com/AntiAnkush", 
+      "twitter": "https://twitter.com/AntiAnkush",
       "tiktok": "https://www.tiktok.com/@thefenixpro216"
     }
   },
-
   "que_hace": [
     "Jala mis repos automáticamente",
     "Tiene filtros",
@@ -31,7 +29,6 @@
     "Runners que se mueven solos y se cansan 🏃",
     "13 logros nuevos con fecha de desbloqueo 🏆"
   ],
-
   "creditos": {
     "inspiracion": {
       "texto": "El creador de funky atlas y mi inspiraciona crear esta cosa base a Funky Atlas el mero parecido es solamente coincidencia (posdata: no me mate abelitogamer)",
@@ -41,33 +38,36 @@
     },
     "testing": "Mi computadora (seh hay hago todas mis mierdas XD)",
     "tecnologias": {
-      "frontend": ["HTML5", "CSS3", "JavaScript ES6+"],
-      "frameworks": ["Bootstrap 5.3.3"],
-      "apis": ["GitHub REST API v3"],
+      "frontend": [
+        "HTML5",
+        "CSS3",
+        "JavaScript ES6+"
+      ],
+      "frameworks": [
+        "Bootstrap 5.3.3"
+      ],
+      "apis": [
+        "GitHub REST API v3"
+      ],
       "hosting": "GitHub Pages",
       "pwa": "Service Worker + Manifest",
       "fuentes": "Google Fonts (Space Grotesk)"
     }
   },
-
   "legal_stuff": {
     "licencia": "MIT",
     "disclaimer": "Hecho por un wey random (puedes usar el sitio web cambiandole cosas y eso y no un copy paste.)"
   },
-
   "planes_a_futuro": [
     "Más animaciones chidas",
-    "Easter eggs", 
+    "Easter eggs",
     "Tal vez un blog",
     "Tal vez solo talvez, añadir un sitio web para mi bot de discord"
   ],
-
   "bugs": {
     "bugs_graves": "Ninguno (que yo sepa)",
     "bugs_menores": "Seguro hay algunos que no me haya percatado",
     "features_no_planeadas": "Los bugs son features"
   },
-
-  
   "mensaje_final": "Si llegaste hasta acá eres un nerd como yo. Respeto bro 🤝, la verdad dudo que vea alguien esto"
 }

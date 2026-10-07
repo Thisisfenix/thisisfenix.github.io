@@ -5,7 +5,6 @@
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/",
-  
   "info_version_actual": {
     "numero": "2.7.0",
     "fecha": "2026-06-20",
@@ -19,7 +18,6 @@
       "Botón hamburguesa rediseñado para móviles"
     ]
   },
-  
   "updates": [
     {
       "version": "2.7.0",
@@ -1106,7 +1104,7 @@
       "status": "planned"
     },
     {
-      "version": "2.0.6", 
+      "version": "2.0.6",
       "title": "🎮 Gamificación Avanzada + PWA Completa Implementada",
       "features": [
         "🏅 Sistema de badges completo - COMPLETADO",
@@ -1122,7 +1120,6 @@
       "status": "completed"
     }
   ],
-  
   "estadisticas_proyecto": {
     "total_versiones": 11,
     "versiones_major": 6,
@@ -1134,18 +1131,30 @@
     "lineas_codigo_aprox": "3000+",
     "archivos_principales": 13
   },
-  
   "tecnologias_usadas": {
-    "frontend": ["HTML5", "CSS3", "JavaScript ES6+"],
-    "frameworks": ["Bootstrap 5.3.3"],
-    "apis_externas": ["GitHub REST API v3", "Firebase v9"],
-    "backend": ["Firebase Firestore"],
+    "frontend": [
+      "HTML5",
+      "CSS3",
+      "JavaScript ES6+"
+    ],
+    "frameworks": [
+      "Bootstrap 5.3.3"
+    ],
+    "apis_externas": [
+      "GitHub REST API v3",
+      "Firebase v9"
+    ],
+    "backend": [
+      "Firebase Firestore"
+    ],
     "hosting": "GitHub Pages",
     "pwa": "Manifest + Service Worker (removido)",
     "fuentes": "Google Fonts (Space Grotesk)",
-    "iconos": ["Bootstrap Icons", "Font Awesome"]
+    "iconos": [
+      "Bootstrap Icons",
+      "Font Awesome"
+    ]
   },
-  
   "proximas_actualizaciones": {
     "v2.1": {
       "fecha_estimada": "2025-01-15",
@@ -1158,7 +1167,6 @@
       "enfoque": "Minijuegos integrados y competencia"
     }
   },
-  
   "notas_desarrollador": {
     "mensaje": "Cada versión es un experimento. A veces funciona, a veces no, pero siempre es divertido.",
     "agradecimientos": "A todos los que han visitado el laboratorio y probado las cosas raras que hago.",

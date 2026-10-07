@@ -414,74 +414,6 @@
       }
     }
     
-    // Mostrar Créditos JSON
-    async function showCredits() {
-      try {
-        const response = await fetch('Assets/json/credits.json');
-        const data = await response.json();
-        showJSONModal('Créditos', data);
-      } catch (error) {
-        alert('Error cargando créditos: ' + error.message);
-      }
-    }
-    
-    // Mostrar Updates JSON
-    async function showUpdates() {
-      try {
-        const response = await fetch('Assets/json/updates.json');
-        const data = await response.json();
-        showJSONModal('Updates / Changelog', data);
-      } catch (error) {
-        alert('Error cargando updates: ' + error.message);
-      }
-    }
-    
-    // Modal para mostrar JSON
-    function showJSONModal(title, data) {
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.8);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-      `;
-      
-      const content = document.createElement('div');
-      content.style.cssText = `
-        background: var(--bg-dark);
-        border: 2px solid var(--primary);
-        border-radius: 12px;
-        max-width: 800px;
-        width: 100%;
-        max-height: 80vh;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      `;
-      
-      content.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-bottom: 2px solid rgba(var(--primary-rgb, 255,107,53), 0.2);">
-          <h3 style="margin: 0; color: var(--primary); font-size: 1.5rem;">${title}</h3>
-          <button onclick="this.closest('[style*=fixed]').remove()" style="background: rgba(var(--primary-rgb, 255,107,53), 0.1); border: 1px solid var(--primary); color: var(--primary); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;">×</button>
-        </div>
-        <div style="padding: 1.5rem; overflow-y: auto;">
-          <pre style="background: var(--bg-light); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary); font-size: 0.85rem; line-height: 1.6;">${JSON.stringify(data, null, 2)}</pre>
-        </div>
-      `;
-      
-      modal.appendChild(content);
-      document.body.appendChild(modal);
-      
-      // Cerrar al hacer click fuera del contenido
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-      });
-    }
-    
     // Mostrar sección de Créditos
     async function showCredits() {
       // Ocultar todas las secciones
@@ -496,6 +428,19 @@
       
       // Cargar datos si no están cargados
       if (creditsSection.dataset.loaded !== 'true') {
+        await import('./Assets/js/json-display.js')
+          .then(module => module.displayCredits('credits-content'))
+          .catch(error => {
+            console.error('Error importando json-display:', error);
+            // Fallback sin módulo
+            loadCreditsLegacy();
+          });
+        creditsSection.dataset.loaded = 'true';
+      }
+    }
+    
+    // Fallback si falla el import
+    async function loadCreditsLegacy() {
         try {
           const response = await fetch('Assets/json/credits.json');
           const data = await response.json();
