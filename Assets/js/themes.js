@@ -26,6 +26,23 @@ function setTheme(theme) {
     achievementSystem.gameData.themesUsed.add(theme);
     achievementSystem.gameData.themeChangeCount = (achievementSystem.gameData.themeChangeCount || 0) + 1;
     achievementSystem.save();
+    
+    // Verificar logros de temas
+    if (achievementSystem.gameData.themesUsed.size === 1 && !achievementSystem.gameData.achievements['theme-explorer']) {
+      achievementSystem.checkAchievement('theme-explorer'); // Primer cambio de tema
+    }
+    
+    if (achievementSystem.gameData.themesUsed.size >= 5 && !achievementSystem.gameData.achievements['theme-collector']) {
+      achievementSystem.checkAchievement('theme-collector'); // 5 temas diferentes
+    }
+    
+    if (theme === 'funkyatlas' && !achievementSystem.gameData.achievements['funky-fan']) {
+      achievementSystem.checkAchievement('funky-fan'); // Fan de FunkyAtlas
+    }
+    
+    if (achievementSystem.gameData.themeChangeCount >= 20 && !achievementSystem.gameData.achievements['theme-addict']) {
+      achievementSystem.checkAchievement('theme-addict'); // 20 cambios de tema
+    }
   }
   
   // Efectos especiales

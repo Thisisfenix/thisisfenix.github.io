@@ -13,63 +13,105 @@ export async function displayCredits(containerId) {
     
     let html = '';
     
-    // El wey que hizo esto
+    // Card del creador principal
     if (data.el_wey_que_hizo_esto) {
+      const creator = data.el_wey_que_hizo_esto;
       html += `
         <div class="card" style="margin-bottom: 2rem;">
           <div class="card-body">
-            <h3 style="color: var(--primary); margin-bottom: 1rem;">👨‍💻 ${data.el_wey_que_hizo_esto.nombre}</h3>
-            <p>${data.el_wey_que_hizo_esto.descripcion}</p>
-            ${data.el_wey_que_hizo_esto.links ? `
-              <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                ${Object.entries(data.el_wey_que_hizo_esto.links).map(([name, url]) => `
-                  <a href="${url}" target="_blank" style="color: var(--primary); text-decoration: none;">
-                    ${name} →
-                  </a>
-                `).join('')}
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="bi bi-code-slash"></i> Creador
+            </h3>
+            <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+              <img src="${creator.foto_perfil}" alt="${creator.quien_soy}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary);">
+              <div style="flex: 1; min-width: 200px;">
+                <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">${creator.quien_soy}</h4>
+                <p style="color: var(--text-secondary); margin: 0 0 1rem 0;">${creator.descripcion_personal}</p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                  ${Object.entries(creator.redes).map(([red, url]) => `
+                    <a href="${url}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                      <i class="bi bi-${red === 'github' ? 'github' : red === 'twitter' ? 'twitter-x' : 'music-note'}"></i> ${red.charAt(0).toUpperCase() + red.slice(1)}
+                    </a>
+                  `).join('')}
+                </div>
               </div>
-            ` : ''}
+            </div>
           </div>
         </div>
       `;
     }
     
-    // Créditos
-    if (data.creditos) {
-      Object.entries(data.creditos).forEach(([category, items]) => {
-        const categoryNames = {
-          'arte': '🎨 Arte',
-          'musica': '🎵 Música',
-          'testing': '🧪 Testing',
-          'ideas': '💡 Ideas',
-          'soporte': '🤝 Soporte'
-        };
-        
-        html += `
-          <div class="card" style="margin-bottom: 2rem;">
-            <div class="card-body">
-              <h3 style="color: var(--primary); margin-bottom: 1rem;">${categoryNames[category] || category}</h3>
-              <div style="display: grid; gap: 1rem;">
-                ${items.map(person => `
-                  <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
-                    <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">${person.nombre}</h4>
-                    ${person.rol ? `<p style="color: var(--text-secondary); margin: 0;">${person.rol}</p>` : ''}
-                    ${person.contribucion ? `<p style="color: var(--text-secondary); margin: 0.5rem 0 0 0;">${person.contribucion}</p>` : ''}
-                  </div>
-                `).join('')}
+    // Card de inspiración
+    if (data.creditos?.inspiracion) {
+      const insp = data.creditos.inspiracion;
+      html += `
+        <div class="card" style="margin-bottom: 2rem;">
+          <div class="card-body">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="bi bi-lightbulb-fill"></i> Inspiración
+            </h3>
+            <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+              <img src="${insp.imagen}" alt="${insp.autor}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary);">
+              <div style="flex: 1; min-width: 200px;">
+                <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">${insp.autor}</h4>
+                <p style="color: var(--text-secondary); margin: 0 0 1rem 0;">${insp.texto}</p>
+                <a href="${insp.url}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                  <i class="bi bi-link-45deg"></i> Funky Atlas
+                </a>
               </div>
             </div>
           </div>
-        `;
-      });
+        </div>
+      `;
     }
     
-    // Mensaje final
+    // Card de tecnologías
+    if (data.creditos?.tecnologias) {
+      const tech = data.creditos.tecnologias;
+      html += `
+        <div class="card" style="margin-bottom: 2rem;">
+          <div class="card-body">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="bi bi-tools"></i> Tecnologías
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+              ${tech.frontend ? `
+                <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
+                  <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">Frontend</h4>
+                  <ul style="margin: 0; padding-left: 1.25rem; color: var(--text-secondary);">
+                    ${tech.frontend.map(item => `<li>${item}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+              ${tech.frameworks ? `
+                <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
+                  <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">Frameworks</h4>
+                  <ul style="margin: 0; padding-left: 1.25rem; color: var(--text-secondary);">
+                    ${tech.frameworks.map(item => `<li>${item}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+              ${tech.apis ? `
+                <div style="padding: 1rem; background: rgba(var(--primary-rgb), 0.1); border-left: 3px solid var(--primary); border-radius: 8px;">
+                  <h4 style="color: var(--text); margin: 0 0 0.5rem 0;">APIs</h4>
+                  <ul style="margin: 0; padding-left: 1.25rem; color: var(--text-secondary);">
+                    ${tech.apis.map(item => `<li>${item}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Card de mensaje final
     if (data.mensaje_final) {
       html += `
-        <div class="card">
-          <div class="card-body" style="text-align: center;">
-            <p style="font-size: 1.2rem; color: var(--primary);">${data.mensaje_final}</p>
+        <div class="card" style="margin-bottom: 2rem;">
+          <div class="card-body" style="text-align: center; padding: 2rem;">
+            <i class="bi bi-emoji-smile" style="font-size: 2rem; color: var(--primary);"></i>
+            <p style="margin-top: 1rem; color: var(--text);">${data.mensaje_final}</p>
           </div>
         </div>
       `;

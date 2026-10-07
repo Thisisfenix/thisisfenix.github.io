@@ -52,20 +52,80 @@
     // Sistema de logros (si existe)
     if (window.AchievementSystem) {
       try {
+        console.log('🎮 Inicializando AchievementSystem...');
         window.achievementSystem = new AchievementSystem('fenix-lab-game');
-        window.achievements = achievementSystem.achievements;
-        window.gameData = achievementSystem.gameData;
+        
+        console.log('📦 achievementSystem creado:', window.achievementSystem);
+        console.log('🏆 achievements disponibles:', window.achievementSystem.achievements);
+        
+        window.achievements = window.achievementSystem.achievements;
+        window.dailyChallenges = window.achievementSystem.dailyChallenges;
+        window.weeklyChallenges = window.achievementSystem.weeklyChallenges;
+        window.gameData = window.achievementSystem.gameData;
+        
+        console.log('✅ window.achievements asignado:', window.achievements);
+        console.log('✅ window.gameData asignado:', window.gameData);
         
         window.addEventListener('achievement-unlocked', (e) => {
           showAchievementNotification(e.detail);
           updatePointsDisplay();
+          
+          // Recargar panel de logros si está abierto
+          const achievementsPanel = document.getElementById('achievements-panel');
+          if (achievementsPanel && achievementsPanel.classList.contains('show')) {
+            if (window.loadAchievementsPanel) {
+              loadAchievementsPanel();
+            }
+          }
         });
         
-        achievementSystem.load();
-        achievementSystem.checkDailyVisit();
+        window.achievementSystem.load();
+        window.achievementSystem.checkDailyVisit();
         updatePointsDisplay();
         
+        // Esperar a que Firebase sincronice antes de verificar logros automáticos
+        setTimeout(() => {
+          // Re-sincronizar window.gameData después de Firebase
+          window.gameData = window.achievementSystem.gameData;
+          
+          console.log('🔍 Verificando logros automáticos...');
+          console.log('gameData.achievements:', window.gameData.achievements);
+          console.log('Logros en gameData:', Object.keys(window.gameData.achievements || {}).length);
+          
+          // Primera visita
+          if (!window.gameData.achievements['first-visit']) {
+            console.log('🎉 Desbloqueando: Primera Visita');
+            window.achievementSystem.checkAchievement('first-visit');
+          } else {
+            console.log('⏭️ Ya desbloqueado: Primera Visita');
+          }
+          
+          // Detectar dispositivo
+          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          if (isMobile && !window.gameData.achievements['mobile-user']) {
+            console.log('📱 Desbloqueando: Usuario Móvil');
+            window.achievementSystem.checkAchievement('mobile-user');
+          } else if (!isMobile && !window.gameData.achievements['desktop-power']) {
+            console.log('🖥️ Desbloqueando: Poder de Escritorio');
+            window.achievementSystem.checkAchievement('desktop-power');
+          }
+          
+          // Verificar PWA
+          if (window.matchMedia('(display-mode: standalone)').matches && !window.gameData.achievements['pwa-user']) {
+            console.log('📱 Desbloqueando: Usuario PWA');
+            window.achievementSystem.checkAchievement('pwa-user');
+          }
+          
+          console.log('✅ Logros automáticos verificados');
+        }, 3000); // 3 segundos para que Firebase termine
+        
+        // Setup de UI de logros
+        if (window.setupAchievements) {
+          window.setupAchievements();
+        }
+        
         console.log('✅ Sistema de logros inicializado. Puntos:', window.gameData.points);
+        console.log('✅ Logros cargados:', Object.keys(window.achievements || {}).length);
       } catch (error) {
         console.error('❌ Error inicializando logros:', error);
         // Crear gameData básico sin achievements
@@ -173,6 +233,16 @@
         const targetId = link.getAttribute('href').substring(1);
         if (targetId && targetId.length > 0) {
           e.preventDefault();
+          
+          // Mostrar todas las secciones normales (ocultar Credits/Updates)
+          document.querySelectorAll('.main-content > section').forEach(section => {
+            if (section.id === 'credits' || section.id === 'updates') {
+              section.style.display = 'none';
+            } else {
+              section.style.display = 'block';
+            }
+          });
+          
           const targetElement = document.getElementById(targetId);
           if (targetElement) {
             targetElement.scrollIntoView({ behavior: 'smooth' });
@@ -308,7 +378,29 @@
 
   window.showAchievementNotification = function(achievement) {
     console.log('🏆', achievement.name, `+${achievement.points} pts`);
-    // Podrías agregar una notificación visual aquí si quieres
+    
+    // Crear notificación visual
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.innerHTML = `
+      <div class="achievement-notification-icon">${achievement.icon || '🏆'}</div>
+      <div class="achievement-notification-content">
+        <div class="achievement-notification-title">¡Logro Desbloqueado!</div>
+        <div class="achievement-notification-name">${achievement.name}</div>
+        <div class="achievement-notification-points">+${achievement.points} pts</div>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animar entrada
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Remover después de 4 segundos
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
+    }, 4000);
   };
 
   window.addPoints = function(points) {
@@ -464,6 +556,9 @@
       return;
     }
     
+    console.log('📊 gameData.achievements al cargar panel:', window.gameData.achievements);
+    console.log('📊 Logros desbloqueados:', Object.keys(window.gameData.achievements || {}).length);
+    
     // Actualizar stats
     const pointsDisplay = document.getElementById('achievements-points-display');
     if (pointsDisplay) pointsDisplay.textContent = window.gameData.points;
@@ -484,18 +579,19 @@
     const container = document.getElementById('achievements-container');
     if (!container) return;
     
-    const achievementArray = Object.values(window.achievements);
-    
-    container.innerHTML = '<div class="achievements-grid">' + achievementArray.map(ach => {
-      const isUnlocked = window.gameData.achievements && window.gameData.achievements[ach.id];
+    container.innerHTML = '<div class="achievements-grid">' + Object.entries(window.achievements).map(([id, ach]) => {
+      const achievementData = window.gameData.achievements && window.gameData.achievements[id];
+      const isUnlocked = achievementData && (achievementData === true || achievementData.unlocked === true);
+      
+      console.log(`Logro ${id}:`, { data: achievementData, isUnlocked });
       
       return `
         <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}">
-          <div class="achievement-icon">${ach.icon}</div>
+          <div class="achievement-icon">${ach.icon || '🏆'}</div>
           <div class="achievement-info">
-            <div class="achievement-name">${ach.name}</div>
-            <div class="achievement-desc">${ach.description}</div>
-            <div class="achievement-points">+${ach.points} pts</div>
+            <div class="achievement-name">${ach.name || 'Logro'}</div>
+            <div class="achievement-desc">${ach.desc || 'Sin descripción'}</div>
+            <div class="achievement-points">+${ach.points || 0} pts</div>
           </div>
           ${isUnlocked ? '<div class="achievement-badge">✓</div>' : ''}
         </div>

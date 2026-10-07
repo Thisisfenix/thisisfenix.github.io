@@ -13,13 +13,62 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Generar ID único para usuario
+// Generar ID único para usuario (versión mejorada con fingerprint)
 const getUserId = () => {
   let userId = localStorage.getItem('userId');
-  if (!userId) {
-    userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('userId', userId);
+  
+  // Si ya fue migrado, retornar
+  if (userId && localStorage.getItem('userId-migrated') === 'true') {
+    return userId;
   }
+  
+  // Generar ID estable basado en browser fingerprint
+  const generateStableId = () => {
+    const nav = window.navigator;
+    const screen = window.screen;
+    
+    const fingerprint = [
+      nav.userAgent,
+      nav.language,
+      screen.colorDepth,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset(),
+      !!window.sessionStorage,
+      !!window.localStorage
+    ].join('|');
+    
+    let hash = 0;
+    for (let i = 0; i < fingerprint.length; i++) {
+      const char = fingerprint.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    
+    return 'user_' + Math.abs(hash).toString(36);
+  };
+  
+  const stableId = generateStableId();
+  
+  // Si no hay userId, usar el estable
+  if (!userId) {
+    userId = stableId;
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('userId-migrated', 'true');
+  } else if (userId !== stableId) {
+    // Si tiene un ID viejo, migrar en background
+    console.log('🔄 Detectado ID antiguo, programando migración...');
+    setTimeout(() => {
+      if (window.migrateToStableId) {
+        migrateToStableId().then(result => {
+          if (result.migrated) {
+            console.log('✅ Migración completada automáticamente');
+            location.reload(); // Recargar para aplicar cambios
+          }
+        });
+      }
+    }, 5000);
+  }
+  
   return userId;
 };
 

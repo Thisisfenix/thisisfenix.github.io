@@ -136,15 +136,42 @@
     const list = document.getElementById('achievements-list');
     if (!list) return;
     
+    console.log('🔍 DEBUG setupAchievements:');
+    console.log('- window.achievements:', window.achievements);
+    console.log('- window.gameData:', window.gameData);
+    console.log('- window.achievementSystem:', window.achievementSystem);
+    
+    if (!window.achievements) {
+      console.error('❌ window.achievements es undefined!');
+      list.innerHTML = '<p style="color: red; padding: 1rem;">Error: Sistema de logros no cargado</p>';
+      return;
+    }
+    
     list.innerHTML = '';
     Object.entries(window.achievements).forEach(([id, achievement]) => {
+      const unlockTime = window.gameData.achievements[id];
+      const isUnlocked = unlockTime !== undefined && unlockTime !== null;
       const item = document.createElement('div');
-      item.className = `achievement-item ${window.gameData.achievements[id] ? 'unlocked' : ''}`;
+      item.className = `achievement-item ${isUnlocked ? 'unlocked' : ''}`;
+      
+      let dateText = '';
+      if (isUnlocked) {
+        try {
+          const date = new Date(unlockTime);
+          if (!isNaN(date.getTime())) {
+            dateText = `<span style="font-size: 0.65rem; color: var(--text-secondary); display: block; margin-top: 0.25rem;">Desbloqueado: ${date.toLocaleDateString('es-ES')}</span>`;
+          }
+        } catch (e) {
+          console.warn('Error parsing date for achievement:', id, e);
+        }
+      }
+      
       item.innerHTML = `
-        <div class="achievement-icon">${achievement.icon}</div>
+        <div class="achievement-icon">${achievement.icon || '🏆'}</div>
         <div class="achievement-info">
-          <h4>${achievement.name}</h4>
-          <p>${achievement.desc} (+${achievement.points} pts)</p>
+          <h4>${achievement.name || 'Logro'}</h4>
+          <p>${achievement.desc || 'Sin descripción'} (+${achievement.points || 0} pts)</p>
+          ${dateText}
         </div>
       `;
       list.appendChild(item);

@@ -1,24 +1,57 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "2.7.0",
-  "lastUpdate": "2026-06-20",
+  "version": "3.0.0",
+  "lastUpdate": "2026-08-02",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/",
   "info_version_actual": {
-    "numero": "2.7.0",
-    "fecha": "2026-06-20",
-    "tipo": "minor",
+    "numero": "3.0.0",
+    "fecha": "2026-08-02",
+    "tipo": "major",
     "estado": "estable",
     "cambios_principales": [
-      "Navbar completamente rediseñado con estilo moderno y minimalista",
-      "Logo solo (sin texto) con animaciones mejoradas",
-      "Efecto glassmorphism (cristalino) en el navbar sin afectar el contenido",
-      "Nuevo diseño de botones con efectos hover mejorados",
-      "Botón hamburguesa rediseñado para móviles"
+      "Reescribí toda la página desde cero",
+      "Sistema de créditos y updates completamente nuevo",
+      "Arreglé un chingo de bugs acumulados",
+      "Mejoras visuales en todos los temas",
+      "Código limpio y organizado"
     ]
   },
   "updates": [
+    {
+      "version": "3.0.0",
+      "date": "2026-08-02",
+      "title": "🔄 Reescritura Total 2026",
+      "type": "major",
+      "features": [
+        "🔄 Reescribí toda la página desde cero porque el código anterior era un desastre",
+        "✨ Sistema de créditos y updates completamente rediseñado",
+        "🐛 Arreglé más de 50 bugs acumulados",
+        "🎨 Mejoras visuales en todos los temas del sitio",
+        "📱 Responsive real ahora, se ve perfecto en móvil",
+        "⚡ Todo carga más rápido con código optimizado",
+        "🔧 Código organizado y fácil de mantener",
+        "🎯 Navegación fluida entre secciones",
+        "💾 Créditos y Updates como páginas reales",
+        "🏆 Sistema de logros completamente funcional"
+      ],
+      "que_significa": [
+        "💀 Tiré todo el código viejo a la basura",
+        "🔨 Lo hice todo de nuevo desde cero",
+        "🐛 Ya no hay bugs raros acumulados",
+        "⚡ Ahora todo es más rápido y fluido",
+        "📱 Se ve bien en cualquier dispositivo"
+      ],
+      "fixes": [
+        "🐛 Eliminados todos los errores de consola",
+        "🐛 Navegación funciona perfectamente",
+        "🐛 Display correcto en móviles",
+        "🐛 Sincronización de temas arreglada",
+        "🐛 Todos los links funcionan",
+        "🐛 Sistema de logros sin errores 'undefined'"
+      ]
+    },
     {
       "version": "2.7.0",
       "date": "2026-06-20",

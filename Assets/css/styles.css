@@ -3983,3 +3983,65 @@
     font-size: 0.7rem;
   }
 }
+
+
+/* Notificaciones de logros */
+.achievement-notification {
+  position: fixed;
+  top: 80px;
+  right: -400px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 10000;
+  min-width: 300px;
+  transition: right 0.3s ease;
+}
+
+.achievement-notification.show {
+  right: 20px;
+}
+
+.achievement-notification-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.achievement-notification-content {
+  flex: 1;
+}
+
+.achievement-notification-title {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 0.25rem;
+}
+
+.achievement-notification-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.achievement-notification-points {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .achievement-notification {
+    min-width: 280px;
+    right: -320px;
+  }
+  
+  .achievement-notification.show {
+    right: 10px;
+  }
+}
