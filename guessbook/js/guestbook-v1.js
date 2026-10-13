@@ -3,9 +3,18 @@
 
 // Importar módulos ES6
 import { MobileOptimizer } from './mobile-optimizer.js';
+import { UIManager } from './ui.js';
+import { FirebaseManager } from './firebase.js';
+import { CanvasManager } from './canvas.js';
+import { GalleryManager } from './gallery.js';
+import { CommentsManager } from './comments.js';
+import { SoundSystem } from './sound-system.js';
+
+// Instancias globales
+let uiManager, firebaseManager, canvasManager, galleryManager, commentsManager;
 
 // ==================== ESPERAR A QUE LOS MÓDULOS ESTÉN LISTOS ====================
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   console.log('[V1] Inicializando Guestbook v1.0...');
   
   // Inicializar Lucide icons
@@ -21,72 +30,88 @@ window.addEventListener('DOMContentLoaded', () => {
   console.log('[V1] Optimización móvil activa');
   
   // Inicializar sistema de sonido (opcional)
-  if (window.SoundSystem) {
-    window.SoundSystem.init();
+  try {
+    SoundSystem.init();
     console.log('[V1] Sistema de sonido listo');
+  } catch (e) {
+    console.log('[V1] Sistema de sonido no disponible');
   }
   
-  // Inicializar canvas
-  if (window.CanvasModule) {
-    window.CanvasModule.init('drawCanvas');
-    console.log('[V1] Canvas inicializado');
+  // Inicializar UI Manager
+  uiManager = new UIManager();
+  window.uiManager = uiManager;
+  console.log('[V1] UI Manager inicializado');
+  
+  // Inicializar Canvas Manager
+  canvasManager = new CanvasManager();
+  window.canvasManager = canvasManager;
+  console.log('[V1] Canvas inicializado');
+  
+  // Inicializar Firebase Manager
+  try {
+    firebaseManager = new FirebaseManager();
+    window.firebaseManager = firebaseManager;
+    console.log('[V1] Firebase conectado');
+  } catch (error) {
+    console.error('[V1] Error al conectar Firebase:', error);
+    uiManager?.showNotification('Error al conectar con Firebase', 'error');
   }
   
-  // Inicializar Firebase y galería
-  if (window.FirebaseModule) {
-    window.FirebaseModule.init().then(() => {
-      console.log('[V1] Firebase conectado');
-      
-      // Cargar galería inicial
-      if (window.GalleryModule) {
-        window.GalleryModule.loadDrawings();
-        console.log('[V1] Galería cargada');
-      }
-    });
+  // Inicializar Gallery Manager
+  galleryManager = new GalleryManager(firebaseManager);
+  window.galleryManager = galleryManager;
+  console.log('[V1] Gallery Manager inicializado');
+  
+  // Cargar galería inicial
+  try {
+    await galleryManager.loadDrawings();
+    console.log('[V1] Galería cargada');
+  } catch (error) {
+    console.error('[V1] Error al cargar galería:', error);
   }
   
-  // Inicializar stats si está disponible
-  if (window.StatsModule) {
-    console.log('[V1] Módulo de estadísticas disponible');
-  }
+  // Inicializar Comments Manager
+  commentsManager = new CommentsManager(firebaseManager);
+  window.commentsManager = commentsManager;
+  console.log('[V1] Comments Manager inicializado');
   
   console.log('[V1] ✅ Guestbook v1.0 listo');
 });
 
 // ==================== FUNCIONES GLOBALES DE HERRAMIENTAS ====================
 window.selectTool = function(tool) {
-  if (!window.CanvasModule) return;
+  if (!canvasManager) return;
   
   // Actualizar UI
   document.querySelectorAll('.btn-tool').forEach(btn => btn.classList.remove('active'));
   document.getElementById(`tool-${tool}`)?.classList.add('active');
   
   // Cambiar herramienta en el módulo de canvas
-  window.CanvasModule.setTool(tool);
+  canvasManager.setTool(tool);
 };
 
 window.undoCanvas = function() {
-  if (window.CanvasModule) {
-    window.CanvasModule.undo();
+  if (canvasManager) {
+    canvasManager.undo();
   }
 };
 
 window.clearCanvas = function() {
   if (confirm('¿Seguro que quieres borrar todo el dibujo?')) {
-    if (window.CanvasModule) {
-      window.CanvasModule.clear();
+    if (canvasManager) {
+      canvasManager.clear();
     }
   }
 };
 
 window.exportDrawing = function(transparent = false) {
-  if (window.CanvasModule) {
-    window.CanvasModule.exportImage(transparent);
+  if (canvasManager) {
+    canvasManager.exportImage(transparent);
   }
 };
 
 window.saveDrawing = async function() {
-  if (!window.CanvasModule || !window.FirebaseModule) {
+  if (!canvasManager || !firebaseManager || !uiManager) {
     alert('Los módulos no están listos. Intenta de nuevo.');
     return;
   }
@@ -96,21 +121,19 @@ window.saveDrawing = async function() {
   const comment = document.getElementById('drawingComment').value.trim();
   
   // Obtener imagen del canvas
-  const imageData = window.CanvasModule.getImageData(false); // Con fondo blanco
+  const imageData = canvasManager.getImageData(false); // Con fondo blanco
   
   if (!imageData) {
-    alert('No hay nada que guardar');
+    uiManager.showNotification('No hay nada que guardar', 'warning');
     return;
   }
   
   try {
     // Mostrar loading
-    if (window.UIModule) {
-      window.UIModule.showNotification('Guardando dibujo...', 'info');
-    }
+    uiManager.showNotification('Guardando dibujo...', 'info');
     
     // Guardar en Firebase
-    await window.FirebaseModule.saveDrawing({
+    await firebaseManager.saveDrawing({
       imageData,
       author: authorName,
       category,
@@ -119,31 +142,27 @@ window.saveDrawing = async function() {
     });
     
     // Éxito
-    if (window.UIModule) {
-      window.UIModule.showNotification('¡Dibujo guardado con éxito!', 'success');
-      window.UIModule.createConfetti();
-    }
+    uiManager.showNotification('¡Dibujo guardado con éxito!', 'success');
+    uiManager.createConfetti();
     
     // Limpiar canvas y recargar galería
-    window.CanvasModule.clear();
+    canvasManager.clear();
     document.getElementById('authorName').value = '';
     document.getElementById('drawingComment').value = '';
     
-    if (window.GalleryModule) {
-      setTimeout(() => window.GalleryModule.loadDrawings(), 1000);
+    if (galleryManager) {
+      setTimeout(() => galleryManager.loadDrawings(), 1000);
     }
     
   } catch (error) {
     console.error('Error al guardar:', error);
-    if (window.UIModule) {
-      window.UIModule.showNotification('Error al guardar el dibujo', 'error');
-    }
+    uiManager.showNotification('Error al guardar el dibujo', 'error');
   }
 };
 
 window.loadDrawings = function() {
-  if (window.GalleryModule) {
-    window.GalleryModule.loadDrawings();
+  if (galleryManager) {
+    galleryManager.loadDrawings();
   }
 };
 
@@ -164,23 +183,23 @@ function initColorPalette() {
     btn.onclick = () => {
       document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      if (window.CanvasModule) {
-        window.CanvasModule.setColor(color);
+      if (canvasManager) {
+        canvasManager.setColor(color);
       }
     };
     palette.appendChild(btn);
   });
 }
 
-// Custom color input
+// Custom color input y brush size
 document.addEventListener('DOMContentLoaded', () => {
   initColorPalette();
   
   const customColor = document.getElementById('customColor');
   if (customColor) {
     customColor.addEventListener('change', (e) => {
-      if (window.CanvasModule) {
-        window.CanvasModule.setColor(e.target.value);
+      if (canvasManager) {
+        canvasManager.setColor(e.target.value);
       }
       document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
     });
@@ -191,8 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (brushSize && brushSizeValue) {
     brushSize.addEventListener('input', (e) => {
       brushSizeValue.textContent = e.target.value;
-      if (window.CanvasModule) {
-        window.CanvasModule.setSize(parseInt(e.target.value));
+      if (canvasManager) {
+        canvasManager.setSize(parseInt(e.target.value));
       }
     });
   }
