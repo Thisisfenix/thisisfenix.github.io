@@ -771,283 +771,153 @@ window.downloadImage = function(imageData, author, backgroundGif = null) {
   img.src = dataToDownload;
 };
 
-// ==================== VIEW IMAGE MODAL - VERSIÓN MEJORADA ====================
-class ImageModal {
-  constructor(imageData, drawingId, options = {}) {
-    this.imageData = imageData;
-    this.drawingId = drawingId;
-    this.isAnimated = options.isAnimated === 'true' || options.isAnimated === true;
-    this.backgroundGif = this.normalizeGifUrl(options.backgroundGif);
-    this.gifStickers = this.parseGifStickers(options.gifStickers);
-    this.drawingData = null;
-    this.modal = null;
+window.viewImage = async function(imageData, drawingId, isAnimated = false, backgroundGif = null, gifStickers = null) {
+  isAnimated = isAnimated === 'true' || isAnimated === true;
+  const existingModal = document.querySelector('.image-modal');
+  if (existingModal) existingModal.remove();
+  
+  // Normalizar backgroundGif
+  if (backgroundGif === '' || backgroundGif === 'null' || backgroundGif === 'undefined') {
+    backgroundGif = null;
   }
-
-  normalizeGifUrl(url) {
-    if (!url || url === '' || url === 'null' || url === 'undefined') {
-      return null;
-    }
-    return url;
-  }
-
-  parseGifStickers(stickers) {
-    if (!stickers || stickers === 'null' || stickers === 'undefined' || stickers === '') {
-      return null;
-    }
-    
+  
+  // Parsear stickers GIF si existen
+  let parsedGifStickers = null;
+  if (gifStickers && gifStickers !== 'null' && gifStickers !== 'undefined' && gifStickers !== '') {
     try {
-      if (typeof stickers === 'string') {
-        const decoded = stickers.replace(/&quot;/g, '"');
-        return JSON.parse(decoded);
+      if (typeof gifStickers === 'string') {
+        // Decodificar HTML entities si es necesario
+        const decodedStickers = gifStickers.replace(/&quot;/g, '"');
+        parsedGifStickers = JSON.parse(decodedStickers);
+      } else if (Array.isArray(gifStickers)) {
+        parsedGifStickers = gifStickers;
       }
-      if (Array.isArray(stickers)) {
-        return stickers;
-      }
+      console.log('Stickers GIF parseados:', parsedGifStickers);
     } catch (e) {
-      console.warn('Error parseando gifStickers:', e);
-    }
-    return null;
-  }
-
-  async loadDrawingData() {
-    try {
-      const drawing = await window.guestbookApp.firebase.getDrawing(this.drawingId);
-      this.drawingData = drawing?.data;
-      return true;
-    } catch (error) {
-      console.error('Error obteniendo datos del dibujo:', error);
-      return false;
+      console.warn('Error parseando gifStickers:', e, 'Datos originales:', gifStickers);
     }
   }
-
-  isMobile() {
-    return window.innerWidth <= 768;
+  
+  // Obtener información del dibujo para mostrar perfil del usuario
+  let drawingData = null;
+  try {
+    const drawing = await window.guestbookApp.firebase.getDrawing(drawingId);
+    drawingData = drawing?.data;
+  } catch (error) {
+    console.error('Error obteniendo datos del dibujo:', error);
   }
-
-  isSmallMobile() {
-    return window.innerWidth <= 480;
-  }
-
-  hasGifStickers() {
-    return this.gifStickers && this.gifStickers.length > 0;
-  }
-
-  hasBackgroundGif() {
-    return this.backgroundGif !== null && this.backgroundGif !== '';
-  }
-
-  createImageContent() {
-    const mobile = this.isMobile();
-    const smallMobile = this.isSmallMobile();
-    const maxHeight = mobile ? (smallMobile ? '30vh' : '35vh') : '70vh';
+  
+  const modal = document.createElement('div');
+  modal.className = 'image-modal';
+  modal.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.95); z-index: 99999; display: flex;
+    align-items: center; justify-content: center; padding: 10px;
+  `;
+  
+  const isMobile = window.innerWidth <= 768;
+  const isSmallMobile = window.innerWidth <= 480;
+  
+  const container = document.createElement('div');
+  container.style.cssText = `
+    display: flex; ${isMobile ? 'flex-direction: column;' : ''}
+    max-width: ${isMobile ? '100%' : '90vw'}; max-height: ${isMobile ? '100%' : '90vh'};
+    background: var(--bg-light); border-radius: ${isMobile ? '0' : '15px'}; overflow: hidden;
+    border: 2px solid var(--primary); width: 100%; height: ${isMobile ? '100vh' : 'auto'};
+    ${isMobile ? 'margin: 0;' : ''}
+  `;
+  
+  const imageSection = document.createElement('div');
+  imageSection.style.cssText = `
+    ${isMobile ? 'flex: 0 0 45vh;' : 'flex: 1;'}
+    padding: ${isMobile ? '10px' : '20px'}; text-align: center;
+    display: flex; flex-direction: column; justify-content: center;
+    background: white; position: relative;
+    ${isMobile ? 'min-height: 0; overflow: hidden;' : ''}
+  `;
+  
+  const commentsSection = document.createElement('div');
+  commentsSection.style.cssText = `
+    ${isMobile ? 'flex: 1; min-height: 0;' : 'width: 400px; min-width: 400px;'}
+    padding: ${isMobile ? '10px' : '20px'};
+    ${isMobile ? 'border-top: 2px solid var(--primary);' : 'border-left: 2px solid var(--primary);'}
+    overflow-y: auto; background: var(--bg-dark);
+    display: flex; flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+  `;
+  
+  const hasGifStickers = parsedGifStickers && parsedGifStickers.length > 0;
+  const hasBackgroundGif = backgroundGif && backgroundGif !== null && backgroundGif !== '' && backgroundGif !== 'null';
+  
+  console.log('Modal - hasBackgroundGif:', hasBackgroundGif, 'backgroundGif length:', backgroundGif?.length);
+  console.log('Modal - hasGifStickers:', hasGifStickers, 'parsedGifStickers:', parsedGifStickers);
+  console.log('Modal - Renderizando GIF de fondo:', hasBackgroundGif ? 'SÍ' : 'NO');
+  
+  const animatedBadge = isAnimated ? `
+    <div style="position: absolute; top: 15px; right: 15px; background: rgba(255, 107, 53, 0.9); color: white; padding: 8px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+      🎬 ${hasGifStickers ? 'GIF + Stickers' : 'GIF Animado'}
+    </div>
+  ` : '';
+  
+  // Crear contenido de imagen optimizado para móvil
+  let imageContent = '';
+  const maxImageHeight = isMobile ? (isSmallMobile ? '30vh' : '35vh') : '70vh';
+  
+  if (hasBackgroundGif || hasGifStickers) {
+    const containerStyle = `position: relative; width: 600px; height: 400px; max-width: 100%; max-height: ${maxImageHeight}; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); background: white; margin: 0 auto;`;
     
-    if (this.hasBackgroundGif() || this.hasGifStickers()) {
-      return this.createAnimatedImageContent(maxHeight);
-    }
+    console.log('Construyendo HTML con GIF:', hasBackgroundGif, 'y stickers:', hasGifStickers);
     
-    return `<img src="${this.imageData}" 
-      style="max-width: 100%; max-height: ${maxHeight}; border-radius: 12px; 
-             object-fit: contain; box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
-             background: white; ${mobile ? 'width: 100%;' : ''}" 
-      loading="lazy" alt="Dibujo">`;
-  }
-
-  createAnimatedImageContent(maxHeight) {
-    const containerStyle = `position: relative; width: 600px; height: 400px; 
-      max-width: 100%; max-height: ${maxHeight}; border-radius: 12px; 
-      overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
-      background: white; margin: 0 auto;`;
-    
-    let content = `<div style="${containerStyle}">`;
-    
-    // Background GIF layer
-    if (this.hasBackgroundGif()) {
-      content += `<img src="${this.backgroundGif}" 
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-               object-fit: contain; z-index: 1;" alt="GIF de fondo">`;
-    }
-    
-    // Main drawing layer
-    const blendMode = this.hasBackgroundGif() ? 'mix-blend-mode: multiply; opacity: 0.9;' : '';
-    content += `<img src="${this.imageData}" 
-      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-             object-fit: contain; z-index: 2; ${blendMode}" alt="Dibujo">`;
-    
-    // GIF stickers layer
-    if (this.hasGifStickers()) {
-      this.gifStickers.forEach((sticker, idx) => {
-        const left = (sticker.x / 600) * 100;
-        const top = (sticker.y / 400) * 100;
-        const width = (sticker.width / 600) * 100;
-        const height = (sticker.height / 400) * 100;
-        
-        content += `<img src="${sticker.src}" 
-          style="position: absolute; left: ${left}%; top: ${top}%; 
-                 width: ${width}%; height: ${height}%; z-index: 3;" 
-          alt="Sticker ${idx}">`;
+    if (hasGifStickers) {
+      console.log('Generando HTML para', parsedGifStickers.length, 'stickers');
+      parsedGifStickers.forEach((sticker, i) => {
+        console.log(`Sticker ${i}:`, {
+          hasSrc: !!sticker.src,
+          srcLength: sticker.src?.length,
+          srcPreview: sticker.src?.substring(0, 50),
+          x: sticker.x,
+          y: sticker.y,
+          width: sticker.width,
+          height: sticker.height
+        });
       });
     }
     
-    content += `</div>`;
-    return content;
-  }
-
-  createAnimatedBadge() {
-    if (!this.isAnimated) return '';
-    
-    const label = this.hasGifStickers() ? 'GIF + Stickers' : 'GIF Animado';
-    return `<div style="position: absolute; top: 15px; right: 15px; 
-      background: rgba(255, 107, 53, 0.9); color: white; 
-      padding: 8px 12px; border-radius: 20px; font-size: 0.9em; 
-      font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
-      🎬 ${label}
-    </div>`;
-  }
-
-  createImageSection() {
-    const mobile = this.isMobile();
-    const imageContent = this.createImageContent();
-    const badge = this.createAnimatedBadge();
-    
-    const sectionStyle = `
-      ${mobile ? 'flex: 0 0 45vh;' : 'flex: 1;'}
-      padding: ${mobile ? '10px' : '20px'}; text-align: center;
-      display: flex; flex-direction: column; justify-content: center;
-      background: white; position: relative;
-      ${mobile ? 'min-height: 0; overflow: hidden;' : ''}
-    `;
-    
-    const buttonStyle = mobile ? 'min-height: 36px; font-size: 14px; padding: 0.4rem 0.8rem;' : '';
-    const closeText = mobile ? '✖️' : '✖️ Cerrar';
-    const downloadText = mobile ? '💾' : '💾 Descargar';
-    
-    const escapedImageData = this.imageData.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    const escapedBgGif = this.backgroundGif ? `'${this.backgroundGif.replace(/'/g, "\\'").replace(/"/g, '&quot;')}'` : 'null';
-    
-    return `
-      <div style="${sectionStyle}">
-        ${badge}
-        <div style="flex: 1; display: flex; align-items: center; justify-content: center; ${mobile ? 'min-height: 0;' : ''}">
-          ${imageContent}
-        </div>
-        <div style="margin-top: ${mobile ? '5px' : '20px'}; display: flex; 
-                    gap: ${mobile ? '5px' : '12px'}; justify-content: center; flex-wrap: wrap;">
-          <button onclick="this.closest('.image-modal').remove()" 
-                  class="btn btn-secondary btn-sm" style="${buttonStyle}">
-            ${closeText}
-          </button>
-          <button onclick="downloadImage('${escapedImageData}', 'dibujo', ${escapedBgGif})" 
-                  class="btn btn-primary btn-sm" style="${buttonStyle}">
-            ${downloadText}
-          </button>
-        </div>
+    imageContent = `
+      <div style="${containerStyle}">
+        ${hasBackgroundGif ? `<img src="${backgroundGif}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;" alt="GIF de fondo">` : ''}
+        <img src="${imageData}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; ${hasBackgroundGif ? 'mix-blend-mode: multiply; opacity: 0.9;' : ''}" alt="Dibujo">
+        ${hasGifStickers ? parsedGifStickers.map((sticker, idx) => `<img src="${sticker.src}" style="position: absolute; left: ${(sticker.x / 600) * 100}%; top: ${(sticker.y / 400) * 100}%; width: ${(sticker.width / 600) * 100}%; height: ${(sticker.height / 400) * 100}%; z-index: 3;" alt="Sticker ${idx}">` ).join('') : ''}
       </div>
     `;
+  } else {
+    imageContent = `<img src="${imageData}" style="max-width: 100%; max-height: ${maxImageHeight}; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 20px rgba(0,0,0,0.3); background: white; image-rendering: auto; -webkit-image-rendering: auto; ${isMobile ? 'width: 100%;' : ''}" loading="lazy">`;
   }
-
-  createCommentsSection() {
-    const mobile = this.isMobile();
-    
-    const sectionStyle = `
-      ${mobile ? 'flex: 1; min-height: 0;' : 'width: 400px; min-width: 400px;'}
-      padding: ${mobile ? '10px' : '20px'};
-      ${mobile ? 'border-top: 2px solid var(--primary);' : 'border-left: 2px solid var(--primary);'}
-      overflow-y: auto; background: var(--bg-dark);
-      display: flex; flex-direction: column;
-      -webkit-overflow-scrolling: touch;
-    `;
-    
-    return `
-      <div style="${sectionStyle}">
-        <h5 style="color: var(--primary); margin-bottom: ${mobile ? '10px' : '20px'}; 
-                   font-size: ${mobile ? '1.1em' : '1.3em'};">
-          💬 Comentarios
-        </h5>
-        <div class="comments-list" style="flex: 1; overflow-y: auto; margin-bottom: ${mobile ? '10px' : '20px'};">
-          <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
-            Cargando comentarios...
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  async render() {
-    // Remover modal existente
-    const existing = document.querySelector('.image-modal');
-    if (existing) existing.remove();
-    
-    // Cargar datos del dibujo
-    await this.loadDrawingData();
-    
-    const mobile = this.isMobile();
-    
-    // Crear modal
-    this.modal = document.createElement('div');
-    this.modal.className = 'image-modal';
-    this.modal.style.cssText = `
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.95); z-index: 99999; display: flex;
-      align-items: center; justify-content: center; padding: ${mobile ? '0' : '10px'};
-    `;
-    
-    const container = document.createElement('div');
-    container.style.cssText = `
-      display: flex; ${mobile ? 'flex-direction: column;' : ''}
-      max-width: ${mobile ? '100%' : '90vw'}; max-height: ${mobile ? '100%' : '90vh'};
-      background: var(--bg-light); border-radius: ${mobile ? '0' : '15px'}; 
-      overflow: hidden; border: 2px solid var(--primary); 
-      width: 100%; height: ${mobile ? '100vh' : 'auto'};
-      ${mobile ? 'margin: 0;' : ''}
-    `;
-    
-    container.innerHTML = this.createImageSection() + this.createCommentsSection();
-    this.modal.appendChild(container);
-    document.body.appendChild(this.modal);
-    
-    // Cerrar al hacer click fuera
-    this.modal.addEventListener('click', (e) => {
-      if (e.target === this.modal) {
-        this.modal.remove();
-      }
-    });
-    
-    // Cargar comentarios
-    await this.loadComments();
-  }
-
-  async loadComments() {
-    try {
-      const commentsList = this.modal.querySelector('.comments-list');
-      if (!commentsList) return;
-      
-      await loadComments(this.drawingId, commentsList);
-    } catch (error) {
-      console.error('Error cargando comentarios:', error);
-      const commentsList = this.modal.querySelector('.comments-list');
-      if (commentsList) {
-        commentsList.innerHTML = `
-          <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
-            Error al cargar comentarios
-          </div>
-        `;
-      }
-    }
-  }
-}
-
-// Función global para mantener compatibilidad
-window.viewImage = async function(imageData, drawingId, isAnimated = false, backgroundGif = null, gifStickers = null) {
-  const modal = new ImageModal(imageData, drawingId, {
-    isAnimated,
-    backgroundGif,
-    gifStickers
-  });
   
-  await modal.render();
-};
-
-window.removeCommentImage = function() {
+  imageSection.innerHTML = `
+    ${animatedBadge}
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; ${isMobile ? 'min-height: 0;' : ''}">
+      ${imageContent}
+    </div>
+    <div style="margin-top: ${isMobile ? '5px' : '20px'}; display: flex; gap: ${isMobile ? '5px' : '12px'}; justify-content: center; flex-wrap: wrap;">
+      <button onclick="this.closest('.image-modal').remove()" class="btn btn-secondary btn-sm" style="${isMobile ? 'min-height: 36px; font-size: 14px; padding: 0.4rem 0.8rem;' : ''}">
+        ${isMobile ? '✖️' : '✖️ Cerrar'}
+      </button>
+      <button onclick="downloadImage('${imageData.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', 'dibujo', ${hasBackgroundGif ? `'${backgroundGif.replace(/'/g, "\\'").replace(/"/g, '&quot;')}'` : 'null'})" class="btn btn-primary btn-sm" style="${isMobile ? 'min-height: 36px; font-size: 14px; padding: 0.4rem 0.8rem;' : ''}">
+        ${isMobile ? '💾' : '💾 Descargar'}
+      </button>
+    </div>
+  `;
+  
+  // Obtener avatar actualizado del perfil desde Firebase
+  let modalAvatar = '👤';
+  let modalAvatarType = 'emoji';
+  
+  // Consultar Firebase directamente para datos actualizados
+  if (window.guestbookApp && window.guestbookApp.firebase && drawingData?.autor) {
+    try {
+      const firebaseProfile = await window.guestbookApp.firebase.getUserProfile(drawingData.autor);
+      if (firebaseProfile) {
         modalAvatar = firebaseProfile.avatar || '👤';
         modalAvatarType = firebaseProfile.avatarType || 'emoji';
         if (firebaseProfile.avatarImage) {
