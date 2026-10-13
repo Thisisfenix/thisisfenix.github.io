@@ -2,6 +2,10 @@ export class CanvasManager {
   constructor() {
     this.canvas = document.getElementById('drawCanvas');
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+    
+    // Detectar versión
+    this.version = this.detectVersion();
+    
     this.isDrawing = false;
     this.currentColor = '#000000';
     this.currentSize = 3;
@@ -28,7 +32,19 @@ export class CanvasManager {
     this.init();
   }
   
+  detectVersion() {
+    if (window.location.pathname.includes('v1')) return 'v1';
+    if (window.location.pathname.includes('new')) return 'new';
+    return 'old';
+  }
+  
   init() {
+    // Para v1, establecer fondo blanco inicial
+    if (this.version === 'v1') {
+      this.ctx.fillStyle = '#FFFFFF';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     this.setupEvents();
@@ -419,6 +435,13 @@ export class CanvasManager {
     const img = new Image();
     img.onload = () => {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      
+      // Para v1, restaurar fondo blanco antes de dibujar
+      if (this.version === 'v1') {
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+      
       this.ctx.globalCompositeOperation = 'source-over';
       this.ctx.globalAlpha = 1;
       this.ctx.drawImage(img, 0, 0);
@@ -429,6 +452,13 @@ export class CanvasManager {
   clear() {
     // Solo limpiar el canvas principal, no las capas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    // Para v1, restaurar fondo blanco
+    if (this.version === 'v1') {
+      this.ctx.fillStyle = '#FFFFFF';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    
     this.strokeCount = 0;
     this.stickers = [];
     
@@ -510,11 +540,40 @@ export class CanvasManager {
   
 
   
-  exportImage() {
+  exportImage(transparent = false) {
     const link = document.createElement('a');
-    link.download = `dibujo-${Date.now()}.png`;
-    link.href = this.canvas.toDataURL();
+    link.download = `dibujo-fenixlab-${Date.now()}.png`;
+    
+    // Para v1, soportar transparencia
+    if (this.version === 'v1') {
+      if (transparent) {
+        link.href = this.canvas.toDataURL('image/png');
+      } else {
+        // Crear canvas temporal con fondo blanco
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = this.canvas.width;
+        tempCanvas.height = this.canvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        tempCtx.fillStyle = '#FFFFFF';
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        tempCtx.drawImage(this.canvas, 0, 0);
+        
+        link.href = tempCanvas.toDataURL('image/png');
+      }
+    } else {
+      // Otras versiones, comportamiento normal
+      link.href = this.canvas.toDataURL();
+    }
+    
     link.click();
+    
+    if (window.guestbookApp?.ui?.showNotification) {
+      const msg = this.version === 'v1' && transparent
+        ? '💾 Descargando PNG transparente'
+        : '💾 Imagen exportada';
+      window.guestbookApp.ui.showNotification(msg, 'success');
+    }
   }
   
   handleKeyboard(e) {

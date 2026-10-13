@@ -1,7 +1,20 @@
 // Gestión de interfaz y modales
 export class UIManager {
   constructor() {
+    // Detectar versión del guestbook
+    this.version = this.detectVersion();
     this.init();
+  }
+  
+  detectVersion() {
+    // Detectar basándose en elementos únicos de cada versión
+    if (document.getElementById('drawCanvas') && window.location.pathname.includes('v1')) {
+      return 'v1';
+    } else if (document.querySelector('.mobile-toolbar')) {
+      return 'new';
+    } else {
+      return 'old';
+    }
   }
   
   init() {

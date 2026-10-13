@@ -5,6 +5,10 @@ import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, updateDoc
 export class FirebaseManager {
   constructor() {
     this.autoModeration = window.autoModeration;
+    
+    // Detectar versión
+    this.version = this.detectVersion();
+    
     this.firebaseConfig = {
       apiKey: "AIzaSyCZk8rs_Vq9ZGgOEiP3_P6zUvZoM1QQOAM",
       authDomain: "fenix-guestbook.firebaseapp.com",
@@ -17,6 +21,12 @@ export class FirebaseManager {
     this.app = initializeApp(this.firebaseConfig);
     this.db = getFirestore(this.app);
     this.testConnection();
+  }
+  
+  detectVersion() {
+    if (window.location.pathname.includes('v1')) return 'v1';
+    if (window.location.pathname.includes('new')) return 'new';
+    return 'old';
   }
   
   async testConnection() {

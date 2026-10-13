@@ -8,8 +8,17 @@ export class GalleryManager {
     this.filteredDrawings = [];
     this.realTimeUpdateInterval = null;
     
+    // Detectar versión
+    this.version = this.detectVersion();
+    
     // Hacer disponible globalmente
     window.galleryManager = this;
+  }
+  
+  detectVersion() {
+    if (window.location.pathname.includes('v1')) return 'v1';
+    if (window.location.pathname.includes('new')) return 'new';
+    return 'old';
   }
 
   async init() {
