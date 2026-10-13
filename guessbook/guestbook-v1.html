@@ -330,6 +330,16 @@
                 <i data-lucide="save" style="width: 1rem; height: 1rem;"></i>
                 Guardar Dibujo
               </button>
+              <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="exportDrawing(false)" title="Descargar con fondo blanco">
+                  <i data-lucide="download" style="width: 0.875rem; height: 0.875rem;"></i>
+                  PNG
+                </button>
+                <button type="button" class="btn btn-outline-info btn-sm" onclick="exportDrawing(true)" title="Descargar transparente">
+                  <i data-lucide="layers" style="width: 0.875rem; height: 0.875rem;"></i>
+                  PNG α
+                </button>
+              </div>
             </div>
           </div>
         </div>

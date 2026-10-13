@@ -79,6 +79,10 @@ class CanvasManager {
   }
 
   init() {
+    // Establecer fondo blanco inicial
+    this.ctx.fillStyle = '#FFFFFF';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     this.setupEvents();
@@ -250,6 +254,9 @@ class CanvasManager {
 
   clear() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // Restaurar fondo blanco
+    this.ctx.fillStyle = '#FFFFFF';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.globalCompositeOperation = 'source-over';
     this.saveState();
   }
@@ -278,6 +285,9 @@ class CanvasManager {
     const img = new Image();
     img.onload = () => {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      // Fondo blanco antes de restaurar
+      this.ctx.fillStyle = '#FFFFFF';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.globalCompositeOperation = 'source-over';
       this.ctx.drawImage(img, 0, 0);
     };
@@ -291,8 +301,33 @@ class CanvasManager {
     return this.canvas.toDataURL() === blank.toDataURL();
   }
 
-  getImageData() {
-    return this.canvas.toDataURL('image/png');
+  getImageData(transparent = false) {
+    if (transparent) {
+      // Retornar con transparencia
+      return this.canvas.toDataURL('image/png');
+    }
+    
+    // Crear canvas temporal con fondo blanco
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = this.canvas.width;
+    tempCanvas.height = this.canvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    // Rellenar con blanco
+    tempCtx.fillStyle = '#FFFFFF';
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    
+    // Dibujar el canvas encima
+    tempCtx.drawImage(this.canvas, 0, 0);
+    
+    return tempCanvas.toDataURL('image/png');
+  }
+
+  exportImage(transparent = false) {
+    const link = document.createElement('a');
+    link.download = `dibujo-fenixlab-${Date.now()}.png`;
+    link.href = this.getImageData(transparent);
+    link.click();
   }
 }
 
@@ -469,7 +504,7 @@ class GuestbookApp {
     const authorName = document.getElementById('authorName').value.trim() || 'Anónimo';
     const comment = document.getElementById('drawingComment').value.trim();
     const category = document.getElementById('categorySelect').value;
-    const imageData = this.canvas.getImageData();
+    const imageData = this.canvas.getImageData(false); // false = con fondo blanco
 
     try {
       const drawingData = {
@@ -500,6 +535,11 @@ class GuestbookApp {
       console.error('Error guardando dibujo:', error);
       this.ui.showNotification('❌ Error al guardar', 'error');
     }
+  }
+
+  exportDrawing(transparent) {
+    this.canvas.exportImage(transparent);
+    this.ui.showNotification(`💾 Descargando ${transparent ? 'PNG transparente' : 'PNG con fondo blanco'}`, 'success');
   }
 
   async likeDrawing(drawingId, button) {
@@ -683,6 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.undoCanvas = () => window.guestbookApp.undoCanvas();
   window.saveDrawing = () => window.guestbookApp.saveDrawing();
   window.loadDrawings = () => window.guestbookApp.loadDrawings();
+  window.exportDrawing = (transparent) => window.guestbookApp.exportDrawing(transparent);
   
   // Inicializar Lucide icons
   lucide.createIcons();
