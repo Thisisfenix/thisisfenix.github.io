@@ -62,9 +62,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   window.galleryManager = galleryManager;
   console.log('[V1] Gallery Manager inicializado');
   
-  // Cargar galería inicial
+  // Cargar galería inicial (solo cargar, sin init completo que busca elementos que no existen en v1)
   try {
-    await galleryManager.loadDrawings();
+    await galleryManager.loadGallery();
     console.log('[V1] Galería cargada');
   } catch (error) {
     console.error('[V1] Error al cargar galería:', error);
