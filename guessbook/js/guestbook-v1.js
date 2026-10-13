@@ -132,14 +132,21 @@ window.saveDrawing = async function() {
     // Mostrar loading
     uiManager.showNotification('Guardando dibujo...', 'info');
     
+    // Preparar datos según las reglas de Firebase
+    const drawingData = {
+      titulo: comment || `Dibujo de ${authorName}`,
+      imagenData: imageData, // Nota: Firebase espera "imagenData" no "imageData"
+      timestamp: Date.now(),
+      autor: authorName,
+      categoria: category,
+      domain: window.location.hostname || 'localhost',
+      likes: 0,
+      comments: [],
+      views: 0
+    };
+    
     // Guardar en Firebase
-    await firebaseManager.saveDrawing({
-      imageData,
-      author: authorName,
-      category,
-      comment,
-      timestamp: new Date()
-    });
+    await firebaseManager.saveDrawing(drawingData);
     
     // Éxito
     uiManager.showNotification('¡Dibujo guardado con éxito!', 'success');
