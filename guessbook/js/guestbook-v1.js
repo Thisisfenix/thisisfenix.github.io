@@ -13,6 +13,16 @@ import { SoundSystem } from './sound-system.js';
 // Instancias globales
 let uiManager, firebaseManager, canvasManager, galleryManager, commentsManager;
 
+// Crear objeto guestbookApp global para compatibilidad con funciones de gallery.js
+window.guestbookApp = {
+  firebase: null,
+  ui: null,
+  canvas: null,
+  gallery: null,
+  comments: null,
+  profiles: null // Para compatibilidad, aunque no lo usamos en v1
+};
+
 // ==================== ESPERAR A QUE LOS MÓDULOS ESTÉN LISTOS ====================
 window.addEventListener('DOMContentLoaded', async () => {
   console.log('[V1] Inicializando Guestbook v1.0...');
@@ -40,17 +50,20 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Inicializar UI Manager
   uiManager = new UIManager();
   window.uiManager = uiManager;
+  window.guestbookApp.ui = uiManager;
   console.log('[V1] UI Manager inicializado');
   
   // Inicializar Canvas Manager
   canvasManager = new CanvasManager();
   window.canvasManager = canvasManager;
+  window.guestbookApp.canvas = canvasManager;
   console.log('[V1] Canvas inicializado');
   
   // Inicializar Firebase Manager
   try {
     firebaseManager = new FirebaseManager();
     window.firebaseManager = firebaseManager;
+    window.guestbookApp.firebase = firebaseManager;
     console.log('[V1] Firebase conectado');
   } catch (error) {
     console.error('[V1] Error al conectar Firebase:', error);
@@ -60,6 +73,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Inicializar Gallery Manager
   galleryManager = new GalleryManager(firebaseManager);
   window.galleryManager = galleryManager;
+  window.guestbookApp.gallery = galleryManager;
   console.log('[V1] Gallery Manager inicializado');
   
   // Cargar galería inicial (solo cargar, sin init completo que busca elementos que no existen en v1)
@@ -73,6 +87,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Inicializar Comments Manager
   commentsManager = new CommentsManager(firebaseManager);
   window.commentsManager = commentsManager;
+  window.guestbookApp.comments = commentsManager;
   console.log('[V1] Comments Manager inicializado');
   
   console.log('[V1] ✅ Guestbook v1.0 listo');
