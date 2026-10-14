@@ -239,6 +239,7 @@ export class UIManager {
                       <small style="color: var(--text-secondary);">${new Date(s.timestamp).toLocaleDateString('es-ES')}</small>
                     </div>
                     <p style="color: var(--text-primary); margin-bottom: 0.5rem;">${this.escapeHtml(s.texto)}</p>
+                    ${s.imagen ? `<div class="mt-2"><img src="${s.imagen}" style="max-width: 100%; max-height: 150px; border-radius: 8px; cursor: pointer;" onclick="this.style.maxHeight=this.style.maxHeight=='150px'?'400px':'150px'" alt="Imagen adjunta"></div>` : ''}
                     <small style="color: var(--text-secondary);">Por: ${this.escapeHtml(s.autor)}</small>
                   </div>
                 </div>
@@ -304,6 +305,12 @@ export class UIManager {
                         style="background: var(--bg-dark); border: 1px solid var(--primary); color: var(--text-primary);"></textarea>
               <small class="form-text" style="color: var(--text-secondary);">Máximo 1000 caracteres</small>
             </div>
+            <div class="mb-3">
+              <label class="form-label" style="color: var(--text-primary);">Imagen (opcional)</label>
+              <input type="file" id="suggestionImage" class="form-control" accept="image/*" 
+                     style="background: var(--bg-dark); border: 1px solid var(--primary); color: var(--text-primary);">
+              <small class="form-text" style="color: var(--text-secondary);">Máximo 800KB - Adjunta una captura o mockup</small>
+            </div>
           </div>
           <div class="modal-footer" style="border-top: 1px solid var(--primary);">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -333,6 +340,7 @@ export class UIManager {
       const author = document.getElementById('suggestionAuthor').value.trim() || 'Anónimo';
       const type = document.getElementById('suggestionType').value;
       const text = document.getElementById('suggestionText').value.trim();
+      const imageFile = document.getElementById('suggestionImage').files[0];
       
       if (!text) {
         alert('Por favor escribe una descripción');
@@ -345,6 +353,19 @@ export class UIManager {
         return;
       }
       
+      let imageData = null;
+      
+      // Procesar imagen si existe
+      if (imageFile) {
+        const maxSize = 800 * 1024; // 800KB
+        if (imageFile.size > maxSize) {
+          alert('La imagen es muy grande. Máximo 800KB');
+          return;
+        }
+        
+        imageData = await this.processImageForSuggestion(imageFile);
+      }
+      
       const suggestionData = {
         autor: author,
         tipo: type,
@@ -353,6 +374,10 @@ export class UIManager {
         status: 'pending',
         domain: window.location.hostname
       };
+      
+      if (imageData) {
+        suggestionData.imagen = imageData;
+      }
       
       await firebase.saveSuggestion(suggestionData);
       
@@ -368,5 +393,14 @@ export class UIManager {
       console.error('Error enviando sugerencia:', error);
       alert('Error al enviar la sugerencia. Intenta de nuevo.');
     }
+  }
+  
+  processImageForSuggestion(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   }
 }
