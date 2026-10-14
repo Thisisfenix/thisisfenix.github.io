@@ -9,9 +9,10 @@ import { CanvasManager } from './canvas.js';
 import { GalleryManagerV2 as GalleryManager } from './gallery-v2.js';
 import { CommentsManager } from './comments.js';
 import { SoundSystem } from './sound-system.js';
+import { AdvancedTools } from './tools.js';
 
 // Instancias globales
-let uiManager, firebaseManager, canvasManager, galleryManager, commentsManager;
+let uiManager, firebaseManager, canvasManager, galleryManager, commentsManager, advancedTools;
 
 // Crear objeto guestbookApp global para compatibilidad con funciones de gallery.js
 window.guestbookApp = {
@@ -20,7 +21,8 @@ window.guestbookApp = {
   canvas: null,
   gallery: null,
   comments: null,
-  profiles: null // Para compatibilidad, aunque no lo usamos en v1
+  profiles: null, // Para compatibilidad, aunque no lo usamos en v1
+  tools: null // Herramientas avanzadas
 };
 
 // ==================== ESPERAR A QUE LOS MÓDULOS ESTÉN LISTOS ====================
@@ -58,6 +60,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   window.canvasManager = canvasManager;
   window.guestbookApp.canvas = canvasManager;
   console.log('[V1] Canvas inicializado');
+  
+  // Inicializar herramientas avanzadas
+  advancedTools = new AdvancedTools(canvasManager);
+  window.advancedTools = advancedTools;
+  window.guestbookApp.tools = advancedTools;
+  console.log('[V1] Herramientas avanzadas inicializadas');
   
   // Inicializar Firebase Manager
   try {
