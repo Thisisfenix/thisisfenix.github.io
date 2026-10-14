@@ -1,6 +1,6 @@
 // Firebase y base de datos
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, updateDoc, doc, getDoc, deleteDoc, where, getDocs, setDoc, limit, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, updateDoc, doc, getDoc, deleteDoc, where, getDocs, setDoc, limit, arrayUnion, connectFirestoreEmulator } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 export class FirebaseManager {
   constructor() {
@@ -19,8 +19,12 @@ export class FirebaseManager {
     };
     
     this.app = initializeApp(this.firebaseConfig);
+    
+    // Configurar Firestore con settings para evitar warnings
     this.db = getFirestore(this.app);
-    this.testConnection();
+    
+    // No testear conexión inmediatamente para evitar el warning de 10s
+    // this.testConnection();
   }
   
   detectVersion() {

@@ -27,6 +27,14 @@
   border-radius: 8px 8px 0 0;
 }
 
+/* NO sobrescribir imágenes con inline styles */
+.drawing-image-container > img:not([style*="height"]) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 .drawing-img {
   width: 100%;
   height: 100%;

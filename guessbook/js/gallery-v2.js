@@ -95,6 +95,41 @@ export class GalleryManager {
     galleryHTML += pageDrawings.map(drawing => this.createDrawingCard(drawing)).join('');
     
     gallery.innerHTML = galleryHTML;
+    console.log('[GalleryV2] HTML insertado, longitud:', galleryHTML.length);
+    console.log('[GalleryV2] Elementos .drawing-card encontrados:', document.querySelectorAll('.drawing-card').length);
+    
+    // Debug: verificar si las imágenes se renderizaron
+    setTimeout(() => {
+      const images = document.querySelectorAll('#gallery img');
+      console.log('[GalleryV2] Total de <img> tags:', images.length);
+      images.forEach((img, i) => {
+        if (i < 3) { // Solo las primeras 3
+          console.log(`  Img ${i}:`, {
+            src: img.src ? img.src.substring(0, 50) + '...' : 'NO SRC',
+            width: img.offsetWidth,
+            height: img.offsetHeight,
+            display: getComputedStyle(img).display,
+            visibility: getComputedStyle(img).visibility,
+            position: getComputedStyle(img).position,
+            parent: img.parentElement.className
+          });
+        }
+      });
+      
+      // Ver el HTML de la primera card
+      const firstCard = document.querySelector('.drawing-image-container');
+      if (firstCard) {
+        console.log('[GalleryV2] HTML de primera card:');
+        console.log(firstCard.innerHTML.substring(0, 500));
+        console.log('[GalleryV2] Container dimensions:', {
+          width: firstCard.offsetWidth,
+          height: firstCard.offsetHeight,
+          display: getComputedStyle(firstCard).display,
+          position: getComputedStyle(firstCard).position
+        });
+      }
+    }, 100);
+    
     this.setupLikeButtons();
   }
 
@@ -119,6 +154,13 @@ export class GalleryManager {
     const title = drawing.data.titulo || drawing.data.title || 'Sin título';
     const category = drawing.data.categoria || drawing.data.category || 'General';
     const timestamp = drawing.data.timestamp || Date.now();
+    
+    // Debug: verificar si hay imageData
+    if (!imageData) {
+      console.warn('⚠️ Drawing sin imageData:', drawing.id, title);
+    } else {
+      console.log('✅ Drawing con imageData:', title, 'Length:', imageData.length);
+    }
 
     // Detectar contenido animado
     const hasBackgroundGif = drawing.data.backgroundGif && drawing.data.backgroundGif !== '';
@@ -129,14 +171,14 @@ export class GalleryManager {
     let imageContent = '';
     if (hasBackgroundGif || hasGifStickers) {
       imageContent = `
-        <div style="position: relative; width: 100%; padding-bottom: 66.67%; background: white; border-radius: 4px; overflow: hidden;">
+        <div style="position: relative; width: 100%; height: 200px; background: white; border-radius: 4px; overflow: hidden;">
           ${hasBackgroundGif ? `<img src="${drawing.data.backgroundGif}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;" alt="Fondo GIF">` : ''}
           <img src="${imageData}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; ${hasBackgroundGif ? 'mix-blend-mode: multiply;' : ''}" alt="Dibujo">
           ${hasGifStickers ? drawing.data.gifStickers.map(sticker => `<img src="${sticker.src}" style="position: absolute; left: ${(sticker.x / 600) * 100}%; top: ${(sticker.y / 400) * 100}%; width: ${(sticker.width / 600) * 100}%; height: ${(sticker.height / 400) * 100}%; z-index: 3;" alt="Sticker">`).join('') : ''}
         </div>
       `;
     } else {
-      imageContent = `<img src="${imageData}" style="width: 100%; height: auto; display: block; border-radius: 4px;" alt="${title}" loading="lazy">`;
+      imageContent = `<img src="${imageData}" class="drawing-img" style="width: 100%; height: 200px; object-fit: contain; background: white; border-radius: 4px; transition: transform 0.3s ease;" loading="lazy" alt="${title}">`;
     }
 
     // Badge animado
