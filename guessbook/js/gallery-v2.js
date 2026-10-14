@@ -129,14 +129,14 @@ export class GalleryManager {
     let imageContent = '';
     if (hasBackgroundGif || hasGifStickers) {
       imageContent = `
-        <div style="position: relative; width: 100%; height: 200px; background: white; border-radius: 4px; overflow: hidden;">
+        <div style="position: relative; width: 100%; padding-bottom: 66.67%; background: white; border-radius: 4px; overflow: hidden;">
           ${hasBackgroundGif ? `<img src="${drawing.data.backgroundGif}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;" alt="Fondo GIF">` : ''}
-          <img src="${imageData}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; ${hasBackgroundGif ? 'mix-blend-mode: multiply; opacity: 0.9;' : ''}" alt="Dibujo">
+          <img src="${imageData}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; ${hasBackgroundGif ? 'mix-blend-mode: multiply;' : ''}" alt="Dibujo">
           ${hasGifStickers ? drawing.data.gifStickers.map(sticker => `<img src="${sticker.src}" style="position: absolute; left: ${(sticker.x / 600) * 100}%; top: ${(sticker.y / 400) * 100}%; width: ${(sticker.width / 600) * 100}%; height: ${(sticker.height / 400) * 100}%; z-index: 3;" alt="Sticker">`).join('') : ''}
         </div>
       `;
     } else {
-      imageContent = `<img src="${imageData}" class="drawing-img" alt="${title}" loading="lazy">`;
+      imageContent = `<img src="${imageData}" style="width: 100%; height: auto; display: block; border-radius: 4px;" alt="${title}" loading="lazy">`;
     }
 
     // Badge animado
