@@ -67,12 +67,34 @@ export class GalleryManager {
 
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    const pageDrawings = this.filteredDrawings.slice(startIndex, endIndex);
+    let pageDrawings = this.filteredDrawings.slice(startIndex, endIndex);
 
-    gallery.innerHTML = pageDrawings
-      .map(drawing => this.createDrawingCard(drawing))
-      .join('');
+    // Obtener top 3 por likes para primera página
+    let topDrawings = [];
+    if (this.currentPage === 1 && this.currentFilter === 'all') {
+      topDrawings = [...this.allDrawings]
+        .filter(d => (d.data.likes || 0) > 0)
+        .sort((a, b) => (b.data.likes || 0) - (a.data.likes || 0))
+        .slice(0, 3);
+      
+      // Remover top 3 de pageDrawings para evitar duplicados
+      const topIds = topDrawings.map(d => d.id);
+      pageDrawings = pageDrawings.filter(d => !topIds.includes(d.id));
+    }
 
+    let galleryHTML = '';
+    
+    // Agregar top 3 al principio si es primera página
+    if (topDrawings.length > 0) {
+      galleryHTML += topDrawings.map((drawing, index) => 
+        this.createDrawingCard(drawing, index + 1)
+      ).join('');
+    }
+    
+    // Agregar resto de dibujos
+    galleryHTML += pageDrawings.map(drawing => this.createDrawingCard(drawing)).join('');
+    
+    gallery.innerHTML = galleryHTML;
     this.setupLikeButtons();
   }
 
@@ -87,7 +109,7 @@ export class GalleryManager {
     `;
   }
 
-  createDrawingCard(drawing) {
+  createDrawingCard(drawing, rank = null) {
     const likes = drawing.data.likes || 0;
     const comments = drawing.data.comments || [];
     const isLiked = localStorage.getItem(`liked_${drawing.id}`) === 'true';
@@ -98,14 +120,46 @@ export class GalleryManager {
     const category = drawing.data.categoria || drawing.data.category || 'General';
     const timestamp = drawing.data.timestamp || Date.now();
 
+    // Detectar contenido animado
+    const hasBackgroundGif = drawing.data.backgroundGif && drawing.data.backgroundGif !== '';
+    const hasGifStickers = drawing.data.gifStickers && Array.isArray(drawing.data.gifStickers) && drawing.data.gifStickers.length > 0;
+    const isAnimated = hasBackgroundGif || drawing.data.isAnimated || hasGifStickers;
+
+    // Crear contenido de imagen
+    let imageContent = '';
+    if (hasBackgroundGif || hasGifStickers) {
+      imageContent = `
+        <div style="position: relative; width: 100%; height: 200px; background: white; border-radius: 4px; overflow: hidden;">
+          ${hasBackgroundGif ? `<img src="${drawing.data.backgroundGif}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;" alt="Fondo GIF">` : ''}
+          <img src="${imageData}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; ${hasBackgroundGif ? 'mix-blend-mode: multiply; opacity: 0.9;' : ''}" alt="Dibujo">
+          ${hasGifStickers ? drawing.data.gifStickers.map(sticker => `<img src="${sticker.src}" style="position: absolute; left: ${(sticker.x / 600) * 100}%; top: ${(sticker.y / 400) * 100}%; width: ${(sticker.width / 600) * 100}%; height: ${(sticker.height / 400) * 100}%; z-index: 3;" alt="Sticker">`).join('') : ''}
+        </div>
+      `;
+    } else {
+      imageContent = `<img src="${imageData}" class="drawing-img" alt="${title}" loading="lazy">`;
+    }
+
+    // Badge animado
+    const animatedBadge = isAnimated ? `
+      <span class="animated-badge">🎬 ${hasGifStickers && hasBackgroundGif ? 'GIF+Stickers' : hasGifStickers ? 'Stickers' : 'GIF'}</span>
+    ` : '';
+
+    // Badge de rank para tops
+    const rankClass = rank ? `top-drawing rank-${rank}` : '';
+    const rankBadge = rank ? `<div class="rank-badge rank-${rank}">${rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉'}</div>` : '';
+
     return `
       <div class="col">
-        <div class="drawing-card" data-id="${drawing.id}">
+        <div class="drawing-card ${rankClass}" data-id="${drawing.id}">
+          ${rankBadge}
           <div class="drawing-image-container" onclick="openDrawingModal('${drawing.id}')">
-            <img src="${imageData}" class="drawing-img" alt="${title}" loading="lazy">
+            ${imageContent}
             <div class="drawing-overlay">
               <span class="category-badge">${category}</span>
-              ${comments.length > 0 ? `<span class="comments-badge">💬 ${comments.length}</span>` : ''}
+              <div>
+                ${comments.length > 0 ? `<span class="comments-badge">💬 ${comments.length}</span>` : ''}
+                ${animatedBadge}
+              </div>
             </div>
           </div>
           
@@ -246,12 +300,32 @@ class DrawingModal {
     const likes = this.drawing.likes || 0;
     const commentsCount = (this.drawing.comments || []).length;
 
+    // Detectar contenido animado
+    const hasBackgroundGif = this.drawing.backgroundGif && this.drawing.backgroundGif !== '';
+    const hasGifStickers = this.drawing.gifStickers && Array.isArray(this.drawing.gifStickers) && this.drawing.gifStickers.length > 0;
+
+    // Crear contenido de imagen
+    let imageHTML = '';
+    if (hasBackgroundGif || hasGifStickers) {
+      const containerStyle = `position: relative; width: 600px; height: 400px; max-width: 100%; max-height: 60vh; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); background: white; margin: 0 auto;`;
+      
+      imageHTML = `
+        <div style="${containerStyle}">
+          ${hasBackgroundGif ? `<img src="${this.drawing.backgroundGif}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;" alt="GIF de fondo">` : ''}
+          <img src="${imageData}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; ${hasBackgroundGif ? 'mix-blend-mode: multiply; opacity: 0.9;' : ''}" alt="Dibujo">
+          ${hasGifStickers ? this.drawing.gifStickers.map((sticker, idx) => `<img src="${sticker.src}" style="position: absolute; left: ${(sticker.x / 600) * 100}%; top: ${(sticker.y / 400) * 100}%; width: ${(sticker.width / 600) * 100}%; height: ${(sticker.height / 400) * 100}%; z-index: 3;" alt="Sticker ${idx}">`).join('') : ''}
+        </div>
+      `;
+    } else {
+      imageHTML = `<img src="${imageData}" class="modal-image" alt="${title}">`;
+    }
+
     return `
       <div class="modal-overlay">
         <div class="modal-container ${isMobile ? 'mobile' : ''}">
           <div class="modal-image-section">
             <button class="modal-close" onclick="this.closest('.drawing-modal').remove()">✖</button>
-            <img src="${imageData}" class="modal-image" alt="${title}">
+            ${imageHTML}
             <div class="modal-actions">
               <button class="btn-secondary" onclick="this.closest('.drawing-modal').remove()">
                 Cerrar
