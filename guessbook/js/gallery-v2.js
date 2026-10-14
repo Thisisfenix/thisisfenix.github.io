@@ -426,5 +426,5 @@ window.submitComment = async function(drawingId) {
 };
 
 // Exponer para uso externo
-window.GalleryManagerV2 = GalleryManager;
-window.DrawingModal = DrawingModal;
+export { GalleryManager as GalleryManagerV2 };
+export { DrawingModal };
