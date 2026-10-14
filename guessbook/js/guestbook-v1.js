@@ -10,9 +10,11 @@ import { GalleryManagerV2 as GalleryManager } from './gallery-v2.js';
 import { CommentsManager } from './comments.js';
 import { SoundSystem } from './sound-system.js';
 import { AdvancedTools } from './tools.js';
+import { ProfileManagerV2 } from './profiles-v2.js';
+import { MediaPickerManager } from './media-picker.js';
 
 // Instancias globales
-let uiManager, firebaseManager, canvasManager, galleryManager, commentsManager, advancedTools;
+let uiManager, firebaseManager, canvasManager, galleryManager, commentsManager, advancedTools, profileManager;
 
 // Crear objeto guestbookApp global para compatibilidad con funciones de gallery.js
 window.guestbookApp = {
@@ -21,8 +23,82 @@ window.guestbookApp = {
   canvas: null,
   gallery: null,
   comments: null,
-  profiles: null, // Para compatibilidad, aunque no lo usamos en v1
+  profiles: null,
   tools: null // Herramientas avanzadas
+};
+
+// ==================== MODO CANVAS: SIMPLE VS EXPERTO ====================
+let currentCanvasMode = 'simple'; // Por defecto modo simple
+
+window.switchCanvasMode = function(mode) {
+  currentCanvasMode = mode;
+  
+  // Actualizar UI de los botones
+  document.getElementById('modeSimple')?.classList.toggle('active', mode === 'simple');
+  document.getElementById('modeExpert')?.classList.toggle('active', mode === 'expert');
+  
+  // Guardar preferencia
+  localStorage.setItem('canvasMode', mode);
+  
+  // Aplicar cambios visuales
+  if (mode === 'simple') {
+    // Ocultar herramientas avanzadas
+    document.querySelectorAll('.expert-only').forEach(el => {
+      el.style.display = 'none';
+    });
+    
+    // Notificar
+    if (window.guestbookApp?.ui?.showNotification) {
+      window.guestbookApp.ui.showNotification('✨ Modo Simple activado - Herramientas básicas', 'success');
+    }
+  } else {
+    // Mostrar todas las herramientas
+    document.querySelectorAll('.expert-only').forEach(el => {
+      el.style.display = '';
+    });
+    
+    // Notificar
+    if (window.guestbookApp?.ui?.showNotification) {
+      window.guestbookApp.ui.showNotification('🚀 Modo Experto activado - Todas las herramientas', 'success');
+    }
+  }
+  
+  // Reinicializar iconos
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+};
+
+// ==================== FUNCIONES GLOBALES DE HERRAMIENTAS ====================
+window.selectTool = function(tool) {
+  if (!window.canvasManager) return;
+  
+  // Actualizar UI
+  document.querySelectorAll('.btn-tool').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`tool-${tool}`)?.classList.add('active');
+  
+  // Cambiar herramienta en el módulo de canvas
+  window.canvasManager.setTool(tool);
+};
+
+window.undoCanvas = function() {
+  if (window.canvasManager) {
+    window.canvasManager.undo();
+  }
+};
+
+window.clearCanvas = function() {
+  if (confirm('¿Seguro que quieres borrar todo el dibujo?')) {
+    if (window.canvasManager) {
+      window.canvasManager.clear();
+    }
+  }
+};
+
+window.exportDrawing = function(transparent = false) {
+  if (window.canvasManager) {
+    window.canvasManager.exportImage(transparent);
+  }
 };
 
 // ==================== ESPERAR A QUE LOS MÓDULOS ESTÉN LISTOS ====================
@@ -98,41 +174,22 @@ window.addEventListener('DOMContentLoaded', async () => {
   window.guestbookApp.comments = commentsManager;
   console.log('[V1] Comments Manager inicializado');
   
+  // Inicializar Profile Manager V2 (Sidebar)
+  profileManager = new ProfileManagerV2(firebaseManager);
+  window.profileManager = profileManager;
+  window.guestbookApp.profiles = profileManager;
+  console.log('[V1] Profile Manager V2 inicializado');
+  
+  // Inicializar Media Picker Manager
+  const mediaPickerManager = new MediaPickerManager(firebaseManager, profileManager);
+  window.mediaPickerManager = mediaPickerManager;
+  window.guestbookApp.mediaPicker = mediaPickerManager;
+  console.log('[V1] Media Picker inicializado');
+  
   console.log('[V1] ✅ Guestbook v1.0 listo');
 });
 
-// ==================== FUNCIONES GLOBALES DE HERRAMIENTAS ====================
-window.selectTool = function(tool) {
-  if (!canvasManager) return;
-  
-  // Actualizar UI
-  document.querySelectorAll('.btn-tool').forEach(btn => btn.classList.remove('active'));
-  document.getElementById(`tool-${tool}`)?.classList.add('active');
-  
-  // Cambiar herramienta en el módulo de canvas
-  canvasManager.setTool(tool);
-};
-
-window.undoCanvas = function() {
-  if (canvasManager) {
-    canvasManager.undo();
-  }
-};
-
-window.clearCanvas = function() {
-  if (confirm('¿Seguro que quieres borrar todo el dibujo?')) {
-    if (canvasManager) {
-      canvasManager.clear();
-    }
-  }
-};
-
-window.exportDrawing = function(transparent = false) {
-  if (canvasManager) {
-    canvasManager.exportImage(transparent);
-  }
-};
-
+// ==================== FUNCIÓN PARA GUARDAR DIBUJO ====================
 window.saveDrawing = async function() {
   if (!canvasManager || !firebaseManager || !uiManager) {
     alert('Los módulos no están listos. Intenta de nuevo.');
@@ -245,4 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  
+  // Cargar modo guardado al iniciar
+  const savedMode = localStorage.getItem('canvasMode') || 'simple';
+  setTimeout(() => {
+    switchCanvasMode(savedMode);
+  }, 500);
 });

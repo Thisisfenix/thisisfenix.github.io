@@ -28,6 +28,8 @@ export class CanvasManager {
     this.layerMode = false; // Modo simple por defecto
     this.initializeLayers();
     this.originalImageData = null;
+    this.activeTextBox = null; // Para la herramienta de texto estilo Paint
+    this.activeImage = null; // Para la herramienta de imagen
     
     this.init();
   }
@@ -49,15 +51,19 @@ export class CanvasManager {
     this.ctx.lineJoin = 'round';
     this.setupEvents();
     this.saveState();
+    this.initImageSystem();
   }
   
   initializeLayers() {
     // Crear capa base
     const baseLayer = {
       id: 0,
+      name: 'Fondo',
       canvas: document.createElement('canvas'),
       opacity: 1,
-      visible: true
+      visible: true,
+      locked: false,
+      blendMode: 'normal'
     };
     baseLayer.canvas.width = this.canvas.width;
     baseLayer.canvas.height = this.canvas.height;
@@ -113,28 +119,50 @@ export class CanvasManager {
   }
   
   startDrawing(e) {
+    // Verificar si la capa está bloqueada
+    if (this.layerMode && this.layers[this.currentLayer]?.locked) {
+      if (window.guestbookApp?.ui?.showNotification) {
+        window.guestbookApp.ui.showNotification(
+          `🔒 ${this.layers[this.currentLayer].name} está bloqueada`,
+          'warning'
+        );
+      }
+      return;
+    }
+    
+    // En modo capas, crear un canvas temporal para el trazo
+    if (this.layerMode) {
+      this.tempLayerCanvas = document.createElement('canvas');
+      this.tempLayerCanvas.width = this.canvas.width;
+      this.tempLayerCanvas.height = this.canvas.height;
+      this.tempLayerCtx = this.tempLayerCanvas.getContext('2d');
+    }
+    
     this.isDrawing = true;
     const coords = this.getCoordinates(e);
     
     if (this.currentTool === 'brush') {
       this.ctx.beginPath();
       this.ctx.moveTo(coords.x, coords.y);
+      
+      // También inicializar en el canvas temporal
+      if (this.layerMode && this.tempLayerCtx) {
+        this.tempLayerCtx.beginPath();
+        this.tempLayerCtx.moveTo(coords.x, coords.y);
+      }
     } else if (this.currentTool === 'eraser') {
       this.ctx.beginPath();
       this.ctx.moveTo(coords.x, coords.y);
-    } else if (this.currentTool === 'text') {
-      const text = prompt('Escribe tu texto:');
-      if (text) {
-        this.ctx.font = `${this.currentSize * 3}px Arial`;
-        this.ctx.fillStyle = this.currentColor;
-        if (this.currentEffect === 'neon') {
-          this.ctx.shadowColor = this.currentColor;
-          this.ctx.shadowBlur = 15;
-        }
-        this.ctx.fillText(text, coords.x, coords.y);
-        this.ctx.shadowBlur = 0;
-        this.saveState();
+      
+      // También inicializar en el canvas temporal
+      if (this.layerMode && this.tempLayerCtx) {
+        this.tempLayerCtx.beginPath();
+        this.tempLayerCtx.moveTo(coords.x, coords.y);
       }
+    } else if (this.currentTool === 'text') {
+      this.createTextBox(coords.x, coords.y);
+      this.isDrawing = false;
+      return;
     } else if (['circle', 'line'].includes(this.currentTool)) {
       this.isShapeDrawing = true;
       this.shapeStartX = coords.x;
@@ -148,6 +176,25 @@ export class CanvasManager {
     if (!this.isDrawing) return;
     
     const coords = this.getCoordinates(e);
+    
+    // En modo capas, dibujar en el canvas temporal además del principal
+    if (this.layerMode && this.tempLayerCtx) {
+      // Configurar el canvas temporal
+      this.setupBrush(this.tempLayerCtx);
+      
+      // Dibujar en el canvas temporal
+      if (this.currentTool === 'brush') {
+        this.tempLayerCtx.lineTo(coords.x, coords.y);
+        this.tempLayerCtx.stroke();
+      } else if (this.currentTool === 'eraser') {
+        this.tempLayerCtx.lineTo(coords.x, coords.y);
+        this.tempLayerCtx.stroke();
+      } else if (this.currentTool === 'spray') {
+        this.drawSprayOn(coords.x, coords.y, this.tempLayerCtx);
+      }
+    }
+    
+    // Configurar el canvas principal
     this.setupBrush();
     
     if (this.currentTool === 'brush') {
@@ -166,14 +213,24 @@ export class CanvasManager {
       this.ctx.stroke();
     } else if (this.currentTool === 'spray') {
       this.drawSpray(coords.x, coords.y);
+    } else if (this.currentTool === 'smudge') {
+      this.drawSmudge(coords.x, coords.y);
+    } else if (this.currentTool === 'blur') {
+      this.drawBlur(coords.x, coords.y);
+    } else if (this.currentTool === 'dodge') {
+      this.drawDodge(coords.x, coords.y);
+    } else if (this.currentTool === 'burn') {
+      this.drawBurn(coords.x, coords.y);
+    } else if (this.currentTool === 'sharpen') {
+      this.drawSharpen(coords.x, coords.y);
+    } else if (this.currentTool === 'sponge') {
+      this.drawSponge(coords.x, coords.y, true);
     } else if (this.currentTool === 'bucket') {
       this.bucketFill(coords.x, coords.y);
     } else if (this.currentTool === 'eyedropper') {
       this.pickColor(coords.x, coords.y);
     }
   }
-  
-
   
   renderAllLayersImmediate() {
     // Usar el método seguro que no modifica contenido
@@ -256,8 +313,16 @@ export class CanvasManager {
       this.ctx.globalAlpha = 1;
       
       // En modo capas, guardar el trazo en la capa actual
-      if (this.layerMode) {
-        this.saveDrawingToCurrentLayer();
+      if (this.layerMode && this.tempLayerCanvas) {
+        // Copiar el contenido del canvas temporal a la capa actual
+        const layerCtx = this.layers[this.currentLayer].canvas.getContext('2d');
+        layerCtx.drawImage(this.tempLayerCanvas, 0, 0);
+        
+        // Limpiar el canvas temporal
+        this.tempLayerCanvas = null;
+        
+        // Re-renderizar todas las capas
+        this.renderLayers();
       }
       
       this.saveState();
@@ -348,6 +413,245 @@ export class CanvasManager {
     this.setTool('brush');
   }
   
+  // Herramienta de Texto estilo Paint
+  createTextBox(x, y) {
+    // Si ya hay una caja de texto, finalizarla primero
+    if (this.activeTextBox) {
+      this.finalizeTextBox();
+    }
+    
+    // Crear contenedor principal
+    const container = document.createElement('div');
+    container.className = 'text-box-container';
+    container.style.cssText = `
+      position: absolute;
+      left: ${x}px;
+      top: ${y}px;
+      z-index: 10000;
+    `;
+    
+    // Barra de herramientas para el texto
+    const toolbar = document.createElement('div');
+    toolbar.className = 'text-toolbar';
+    toolbar.style.cssText = `
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--bg-dark);
+      border: 1px solid var(--primary);
+      border-radius: 4px 4px 0 0;
+      align-items: center;
+    `;
+    
+    // Botón reducir tamaño
+    const btnSmallerFont = document.createElement('button');
+    btnSmallerFont.innerHTML = '🔽';
+    btnSmallerFont.title = 'Reducir texto';
+    btnSmallerFont.style.cssText = 'background: var(--primary); color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 0.8em;';
+    
+    // Indicador de tamaño
+    const fontSizeDisplay = document.createElement('span');
+    fontSizeDisplay.style.cssText = 'color: var(--text); font-size: 0.8em; min-width: 30px; text-align: center;';
+    fontSizeDisplay.textContent = `${this.currentSize * 3}px`;
+    
+    // Botón aumentar tamaño
+    const btnBiggerFont = document.createElement('button');
+    btnBiggerFont.innerHTML = '🔼';
+    btnBiggerFont.title = 'Aumentar texto';
+    btnBiggerFont.style.cssText = 'background: var(--primary); color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 0.8em;';
+    
+    // Botón negrita
+    const btnBold = document.createElement('button');
+    btnBold.innerHTML = '<b>B</b>';
+    btnBold.title = 'Negrita';
+    btnBold.style.cssText = 'background: var(--bg-light); color: var(--text); border: 1px solid var(--primary); padding: 2px 8px; border-radius: 3px; cursor: pointer; font-weight: bold;';
+    
+    // Botón cursiva
+    const btnItalic = document.createElement('button');
+    btnItalic.innerHTML = '<i>I</i>';
+    btnItalic.title = 'Cursiva';
+    btnItalic.style.cssText = 'background: var(--bg-light); color: var(--text); border: 1px solid var(--primary); padding: 2px 8px; border-radius: 3px; cursor: pointer; font-style: italic;';
+    
+    // Botón finalizar
+    const btnDone = document.createElement('button');
+    btnDone.innerHTML = '✓';
+    btnDone.title = 'Finalizar (Escape)';
+    btnDone.style.cssText = 'background: #28a745; color: white; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer; margin-left: auto;';
+    
+    toolbar.appendChild(btnSmallerFont);
+    toolbar.appendChild(fontSizeDisplay);
+    toolbar.appendChild(btnBiggerFont);
+    toolbar.appendChild(btnBold);
+    toolbar.appendChild(btnItalic);
+    toolbar.appendChild(btnDone);
+    
+    // Crear caja de texto
+    const textBox = document.createElement('div');
+    textBox.contentEditable = true;
+    textBox.className = 'paint-text-box';
+    textBox.style.cssText = `
+      min-width: 150px;
+      min-height: ${this.currentSize * 3 * 1.2}px;
+      padding: 8px;
+      margin: 0;
+      border: 2px solid ${this.currentColor};
+      border-top: none;
+      background: rgba(255, 255, 255, 0.95);
+      color: ${this.currentColor};
+      font-family: Arial, sans-serif;
+      font-size: ${this.currentSize * 3}px;
+      line-height: 1.2;
+      outline: none;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      cursor: text;
+      resize: both;
+      overflow: auto;
+      box-sizing: border-box;
+    `;
+    
+    container.appendChild(toolbar);
+    container.appendChild(textBox);
+    
+    // Agregar al contenedor del canvas
+    const canvasSection = this.canvas.parentElement;
+    canvasSection.style.position = 'relative';
+    canvasSection.appendChild(container);
+    textBox.focus();
+    
+    // Variables para el texto
+    let currentFontSize = this.currentSize * 3;
+    let isBold = false;
+    let isItalic = false;
+    
+    // Guardar referencia
+    this.activeTextBox = {
+      element: textBox,
+      container: container,
+      x: x,
+      y: y,
+      fontSize: currentFontSize,
+      bold: isBold,
+      italic: isItalic
+    };
+    
+    // Eventos de los botones
+    btnSmallerFont.onclick = (e) => {
+      e.preventDefault();
+      currentFontSize = Math.max(12, currentFontSize - 4);
+      textBox.style.fontSize = currentFontSize + 'px';
+      fontSizeDisplay.textContent = currentFontSize + 'px';
+      this.activeTextBox.fontSize = currentFontSize;
+      textBox.focus();
+    };
+    
+    btnBiggerFont.onclick = (e) => {
+      e.preventDefault();
+      currentFontSize = Math.min(120, currentFontSize + 4);
+      textBox.style.fontSize = currentFontSize + 'px';
+      fontSizeDisplay.textContent = currentFontSize + 'px';
+      this.activeTextBox.fontSize = currentFontSize;
+      textBox.focus();
+    };
+    
+    btnBold.onclick = (e) => {
+      e.preventDefault();
+      isBold = !isBold;
+      textBox.style.fontWeight = isBold ? 'bold' : 'normal';
+      btnBold.style.background = isBold ? 'var(--primary)' : 'var(--bg-light)';
+      btnBold.style.color = isBold ? 'white' : 'var(--text)';
+      this.activeTextBox.bold = isBold;
+      textBox.focus();
+    };
+    
+    btnItalic.onclick = (e) => {
+      e.preventDefault();
+      isItalic = !isItalic;
+      textBox.style.fontStyle = isItalic ? 'italic' : 'normal';
+      btnItalic.style.background = isItalic ? 'var(--primary)' : 'var(--bg-light)';
+      btnItalic.style.color = isItalic ? 'white' : 'var(--text)';
+      this.activeTextBox.italic = isItalic;
+      textBox.focus();
+    };
+    
+    btnDone.onclick = (e) => {
+      e.preventDefault();
+      this.finalizeTextBox();
+    };
+    
+    // Evento para detectar Escape
+    textBox.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.finalizeTextBox();
+      }
+    });
+    
+    // Click en el canvas finaliza el texto
+    const canvasClickHandler = (e) => {
+      const rect = container.getBoundingClientRect();
+      const isClickInside = e.clientX >= rect.left && e.clientX <= rect.right &&
+                           e.clientY >= rect.top && e.clientY <= rect.bottom;
+      
+      if (e.target === this.canvas && !isClickInside) {
+        this.finalizeTextBox();
+        this.canvas.removeEventListener('mousedown', canvasClickHandler);
+      }
+    };
+    
+    setTimeout(() => {
+      this.canvas.addEventListener('mousedown', canvasClickHandler);
+    }, 100);
+  }
+  
+  finalizeTextBox() {
+    if (!this.activeTextBox) return;
+    
+    const text = this.activeTextBox.element.innerText;
+    
+    if (text && text.trim()) {
+      const ctx = this.layerMode && this.layers[this.currentLayer] 
+        ? this.layers[this.currentLayer].canvas.getContext('2d')
+        : this.ctx;
+      
+      ctx.save();
+      
+      // Aplicar estilo de fuente
+      let fontStyle = '';
+      if (this.activeTextBox.italic) fontStyle += 'italic ';
+      if (this.activeTextBox.bold) fontStyle += 'bold ';
+      
+      ctx.font = `${fontStyle}${this.activeTextBox.fontSize}px Arial`;
+      ctx.fillStyle = this.currentColor;
+      ctx.textBaseline = 'top';
+      
+      if (this.currentEffect === 'neon') {
+        ctx.shadowColor = this.currentColor;
+        ctx.shadowBlur = 15;
+      }
+      
+      const lines = text.split('\n');
+      const lineHeight = this.activeTextBox.fontSize * 1.2;
+      
+      lines.forEach((line, index) => {
+        ctx.fillText(line, this.activeTextBox.x, this.activeTextBox.y + (index * lineHeight));
+      });
+      
+      ctx.restore();
+      
+      if (this.layerMode) {
+        this.renderLayers();
+      }
+      
+      this.saveState();
+    }
+    
+    if (this.activeTextBox && this.activeTextBox.container) {
+      this.activeTextBox.container.remove();
+    }
+    this.activeTextBox = null;
+  }
+  
   hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -361,6 +665,11 @@ export class CanvasManager {
     this.currentTool = tool;
     this.currentEffect = null;
     this.canvas.style.cursor = 'crosshair';
+    
+    // Si se selecciona la herramienta de imagen, abrir selector
+    if (tool === 'image') {
+      this.selectImageTool();
+    }
   }
   
   setEffect(effect) {
@@ -785,10 +1094,14 @@ export class CanvasManager {
   
   updateModeUI() {
     const layerControls = document.getElementById('layerControls');
+    const layerControlsNew = document.getElementById('layerControlsNew');
     const modeToggle = document.getElementById('layerModeToggle');
     
-    if (layerControls) {
-      layerControls.style.display = this.layerMode ? 'block' : 'none';
+    // Priorizar el nuevo UI si existe, sino usar el viejo
+    const activeLayerUI = layerControlsNew || layerControls;
+    
+    if (activeLayerUI) {
+      activeLayerUI.style.display = this.layerMode ? 'block' : 'none';
     }
     
     if (modeToggle) {
@@ -807,9 +1120,12 @@ export class CanvasManager {
     
     const newLayer = {
       id: this.layers.length,
+      name: `Capa ${this.layers.length + 1}`,
       canvas: document.createElement('canvas'),
       opacity: 1,
-      visible: true
+      visible: true,
+      locked: false,
+      blendMode: 'normal'
     };
     
     newLayer.canvas.width = this.canvas.width;
@@ -836,7 +1152,7 @@ export class CanvasManager {
     this.updateLayersList();
     
     if (window.guestbookApp?.ui?.showNotification) {
-      window.guestbookApp.ui.showNotification(`✨ Capa ${this.layers.length} creada`, 'success');
+      window.guestbookApp.ui.showNotification(`✨ ${newLayer.name} creada`, 'success');
     }
   }
   
@@ -861,90 +1177,423 @@ export class CanvasManager {
   }
   
   updateLayersList() {
-    const layersList = document.getElementById('layersList');
+    // Soportar tanto el diseño viejo como el nuevo
+    const layersList = document.getElementById('layersList') || document.getElementById('layersListNew');
     if (!layersList) return;
     
     layersList.innerHTML = '';
-    this.layers.forEach((layer, index) => {
-      const layerItem = document.createElement('div');
-      layerItem.className = `layer-item ${index === this.currentLayer ? 'active' : ''}`;
-      layerItem.dataset.layer = index;
-      layerItem.style.cssText = `
-        display: flex; align-items: center; gap: 8px; padding: 8px;
-        background: ${index === this.currentLayer ? 'var(--primary)' : 'var(--bg-dark)'};
-        border: 1px solid var(--primary); border-radius: 6px; margin-bottom: 4px;
-        cursor: pointer; transition: all 0.2s ease;
-      `;
+    
+    // Determinar si es el diseño compacto
+    const isCompact = layersList.id === 'layersListNew';
+    
+    // Renderizar capas en orden inverso (última arriba)
+    [...this.layers].reverse().forEach((layer, reverseIndex) => {
+      const index = this.layers.length - 1 - reverseIndex;
+      const isActive = index === this.currentLayer;
       
-      // Crear botón de visibilidad
-      const visibilityBtn = document.createElement('button');
-      visibilityBtn.className = 'visibility-btn';
-      visibilityBtn.dataset.layer = index;
-      visibilityBtn.style.cssText = `
-        background: ${layer.visible ? '#28a745' : '#dc3545'};
-        color: white; border: none; border-radius: 4px;
-        width: 24px; height: 24px; font-size: 12px;
-        cursor: pointer; transition: all 0.2s ease;
-      `;
-      visibilityBtn.textContent = layer.visible ? '👁️' : '🙈';
-      visibilityBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.toggleLayerVisibility(index);
-      });
-      
-      // Crear span del nombre
-      const nameSpan = document.createElement('span');
-      nameSpan.style.cssText = 'flex: 1; color: var(--text-primary); font-size: 0.8em;';
-      nameSpan.textContent = `🎨 Capa ${index + 1}`;
-      
-      // Crear slider de opacidad
-      const opacitySlider = document.createElement('input');
-      opacitySlider.type = 'range';
-      opacitySlider.className = 'opacity-slider';
-      opacitySlider.dataset.layer = index;
-      opacitySlider.min = '0';
-      opacitySlider.max = '100';
-      opacitySlider.value = layer.opacity * 100;
-      opacitySlider.style.cssText = 'width: 60px; accent-color: var(--primary);';
-      opacitySlider.title = `Opacidad: ${Math.round(layer.opacity * 100)}%`;
-      opacitySlider.addEventListener('input', (e) => {
-        const opacity = parseFloat(e.target.value) / 100;
-        this.setLayerOpacity(index, opacity);
-        percentSpan.textContent = `${Math.round(opacity * 100)}%`;
-        opacitySlider.title = `Opacidad: ${Math.round(opacity * 100)}%`;
-      });
-      
-      // Crear span del porcentaje
-      const percentSpan = document.createElement('span');
-      percentSpan.style.cssText = 'color: var(--text-secondary); font-size: 0.7em; min-width: 30px;';
-      percentSpan.textContent = `${Math.round(layer.opacity * 100)}%`;
-      
-      // Agregar elementos al item
-      layerItem.appendChild(visibilityBtn);
-      layerItem.appendChild(nameSpan);
-      layerItem.appendChild(opacitySlider);
-      layerItem.appendChild(percentSpan);
-      
-      // Event listener para seleccionar capa
-      layerItem.addEventListener('click', (e) => {
-        if (e.target === layerItem || e.target === nameSpan) {
-          this.switchToLayer(index);
-        }
-      });
-      
-      layersList.appendChild(layerItem);
+      if (isCompact) {
+        this.renderCompactLayer(layersList, layer, index, isActive);
+      } else {
+        this.renderFullLayer(layersList, layer, index, isActive);
+      }
     });
+  }
+  
+  renderCompactLayer(container, layer, index, isActive) {
+    const layerItem = document.createElement('div');
+    layerItem.className = `layer-item-compact ${isActive ? 'active' : ''}`;
+    layerItem.dataset.layer = index;
+    layerItem.draggable = true;
+    layerItem.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 6px;
+      margin-bottom: 3px;
+      background: ${isActive ? 'var(--primary)' : 'rgba(var(--primary-rgb), 0.1)'};
+      border: 1px solid ${isActive ? 'var(--primary)' : 'rgba(var(--primary-rgb), 0.3)'};
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.8em;
+    `;
+    
+    // Botón de visibilidad
+    const visBtn = document.createElement('button');
+    visBtn.textContent = layer.visible ? '👁️' : '🙈';
+    visBtn.style.cssText = 'background: none; border: none; cursor: pointer; font-size: 0.9em; padding: 2px;';
+    visBtn.onclick = (e) => {
+      e.stopPropagation();
+      this.toggleLayerVisibility(index);
+    };
+    
+    // Nombre
+    const name = document.createElement('span');
+    name.textContent = layer.name;
+    name.style.cssText = `flex: 1; color: ${isActive ? 'white' : 'var(--text)'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;`;
+    
+    // Slider de opacidad mini
+    const opacitySlider = document.createElement('input');
+    opacitySlider.type = 'range';
+    opacitySlider.min = '0';
+    opacitySlider.max = '100';
+    opacitySlider.value = layer.opacity * 100;
+    opacitySlider.style.cssText = 'width: 50px; height: 3px; accent-color: var(--primary);';
+    opacitySlider.onclick = (e) => e.stopPropagation();
+    opacitySlider.onmousedown = (e) => e.stopPropagation();
+    opacitySlider.oninput = (e) => {
+      e.stopPropagation();
+      this.setLayerOpacity(index, parseFloat(e.target.value) / 100);
+    };
+    
+    layerItem.appendChild(visBtn);
+    layerItem.appendChild(name);
+    layerItem.appendChild(opacitySlider);
+    
+    // Evento de selección
+    layerItem.onclick = () => {
+      if (!layer.locked) {
+        this.switchToLayer(index);
+      }
+    };
+    
+    // Drag and drop
+    layerItem.addEventListener('dragstart', (e) => {
+      if (!layer.locked) {
+        this.switchToLayer(index);
+      }
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', index);
+      layerItem.style.opacity = '0.5';
+    });
+    
+    layerItem.addEventListener('dragend', () => {
+      layerItem.style.opacity = '1';
+    });
+    
+    layerItem.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      layerItem.style.borderColor = 'var(--primary)';
+    });
+    
+    layerItem.addEventListener('dragleave', () => {
+      layerItem.style.borderColor = isActive ? 'var(--primary)' : 'rgba(var(--primary-rgb), 0.3)';
+    });
+    
+    layerItem.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+      const toIndex = index;
+      this.reorderLayers(fromIndex, toIndex);
+      layerItem.style.borderColor = isActive ? 'var(--primary)' : 'rgba(var(--primary-rgb), 0.3)';
+    });
+    
+    container.appendChild(layerItem);
+  }
+  
+  renderFullLayer(container, layer, index, isActive) {
+    const layerItem = document.createElement('div');
+    layerItem.className = `layer-item ${isActive ? 'active' : ''} ${layer.locked ? 'locked' : ''}`;
+    layerItem.dataset.layer = index;
+    layerItem.draggable = true;
+    layerItem.style.cssText = `
+      display: flex; flex-direction: column; gap: 6px; padding: 10px;
+      background: ${isActive ? 'var(--primary)' : 'var(--bg-dark)'};
+      border: 1px solid ${isActive ? 'var(--primary)' : 'rgba(var(--primary-rgb), 0.3)'};
+      border-radius: 8px; margin-bottom: 6px;
+      cursor: ${layer.locked ? 'not-allowed' : 'pointer'};
+      transition: all 0.2s ease;
+      ${layer.locked ? 'opacity: 0.7;' : ''}
+    `;
+    
+    // Fila superior: miniatura + nombre + controles
+    const topRow = document.createElement('div');
+    topRow.style.cssText = 'display: flex; align-items: center; gap: 8px;';
+    
+    // Miniatura
+    const thumbnail = document.createElement('canvas');
+    thumbnail.width = 40;
+    thumbnail.height = 30;
+    thumbnail.style.cssText = `
+      border: 1px solid rgba(var(--primary-rgb), 0.3);
+      border-radius: 4px;
+      background: white;
+      image-rendering: pixelated;
+    `;
+    const thumbCtx = thumbnail.getContext('2d');
+    if (layer.canvas) {
+      thumbCtx.drawImage(layer.canvas, 0, 0, 40, 30);
+    }
+    
+    // Campo de nombre editable
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = layer.name;
+    nameInput.className = 'layer-name-input';
+    nameInput.style.cssText = `
+      flex: 1; background: transparent; border: none;
+      color: var(--text-primary); font-size: 0.85em;
+      padding: 4px 6px; border-radius: 4px;
+      transition: background 0.2s ease;
+    `;
+    nameInput.addEventListener('click', (e) => e.stopPropagation());
+    nameInput.addEventListener('mousedown', (e) => e.stopPropagation());
+    nameInput.addEventListener('dragstart', (e) => e.preventDefault());
+    nameInput.addEventListener('focus', function() {
+      this.style.background = 'rgba(var(--primary-rgb), 0.2)';
+    });
+    nameInput.addEventListener('blur', function() {
+      this.style.background = 'transparent';
+      layer.name = this.value || `Capa ${index + 1}`;
+    });
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        nameInput.blur();
+      }
+    });
+    
+    // Botones de control
+    const controlsDiv = document.createElement('div');
+    controlsDiv.style.cssText = 'display: flex; gap: 4px;';
+    
+    // Botón de visibilidad
+    const visibilityBtn = this.createLayerButton(
+      layer.visible ? '👁️' : '🙈',
+      layer.visible ? '#28a745' : '#dc3545',
+      'Mostrar/Ocultar'
+    );
+    visibilityBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleLayerVisibility(index);
+    });
+    
+    // Botón de bloqueo
+    const lockBtn = this.createLayerButton(
+      layer.locked ? '🔒' : '🔓',
+      layer.locked ? '#ffc107' : '#6c757d',
+      'Bloquear/Desbloquear'
+    );
+    lockBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleLayerLock(index);
+    });
+    
+    controlsDiv.appendChild(visibilityBtn);
+    controlsDiv.appendChild(lockBtn);
+    
+    topRow.appendChild(thumbnail);
+    topRow.appendChild(nameInput);
+    topRow.appendChild(controlsDiv);
+    
+    // Fila inferior: opacidad + blend mode
+    const bottomRow = document.createElement('div');
+    bottomRow.style.cssText = 'display: flex; align-items: center; gap: 8px; font-size: 0.75em;';
+    
+    // Opacidad
+    const opacityDiv = document.createElement('div');
+    opacityDiv.style.cssText = 'display: flex; align-items: center; gap: 4px; flex: 1;';
+    
+    const opacityLabel = document.createElement('span');
+    opacityLabel.textContent = '💧';
+    opacityLabel.style.cssText = 'font-size: 0.9em;';
+    
+    const opacitySlider = document.createElement('input');
+    opacitySlider.type = 'range';
+    opacitySlider.min = '0';
+    opacitySlider.max = '100';
+    opacitySlider.value = layer.opacity * 100;
+    opacitySlider.style.cssText = 'flex: 1; accent-color: var(--primary); height: 4px;';
+    opacitySlider.addEventListener('input', (e) => {
+      const opacity = parseFloat(e.target.value) / 100;
+      this.setLayerOpacity(index, opacity);
+      percentSpan.textContent = `${Math.round(opacity * 100)}%`;
+    });
+    opacitySlider.addEventListener('click', (e) => e.stopPropagation());
+    opacitySlider.addEventListener('mousedown', (e) => e.stopPropagation());
+    opacitySlider.addEventListener('dragstart', (e) => e.preventDefault());
+    
+    const percentSpan = document.createElement('span');
+    percentSpan.style.cssText = 'color: var(--text-secondary); min-width: 35px;';
+    percentSpan.textContent = `${Math.round(layer.opacity * 100)}%`;
+    
+    opacityDiv.appendChild(opacityLabel);
+    opacityDiv.appendChild(opacitySlider);
+    opacityDiv.appendChild(percentSpan);
+    
+    // Modo de fusión
+    const blendSelect = document.createElement('select');
+    blendSelect.style.cssText = `
+      background: rgba(var(--primary-rgb), 0.1);
+      border: 1px solid rgba(var(--primary-rgb), 0.3);
+      color: var(--text-primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75em;
+      cursor: pointer;
+    `;
+    blendSelect.innerHTML = `
+      <option value="normal">Normal</option>
+      <option value="multiply">Multiplicar</option>
+      <option value="screen">Pantalla</option>
+      <option value="overlay">Superponer</option>
+      <option value="darken">Oscurecer</option>
+      <option value="lighten">Aclarar</option>
+      <option value="color-dodge">Subexponer color</option>
+      <option value="color-burn">Sobreexponer color</option>
+      <option value="hard-light">Luz fuerte</option>
+      <option value="soft-light">Luz suave</option>
+      <option value="difference">Diferencia</option>
+      <option value="exclusion">Exclusión</option>
+    `;
+    blendSelect.value = layer.blendMode;
+    blendSelect.addEventListener('change', (e) => {
+      this.setLayerBlendMode(index, e.target.value);
+    });
+    blendSelect.addEventListener('click', (e) => e.stopPropagation());
+    blendSelect.addEventListener('mousedown', (e) => e.stopPropagation());
+    
+    bottomRow.appendChild(opacityDiv);
+    bottomRow.appendChild(blendSelect);
+    
+    // Fila de acciones
+    const actionsRow = document.createElement('div');
+    actionsRow.style.cssText = 'display: flex; gap: 4px; margin-top: 4px;';
+    
+    const duplicateBtn = this.createSmallButton('📋', 'Duplicar', '#17a2b8');
+    duplicateBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.duplicateLayer(index);
+    });
+    
+    const mergeBtn = this.createSmallButton('⬇️', 'Fusionar abajo', '#6c757d');
+    mergeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.mergeLayerDown(index);
+    });
+    mergeBtn.disabled = index === 0;
+    if (index === 0) mergeBtn.style.opacity = '0.5';
+    
+    const deleteBtn = this.createSmallButton('🗑️', 'Eliminar', '#dc3545');
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.deleteLayer();
+    });
+    
+    actionsRow.appendChild(duplicateBtn);
+    actionsRow.appendChild(mergeBtn);
+    actionsRow.appendChild(deleteBtn);
+    
+    // Agregar todo al layerItem
+    layerItem.appendChild(topRow);
+    layerItem.appendChild(bottomRow);
+    layerItem.appendChild(actionsRow);
+    
+    // Event listener para seleccionar capa
+    layerItem.addEventListener('click', () => {
+      if (!layer.locked) {
+        this.switchToLayer(index);
+      }
+    });
+    
+    // Drag and drop
+    layerItem.addEventListener('dragstart', (e) => {
+      // Seleccionar la capa al empezar a arrastrar
+      if (!layer.locked) {
+        this.switchToLayer(index);
+      }
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', index);
+      layerItem.style.opacity = '0.5';
+    });
+    
+    layerItem.addEventListener('dragend', () => {
+      layerItem.style.opacity = '1';
+    });
+    
+    layerItem.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      layerItem.style.borderColor = 'var(--primary)';
+    });
+    
+    layerItem.addEventListener('dragleave', () => {
+      layerItem.style.borderColor = isActive ? 'var(--primary)' : 'rgba(var(--primary-rgb), 0.3)';
+    });
+    
+    layerItem.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+      const toIndex = index;
+      this.reorderLayers(fromIndex, toIndex);
+      layerItem.style.borderColor = isActive ? 'var(--primary)' : 'rgba(var(--primary-rgb), 0.3)';
+    });
+    
+    container.appendChild(layerItem);
+  }
+  
+  createLayerButton(text, color, title) {
+    const btn = document.createElement('button');
+    btn.textContent = text;
+    btn.title = title;
+    btn.style.cssText = `
+      background: ${color};
+      color: white;
+      border: none;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    btn.addEventListener('mouseenter', function() {
+      this.style.transform = 'scale(1.1)';
+    });
+    btn.addEventListener('mouseleave', function() {
+      this.style.transform = 'scale(1)';
+    });
+    return btn;
+  }
+  
+  createSmallButton(text, title, color) {
+    const btn = document.createElement('button');
+    btn.textContent = text;
+    btn.title = title;
+    btn.style.cssText = `
+      background: ${color};
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex: 1;
+    `;
+    btn.addEventListener('mouseenter', function() {
+      if (!this.disabled) {
+        this.style.opacity = '0.8';
+      }
+    });
+    btn.addEventListener('mouseleave', function() {
+      this.style.opacity = '1';
+    });
+    return btn;
   }
   
   renderLayers() {
     // Limpiar canvas principal
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
-    // Renderizar todas las capas visibles en orden
+    // Renderizar todas las capas visibles en orden con blend modes
     this.layers.forEach((layer, index) => {
       if (layer.visible && layer.canvas) {
         this.ctx.globalAlpha = layer.opacity;
-        this.ctx.globalCompositeOperation = 'source-over';
+        this.ctx.globalCompositeOperation = layer.blendMode || 'source-over';
         this.ctx.drawImage(layer.canvas, 0, 0);
       }
     });
@@ -952,6 +1601,156 @@ export class CanvasManager {
     // Restaurar configuración por defecto
     this.ctx.globalAlpha = 1;
     this.ctx.globalCompositeOperation = 'source-over';
+  }
+  
+  // ==================== NUEVAS FUNCIONES DE CAPAS ====================
+  
+  toggleLayerLock(layerIndex) {
+    if (this.layers[layerIndex]) {
+      this.layers[layerIndex].locked = !this.layers[layerIndex].locked;
+      this.updateLayersList();
+      
+      const lockStatus = this.layers[layerIndex].locked ? 'bloqueada' : 'desbloqueada';
+      if (window.guestbookApp?.ui?.showNotification) {
+        window.guestbookApp.ui.showNotification(
+          `🔒 ${this.layers[layerIndex].name} ${lockStatus}`,
+          'info'
+        );
+      }
+    }
+  }
+  
+  setLayerBlendMode(layerIndex, blendMode) {
+    if (this.layers[layerIndex]) {
+      this.layers[layerIndex].blendMode = blendMode;
+      this.renderLayers();
+    }
+  }
+  
+  duplicateLayer(layerIndex) {
+    if (!this.layers[layerIndex]) return;
+    
+    const sourceLayer = this.layers[layerIndex];
+    const newLayer = {
+      id: this.layers.length,
+      name: `${sourceLayer.name} (copia)`,
+      canvas: document.createElement('canvas'),
+      opacity: sourceLayer.opacity,
+      visible: sourceLayer.visible,
+      locked: false,
+      blendMode: sourceLayer.blendMode
+    };
+    
+    newLayer.canvas.width = this.canvas.width;
+    newLayer.canvas.height = this.canvas.height;
+    
+    // Copiar contenido
+    const newCtx = newLayer.canvas.getContext('2d');
+    newCtx.drawImage(sourceLayer.canvas, 0, 0);
+    
+    // Insertar después de la capa original
+    this.layers.splice(layerIndex + 1, 0, newLayer);
+    this.currentLayer = layerIndex + 1;
+    
+    // Reindexar IDs
+    this.layers.forEach((layer, idx) => {
+      layer.id = idx;
+    });
+    
+    this.updateLayersList();
+    this.renderLayers();
+    
+    if (window.guestbookApp?.ui?.showNotification) {
+      window.guestbookApp.ui.showNotification(`📋 ${newLayer.name} creada`, 'success');
+    }
+  }
+  
+  mergeLayerDown(layerIndex) {
+    if (layerIndex === 0 || !this.layers[layerIndex] || !this.layers[layerIndex - 1]) {
+      if (window.guestbookApp?.ui?.showNotification) {
+        window.guestbookApp.ui.showNotification('⚠️ No se puede fusionar', 'warning');
+      }
+      return;
+    }
+    
+    const upperLayer = this.layers[layerIndex];
+    const lowerLayer = this.layers[layerIndex - 1];
+    
+    // Fusionar en la capa inferior
+    const lowerCtx = lowerLayer.canvas.getContext('2d');
+    lowerCtx.globalAlpha = upperLayer.opacity;
+    lowerCtx.globalCompositeOperation = upperLayer.blendMode || 'source-over';
+    lowerCtx.drawImage(upperLayer.canvas, 0, 0);
+    lowerCtx.globalAlpha = 1;
+    lowerCtx.globalCompositeOperation = 'source-over';
+    
+    // Eliminar capa superior
+    this.layers.splice(layerIndex, 1);
+    this.currentLayer = Math.max(0, layerIndex - 1);
+    
+    // Reindexar
+    this.layers.forEach((layer, idx) => {
+      layer.id = idx;
+    });
+    
+    this.updateLayersList();
+    this.renderLayers();
+    
+    if (window.guestbookApp?.ui?.showNotification) {
+      window.guestbookApp.ui.showNotification('⬇️ Capas fusionadas', 'success');
+    }
+  }
+  
+  reorderLayers(fromIndex, toIndex) {
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || 
+        fromIndex >= this.layers.length || toIndex >= this.layers.length) {
+      return;
+    }
+    
+    // Mover capa
+    const [movedLayer] = this.layers.splice(fromIndex, 1);
+    this.layers.splice(toIndex, 0, movedLayer);
+    
+    // Reindexar
+    this.layers.forEach((layer, idx) => {
+      layer.id = idx;
+    });
+    
+    // Actualizar capa actual
+    if (this.currentLayer === fromIndex) {
+      this.currentLayer = toIndex;
+    } else if (fromIndex < this.currentLayer && toIndex >= this.currentLayer) {
+      this.currentLayer--;
+    } else if (fromIndex > this.currentLayer && toIndex <= this.currentLayer) {
+      this.currentLayer++;
+    }
+    
+    this.updateLayersList();
+    this.renderLayers();
+    
+    if (window.guestbookApp?.ui?.showNotification) {
+      window.guestbookApp.ui.showNotification('🔃 Capas reordenadas', 'info');
+    }
+  }
+  
+  switchToLayer(layerIndex) {
+    if (!this.layers[layerIndex] || this.layers[layerIndex].locked) return;
+    
+    // Guardar contenido de la capa actual antes de cambiar
+    if (this.layerMode && this.layers[this.currentLayer]) {
+      this.saveCurrentDrawingToLayer();
+    }
+    
+    this.currentLayer = layerIndex;
+    this.updateLayersList();
+    this.renderLayers();
+    
+    if (window.guestbookApp?.ui?.showNotification) {
+      window.guestbookApp.ui.showNotification(
+        `🎨 ${this.layers[layerIndex].name} seleccionada`,
+        'info'
+      );
+    }
   }
   
   toggleLayerVisibility(layerIndex) {
@@ -1229,13 +2028,14 @@ export class CanvasManager {
   saveDrawingToCurrentLayer() {
     if (!this.layers[this.currentLayer]) return;
     
-    // Simplemente copiar todo el canvas actual a la capa
-    // Esto preserva tanto el dibujo como el borrado
-    const layerCtx = this.layers[this.currentLayer].canvas.getContext('2d');
-    layerCtx.clearRect(0, 0, this.layers[this.currentLayer].canvas.width, this.layers[this.currentLayer].canvas.height);
-    layerCtx.globalCompositeOperation = 'source-over';
-    layerCtx.globalAlpha = 1;
-    layerCtx.drawImage(this.canvas, 0, 0);
+    // Si tenemos un canvas temporal con el último trazo, copiarlo a la capa
+    if (this.tempDrawingCanvas) {
+      const layerCtx = this.layers[this.currentLayer].canvas.getContext('2d');
+      layerCtx.drawImage(this.tempDrawingCanvas, 0, 0);
+      
+      // Limpiar el canvas temporal
+      this.tempDrawingCanvas = null;
+    }
   }
   
   exportImage() {
@@ -1258,4 +2058,637 @@ export class CanvasManager {
     link.href = tempCanvas.toDataURL();
     link.click();
   }
+
+  // ==================== SISTEMA DE IMÁGENES/STICKERS ====================
+  initImageSystem() {
+    this.activeImage = null; // Imagen actualmente en transformación
+    this.imageInput = null; // Input file para seleccionar imagen
   }
+  
+  selectImageTool() {
+    if (!this.imageInput) {
+      // Crear input file oculto
+      this.imageInput = document.createElement('input');
+      this.imageInput.type = 'file';
+      this.imageInput.accept = 'image/*';
+      this.imageInput.style.display = 'none';
+      document.body.appendChild(this.imageInput);
+      
+      this.imageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          this.loadImageToCanvas(file);
+        }
+        // Reset input para poder cargar la misma imagen de nuevo
+        this.imageInput.value = '';
+      });
+    }
+    
+    // Abrir selector de archivo
+    this.imageInput.click();
+  }
+  
+  loadImageToCanvas(file) {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        // Crear objeto de imagen transformable
+        const maxSize = Math.min(this.canvas.width, this.canvas.height) * 0.4;
+        const scale = Math.min(maxSize / img.width, maxSize / img.height);
+        
+        this.activeImage = {
+          img: img,
+          x: this.canvas.width / 2,
+          y: this.canvas.height / 2,
+          width: img.width * scale,
+          height: img.height * scale,
+          rotation: 0,
+          isDragging: false,
+          isResizing: false,
+          dragOffsetX: 0,
+          dragOffsetY: 0
+        };
+        
+        // Dibujar la imagen con controles
+        this.drawImageWithControls();
+        
+        // Mostrar controles de transformación
+        this.showImageControls();
+      };
+      img.src = e.target.result;
+    };
+    
+    reader.readAsDataURL(file);
+  }
+  
+  drawImageWithControls() {
+    if (!this.activeImage) return;
+    
+    // Restaurar canvas original (sin la imagen)
+    if (this.canvasBeforeImage) {
+      this.ctx.putImageData(this.canvasBeforeImage, 0, 0);
+    }
+    
+    // Dibujar imagen con transformación
+    this.ctx.save();
+    this.ctx.translate(this.activeImage.x, this.activeImage.y);
+    this.ctx.rotate(this.activeImage.rotation);
+    this.ctx.drawImage(
+      this.activeImage.img,
+      -this.activeImage.width / 2,
+      -this.activeImage.height / 2,
+      this.activeImage.width,
+      this.activeImage.height
+    );
+    this.ctx.restore();
+    
+    // Dibujar controles (borde y handles)
+    this.drawImageControls();
+  }
+  
+  drawImageControls() {
+    if (!this.activeImage) return;
+    
+    const img = this.activeImage;
+    
+    this.ctx.save();
+    this.ctx.translate(img.x, img.y);
+    this.ctx.rotate(img.rotation);
+    
+    // Borde
+    this.ctx.strokeStyle = '#ff6b35';
+    this.ctx.lineWidth = 2;
+    this.ctx.setLineDash([5, 5]);
+    this.ctx.strokeRect(
+      -img.width / 2,
+      -img.height / 2,
+      img.width,
+      img.height
+    );
+    this.ctx.setLineDash([]);
+    
+    // Handles de resize en las esquinas
+    const handleSize = 10;
+    const corners = [
+      { x: -img.width / 2, y: -img.height / 2 }, // Top-left
+      { x: img.width / 2, y: -img.height / 2 },  // Top-right
+      { x: img.width / 2, y: img.height / 2 },   // Bottom-right
+      { x: -img.width / 2, y: img.height / 2 }   // Bottom-left
+    ];
+    
+    this.ctx.fillStyle = '#ff6b35';
+    corners.forEach(corner => {
+      this.ctx.fillRect(
+        corner.x - handleSize / 2,
+        corner.y - handleSize / 2,
+        handleSize,
+        handleSize
+      );
+    });
+    
+    this.ctx.restore();
+  }
+  
+  showImageControls() {
+    // Crear UI de controles flotantes
+    let controlPanel = document.getElementById('imageControlPanel');
+    
+    if (!controlPanel) {
+      controlPanel = document.createElement('div');
+      controlPanel.id = 'imageControlPanel';
+      controlPanel.style.cssText = `
+        position: fixed;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        background: var(--bg-light);
+        border: 2px solid var(--primary);
+        border-radius: 12px;
+        padding: 15px;
+        z-index: 10000;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 200px;
+      `;
+      
+      controlPanel.innerHTML = `
+        <h6 style="color: var(--primary); margin: 0 0 10px 0; text-align: center;">
+          <i data-lucide="image" style="width: 1rem; height: 1rem;"></i>
+          Transformar Imagen
+        </h6>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="color: var(--text); font-size: 0.9em;">
+            Rotación: <span id="rotationValue">0</span>°
+          </label>
+          <input type="range" id="imageRotation" min="0" max="360" value="0" class="form-range">
+          
+          <label style="color: var(--text); font-size: 0.9em;">
+            Escala: <span id="scaleValue">100</span>%
+          </label>
+          <input type="range" id="imageScale" min="10" max="200" value="100" class="form-range">
+        </div>
+        
+        <button id="finishImageBtn" class="btn btn-success btn-sm" style="margin-top: 10px;">
+          <i data-lucide="check" style="width: 0.875rem; height: 0.875rem;"></i>
+          Finalizar
+        </button>
+        <button id="cancelImageBtn" class="btn btn-danger btn-sm">
+          <i data-lucide="x" style="width: 0.875rem; height: 0.875rem;"></i>
+          Cancelar
+        </button>
+      `;
+      
+      document.body.appendChild(controlPanel);
+      
+      // Event listeners
+      document.getElementById('imageRotation').addEventListener('input', (e) => {
+        if (this.activeImage) {
+          this.activeImage.rotation = (e.target.value * Math.PI) / 180;
+          document.getElementById('rotationValue').textContent = e.target.value;
+          this.redrawWithActiveImage();
+        }
+      });
+      
+      document.getElementById('imageScale').addEventListener('input', (e) => {
+        if (this.activeImage) {
+          const scale = e.target.value / 100;
+          const originalWidth = this.activeImage.img.width;
+          const originalHeight = this.activeImage.img.height;
+          const maxSize = Math.min(this.canvas.width, this.canvas.height) * 0.4;
+          const baseScale = Math.min(maxSize / originalWidth, maxSize / originalHeight);
+          
+          this.activeImage.width = originalWidth * baseScale * scale;
+          this.activeImage.height = originalHeight * baseScale * scale;
+          document.getElementById('scaleValue').textContent = e.target.value;
+          this.redrawWithActiveImage();
+        }
+      });
+      
+      document.getElementById('finishImageBtn').addEventListener('click', () => {
+        this.finalizeImage();
+      });
+      
+      document.getElementById('cancelImageBtn').addEventListener('click', () => {
+        this.cancelImage();
+      });
+      
+      // Inicializar iconos
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+    
+    controlPanel.style.display = 'flex';
+    
+    // Habilitar arrastre de imagen en el canvas
+    this.enableImageDragging();
+  }
+  
+  enableImageDragging() {
+    if (this.imageDraggingEnabled) return;
+    this.imageDraggingEnabled = true;
+    
+    const handleMouseDown = (e) => {
+      if (!this.activeImage) return;
+      
+      const rect = this.canvas.getBoundingClientRect();
+      const scaleX = this.canvas.width / rect.width;
+      const scaleY = this.canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      // Verificar si está sobre un handle de resize (esquinas)
+      const img = this.activeImage;
+      const handleSize = 10;
+      const corners = [
+        { x: img.x - img.width / 2, y: img.y - img.height / 2, corner: 'tl' }, // Top-left
+        { x: img.x + img.width / 2, y: img.y - img.height / 2, corner: 'tr' }, // Top-right
+        { x: img.x + img.width / 2, y: img.y + img.height / 2, corner: 'br' }, // Bottom-right
+        { x: img.x - img.width / 2, y: img.y + img.height / 2, corner: 'bl' }  // Bottom-left
+      ];
+      
+      for (const corner of corners) {
+        const dx = x - corner.x;
+        const dy = y - corner.y;
+        if (Math.abs(dx) < handleSize && Math.abs(dy) < handleSize) {
+          this.activeImage.isResizing = true;
+          this.activeImage.resizeCorner = corner.corner;
+          this.activeImage.startX = x;
+          this.activeImage.startY = y;
+          this.activeImage.startWidth = img.width;
+          this.activeImage.startHeight = img.height;
+          return;
+        }
+      }
+      
+      // Verificar si el click está dentro de la imagen (para arrastrar)
+      const dx = x - this.activeImage.x;
+      const dy = y - this.activeImage.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < Math.max(this.activeImage.width, this.activeImage.height) / 2) {
+        this.activeImage.isDragging = true;
+        this.activeImage.dragOffsetX = dx;
+        this.activeImage.dragOffsetY = dy;
+      }
+    };
+    
+    const handleMouseMove = (e) => {
+      if (!this.activeImage) return;
+      
+      const rect = this.canvas.getBoundingClientRect();
+      const scaleX = this.canvas.width / rect.width;
+      const scaleY = this.canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      // Manejar resize
+      if (this.activeImage.isResizing) {
+        const dx = x - this.activeImage.startX;
+        const dy = y - this.activeImage.startY;
+        const aspectRatio = this.activeImage.startWidth / this.activeImage.startHeight;
+        
+        // Calcular nuevo tamaño manteniendo proporción
+        let newWidth = this.activeImage.startWidth;
+        let newHeight = this.activeImage.startHeight;
+        
+        const corner = this.activeImage.resizeCorner;
+        if (corner === 'br' || corner === 'tr') {
+          newWidth = this.activeImage.startWidth + dx;
+        } else if (corner === 'bl' || corner === 'tl') {
+          newWidth = this.activeImage.startWidth - dx;
+        }
+        
+        newHeight = newWidth / aspectRatio;
+        
+        // Limitar tamaño mínimo
+        if (newWidth > 20 && newHeight > 20) {
+          this.activeImage.width = newWidth;
+          this.activeImage.height = newHeight;
+          this.redrawWithActiveImage();
+        }
+        return;
+      }
+      
+      // Manejar arrastre
+      if (this.activeImage.isDragging) {
+        this.activeImage.x = x - this.activeImage.dragOffsetX;
+        this.activeImage.y = y - this.activeImage.dragOffsetY;
+        this.redrawWithActiveImage();
+      }
+    };
+    
+    const handleMouseUp = () => {
+      if (this.activeImage) {
+        this.activeImage.isDragging = false;
+        this.activeImage.isResizing = false;
+      }
+    };
+    
+    this.canvas.addEventListener('mousedown', handleMouseDown);
+    this.canvas.addEventListener('mousemove', handleMouseMove);
+    this.canvas.addEventListener('mouseup', handleMouseUp);
+    
+    // Guardar referencias para poder removerlas después
+    this.imageHandlers = { handleMouseDown, handleMouseMove, handleMouseUp };
+  }
+  
+  redrawWithActiveImage() {
+    if (!this.activeImage) return;
+    
+    // Guardar el contenido del canvas sin la imagen activa
+    if (!this.canvasBeforeImage) {
+      this.canvasBeforeImage = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    }
+    
+    // Restaurar canvas original
+    this.ctx.putImageData(this.canvasBeforeImage, 0, 0);
+    
+    // Dibujar imagen con controles
+    this.drawImageWithControls();
+  }
+  
+  finalizeImage() {
+    if (!this.activeImage) return;
+    
+    // Dibujar la imagen final sin controles
+    this.ctx.save();
+    this.ctx.translate(this.activeImage.x, this.activeImage.y);
+    this.ctx.rotate(this.activeImage.rotation);
+    this.ctx.drawImage(
+      this.activeImage.img,
+      -this.activeImage.width / 2,
+      -this.activeImage.height / 2,
+      this.activeImage.width,
+      this.activeImage.height
+    );
+    this.ctx.restore();
+    
+    // Limpiar
+    this.activeImage = null;
+    this.canvasBeforeImage = null;
+    this.hideImageControls();
+    this.disableImageDragging();
+    
+    // Guardar estado
+    this.saveState();
+    
+    // Notificar
+    if (window.guestbookApp?.ui?.showNotification) {
+      window.guestbookApp.ui.showNotification('✅ Imagen agregada al canvas', 'success');
+    }
+    
+    // Volver a la herramienta pincel
+    window.selectTool('brush');
+  }
+  
+  cancelImage() {
+    if (!this.activeImage) return;
+    
+    // Restaurar canvas sin la imagen
+    if (this.canvasBeforeImage) {
+      this.ctx.putImageData(this.canvasBeforeImage, 0, 0);
+    }
+    
+    // Limpiar
+    this.activeImage = null;
+    this.canvasBeforeImage = null;
+    this.hideImageControls();
+    this.disableImageDragging();
+    
+    // Notificar
+    if (window.guestbookApp?.ui?.showNotification) {
+      window.guestbookApp.ui.showNotification('❌ Imagen cancelada', 'warning');
+    }
+    
+    // Volver a la herramienta pincel
+    window.selectTool('brush');
+  }
+  
+  hideImageControls() {
+    const controlPanel = document.getElementById('imageControlPanel');
+    if (controlPanel) {
+      controlPanel.style.display = 'none';
+    }
+  }
+  
+  disableImageDragging() {
+    if (!this.imageDraggingEnabled || !this.imageHandlers) return;
+    
+    this.canvas.removeEventListener('mousedown', this.imageHandlers.handleMouseDown);
+    this.canvas.removeEventListener('mousemove', this.imageHandlers.handleMouseMove);
+    this.canvas.removeEventListener('mouseup', this.imageHandlers.handleMouseUp);
+    
+    this.imageDraggingEnabled = false;
+    this.imageHandlers = null;
+  }
+  
+  // ==================== HERRAMIENTAS AVANZADAS PARA ARTISTAS ====================
+  
+  // Herramienta Smudge (Difuminar)
+  drawSmudge(x, y) {
+    const radius = this.getBrushSize();
+    const imageData = this.ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+    const data = imageData.data;
+    
+    // Algoritmo de difuminado simple
+    for (let i = 0; i < data.length; i += 4) {
+      const px = (i / 4) % (radius * 2);
+      const py = Math.floor((i / 4) / (radius * 2));
+      
+      // Promedio con píxeles vecinos
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = px + dx;
+          const ny = py + dy;
+          if (nx >= 0 && nx < radius * 2 && ny >= 0 && ny < radius * 2) {
+            const idx = (ny * radius * 2 + nx) * 4;
+            r += data[idx];
+            g += data[idx + 1];
+            b += data[idx + 2];
+            count++;
+          }
+        }
+      }
+      
+      data[i] = r / count;
+      data[i + 1] = g / count;
+      data[i + 2] = b / count;
+    }
+    
+    this.ctx.putImageData(imageData, x - radius, y - radius);
+  }
+  
+  // Herramienta Blur (Desenfocar)
+  drawBlur(x, y) {
+    const radius = this.getBrushSize();
+    const imageData = this.ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+    const data = imageData.data;
+    const width = radius * 2;
+    const height = radius * 2;
+    
+    // Box blur simple
+    const tempData = new Uint8ClampedArray(data);
+    
+    for (let py = 0; py < height; py++) {
+      for (let px = 0; px < width; px++) {
+        let r = 0, g = 0, b = 0, count = 0;
+        
+        // Blur kernel 3x3
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const nx = px + kx;
+            const ny = py + ky;
+            
+            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+              const idx = (ny * width + nx) * 4;
+              r += tempData[idx];
+              g += tempData[idx + 1];
+              b += tempData[idx + 2];
+              count++;
+            }
+          }
+        }
+        
+        const idx = (py * width + px) * 4;
+        data[idx] = r / count;
+        data[idx + 1] = g / count;
+        data[idx + 2] = b / count;
+      }
+    }
+    
+    this.ctx.putImageData(imageData, x - radius, y - radius);
+  }
+  
+  // ==================== HERRAMIENTAS ADICIONALES PARA ARTISTAS ====================
+  
+  // Herramienta Dodge (Aclarar/Sobreexponer)
+  drawDodge(x, y) {
+    const radius = this.getBrushSize();
+    const imageData = this.ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+    const data = imageData.data;
+    
+    for (let i = 0; i < data.length; i += 4) {
+      // Aclarar cada canal de color
+      data[i] = Math.min(255, data[i] * 1.15);     // R
+      data[i + 1] = Math.min(255, data[i + 1] * 1.15); // G
+      data[i + 2] = Math.min(255, data[i + 2] * 1.15); // B
+    }
+    
+    this.ctx.putImageData(imageData, x - radius, y - radius);
+  }
+  
+  // Herramienta Burn (Oscurecer/Subexponer)
+  drawBurn(x, y) {
+    const radius = this.getBrushSize();
+    const imageData = this.ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+    const data = imageData.data;
+    
+    for (let i = 0; i < data.length; i += 4) {
+      // Oscurecer cada canal de color
+      data[i] = Math.max(0, data[i] * 0.85);     // R
+      data[i + 1] = Math.max(0, data[i + 1] * 0.85); // G
+      data[i + 2] = Math.max(0, data[i + 2] * 0.85); // B
+    }
+    
+    this.ctx.putImageData(imageData, x - radius, y - radius);
+  }
+  
+  // Herramienta Sharpen (Enfocar)
+  drawSharpen(x, y) {
+    const radius = this.getBrushSize();
+    const imageData = this.ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+    const data = imageData.data;
+    const width = radius * 2;
+    const height = radius * 2;
+    
+    // Kernel de enfoque
+    const kernel = [
+      0, -1, 0,
+      -1, 5, -1,
+      0, -1, 0
+    ];
+    
+    const tempData = new Uint8ClampedArray(data);
+    
+    for (let py = 1; py < height - 1; py++) {
+      for (let px = 1; px < width - 1; px++) {
+        let r = 0, g = 0, b = 0;
+        let ki = 0;
+        
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const idx = ((py + ky) * width + (px + kx)) * 4;
+            r += tempData[idx] * kernel[ki];
+            g += tempData[idx + 1] * kernel[ki];
+            b += tempData[idx + 2] * kernel[ki];
+            ki++;
+          }
+        }
+        
+        const idx = (py * width + px) * 4;
+        data[idx] = Math.max(0, Math.min(255, r));
+        data[idx + 1] = Math.max(0, Math.min(255, g));
+        data[idx + 2] = Math.max(0, Math.min(255, b));
+      }
+    }
+    
+    this.ctx.putImageData(imageData, x - radius, y - radius);
+  }
+  
+  // Herramienta Sponge (Ajuste de saturación)
+  drawSponge(x, y, increase = true) {
+    const radius = this.getBrushSize();
+    const imageData = this.ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+    const data = imageData.data;
+    
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      
+      // Convertir RGB a HSL
+      const max = Math.max(r, g, b) / 255;
+      const min = Math.min(r, g, b) / 255;
+      const l = (max + min) / 2;
+      
+      if (max === min) continue; // Es gris, sin saturación
+      
+      const d = max - min;
+      const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      
+      // Ajustar saturación
+      const newS = increase ? Math.min(1, s * 1.2) : Math.max(0, s * 0.8);
+      
+      // Convertir de vuelta a RGB
+      const hue = max === r / 255 ? ((g / 255 - b / 255) / d + (g < b ? 6 : 0)) / 6
+                : max === g / 255 ? ((b / 255 - r / 255) / d + 2) / 6
+                : ((r / 255 - g / 255) / d + 4) / 6;
+      
+      const c = (1 - Math.abs(2 * l - 1)) * newS;
+      const x = c * (1 - Math.abs((hue * 6) % 2 - 1));
+      const m = l - c / 2;
+      
+      let newR, newG, newB;
+      if (hue < 1/6) { newR = c; newG = x; newB = 0; }
+      else if (hue < 2/6) { newR = x; newG = c; newB = 0; }
+      else if (hue < 3/6) { newR = 0; newG = c; newB = x; }
+      else if (hue < 4/6) { newR = 0; newG = x; newB = c; }
+      else if (hue < 5/6) { newR = x; newG = 0; newB = c; }
+      else { newR = c; newG = 0; newB = x; }
+      
+      data[i] = (newR + m) * 255;
+      data[i + 1] = (newG + m) * 255;
+      data[i + 2] = (newB + m) * 255;
+    }
+    
+    this.ctx.putImageData(imageData, x - radius, y - radius);
+  }
+}
+

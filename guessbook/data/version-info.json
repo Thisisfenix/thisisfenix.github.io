@@ -1,0 +1,104 @@
+{
+  "version": "1.0.0",
+  "codename": "Rewrite",
+  "releaseDate": "2026-10-15T15:00:00-05:00",
+  "status": "stable",
+  "description": "Reescritura completa del guestbook desde cero. Mismo Firebase, misma compatibilidad, pero con mejor código y más herramientas.",
+  
+  "changelog": {
+    "majorFeatures": [
+      {
+        "title": "15 Herramientas de Dibujo",
+        "description": "Pincel, borrador, balde, spray, línea, círculo, texto, difuminar, desenfocar, cuentagotas, imagen, aclarar, oscurecer, enfocar, saturar",
+        "icon": "🎨"
+      },
+      {
+        "title": "Modo Simple (7) y Experto (15)",
+        "description": "Modo simple para principiantes, modo experto con todas las herramientas",
+        "icon": "⚡"
+      },
+      {
+        "title": "Sistema de Capas",
+        "description": "Capas con opacidad, bloqueo, visibilidad y reordenamiento",
+        "icon": "📚"
+      },
+      {
+        "title": "Herramienta de Texto Mejorada",
+        "description": "Estilo Paint: toolbar con tamaño, negrita, cursiva",
+        "icon": "✍️"
+      },
+      {
+        "title": "Subir Imágenes y GIFs",
+        "description": "Arrastra, escala y rota imágenes en el canvas",
+        "icon": "🖼️"
+      },
+      {
+        "title": "Sistema de Perfiles",
+        "description": "Login, avatares, banners, badges",
+        "icon": "👤"
+      },
+      {
+        "title": "Formulario de Upload Mejorado",
+        "description": "Validación, preview, auto-guardado de borradores",
+        "icon": "📤"
+      },
+      {
+        "title": "Descripciones en Galería",
+        "description": "Agrega descripciones a tus dibujos (500 caracteres)",
+        "icon": "🖼️"
+      }
+    ],
+    
+    "improvements": [
+      "Validación de nombres (filtro de palabras prohibidas)",
+      "No permite usar nombres de usuarios registrados",
+      "Auto-guardado de borradores en localStorage",
+      "Contador de caracteres dinámico",
+      "Vista previa antes de subir",
+      "Mensajes de estado claros",
+      "Diseño responsive",
+      "8 categorías disponibles",
+      "Compatibilidad con todos los temas",
+      "Transiciones suaves"
+    ],
+    
+    "technicalSpecs": {
+      "canvasSize": "800x600",
+      "maxImageUpload": "2MB",
+      "maxAvatarSize": "1MB",
+      "maxDescriptionLength": 500,
+      "maxTitleLength": 100,
+      "maxNameLength": 20,
+      "supportedImageFormats": ["PNG", "JPG", "JPEG", "GIF", "WEBP"],
+      "themes": "Todos los temas de FenixLaboratory",
+      "frameworks": ["Bootstrap 5.3.3", "Lucide Icons", "Firebase"],
+      "browsers": "Chrome, Firefox, Safari, Edge"
+    }
+  },
+  
+  "compatibility": {
+    "firebase": "Mismo backend que versiones anteriores",
+    "drawings": "Todos los dibujos existentes son compatibles",
+    "profiles": "Sistema de perfiles compatible con guestbook-new",
+    "themes": "Soporte completo para temas existentes"
+  },
+  
+  "successor": {
+    "version": "2.0.9",
+    "codename": "NEW",
+    "location": "guessbook/guestbook-new.html",
+    "status": "legacy",
+    "note": "v1.0 es la versión actual. NEW pasa a legacy."
+  },
+  
+  "links": {
+    "live": "/guessbook/guestbook-v1.html",
+    "github": "https://github.com/YourRepo/FenixLaboratory"
+  },
+  
+  "launchInfo": {
+    "date": "2026-10-15",
+    "time": "15:00",
+    "timezone": "CT (UTC-5)"
+  }
+}

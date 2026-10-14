@@ -132,6 +132,15 @@ export class VipStore {
     this.initPointsSystem();
   }
   
+  // Helper para verificar si el usuario está logueado
+  isUserLoggedIn() {
+    if (!window.guestbookApp || !window.guestbookApp.profiles) {
+      return false;
+    }
+    const profiles = window.guestbookApp.profiles;
+    return profiles.currentProfile && profiles.currentProfile.isLoggedIn === true;
+  }
+  
   setupGlobalFunctions() {
     window.showVipStore = () => this.showStore();
     window.applyTheme = (themeName) => this.applyTheme(themeName);
@@ -331,122 +340,177 @@ export class VipStore {
   }
   
   showStore() {
+    // Verificar integración con Laboratory antes de mostrar
+    if (window.achievementSystem && !this.useLaboratoryPoints) {
+      console.log('🔄 Detectado Laboratory, activando integración');
+      this.useLaboratoryPoints = true;
+    }
+    
     const modal = document.createElement('div');
     modal.className = 'modal fade';
     modal.innerHTML = `
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background: var(--bg-dark); border: 2px solid var(--primary);">
-          <div class="modal-header" style="border-bottom: 1px solid var(--primary);">
-            <h5 class="modal-title" style="color: var(--primary);">💎 Tienda VIP</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+      <div class="modal-dialog modal-dialog-centered" style="max-width: min(92vw, 1000px); margin: 1rem auto;">
+        <div class="modal-content" style="background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(15, 15, 30, 0.98)); backdrop-filter: blur(20px); border: 1px solid rgba(255, 107, 53, 0.2); border-radius: 20px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5); overflow: hidden; height: 85vh; display: flex; flex-direction: column;">
+          
+          <!-- Header -->
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(247, 147, 30, 0.1)); border-bottom: 1px solid rgba(255, 107, 53, 0.2); padding: 1.25rem 1.5rem; flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 1rem; width: 100%;">
+              <div style="font-size: 2rem;">💎</div>
+              <div style="flex: 1;">
+                <h4 style="color: var(--primary); margin: 0; font-size: 1.5rem; font-weight: 700;">VIP Store</h4>
+                <small style="color: rgba(255, 255, 255, 0.65); font-size: 0.85rem;">Personaliza tu experiencia</small>
+              </div>
+              <div style="background: rgba(255, 107, 53, 0.15); padding: 0.65rem 1.25rem; border-radius: 25px; border: 1px solid rgba(255, 107, 53, 0.3);">
+                <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.75rem; display: block;">Puntos</small>
+                <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary);" data-points-display>${this.getUserPoints()}</div>
+              </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="opacity: 0.8;"></button>
           </div>
-          <div class="modal-body">
-            <div class="text-center mb-3">
-              <h5 style="color: var(--primary);">Tus Puntos: <span class="badge bg-primary" data-points-display>${this.getUserPoints()}</span></h5>
-              <small class="text-muted">Gana puntos dibujando (+10), comentando (+5) y dando likes (+2)</small>
+          
+          <div class="modal-body" style="padding: 0; display: flex; flex-direction: column; flex: 1; min-height: 0;">
+            <!-- Info Bar -->
+            <div style="padding: 0.85rem 1.5rem; background: rgba(255, 107, 53, 0.05); border-bottom: 1px solid rgba(255, 107, 53, 0.1); display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.85rem; flex-shrink: 0;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: rgba(255, 255, 255, 0.7);">
+                <span style="font-size: 1.1rem;">🎨</span>
+                <span>Dibuja +10pts</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: rgba(255, 255, 255, 0.7);">
+                <span style="font-size: 1.1rem;">💬</span>
+                <span>Comenta +5pts</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: rgba(255, 255, 255, 0.7);">
+                <span style="font-size: 1.1rem;">❤️</span>
+                <span>Like +2pts</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: rgba(255, 255, 255, 0.7);">
+                <span style="font-size: 1.1rem;">🎁</span>
+                <span>Bonus +25pts</span>
+              </div>
             </div>
             
-            <ul class="nav nav-tabs mb-3" role="tablist">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs" role="tablist" style="padding: 1rem 1.5rem 0; border-bottom: none; gap: 0.5rem; background: transparent; overflow-x: auto; flex-shrink: 0;">
               <li class="nav-item" role="presentation">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#free-content" type="button" role="tab">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#free-content" type="button" role="tab" style="background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(247, 147, 30, 0.15)); border: 1px solid rgba(255, 107, 53, 0.3); color: var(--primary); border-radius: 10px 10px 0 0; padding: 0.65rem 1.25rem; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; white-space: nowrap;">
                   🆓 Gratis
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#market-content" type="button" role="tab">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#market-content" type="button" role="tab" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); border-radius: 10px 10px 0 0; padding: 0.65rem 1.25rem; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; white-space: nowrap;">
                   💰 Mercado
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#vip-content" type="button" role="tab">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#vip-content" type="button" role="tab" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); border-radius: 10px 10px 0 0; padding: 0.65rem 1.25rem; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; white-space: nowrap;">
                   💎 VIP
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#vip-store" type="button" role="tab">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#vip-store" type="button" role="tab" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); border-radius: 10px 10px 0 0; padding: 0.65rem 1.25rem; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; white-space: nowrap;">
                   🛒 Comprar VIP
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#points-history" type="button" role="tab">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#points-history" type="button" role="tab" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); border-radius: 10px 10px 0 0; padding: 0.65rem 1.25rem; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; white-space: nowrap;">
                   📊 Historial
                 </button>
               </li>
             </ul>
             
-            <div class="tab-content">
+            <div class="tab-content" style="padding: 1.5rem; flex: 1; overflow-y: auto; min-height: 0;">
               <div class="tab-pane fade show active" id="free-content" role="tabpanel">
-                <div class="row">
-                  <div class="col-md-6">
-                    <h6 style="color: var(--primary); margin-bottom: 15px;">🎨 Temas Gratuitos</h6>
-                    ${this.renderFreeThemes()}
-                  </div>
-                  <div class="col-md-6">
-                    <h6 style="color: var(--primary); margin-bottom: 15px;">🖼️ Marcos Gratuitos</h6>
-                    ${this.renderFreeFrames()}
-                  </div>
-                </div>
+                ${this.renderModernContent('free')}
               </div>
               
               <div class="tab-pane fade" id="market-content" role="tabpanel">
-                <div class="text-center mb-3">
-                  <h5 style="color: var(--primary);">Tus Puntos: <span class="badge bg-primary" data-points-display>${this.getUserPoints()}</span></h5>
-                </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <h6 style="color: #ffa500; margin-bottom: 15px;">🎨 Temas Premium</h6>
-                    ${this.renderPremiumThemes()}
-                  </div>
-                  <div class="col-md-6">
-                    <h6 style="color: #ffa500; margin-bottom: 15px;">🖼️ Marcos Premium</h6>
-                    ${this.renderPremiumFrames()}
-                  </div>
-                </div>
+                ${this.renderModernContent('premium')}
               </div>
               
               <div class="tab-pane fade" id="vip-content" role="tabpanel">
-                <div class="text-center mb-4">
-                  <div style="font-size: 3em; margin-bottom: 15px;">👑</div>
-                  <h4 style="color: var(--primary);">Contenido VIP</h4>
-                  <div class="alert ${this.hasVipAccess() ? 'alert-success' : 'alert-warning'}" role="alert" style="color: var(--primary) !important;">
-                    ${this.hasVipAccess() ? '✅ Tienes acceso VIP' : '⚠️ Necesitas VIP para acceder a este contenido'}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <h6 style="color: #8b5cf6;">🎨 Temas VIP</h6>
-                    ${this.renderVipThemes()}
-                  </div>
-                  <div class="col-md-6">
-                    <h6 style="color: #8b5cf6;">🖼️ Marcos VIP</h6>
-                    ${this.renderVipFrames()}
-                  </div>
-                </div>
+                ${this.renderModernContent('vip')}
               </div>
               
               <div class="tab-pane fade" id="vip-store" role="tabpanel">
-                <div class="text-center mb-4">
-                  <h4 style="color: var(--primary);">🛒 Comprar Acceso VIP</h4>
-                  <h5 style="color: var(--primary);">Tus Puntos: <span class="badge bg-primary" data-points-display>${this.getUserPoints()}</span></h5>
-                </div>
-                <div class="row justify-content-center">
-                  ${this.renderVipTagsStore()}
-                </div>
+                ${this.renderVipTagsModern()}
               </div>
               
               <div class="tab-pane fade" id="points-history" role="tabpanel">
-                <div class="text-center mb-3">
-                  <h4 style="color: var(--primary);">📊 Historial de Puntos</h4>
-                </div>
                 ${this.renderPointsHistory()}
               </div>
             </div>
           </div>
-          <div class="modal-footer" style="border-top: 1px solid var(--primary);">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          </div>
         </div>
       </div>
+      
+      <style>
+        .nav-tabs {
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: thin;
+        }
+        
+        .nav-tabs::-webkit-scrollbar {
+          height: 4px;
+        }
+        
+        .nav-tabs::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-tabs::-webkit-scrollbar-thumb {
+          background: rgba(255, 107, 53, 0.3);
+          border-radius: 4px;
+        }
+        
+        .nav-link.active {
+          background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(247, 147, 30, 0.15)) !important;
+          border-color: rgba(255, 107, 53, 0.3) !important;
+          color: var(--primary) !important;
+        }
+        
+        .nav-link:hover:not(.active) {
+          background: rgba(255, 107, 53, 0.1) !important;
+          border-color: rgba(255, 107, 53, 0.2) !important;
+          color: var(--primary) !important;
+        }
+        
+        .tab-content::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .tab-content::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+        }
+        
+        .tab-content::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+          .modal-dialog {
+            margin: 0.5rem !important;
+            max-width: calc(100vw - 1rem) !important;
+          }
+          
+          .modal-content {
+            height: 90vh !important;
+          }
+          
+          .modal-header {
+            padding: 1rem 1.25rem !important;
+          }
+          
+          .modal-header h4 {
+            font-size: 1.25rem !important;
+          }
+          
+          .tab-content {
+            padding: 1rem !important;
+          }
+        }
+      </style>
     `;
     
     document.body.appendChild(modal);
@@ -500,7 +564,7 @@ export class VipStore {
     </select>`;
   }
   
-  applyTheme(themeName) {
+  applyTheme(themeName, skipFirebaseSync = false) {
     const body = document.body;
     
     if (this.themes.vip[themeName] && !this.hasVipAccess()) {
@@ -532,10 +596,28 @@ export class VipStore {
       document.querySelectorAll('.snowflake').forEach(el => el.remove());
     }
     
+    // Guardar en localStorage de Guestbook
     localStorage.setItem('guestbook-theme', themeName);
     
-    // Guardar tema en Firebase si el usuario está logueado
-    this.saveThemeToFirebase(themeName);
+    // 🔄 SINCRONIZAR CON LABORATORY
+    // Guardar también en el localStorage que usa Laboratory
+    localStorage.setItem('theme', themeName);
+    
+    // Si existe la función setTheme de Laboratory, llamarla también
+    if (typeof window.setTheme === 'function' && window.setTheme !== this.applyTheme) {
+      try {
+        window.setTheme(themeName);
+        console.log(`🔄 Tema sincronizado con Laboratory: ${themeName}`);
+      } catch (error) {
+        console.warn('Error sincronizando tema con Laboratory:', error);
+      }
+    }
+    
+    // 🔥 GUARDAR EN FIREBASE (solo si NO se solicita saltar y el usuario está logueado)
+    // Esto evita escrituras innecesarias cuando se carga el tema guardado al iniciar
+    if (!skipFirebaseSync) {
+      this.saveThemeToFirebase(themeName);
+    }
     
     if (window.guestbookApp && window.guestbookApp.ui) {
       const theme = this.themes.free[themeName] || this.themes.premium[themeName] || this.themes.vip[themeName];
@@ -580,7 +662,7 @@ export class VipStore {
     
     localStorage.setItem('guestbook-avatar-frame', frameKey);
     
-    if (window.guestbookApp && window.guestbookApp.profiles && window.guestbookApp.profiles.isLoggedIn()) {
+    if (this.isUserLoggedIn()) {
       window.guestbookApp.profiles.currentProfile.avatarFrame = frameKey;
       window.guestbookApp.profiles.saveProfile();
     }
@@ -591,10 +673,25 @@ export class VipStore {
   }
   
   loadSavedTheme() {
-    const savedTheme = localStorage.getItem('guestbook-theme');
-    if (savedTheme) {
-      this.applyTheme(savedTheme);
+    // Prioridad de carga: Guestbook > Laboratory
+    let savedTheme = localStorage.getItem('guestbook-theme');
+    
+    // Si no hay tema guardado en Guestbook, intentar cargar desde Laboratory
+    if (!savedTheme) {
+      savedTheme = localStorage.getItem('theme');
+      
+      // Si encontramos tema de Laboratory, sincronizar con Guestbook
+      if (savedTheme && savedTheme !== 'dark') {
+        localStorage.setItem('guestbook-theme', savedTheme);
+        console.log(`🔄 Tema importado desde Laboratory: ${savedTheme}`);
+      }
     }
+    
+    if (savedTheme && savedTheme !== 'dark') {
+      // ⚡ Pasar skipFirebaseSync=true para evitar escrituras innecesarias al cargar
+      this.applyTheme(savedTheme, true);
+    }
+    
     // Crear copos si el tema guardado es navideño
     if (savedTheme === 'christmas' || savedTheme === 'funkyatlas-christmas') {
       setTimeout(() => this.createSnowflakes(), 100);
@@ -609,7 +706,7 @@ export class VipStore {
   }
   
   hasVipAccess() {
-    if (!window.guestbookApp || !window.guestbookApp.profiles || !window.guestbookApp.profiles.isLoggedIn()) {
+    if (!this.isUserLoggedIn()) {
       return false;
     }
     
@@ -647,12 +744,77 @@ export class VipStore {
   }
   
   getUserPoints() {
+    // Si está conectado a Laboratory, usar sus puntos
+    if (this.useLaboratoryPoints && window.achievementSystem) {
+      return window.achievementSystem.getPoints();
+    }
+    // Fallback a puntos locales del Guestbook
     return parseInt(localStorage.getItem('guestbook-user-points') || '0');
   }
   
   initPointsSystem() {
+    // Integración con sistema de puntos de Laboratory
+    this.initLaboratoryPointsSync();
     this.checkDailyBonus();
     this.setupActivityListeners();
+  }
+  
+  initLaboratoryPointsSync() {
+    // Intentar cargar el sistema de achievements de Laboratory
+    if (window.achievementSystem) {
+      console.log('✅ Sistema de puntos de Laboratory detectado');
+      this.useLaboratoryPoints = true;
+      
+      // 🔄 IMPORTAR TEMAS DESBLOQUEADOS DE LABORATORY
+      this.importUnlockedThemesFromLaboratory();
+    } else {
+      console.log('⚠️ Sistema de puntos de Laboratory no detectado aún, esperando...');
+      this.useLaboratoryPoints = false;
+      
+      // Escuchar el evento de Laboratory
+      window.addEventListener('laboratory-points-ready', () => {
+        console.log('✅ Laboratory cargado, activando integración de puntos');
+        this.useLaboratoryPoints = true;
+        this.updatePointsDisplay();
+        
+        // Importar temas al cargar Laboratory
+        this.importUnlockedThemesFromLaboratory();
+      });
+    }
+  }
+  
+  // Importar temas desbloqueados desde Laboratory
+  importUnlockedThemesFromLaboratory() {
+    if (!window.achievementSystem || !window.achievementSystem.gameData) {
+      return;
+    }
+    
+    const unlockedThemes = window.achievementSystem.gameData.unlockedThemes;
+    if (!unlockedThemes || unlockedThemes.size === 0) {
+      return;
+    }
+    
+    // Obtener compras actuales de Guestbook
+    const purchased = JSON.parse(localStorage.getItem('vip-purchased-items') || '[]');
+    let imported = 0;
+    
+    // Importar cada tema desbloqueado de Laboratory
+    unlockedThemes.forEach(themeKey => {
+      const itemId = `theme-${themeKey}`;
+      
+      // Solo importar si no está ya en la lista (evitar duplicados)
+      if (!purchased.includes(itemId)) {
+        purchased.push(itemId);
+        imported++;
+      }
+    });
+    
+    if (imported > 0) {
+      // Remover duplicados antes de guardar
+      const uniquePurchased = [...new Set(purchased)];
+      localStorage.setItem('vip-purchased-items', JSON.stringify(uniquePurchased));
+      console.log(`✅ Importados ${imported} temas desde Laboratory (${uniquePurchased.length} total)`);
+    }
   }
   
   setupActivityListeners() {
@@ -690,11 +852,22 @@ export class VipStore {
   }
   
   awardPoints(amount, reason = '') {
-    const currentPoints = this.getUserPoints();
-    const newPoints = currentPoints + amount;
-    localStorage.setItem('guestbook-user-points', newPoints.toString());
+    let newPoints;
     
-    // Agregar al historial
+    // Si está conectado a Laboratory, usar su sistema
+    if (this.useLaboratoryPoints && window.achievementSystem) {
+      const addedPoints = window.achievementSystem.addPoints(amount);
+      newPoints = window.achievementSystem.getPoints();
+      console.log(`💎 Puntos agregados via Laboratory: +${addedPoints} (Total: ${newPoints})`);
+    } else {
+      // Fallback a sistema local
+      const currentPoints = this.getUserPoints();
+      newPoints = currentPoints + amount;
+      localStorage.setItem('guestbook-user-points', newPoints.toString());
+      console.log(`💰 Puntos agregados localmente: +${amount} (Total: ${newPoints})`);
+    }
+    
+    // Agregar al historial (mantener historial local para Guestbook)
     this.addToPointsHistory(amount, reason, 'earned');
     
     if (window.guestbookApp && window.guestbookApp.ui) {
@@ -751,6 +924,472 @@ export class VipStore {
     }
     
     localStorage.setItem('guestbook-points-history', JSON.stringify(history));
+  }
+  
+  renderModernContent(category) {
+    const items = this.getItemsByCategory(category);
+    
+    if (!items || items.length === 0) {
+      return `
+        <div style="text-align: center; padding: 3rem 2rem; color: var(--text-muted);">
+          <div style="font-size: 3em; margin-bottom: 1rem; opacity: 0.3;">📦</div>
+          <h4 style="color: var(--text-secondary); margin-bottom: 0.5rem;">Próximamente</h4>
+          <p style="margin: 0;">Contenido disponible próximamente</p>
+        </div>
+      `;
+    }
+    
+    return `
+      <div class="modern-items-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+        ${items.map(item => this.renderModernItem(item, category)).join('')}
+      </div>
+    `;
+  }
+  
+  getItemsByCategory(category) {
+    const items = [];
+    
+    if (category === 'free') {
+      // Temas gratis desde this.themes.free
+      Object.entries(this.themes.free).forEach(([key, theme]) => {
+        items.push({
+          id: `theme-${key}`,
+          name: theme.name,
+          type: 'theme',
+          price: 0,
+          description: `Colores: ${theme.colors.primary} y ${theme.colors.secondary}`,
+          emoji: theme.name.split(' ')[0]
+        });
+      });
+      
+      // Marcos gratis desde this.avatarFrames.free
+      Object.entries(this.avatarFrames.free).forEach(([key, frame]) => {
+        if (key !== 'none') { // Excluir "Sin Marco"
+          items.push({
+            id: `frame-${key}`,
+            name: frame.name,
+            type: 'frame',
+            price: 0,
+            description: frame.description,
+            emoji: '⬜'
+          });
+        }
+      });
+    } else if (category === 'premium') {
+      // Temas premium desde this.themes.premium
+      Object.entries(this.themes.premium).forEach(([key, theme]) => {
+        items.push({
+          id: `theme-${key}`,
+          name: theme.name,
+          type: 'theme',
+          price: theme.price || 100,
+          description: `Colores: ${theme.colors.primary} y ${theme.colors.secondary}`,
+          emoji: theme.name.split(' ')[0]
+        });
+      });
+      
+      // Marcos premium desde this.avatarFrames.premium
+      if (this.avatarFrames.premium) {
+        Object.entries(this.avatarFrames.premium).forEach(([key, frame]) => {
+          items.push({
+            id: `frame-${key}`,
+            name: frame.name,
+            type: 'frame',
+            price: frame.price || 100,
+            description: frame.description,
+            emoji: '🖼️'
+          });
+        });
+      }
+    } else if (category === 'vip') {
+      // Temas VIP desde this.themes.vip
+      Object.entries(this.themes.vip).forEach(([key, theme]) => {
+        items.push({
+          id: `theme-${key}`,
+          name: theme.name,
+          type: 'theme',
+          price: 0,
+          description: `Exclusivo VIP: ${theme.colors.primary} y ${theme.colors.secondary}`,
+          emoji: theme.name.split(' ')[0],
+          vipOnly: true
+        });
+      });
+      
+      // Marcos VIP desde this.avatarFrames.vip
+      if (this.avatarFrames.vip) {
+        Object.entries(this.avatarFrames.vip).forEach(([key, frame]) => {
+          items.push({
+            id: `frame-${key}`,
+            name: frame.name,
+            type: 'frame',
+            price: 0,
+            description: frame.description + ' (VIP)',
+            emoji: '👑',
+            vipOnly: true
+          });
+        });
+      }
+    }
+    
+    return items;
+  }
+  
+  renderModernItem(item, category) {
+    const isVip = category === 'vip';
+    const canPurchase = !isVip || this.hasVipAccess();
+    const userPoints = this.getUserPoints();
+    const canAfford = userPoints >= item.price;
+    
+    const isPurchased = this.isPurchased(item.id);
+    
+    return `
+      <div class="modern-item-card" style="
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        cursor: ${canPurchase && !isPurchased ? 'pointer' : 'default'};
+        position: relative;
+        overflow: hidden;
+      " onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(var(--primary-rgb), 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+        
+        ${isVip ? '<div style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #FFD700, #FFA500); color: black; padding: 4px 12px; border-radius: 20px; font-size: 0.75em; font-weight: 700;">👑 VIP</div>' : ''}
+        
+        <div style="font-size: 3em; text-align: center; margin-bottom: 1rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
+          ${item.emoji || item.name.split(' ')[0] || '🎨'}
+        </div>
+        
+        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.1em; text-align: center;">
+          ${item.name.includes(' ') ? item.name.substring(item.name.indexOf(' ') + 1) : item.name}
+        </h4>
+        
+        <p style="color: var(--text-muted); font-size: 0.9em; text-align: center; margin-bottom: 1rem; min-height: 2.5em;">
+          ${item.description}
+        </p>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+          ${item.price > 0 ? `
+            <div style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--primary);">
+              <span style="font-size: 1.2em;">💎</span>
+              <span>${item.price}</span>
+            </div>
+          ` : `
+            <div style="color: #4ade80; font-weight: 600;">✨ GRATIS</div>
+          `}
+          
+          ${isPurchased ? `
+            <button onclick="vipStore.applyItem('${item.id}', '${item.type}')" style="
+              background: linear-gradient(135deg, #4ade80, #22c55e);
+              color: white;
+              border: none;
+              padding: 8px 20px;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+              font-size: 0.9em;
+            ">
+              ✓ Usar
+            </button>
+          ` : canPurchase ? (item.price === 0 || canAfford ? `
+            <button onclick="vipStore.purchaseItem('${item.id}', ${item.price})" style="
+              background: linear-gradient(135deg, var(--primary), var(--secondary));
+              color: white;
+              border: none;
+              padding: 8px 20px;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+              font-size: 0.9em;
+            ">
+              ${item.price === 0 ? 'Obtener' : 'Comprar'}
+            </button>
+          ` : `
+            <button disabled style="
+              background: rgba(255, 255, 255, 0.1);
+              color: rgba(255, 255, 255, 0.3);
+              border: none;
+              padding: 8px 20px;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: not-allowed;
+              font-size: 0.9em;
+            ">
+              No puedes
+            </button>
+          `) : `
+            <button disabled style="
+              background: rgba(255, 255, 255, 0.1);
+              color: rgba(255, 255, 255, 0.3);
+              border: none;
+              padding: 8px 20px;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: not-allowed;
+              font-size: 0.9em;
+            ">
+              🔒 VIP
+            </button>
+          `}
+        </div>
+      </div>
+    `;
+  }
+  
+  renderVipTagsModern() {
+    return `
+      <div style="margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05)); border-radius: 16px; border: 2px solid rgba(255, 215, 0, 0.3);">
+        <h3 style="color: #FFD700; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5em;">👑</span>
+          <span>Tags VIP Exclusivos</span>
+        </h3>
+        <p style="color: var(--text-muted); margin: 0;">
+          Personaliza tu perfil con tags únicos que solo los usuarios VIP pueden obtener
+        </p>
+      </div>
+      
+      <div class="modern-items-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+        ${this.renderVipTagsGrid()}
+      </div>
+    `;
+  }
+  
+  renderVipTagsGrid() {
+    const vipTags = {
+      'legendary': { name: '⚡ Legendario', color: '#FFD700', price: 500, glow: true },
+      'master': { name: '🎨 Maestro', color: '#9333EA', price: 300, glow: true },
+      'veteran': { name: '🛡️ Veterano', color: '#3B82F6', price: 200, glow: false },
+      'artist': { name: '🖌️ Artista Pro', color: '#EC4899', price: 250, glow: false },
+      'patron': { name: '💎 Patrocinador', color: '#10B981', price: 400, glow: true }
+    };
+    
+    return Object.entries(vipTags).map(([key, tag]) => {
+      const isPurchased = this.isPurchased(`tag-${key}`);
+      const userPoints = this.getUserPoints();
+      const canAfford = userPoints >= tag.price;
+      const hasVip = this.hasVipAccess();
+      
+      return `
+        <div class="vip-tag-card" style="
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+          backdrop-filter: blur(10px);
+          border: 2px solid ${tag.color}40;
+          border-radius: 16px;
+          padding: 1.5rem;
+          text-align: center;
+          transition: all 0.3s ease;
+          position: relative;
+          ${tag.glow ? `box-shadow: 0 0 20px ${tag.color}30;` : ''}
+        " onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='${tag.color}'" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='${tag.color}40'">
+          
+          <div style="font-size: 3em; margin-bottom: 1rem; filter: drop-shadow(0 4px 12px ${tag.color});">
+            ${tag.name.split(' ')[0]}
+          </div>
+          
+          <h4 style="color: ${tag.color}; margin-bottom: 1rem; font-size: 1.2em; text-shadow: 0 0 10px ${tag.color}50;">
+            ${tag.name.substring(tag.name.indexOf(' ') + 1)}
+          </h4>
+          
+          <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 1rem; font-weight: 700; font-size: 1.3em; color: var(--primary);">
+            <span>💎</span>
+            <span>${tag.price}</span>
+          </div>
+          
+          ${isPurchased ? `
+            <button onclick="vipStore.applyTag('${key}')" style="
+              background: linear-gradient(135deg, #4ade80, #22c55e);
+              color: white;
+              border: none;
+              padding: 10px 24px;
+              border-radius: 10px;
+              font-weight: 700;
+              cursor: pointer;
+              width: 100%;
+            ">
+              ✓ Equipar
+            </button>
+          ` : hasVip && canAfford ? `
+            <button onclick="vipStore.purchaseTag('${key}', ${tag.price})" style="
+              background: linear-gradient(135deg, ${tag.color}, ${tag.color}DD);
+              color: white;
+              border: none;
+              padding: 10px 24px;
+              border-radius: 10px;
+              font-weight: 700;
+              cursor: pointer;
+              width: 100%;
+            ">
+              Comprar
+            </button>
+          ` : !hasVip ? `
+            <button disabled style="
+              background: rgba(255, 255, 255, 0.1);
+              color: rgba(255, 255, 255, 0.3);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              padding: 10px 24px;
+              border-radius: 10px;
+              font-weight: 700;
+              cursor: not-allowed;
+              width: 100%;
+            ">
+              🔒 Requiere VIP
+            </button>
+          ` : `
+            <button disabled style="
+              background: rgba(255, 255, 255, 0.1);
+              color: rgba(255, 255, 255, 0.3);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              padding: 10px 24px;
+              border-radius: 10px;
+              font-weight: 700;
+              cursor: not-allowed;
+              width: 100%;
+            ">
+              Puntos insuficientes
+            </button>
+          `}
+        </div>
+      `;
+    }).join('');
+  }
+  
+  isPurchased(itemId) {
+    // Verificar en localStorage de Guestbook
+    const purchased = JSON.parse(localStorage.getItem('vip-purchased-items') || '[]');
+    if (purchased.includes(itemId)) {
+      return true;
+    }
+    
+    // 🔄 VERIFICAR EN LABORATORY
+    if (itemId.startsWith('theme-')) {
+      const themeKey = itemId.replace('theme-', '');
+      
+      // Verificar en achievementSystem de Laboratory
+      if (window.achievementSystem && window.achievementSystem.gameData) {
+        const unlockedThemes = window.achievementSystem.gameData.unlockedThemes;
+        if (unlockedThemes && unlockedThemes.has(themeKey)) {
+          // Si está desbloqueado en Laboratory, agregarlo a Guestbook también
+          purchased.push(itemId);
+          localStorage.setItem('vip-purchased-items', JSON.stringify(purchased));
+          return true;
+        }
+      }
+      
+      // Verificar marca de compra de Laboratory
+      if (localStorage.getItem(`purchased_${themeKey}`)) {
+        // Si tiene la marca de Laboratory, agregarlo a Guestbook
+        purchased.push(itemId);
+        localStorage.setItem('vip-purchased-items', JSON.stringify(purchased));
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
+  purchaseItem(itemId, price) {
+    const userPoints = this.getUserPoints();
+    
+    if (price > 0 && userPoints < price) {
+      alert('❌ No tienes suficientes puntos');
+      return;
+    }
+    
+    // Gastar puntos
+    if (price > 0) {
+      this.spendPoints(price, `Compra: ${itemId}`);
+    }
+    
+    // Guardar compra en Guestbook
+    const purchased = JSON.parse(localStorage.getItem('vip-purchased-items') || '[]');
+    if (!purchased.includes(itemId)) {
+      purchased.push(itemId);
+      localStorage.setItem('vip-purchased-items', JSON.stringify(purchased));
+    }
+    
+    // 🔄 SINCRONIZAR COMPRA CON LABORATORY
+    if (itemId.startsWith('theme-')) {
+      const themeKey = itemId.replace('theme-', '');
+      
+      // Desbloquear en Laboratory si existe el sistema
+      if (window.achievementSystem && window.achievementSystem.gameData) {
+        if (!window.achievementSystem.gameData.unlockedThemes) {
+          window.achievementSystem.gameData.unlockedThemes = new Set();
+        }
+        
+        window.achievementSystem.gameData.unlockedThemes.add(themeKey);
+        
+        // Guardar marca de compra con timestamp
+        localStorage.setItem(`purchased_${themeKey}`, Date.now().toString());
+        
+        // Guardar en achievementSystem
+        window.achievementSystem.save();
+        
+        console.log(`✅ Tema desbloqueado en Laboratory: ${themeKey}`);
+        
+        // Sincronizar con Firebase de Laboratory si existe
+        if (window.firebaseThemes && window.firebaseThemes.syncUnlockedThemes) {
+          const themesArray = Array.from(window.achievementSystem.gameData.unlockedThemes);
+          window.firebaseThemes.syncUnlockedThemes(themesArray).catch(err => 
+            console.warn('Error sincronizando temas con Firebase:', err)
+          );
+        }
+      }
+    }
+    
+    // Actualizar UI del modal sin cerrarlo
+    alert(`✅ ¡Compra exitosa! Tema desbloqueado`);
+    
+    // Actualizar solo el contenido del tab actual
+    const activeTab = document.querySelector('.tab-pane.active');
+    if (activeTab) {
+      const tabId = activeTab.id;
+      let category = 'free';
+      if (tabId === 'market-content') category = 'premium';
+      if (tabId === 'vip-content') category = 'vip';
+      
+      activeTab.innerHTML = this.renderModernContent(category);
+    }
+    
+    // Actualizar display de puntos
+    this.updatePointsDisplay();
+  }
+  
+  applyItem(itemId, type) {
+    if (type === 'theme') {
+      // Extraer el key del tema (remover 'theme-' del inicio)
+      const themeKey = itemId.replace('theme-', '');
+      this.applyTheme(themeKey);
+      
+      if (window.guestbookApp && window.guestbookApp.ui) {
+        window.guestbookApp.ui.showNotification(`✨ Tema aplicado: ${themeKey}`, 'success');
+      } else {
+        alert(`✨ ¡Tema aplicado: ${themeKey}!`);
+      }
+    } else if (type === 'frame') {
+      // Extraer el key del marco (remover 'frame-' del inicio)
+      const frameKey = itemId.replace('frame-', '');
+      this.applyAvatarFrame(frameKey);
+      
+      if (window.guestbookApp && window.guestbookApp.ui) {
+        window.guestbookApp.ui.showNotification(`✨ Marco aplicado: ${frameKey}`, 'success');
+      } else {
+        alert(`✨ ¡Marco aplicado: ${frameKey}!`);
+      }
+    }
+    
+    // NO reabrir el modal, ya está abierto
+  }
+  
+  purchaseTag(tagKey, price) {
+    this.purchaseItem(`tag-${tagKey}`, price);
+  }
+  
+  applyTag(tagKey) {
+    localStorage.setItem('active-vip-tag', tagKey);
+    alert(`✨ ¡Tag equipado exitosamente!`);
+    this.showStore();
   }
   
   renderPointsHistory() {
@@ -828,8 +1467,17 @@ export class VipStore {
     const currentPoints = this.getUserPoints();
     if (currentPoints < amount) return false;
     
-    const newPoints = currentPoints - amount;
-    localStorage.setItem('guestbook-user-points', newPoints.toString());
+    // Si está conectado a Laboratory, gastar desde ahí
+    if (this.useLaboratoryPoints && window.achievementSystem) {
+      window.achievementSystem.gameData.points -= amount;
+      window.achievementSystem.save();
+      console.log(`💸 Puntos gastados via Laboratory: -${amount} (Restante: ${window.achievementSystem.getPoints()})`);
+    } else {
+      // Fallback a sistema local
+      const newPoints = currentPoints - amount;
+      localStorage.setItem('guestbook-user-points', newPoints.toString());
+      console.log(`💸 Puntos gastados localmente: -${amount} (Restante: ${newPoints})`);
+    }
     
     // Agregar al historial
     this.addToPointsHistory(amount, reason, 'spent');
@@ -901,8 +1549,11 @@ export class VipStore {
   }
   
   hasPurchased(type, key) {
-    const purchased = JSON.parse(localStorage.getItem(`guestbook-purchased-${type}`) || '[]');
-    return purchased.includes(key);
+    // Convertir a formato de itemId
+    const itemId = `${type === 'themes' ? 'theme' : 'frame'}-${key}`;
+    
+    // Usar el método isPurchased sincronizado
+    return this.isPurchased(itemId);
   }
   
   renderVipTagsStore() {
@@ -950,31 +1601,34 @@ export class VipStore {
   }
   
   grantVipAccess(duration) {
-    if (window.guestbookApp && window.guestbookApp.profiles && window.guestbookApp.profiles.isLoggedIn()) {
-      const profile = window.guestbookApp.profiles.currentProfile;
-      
-      if (!profile.userTags) {
-        profile.userTags = [];
-      }
-      
-      if (!profile.userTags.includes('VIP')) {
-        profile.userTags.push('VIP');
-      }
-      
-      if (duration !== 'permanent') {
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + duration);
-        profile.vipExpiry = expiryDate.toISOString();
-      } else {
-        profile.vipExpiry = 'permanent';
-      }
-      
-      window.guestbookApp.profiles.saveProfile();
+    if (!this.isUserLoggedIn()) {
+      alert('⚠️ Debes iniciar sesión para obtener VIP');
+      return;
     }
+    
+    const profile = window.guestbookApp.profiles.currentProfile;
+    
+    if (!profile.userTags) {
+      profile.userTags = [];
+    }
+    
+    if (!profile.userTags.includes('VIP')) {
+      profile.userTags.push('VIP');
+    }
+    
+    if (duration !== 'permanent') {
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + duration);
+      profile.vipExpiry = expiryDate.toISOString();
+    } else {
+      profile.vipExpiry = 'permanent';
+    }
+    
+    window.guestbookApp.profiles.saveProfile();
   }
   
   checkVipExpiry() {
-    if (!window.guestbookApp || !window.guestbookApp.profiles || !window.guestbookApp.profiles.isLoggedIn()) {
+    if (!this.isUserLoggedIn()) {
       return;
     }
     
@@ -1098,18 +1752,28 @@ export class VipStore {
     return false;
   }
   
-  // Guardar tema del usuario en Firebase
+  // Guardar tema del usuario en Firebase (con debounce para evitar escrituras excesivas)
   async saveThemeToFirebase(themeName) {
-    if (window.guestbookApp && window.guestbookApp.profiles && window.guestbookApp.profiles.isLoggedIn()) {
+    if (!this.isUserLoggedIn()) {
+      return;
+    }
+    
+    // Cancelar guardado pendiente anterior
+    if (this._saveThemeTimeout) {
+      clearTimeout(this._saveThemeTimeout);
+    }
+    
+    // Esperar 2 segundos antes de guardar (debounce)
+    this._saveThemeTimeout = setTimeout(async () => {
       try {
         const profile = window.guestbookApp.profiles.currentProfile;
         profile.selectedTheme = themeName;
         await window.guestbookApp.profiles.saveProfile();
-        console.log(`Tema ${themeName} guardado en Firebase para ${profile.username}`);
+        console.log(`✅ Tema ${themeName} guardado en Firebase para ${profile.username}`);
       } catch (error) {
-        console.error('Error guardando tema en Firebase:', error);
+        console.error('❌ Error guardando tema en Firebase:', error);
       }
-    }
+    }, 2000);
   }
   
   // Aplicar personalización a todos los paneles visibles

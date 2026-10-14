@@ -1,6 +1,6 @@
 // Firebase y base de datos
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, updateDoc, doc, getDoc, deleteDoc, where, getDocs, setDoc, limit, arrayUnion, connectFirestoreEmulator } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, updateDoc, doc, getDoc, deleteDoc, where, getDocs, setDoc, limit, arrayUnion, arrayRemove, connectFirestoreEmulator } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 export class FirebaseManager {
   constructor() {
@@ -245,6 +245,41 @@ export class FirebaseManager {
     return this.getAllDrawings();
   }
   
+  async getUserDrawings(username) {
+    try {
+      console.log(`🎨 Cargando dibujos de ${username}...`);
+      
+      // Query con filtro por autor
+      const q = query(
+        collection(this.db, 'dibujos'),
+        where('autor', '==', username),
+        orderBy('timestamp', 'desc')
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const drawings = [];
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data && data.imagenData) {
+          drawings.push({
+            id: doc.id,
+            data: data
+          });
+        }
+      });
+      
+      console.log(`✅ Cargados ${drawings.length} dibujos de ${username}`);
+      return drawings;
+    } catch (error) {
+      console.error(`❌ Error obteniendo dibujos de ${username}:`, error);
+      // Si el índice no existe, hacer fallback a filtrado local
+      console.warn('⚠️ Usando filtrado local (índice no disponible)');
+      const allDrawings = await this.getAllDrawings();
+      return allDrawings.filter(d => d.data.autor === username);
+    }
+  }
+  
   async getComments(drawingId) {
     try {
       console.log('Buscando comentarios para drawingId:', drawingId);
@@ -311,18 +346,35 @@ export class FirebaseManager {
     }
   }
   
-  async toggleLike(drawingId, isLiked) {
+  async toggleLike(drawingId, username, isLiked) {
     try {
       const docRef = doc(this.db, 'dibujos', drawingId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        const currentLikes = docSnap.data().likes || 0;
-        const newLikes = isLiked ? currentLikes + 1 : Math.max(0, currentLikes - 1);
+        const data = docSnap.data();
+        const currentLikes = data.likes || 0;
+        const likedBy = data.likedBy || [];
+        
+        let newLikes;
+        let newLikedBy;
+        
+        if (isLiked) {
+          // Dar like
+          newLikes = currentLikes + 1;
+          newLikedBy = [...new Set([...likedBy, username])]; // Evitar duplicados
+        } else {
+          // Quitar like
+          newLikes = Math.max(0, currentLikes - 1);
+          newLikedBy = likedBy.filter(user => user !== username);
+        }
         
         await updateDoc(docRef, {
-          likes: newLikes
+          likes: newLikes,
+          likedBy: newLikedBy
         });
+        
+        console.log(`✅ Like ${isLiked ? 'agregado' : 'removido'} - Total: ${newLikes}`);
         return true;
       }
       return false;
@@ -640,22 +692,28 @@ export class FirebaseManager {
   async saveUserProfile(profileData) {
     try {
       const docRef = doc(this.db, 'user_profiles', profileData.username.toLowerCase());
-      await setDoc(docRef, {
+      
+      // Filtrar campos undefined
+      const cleanData = {
         username: profileData.username,
-        avatar: profileData.avatar,
-        avatarType: profileData.avatarType,
-        avatarImage: profileData.avatarImage,
-        bannerImage: profileData.bannerImage,
-        bio: profileData.bio,
-        favoriteCategory: profileData.favoriteCategory,
-        totalDrawings: profileData.totalDrawings,
-        totalLikes: profileData.totalLikes,
-        achievements: profileData.achievements,
-        lastLogin: profileData.lastLogin,
-        userTags: profileData.userTags || [],
         domain: 'thisisfenix.github.io',
         updatedAt: Date.now()
-      }, { merge: true });
+      };
+      
+      // Solo agregar campos que no sean undefined
+      if (profileData.avatar !== undefined) cleanData.avatar = profileData.avatar;
+      if (profileData.avatarType !== undefined) cleanData.avatarType = profileData.avatarType;
+      if (profileData.avatarImage !== undefined) cleanData.avatarImage = profileData.avatarImage;
+      if (profileData.bannerImage !== undefined) cleanData.bannerImage = profileData.bannerImage;
+      if (profileData.bio !== undefined) cleanData.bio = profileData.bio;
+      if (profileData.favoriteCategory !== undefined) cleanData.favoriteCategory = profileData.favoriteCategory;
+      if (profileData.totalDrawings !== undefined) cleanData.totalDrawings = profileData.totalDrawings;
+      if (profileData.totalLikes !== undefined) cleanData.totalLikes = profileData.totalLikes;
+      if (profileData.achievements !== undefined) cleanData.achievements = profileData.achievements;
+      if (profileData.lastLogin !== undefined) cleanData.lastLogin = profileData.lastLogin;
+      if (profileData.userTags !== undefined) cleanData.userTags = profileData.userTags;
+      
+      await setDoc(docRef, cleanData, { merge: true });
       return true;
     } catch (error) {
       console.error('Error guardando perfil de usuario:', error);
@@ -746,6 +804,210 @@ export class FirebaseManager {
     }
   }
   
+  async saveRecoveryCode(username, code) {
+    try {
+      const docRef = doc(this.db, 'recovery_codes', username.toLowerCase());
+      await setDoc(docRef, {
+        username: username,
+        code: code,
+        createdAt: Date.now(),
+        used: false,
+        domain: 'thisisfenix.github.io'
+      });
+      return true;
+    } catch (error) {
+      console.error('Error guardando código de recuperación:', error);
+      throw error;
+    }
+  }
+  
+  async verifyRecoveryCode(username, code) {
+    try {
+      const docRef = doc(this.db, 'recovery_codes', username.toLowerCase());
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        return false;
+      }
+      
+      const data = docSnap.data();
+      return data.code === code && !data.used;
+    } catch (error) {
+      console.error('Error verificando código:', error);
+      return false;
+    }
+  }
+  
+  async invalidateRecoveryCode(username, code) {
+    try {
+      const docRef = doc(this.db, 'recovery_codes', username.toLowerCase());
+      await updateDoc(docRef, {
+        used: true,
+        usedAt: Date.now()
+      });
+      return true;
+    } catch (error) {
+      console.error('Error invalidando código:', error);
+      throw error;
+    }
+  }
+  
+  async updateUserPassword(username, newPasswordHash) {
+    try {
+      const docRef = doc(this.db, 'user_credentials', username.toLowerCase());
+      await updateDoc(docRef, {
+        passwordHash: newPasswordHash,
+        lastPasswordChange: Date.now()
+      });
+      return true;
+    } catch (error) {
+      console.error('Error actualizando contraseña:', error);
+      throw error;
+    }
+  }
+  
+  async checkRecoveryAttempts(username) {
+    try {
+      const docRef = doc(this.db, 'recovery_attempts', username.toLowerCase());
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        return { count: 0, blocked: false };
+      }
+      
+      const data = docSnap.data();
+      const now = Date.now();
+      
+      // Si está bloqueado, verificar si ya pasó el tiempo
+      if (data.blockUntil && data.blockUntil > now) {
+        return { 
+          count: data.failedAttempts || 0,
+          blocked: true, 
+          blockUntil: data.blockUntil 
+        };
+      }
+      
+      // Si ya pasó el bloqueo, resetear
+      if (data.blockUntil && data.blockUntil <= now) {
+        await updateDoc(docRef, {
+          failedAttempts: 0,
+          blockUntil: null
+        });
+        return { count: 0, blocked: false };
+      }
+      
+      return { 
+        count: data.failedAttempts || 0, 
+        blocked: false 
+      };
+    } catch (error) {
+      console.error('Error verificando intentos:', error);
+      return { count: 0, blocked: false };
+    }
+  }
+  
+  async registerRecoveryAttempt(username, success) {
+    try {
+      const docRef = doc(this.db, 'recovery_attempts', username.toLowerCase());
+      const docSnap = await getDoc(docRef);
+      
+      const now = Date.now();
+      const BLOCK_DURATION = 30 * 60 * 1000; // 30 minutos
+      
+      if (success) {
+        // Si tuvo éxito, limpiar intentos
+        await setDoc(docRef, {
+          username: username,
+          failedAttempts: 0,
+          lastSuccessful: now,
+          blockUntil: null,
+          domain: 'thisisfenix.github.io'
+        }, { merge: true });
+      } else {
+        // Incrementar intentos fallidos
+        const currentAttempts = docSnap.exists() ? (docSnap.data().failedAttempts || 0) : 0;
+        const newAttempts = currentAttempts + 1;
+        
+        const updateData = {
+          username: username,
+          failedAttempts: newAttempts,
+          lastFailed: now,
+          domain: 'thisisfenix.github.io'
+        };
+        
+        // Si llegó a 3 intentos, bloquear
+        if (newAttempts >= 3) {
+          updateData.blockUntil = now + BLOCK_DURATION;
+          updateData.blockedAt = now;
+        }
+        
+        await setDoc(docRef, updateData, { merge: true });
+        
+        // Registrar en logs de seguridad
+        await addDoc(collection(this.db, 'security_logs'), {
+          type: 'recovery_attempt_failed',
+          username: username,
+          timestamp: now,
+          attempts: newAttempts,
+          blocked: newAttempts >= 3,
+          domain: 'thisisfenix.github.io'
+        });
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error registrando intento:', error);
+      throw error;
+    }
+  }
+  
+  async clearRecoveryAttempts(username) {
+    try {
+      const docRef = doc(this.db, 'recovery_attempts', username.toLowerCase());
+      await setDoc(docRef, {
+        username: username,
+        failedAttempts: 0,
+        blockUntil: null,
+        clearedAt: Date.now(),
+        domain: 'thisisfenix.github.io'
+      }, { merge: true });
+      return true;
+    } catch (error) {
+      console.error('Error limpiando intentos:', error);
+      throw error;
+    }
+  }
+  
+  async getRecoveryCode(username) {
+    try {
+      const docRef = doc(this.db, 'recovery_codes', username.toLowerCase());
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        return docSnap.data();
+      }
+      return null;
+    } catch (error) {
+      console.error('Error obteniendo código:', error);
+      return null;
+    }
+  }
+  
+  async updateUserSecurityQuestion(username, question, answerHash) {
+    try {
+      const docRef = doc(this.db, 'user_credentials', username.toLowerCase());
+      await updateDoc(docRef, {
+        securityQuestion: question,
+        securityAnswerHash: answerHash,
+        securityQuestionUpdated: Date.now()
+      });
+      return true;
+    } catch (error) {
+      console.error('Error actualizando pregunta de seguridad:', error);
+      throw error;
+    }
+  }
+  
   async getAllComments() {
     try {
       const q = query(collection(this.db, 'comments'), orderBy('timestamp', 'desc'), limit(1000));
@@ -779,6 +1041,22 @@ export class FirebaseManager {
       return true;
     } catch (error) {
       console.error('Error actualizando perfil de usuario:', error);
+      throw error;
+    }
+  }
+
+  async updateUserPrivacy(username, privacySettings) {
+    try {
+      const docRef = doc(this.db, 'user_profiles', username.toLowerCase());
+      await updateDoc(docRef, {
+        privacy: privacySettings,
+        updatedAt: Date.now()
+      });
+      
+      console.log(`✅ Configuración de privacidad de ${username} actualizada`);
+      return true;
+    } catch (error) {
+      console.error('Error actualizando privacidad:', error);
       throw error;
     }
   }
@@ -1106,20 +1384,25 @@ export class FirebaseManager {
       const drawingDoc = await getDoc(doc(this.db, 'dibujos', drawingId));
       const oldCommentsArray = drawingDoc.exists() ? (drawingDoc.data().comments || []) : [];
       
+      console.log(`📦 Array viejo tiene ${oldCommentsArray.length} elementos`);
+      
       // Separar comentarios principales y respuestas del array viejo
       const oldMainComments = oldCommentsArray.filter(c => !c.parentId);
       const oldReplies = oldCommentsArray.filter(c => c.parentId);
       
+      console.log(`👥 ${oldMainComments.length} comentarios principales, ${oldReplies.length} replies en array viejo`);
+      
       // Convertir comentarios principales viejos al formato nuevo
       const convertedOldComments = oldMainComments.map(comment => {
-        const commentId = comment.id || `legacy_${comment.timestamp || Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Usar el ID que ya tiene, o generar uno consistente
+        const commentId = comment.id || `comment_${comment.timestamp || Date.now()}`;
         
-        // Buscar replies de este comentario en el array viejo
+        // Buscar replies de este comentario en el array viejo usando SU parentId
         const legacyReplies = oldReplies
           .filter(r => r.parentId === commentId)
           .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
           .map(reply => ({
-            id: reply.id || `legacy_reply_${reply.timestamp || Date.now()}`,
+            id: reply.id || `reply_${reply.timestamp || Date.now()}`,
             autor: reply.autor || reply.author || 'Anónimo',
             texto: reply.texto || reply.text || '',
             timestamp: reply.timestamp || Date.now(),
@@ -1156,15 +1439,23 @@ export class FirebaseManager {
         });
       });
       
+      console.log(`🆕 ${newSubcomments.length} replies nuevos en colección subcomments`);
+      
       // Ordenar respuestas nuevas en el cliente
       newSubcomments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
       
       // Agregar respuestas nuevas a los comentarios que las tengan
       const commentsWithReplies = allMainComments.map(comment => {
         const newReplies = newSubcomments.filter(sub => sub.parentCommentId === comment.id);
+        const allReplies = [...(comment.replies || []), ...newReplies];
+        
+        if (allReplies.length > 0) {
+          console.log(`📝 Comentario ${comment.id} tiene ${allReplies.length} replies totales`);
+        }
+        
         return {
           ...comment,
-          replies: [...(comment.replies || []), ...newReplies]
+          replies: allReplies
         };
       });
       
@@ -1176,11 +1467,135 @@ export class FirebaseManager {
       });
       
       const totalReplies = commentsWithReplies.reduce((sum, c) => sum + (c.replies?.length || 0), 0);
-      console.log(`✅ ${convertedOldComments.length} comentarios legacy (${oldReplies.length} replies) + ${separateComments.length} nuevos (${newSubcomments.length} replies) = ${commentsWithReplies.length} total con ${totalReplies} respuestas`);
+      console.log(`✅ FINAL: ${commentsWithReplies.length} comentarios principales con ${totalReplies} respuestas totales`);
       return commentsWithReplies;
     } catch (error) {
       console.error('❌ Error obteniendo comentarios con respuestas:', error);
       return [];
+    }
+  }
+  
+  // Verificar si un nombre de usuario ya está registrado
+  async checkUsernameExists(username) {
+    if (!username || !username.trim()) return false;
+    
+    try {
+      const normalizedUsername = username.trim();
+      const credentialsRef = doc(this.db, 'userCredentials', normalizedUsername);
+      const credentialsSnap = await getDoc(credentialsRef);
+      
+      return credentialsSnap.exists();
+    } catch (error) {
+      console.error('Error verificando username:', error);
+      return false; // En caso de error, asumir que no existe
+    }
+  }
+
+  /**
+   * Migra los likes de localStorage a Firebase (array likedBy)
+   * @param {string} username - Usuario actual
+   */
+  async migrateLikesToFirebase(username) {
+    if (!username || username === 'Anónimo') {
+      console.log('⚠️ Usuario anónimo, no se migran likes');
+      return { migrated: 0, errors: 0 };
+    }
+
+    console.log(`🔄 Iniciando migración de likes para ${username}...`);
+    
+    const migrationKey = `likes_migrated_${username}`;
+    
+    // Verificar si ya se migró
+    if (localStorage.getItem(migrationKey) === 'true') {
+      console.log('✅ Likes ya fueron migrados anteriormente');
+      return { migrated: 0, errors: 0, alreadyMigrated: true };
+    }
+
+    try {
+      // Obtener todos los dibujos
+      const allDrawings = await this.getAllDrawings();
+      let migrated = 0;
+      let errors = 0;
+
+      // Buscar likes en localStorage
+      for (const drawing of allDrawings) {
+        const storageKey = `liked_${drawing.id}`;
+        const isLiked = localStorage.getItem(storageKey) === 'true';
+
+        if (isLiked) {
+          try {
+            const likedBy = drawing.data.likedBy || [];
+            
+            // Solo migrar si el usuario NO está ya en likedBy
+            if (!likedBy.includes(username)) {
+              const docRef = doc(this.db, 'dibujos', drawing.id);
+              await updateDoc(docRef, {
+                likedBy: arrayUnion(username)
+              });
+              
+              migrated++;
+              console.log(`✅ Migrado like en dibujo ${drawing.id}`);
+            } else {
+              console.log(`⏭️ Like ya existe en Firebase para dibujo ${drawing.id}`);
+            }
+          } catch (error) {
+            console.error(`❌ Error migrando like en dibujo ${drawing.id}:`, error);
+            errors++;
+          }
+        }
+      }
+
+      // Marcar como migrado
+      localStorage.setItem(migrationKey, 'true');
+      
+      console.log(`✅ Migración completada: ${migrated} likes migrados, ${errors} errores`);
+      return { migrated, errors, total: allDrawings.length };
+      
+    } catch (error) {
+      console.error('❌ Error en migración de likes:', error);
+      return { migrated: 0, errors: 1, error: error.message };
+    }
+  }
+
+  // ==================== ELIMINAR COMENTARIOS Y RESPUESTAS ====================
+  
+  async deleteComment(drawingId, commentId) {
+    try {
+      console.log('🗑️ Eliminando comentario:', { drawingId, commentId });
+      
+      // Eliminar el comentario de la colección separada
+      await deleteDoc(doc(this.db, 'comments', commentId));
+      
+      // También eliminar todas las respuestas de este comentario
+      const repliesQuery = query(
+        collection(this.db, 'subcomments'),
+        where('parentCommentId', '==', commentId)
+      );
+      
+      const repliesSnapshot = await getDocs(repliesQuery);
+      const deletePromises = repliesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      
+      console.log(`✅ Comentario eliminado: ${commentId} (+ ${repliesSnapshot.size} respuestas)`);
+      return true;
+    } catch (error) {
+      console.error('❌ Error eliminando comentario:', error);
+      throw error;
+    }
+  }
+  
+  async deleteReply(drawingId, parentCommentId, replyId) {
+    try {
+      console.log('🗑️ Eliminando respuesta:', { drawingId, parentCommentId, replyId });
+      
+      // Eliminar la respuesta de la colección de subcomments
+      await deleteDoc(doc(this.db, 'subcomments', replyId));
+      
+      console.log(`✅ Respuesta eliminada: ${replyId}`);
+      return true;
+    } catch (error) {
+      console.error('❌ Error eliminando respuesta:', error);
+      throw error;
     }
   }
 }

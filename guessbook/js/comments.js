@@ -179,6 +179,16 @@ export class CommentsManager {
   async addComment(drawingId, author, text, attachedImage = null) {
     if (!text || !text.trim()) return false;
     
+    // Validar nombre de autor
+    const validation = await this.validateAuthorName(author);
+    if (!validation.valid) {
+      alert(validation.message);
+      return false;
+    }
+    
+    // Usar el nombre validado (puede ser "Anónimo" si estaba vacío)
+    author = validation.authorName;
+    
     // Auto-moderación antes de agregar
     if (window.autoModeration) {
       const modResult = await window.autoModeration.moderateContent(text, author, 'comment');
@@ -243,6 +253,60 @@ export class CommentsManager {
     } catch (error) {
       console.error('Error agregando comentario:', error);
       return false;
+    }
+  }
+  
+  // Validar nombre de autor antes de comentar
+  async validateAuthorName(author) {
+    // Si está vacío o es null, ofrecer usar Anónimo
+    if (!author || !author.trim()) {
+      const useAnonymous = confirm('No has ingresado un nombre.\n\n¿Quieres comentar como "Anónimo" (invitado)?');
+      if (useAnonymous) {
+        return { valid: true, authorName: 'Anónimo' };
+      }
+      return { valid: false, message: 'Debes ingresar un nombre o usar "Anónimo"' };
+    }
+    
+    author = author.trim();
+    
+    // Bloquear "Anónimo" con variaciones como nombre de usuario
+    const anonVariations = ['anonimo', 'anónimo', 'anonymous', 'anon'];
+    if (anonVariations.includes(author.toLowerCase())) {
+      return { valid: true, authorName: 'Anónimo' }; // Normalizar a "Anónimo"
+    }
+    
+    // Verificar si el nombre está registrado
+    try {
+      const firebase = window.guestbookApp?.firebase;
+      if (!firebase) {
+        return { valid: true, authorName: author }; // Si no hay Firebase, permitir
+      }
+      
+      // Verificar si existe un usuario registrado con ese nombre
+      const userExists = await firebase.checkUsernameExists(author);
+      
+      if (userExists) {
+        // Verificar si es el usuario actual logueado
+        const profiles = window.guestbookApp?.profiles;
+        if (profiles && profiles.currentProfile && profiles.currentProfile.isLoggedIn) {
+          if (profiles.currentProfile.username.toLowerCase() === author.toLowerCase()) {
+            return { valid: true, authorName: profiles.currentProfile.username };
+          }
+        }
+        
+        // Nombre registrado por otro usuario
+        return { 
+          valid: false, 
+          message: `❌ El nombre "${author}" ya está registrado.\n\nPor favor:\n• Inicia sesión si es tu cuenta\n• Usa otro nombre\n• O comenta como "Anónimo" (deja el campo vacío)`
+        };
+      }
+      
+      // Nombre disponible
+      return { valid: true, authorName: author };
+      
+    } catch (error) {
+      console.error('Error validando nombre:', error);
+      return { valid: true, authorName: author }; // En caso de error, permitir
     }
   }
 }
@@ -552,3 +616,4 @@ window.viewAttachedImage = function(imageSrc) {
 if (typeof window !== 'undefined') {
   window.CommentsManager = CommentsManager;
 }
+
