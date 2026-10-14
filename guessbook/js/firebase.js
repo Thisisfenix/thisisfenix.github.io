@@ -1099,10 +1099,28 @@ export class FirebaseManager {
     try {
       console.log('📝 Cargando comentarios con respuestas para:', drawingId);
       
-      // Obtener comentarios principales
-      const mainComments = await this.getComments(drawingId);
+      // Obtener comentarios de la colección separada (sistema nuevo)
+      const separateComments = await this.getComments(drawingId);
       
-      // Obtener todas las respuestas de una vez (sin orderBy)
+      // Obtener comentarios del documento (sistema viejo) para compatibilidad
+      const drawingDoc = await getDoc(doc(this.db, 'dibujos', drawingId));
+      const oldComments = drawingDoc.exists() ? (drawingDoc.data().comments || []) : [];
+      
+      // Convertir comentarios viejos al formato nuevo
+      const convertedOldComments = oldComments.map((comment, index) => ({
+        id: `legacy_${index}_${comment.timestamp || Date.now()}`,
+        data: {
+          autor: comment.autor || comment.author || 'Anónimo',
+          texto: comment.texto || comment.text || '',
+          timestamp: comment.timestamp || Date.now()
+        },
+        replies: [] // Los comentarios viejos no tienen replies
+      }));
+      
+      // Combinar comentarios viejos y nuevos
+      const allMainComments = [...convertedOldComments, ...separateComments];
+      
+      // Obtener todas las respuestas de la colección subcomments (solo para comentarios nuevos)
       const qSub = query(
         collection(this.db, 'subcomments'),
         where('drawingId', '==', drawingId)
@@ -1121,12 +1139,19 @@ export class FirebaseManager {
       allSubcomments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
       
       // Agrupar respuestas por parentCommentId
-      const commentsWithReplies = mainComments.map(comment => ({
+      const commentsWithReplies = allMainComments.map(comment => ({
         ...comment,
         replies: allSubcomments.filter(sub => sub.parentCommentId === comment.id)
       }));
       
-      console.log(`✅ ${mainComments.length} comentarios con ${allSubcomments.length} respuestas totales`);
+      // Ordenar todos los comentarios por timestamp
+      commentsWithReplies.sort((a, b) => {
+        const aTime = a.data?.timestamp || a.timestamp || 0;
+        const bTime = b.data?.timestamp || b.timestamp || 0;
+        return aTime - bTime;
+      });
+      
+      console.log(`✅ ${convertedOldComments.length} comentarios legacy + ${separateComments.length} nuevos = ${commentsWithReplies.length} total con ${allSubcomments.length} respuestas`);
       return commentsWithReplies;
     } catch (error) {
       console.error('❌ Error obteniendo comentarios con respuestas:', error);
