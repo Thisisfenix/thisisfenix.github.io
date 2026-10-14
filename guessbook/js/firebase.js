@@ -1004,3 +1004,127 @@ export class FirebaseManager {
     }
   }
 }
+
+
+  // ==================== SUBCOMMENTS (REPLIES) ====================
+  
+  async getSubcomments(parentCommentId) {
+    try {
+      console.log('🔍 Buscando respuestas para comentario:', parentCommentId);
+      
+      const q = query(
+        collection(this.db, 'subcomments'),
+        where('parentCommentId', '==', parentCommentId),
+        orderBy('timestamp', 'asc')
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const subcomments = [];
+      
+      querySnapshot.forEach((doc) => {
+        subcomments.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      console.log(`✅ Encontradas ${subcomments.length} respuestas`);
+      return subcomments;
+    } catch (error) {
+      console.error('❌ Error obteniendo respuestas:', error);
+      return [];
+    }
+  }
+  
+  async addSubcomment(drawingId, parentCommentId, subcommentData) {
+    try {
+      console.log('💬 Agregando respuesta:', { drawingId, parentCommentId, subcommentData });
+      
+      // Auto-moderación antes de agregar
+      if (subcommentData.texto && this.autoModeration) {
+        const modResult = await this.autoModeration.moderateContent(
+          subcommentData.texto, 
+          subcommentData.autor || 'Anónimo', 
+          'comment'
+        );
+        
+        if (modResult.blocked) {
+          throw new Error(`Respuesta bloqueada: ${modResult.reasons.join(', ')}`);
+        }
+        
+        if (modResult.flagged) {
+          subcommentData.flagged = true;
+          subcommentData.flagReason = modResult.reasons.join(', ');
+        }
+        
+        subcommentData.texto = this.autoModeration.filterContent(subcommentData.texto);
+      }
+      
+      const subcomment = {
+        autor: subcommentData.autor || 'Anónimo',
+        texto: subcommentData.texto,
+        timestamp: subcommentData.timestamp || Date.now(),
+        parentCommentId: parentCommentId,
+        drawingId: drawingId,
+        domain: window.location.hostname || 'thisisfenix.github.io'
+      };
+      
+      const docRef = await addDoc(collection(this.db, 'subcomments'), subcomment);
+      console.log('✅ Respuesta agregada con ID:', docRef.id);
+      return docRef.id;
+    } catch (error) {
+      console.error('❌ Error agregando respuesta:', error);
+      throw error;
+    }
+  }
+  
+  async deleteSubcomment(subcommentId) {
+    try {
+      await deleteDoc(doc(this.db, 'subcomments', subcommentId));
+      console.log('✅ Respuesta eliminada:', subcommentId);
+      return true;
+    } catch (error) {
+      console.error('❌ Error eliminando respuesta:', error);
+      throw error;
+    }
+  }
+  
+  // ==================== COMMENTS CON SUBCOMMENTS ====================
+  
+  async getCommentsWithReplies(drawingId) {
+    try {
+      console.log('📝 Cargando comentarios con respuestas para:', drawingId);
+      
+      // Obtener comentarios principales
+      const mainComments = await this.getComments(drawingId);
+      
+      // Obtener todas las respuestas de una vez
+      const qSub = query(
+        collection(this.db, 'subcomments'),
+        where('drawingId', '==', drawingId),
+        orderBy('timestamp', 'asc')
+      );
+      
+      const subSnapshot = await getDocs(qSub);
+      const allSubcomments = [];
+      subSnapshot.forEach((doc) => {
+        allSubcomments.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      // Agrupar respuestas por parentCommentId
+      const commentsWithReplies = mainComments.map(comment => ({
+        ...comment,
+        replies: allSubcomments.filter(sub => sub.parentCommentId === comment.id)
+      }));
+      
+      console.log(`✅ ${mainComments.length} comentarios con ${allSubcomments.length} respuestas totales`);
+      return commentsWithReplies;
+    } catch (error) {
+      console.error('❌ Error obteniendo comentarios con respuestas:', error);
+      return [];
+    }
+  }
+}
