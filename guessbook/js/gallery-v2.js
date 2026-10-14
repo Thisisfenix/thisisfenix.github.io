@@ -557,34 +557,6 @@ class DrawingModal {
     
     return new Date(timestamp).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }
-
-    container.innerHTML = comments
-      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
-      .map(comment => this.createCommentHTML(comment))
-      .join('');
-  }
-
-  createCommentHTML(comment) {
-    const author = comment.autor || comment.author || 'Anónimo';
-    const text = comment.texto || comment.text || '';
-    const timestamp = comment.timestamp || Date.now();
-    const date = new Date(timestamp).toLocaleString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-
-    return `
-      <div class="comment-item">
-        <div class="comment-header">
-          <span class="comment-author">👤 ${author}</span>
-          <span class="comment-date">${date}</span>
-        </div>
-        <div class="comment-text">${text}</div>
-      </div>
-    `;
-  }
 }
 
 // ==================== FUNCIONES GLOBALES ====================

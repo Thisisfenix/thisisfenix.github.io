@@ -1003,8 +1003,6 @@ export class FirebaseManager {
       return 'none';
     }
   }
-}
-
 
   // ==================== SUBCOMMENTS (REPLIES) ====================
   
