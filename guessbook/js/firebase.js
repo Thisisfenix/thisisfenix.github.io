@@ -1104,18 +1104,39 @@ export class FirebaseManager {
       
       // Obtener comentarios del documento (sistema viejo) para compatibilidad
       const drawingDoc = await getDoc(doc(this.db, 'dibujos', drawingId));
-      const oldComments = drawingDoc.exists() ? (drawingDoc.data().comments || []) : [];
+      const oldCommentsArray = drawingDoc.exists() ? (drawingDoc.data().comments || []) : [];
       
-      // Convertir comentarios viejos al formato nuevo
-      const convertedOldComments = oldComments.map((comment, index) => ({
-        id: `legacy_${index}_${comment.timestamp || Date.now()}`,
-        data: {
-          autor: comment.autor || comment.author || 'Anónimo',
-          texto: comment.texto || comment.text || '',
-          timestamp: comment.timestamp || Date.now()
-        },
-        replies: [] // Los comentarios viejos no tienen replies
-      }));
+      // Separar comentarios principales y respuestas del array viejo
+      const oldMainComments = oldCommentsArray.filter(c => !c.parentId);
+      const oldReplies = oldCommentsArray.filter(c => c.parentId);
+      
+      // Convertir comentarios principales viejos al formato nuevo
+      const convertedOldComments = oldMainComments.map(comment => {
+        const commentId = comment.id || `legacy_${comment.timestamp || Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Buscar replies de este comentario en el array viejo
+        const legacyReplies = oldReplies
+          .filter(r => r.parentId === commentId)
+          .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
+          .map(reply => ({
+            id: reply.id || `legacy_reply_${reply.timestamp || Date.now()}`,
+            autor: reply.autor || reply.author || 'Anónimo',
+            texto: reply.texto || reply.text || '',
+            timestamp: reply.timestamp || Date.now(),
+            parentCommentId: commentId,
+            drawingId: drawingId
+          }));
+        
+        return {
+          id: commentId,
+          data: {
+            autor: comment.autor || comment.author || 'Anónimo',
+            texto: comment.texto || comment.text || '',
+            timestamp: comment.timestamp || Date.now()
+          },
+          replies: legacyReplies
+        };
+      });
       
       // Combinar comentarios viejos y nuevos
       const allMainComments = [...convertedOldComments, ...separateComments];
@@ -1127,22 +1148,25 @@ export class FirebaseManager {
       );
       
       const subSnapshot = await getDocs(qSub);
-      const allSubcomments = [];
+      const newSubcomments = [];
       subSnapshot.forEach((doc) => {
-        allSubcomments.push({
+        newSubcomments.push({
           id: doc.id,
           ...doc.data()
         });
       });
       
-      // Ordenar respuestas en el cliente
-      allSubcomments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      // Ordenar respuestas nuevas en el cliente
+      newSubcomments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
       
-      // Agrupar respuestas por parentCommentId
-      const commentsWithReplies = allMainComments.map(comment => ({
-        ...comment,
-        replies: allSubcomments.filter(sub => sub.parentCommentId === comment.id)
-      }));
+      // Agregar respuestas nuevas a los comentarios que las tengan
+      const commentsWithReplies = allMainComments.map(comment => {
+        const newReplies = newSubcomments.filter(sub => sub.parentCommentId === comment.id);
+        return {
+          ...comment,
+          replies: [...(comment.replies || []), ...newReplies]
+        };
+      });
       
       // Ordenar todos los comentarios por timestamp
       commentsWithReplies.sort((a, b) => {
@@ -1151,7 +1175,8 @@ export class FirebaseManager {
         return aTime - bTime;
       });
       
-      console.log(`✅ ${convertedOldComments.length} comentarios legacy + ${separateComments.length} nuevos = ${commentsWithReplies.length} total con ${allSubcomments.length} respuestas`);
+      const totalReplies = commentsWithReplies.reduce((sum, c) => sum + (c.replies?.length || 0), 0);
+      console.log(`✅ ${convertedOldComments.length} comentarios legacy (${oldReplies.length} replies) + ${separateComments.length} nuevos (${newSubcomments.length} replies) = ${commentsWithReplies.length} total con ${totalReplies} respuestas`);
       return commentsWithReplies;
     } catch (error) {
       console.error('❌ Error obteniendo comentarios con respuestas:', error);
