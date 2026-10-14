@@ -185,4 +185,188 @@ export class UIManager {
       }, i * 50);
     }
   }
+
+  // ==================== UTILIDADES ====================
+  
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ==================== SUGERENCIAS ====================
+  
+  async showSuggestionsModal() {
+    try {
+      const firebase = window.guestbookApp?.firebase;
+      if (!firebase) {
+        alert('Error: Firebase no está inicializado');
+        return;
+      }
+
+      const suggestions = await firebase.getAllSuggestions();
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal fade';
+      modal.innerHTML = `
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content" style="background: var(--bg-light); border: 2px solid var(--primary);">
+            <div class="modal-header" style="border-bottom: 1px solid var(--primary);">
+              <h5 class="modal-title" style="color: var(--primary);">
+                <i data-lucide="message-square" style="width: 1.25rem; height: 1.25rem; vertical-align: middle;"></i>
+                Sugerencias de la Comunidad
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+              ${suggestions.length === 0 ? `
+                <div class="text-center py-5" style="color: var(--text-secondary);">
+                  <i data-lucide="inbox" style="width: 3rem; height: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                  <p>No hay sugerencias aún</p>
+                </div>
+              ` : suggestions.map(s => `
+                <div class="card mb-3" style="background: var(--bg-dark); border: 1px solid var(--primary); border-radius: 12px;">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <span class="badge ${s.tipo === 'feature' ? 'bg-primary' : s.tipo === 'bug' ? 'bg-danger' : 'bg-secondary'}">
+                          ${s.tipo === 'feature' ? '✨ Feature' : s.tipo === 'bug' ? '🐛 Bug' : '💡 Mejora'}
+                        </span>
+                        <span class="badge ${s.status === 'pending' ? 'bg-warning' : s.status === 'done' ? 'bg-success' : 'bg-secondary'} ms-2">
+                          ${s.status === 'pending' ? '⏳ Pendiente' : s.status === 'done' ? '✅ Completado' : '❌ Rechazado'}
+                        </span>
+                      </div>
+                      <small style="color: var(--text-secondary);">${new Date(s.timestamp).toLocaleDateString('es-ES')}</small>
+                    </div>
+                    <p style="color: var(--text-primary); margin-bottom: 0.5rem;">${this.escapeHtml(s.texto)}</p>
+                    <small style="color: var(--text-secondary);">Por: ${this.escapeHtml(s.autor)}</small>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid var(--primary);">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      const bsModal = new bootstrap.Modal(modal);
+      bsModal.show();
+      
+      // Inicializar iconos de Lucide
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+      
+      modal.addEventListener('hidden.bs.modal', () => modal.remove());
+      
+    } catch (error) {
+      console.error('Error mostrando sugerencias:', error);
+      alert('Error al cargar sugerencias');
+    }
+  }
+  
+  showCreateSuggestionModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+      <div class="modal-dialog">
+        <div class="modal-content" style="background: var(--bg-light); border: 2px solid var(--primary);">
+          <div class="modal-header" style="border-bottom: 1px solid var(--primary);">
+            <h5 class="modal-title" style="color: var(--primary);">
+              <i data-lucide="plus-circle" style="width: 1.25rem; height: 1.25rem; vertical-align: middle;"></i>
+              Nueva Sugerencia
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label" style="color: var(--text-primary);">Tu Nombre</label>
+              <input type="text" id="suggestionAuthor" class="form-control" placeholder="Nombre (opcional)" maxlength="50" 
+                     style="background: var(--bg-dark); border: 1px solid var(--primary); color: var(--text-primary);">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" style="color: var(--text-primary);">Tipo de Sugerencia</label>
+              <select id="suggestionType" class="form-select" 
+                      style="background: var(--bg-dark); border: 1px solid var(--primary); color: var(--text-primary);">
+                <option value="feature">✨ Nueva Funcionalidad</option>
+                <option value="improvement">💡 Mejora</option>
+                <option value="bug">🐛 Reporte de Bug</option>
+                <option value="other">📝 Otro</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" style="color: var(--text-primary);">Descripción</label>
+              <textarea id="suggestionText" class="form-control" rows="4" maxlength="1000" 
+                        placeholder="Describe tu sugerencia..." required
+                        style="background: var(--bg-dark); border: 1px solid var(--primary); color: var(--text-primary);"></textarea>
+              <small class="form-text" style="color: var(--text-secondary);">Máximo 1000 caracteres</small>
+            </div>
+          </div>
+          <div class="modal-footer" style="border-top: 1px solid var(--primary);">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="this.closest('.modal').querySelector('.btn-primary').disabled = true; window.guestbookApp.ui.submitSuggestion()">
+              <i data-lucide="send" style="width: 1rem; height: 1rem;"></i>
+              Enviar Sugerencia
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+    
+    // Inicializar iconos de Lucide
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+    
+    modal.addEventListener('hidden.bs.modal', () => modal.remove());
+  }
+  
+  async submitSuggestion() {
+    try {
+      const author = document.getElementById('suggestionAuthor').value.trim() || 'Anónimo';
+      const type = document.getElementById('suggestionType').value;
+      const text = document.getElementById('suggestionText').value.trim();
+      
+      if (!text) {
+        alert('Por favor escribe una descripción');
+        return;
+      }
+      
+      const firebase = window.guestbookApp?.firebase;
+      if (!firebase) {
+        alert('Error: Firebase no está inicializado');
+        return;
+      }
+      
+      const suggestionData = {
+        autor: author,
+        tipo: type,
+        texto: text,
+        timestamp: Date.now(),
+        status: 'pending',
+        domain: window.location.hostname
+      };
+      
+      await firebase.saveSuggestion(suggestionData);
+      
+      this.showNotification('✅ ¡Sugerencia enviada!', 'success');
+      
+      // Cerrar modal
+      const modal = document.querySelector('.modal.show');
+      if (modal) {
+        bootstrap.Modal.getInstance(modal).hide();
+      }
+      
+    } catch (error) {
+      console.error('Error enviando sugerencia:', error);
+      alert('Error al enviar la sugerencia. Intenta de nuevo.');
+    }
+  }
 }
