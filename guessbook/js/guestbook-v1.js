@@ -6,7 +6,7 @@ import { MobileOptimizer } from './mobile-optimizer.js';
 import { UIManager } from './ui.js';
 import { FirebaseManager } from './firebase.js';
 import { CanvasManager } from './canvas.js';
-import { GalleryManager } from './gallery.js';
+import { GalleryManagerV2 as GalleryManager } from './gallery-v2.js';
 import { CommentsManager } from './comments.js';
 import { SoundSystem } from './sound-system.js';
 
