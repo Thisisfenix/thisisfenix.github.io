@@ -249,10 +249,10 @@ export class FirebaseManager {
     try {
       console.log('Buscando comentarios para drawingId:', drawingId);
       
+      // Query sin orderBy para evitar necesitar índice compuesto
       const q = query(
         collection(this.db, 'comments'),
-        where('drawingId', '==', drawingId),
-        orderBy('timestamp', 'asc')
+        where('drawingId', '==', drawingId)
       );
       
       const querySnapshot = await getDocs(q);
@@ -264,6 +264,9 @@ export class FirebaseManager {
           data: doc.data()
         });
       });
+      
+      // Ordenar en el cliente
+      comments.sort((a, b) => (a.data.timestamp || 0) - (b.data.timestamp || 0));
       
       console.log(`Encontrados ${comments.length} comentarios en colección separada`);
       return comments;
@@ -1010,10 +1013,10 @@ export class FirebaseManager {
     try {
       console.log('🔍 Buscando respuestas para comentario:', parentCommentId);
       
+      // Query sin orderBy para evitar necesitar índice compuesto
       const q = query(
         collection(this.db, 'subcomments'),
-        where('parentCommentId', '==', parentCommentId),
-        orderBy('timestamp', 'asc')
+        where('parentCommentId', '==', parentCommentId)
       );
       
       const querySnapshot = await getDocs(q);
@@ -1025,6 +1028,9 @@ export class FirebaseManager {
           ...doc.data()
         });
       });
+      
+      // Ordenar en el cliente
+      subcomments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
       
       console.log(`✅ Encontradas ${subcomments.length} respuestas`);
       return subcomments;
@@ -1096,11 +1102,10 @@ export class FirebaseManager {
       // Obtener comentarios principales
       const mainComments = await this.getComments(drawingId);
       
-      // Obtener todas las respuestas de una vez
+      // Obtener todas las respuestas de una vez (sin orderBy)
       const qSub = query(
         collection(this.db, 'subcomments'),
-        where('drawingId', '==', drawingId),
-        orderBy('timestamp', 'asc')
+        where('drawingId', '==', drawingId)
       );
       
       const subSnapshot = await getDocs(qSub);
@@ -1111,6 +1116,9 @@ export class FirebaseManager {
           ...doc.data()
         });
       });
+      
+      // Ordenar respuestas en el cliente
+      allSubcomments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
       
       // Agrupar respuestas por parentCommentId
       const commentsWithReplies = mainComments.map(comment => ({
