@@ -167,9 +167,10 @@ export class GalleryManager {
     const hasGifStickers = drawing.data.gifStickers && Array.isArray(drawing.data.gifStickers) && drawing.data.gifStickers.length > 0;
     const isAnimated = hasBackgroundGif || drawing.data.isAnimated || hasGifStickers;
 
-    // Crear contenido de imagen
+    // Crear contenido de imagen - SIMPLIFICADO con background-image
     let imageContent = '';
     if (hasBackgroundGif || hasGifStickers) {
+      // Caso complejo: con capas de GIF
       imageContent = `
         <div style="position: relative; width: 100%; height: 200px; background: white; border-radius: 4px; overflow: hidden;">
           ${hasBackgroundGif ? `<img src="${drawing.data.backgroundGif}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;" alt="Fondo GIF">` : ''}
@@ -178,7 +179,8 @@ export class GalleryManager {
         </div>
       `;
     } else {
-      imageContent = `<img src="${imageData}" class="drawing-img" style="width: 100%; height: 200px; object-fit: contain; background: white; border-radius: 4px; transition: transform 0.3s ease;" loading="lazy" alt="${title}">`;
+      // Caso simple: usar background-image en lugar de <img>
+      imageContent = `<div style="width: 100%; height: 200px; background-image: url('${imageData}'); background-size: contain; background-position: center; background-repeat: no-repeat; background-color: white; border-radius: 4px;"></div>`;
     }
 
     // Badge animado
