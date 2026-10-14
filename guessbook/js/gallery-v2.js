@@ -446,17 +446,117 @@ class DrawingModal {
     const container = this.modal.querySelector('.comments-list');
     if (!container) return;
 
-    const comments = this.drawing.comments || [];
-    
-    if (comments.length === 0) {
-      container.innerHTML = `
-        <div class="empty-comments">
-          <p>💬 Aún no hay comentarios</p>
-          <small>¡Sé el primero en comentar!</small>
-        </div>
-      `;
-      return;
+    try {
+      container.innerHTML = '<div class="loading">Cargando comentarios...</div>';
+      
+      // Usar el nuevo método que carga comentarios con replies
+      const commentsWithReplies = await window.guestbookApp.firebase.getCommentsWithReplies(this.drawingId);
+      
+      if (commentsWithReplies.length === 0) {
+        container.innerHTML = `
+          <div class="empty-comments">
+            <p>💬 Aún no hay comentarios</p>
+            <small>¡Sé el primero en comentar!</small>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = commentsWithReplies.map(comment => this.renderCommentWithReplies(comment)).join('');
+      
+    } catch (error) {
+      console.error('Error cargando comentarios:', error);
+      container.innerHTML = '<div class="error">Error al cargar comentarios</div>';
     }
+  }
+  
+  renderCommentWithReplies(comment) {
+    const commentData = comment.data || comment;
+    const author = commentData.autor || 'Anónimo';
+    const text = commentData.texto || '';
+    const timestamp = commentData.timestamp || Date.now();
+    const replies = comment.replies || [];
+    
+    return `
+      <div class="comment-item" data-comment-id="${comment.id}">
+        <div class="comment-main">
+          <div class="comment-avatar">👤</div>
+          <div class="comment-content">
+            <div class="comment-header">
+              <strong>${this.escapeHtml(author)}</strong>
+              <span class="comment-time">${this.formatTimeAgo(timestamp)}</span>
+            </div>
+            <p class="comment-text">${this.escapeHtml(text)}</p>
+            <button class="btn-reply" onclick="showReplyBox('${comment.id}')">
+              <i data-lucide="corner-down-right" style="width: 14px; height: 14px;"></i>
+              Responder
+            </button>
+          </div>
+        </div>
+        
+        <!-- Caja de respuesta (oculta por defecto) -->
+        <div class="reply-box" id="reply-box-${comment.id}" style="display: none;">
+          <div class="reply-form">
+            <input type="text" 
+                   class="reply-author" 
+                   placeholder="Tu nombre (opcional)" 
+                   maxlength="50">
+            <textarea class="reply-text" 
+                      placeholder="Escribe tu respuesta..." 
+                      maxlength="300" 
+                      rows="2"></textarea>
+            <div class="reply-actions">
+              <button class="btn-secondary btn-sm" onclick="hideReplyBox('${comment.id}')">Cancelar</button>
+              <button class="btn-primary btn-sm" onclick="submitReply('${this.drawingId}', '${comment.id}')">Responder</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Respuestas (threads) -->
+        ${replies.length > 0 ? `
+          <div class="replies-list">
+            ${replies.map(reply => this.renderReply(reply)).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+  
+  renderReply(reply) {
+    const author = reply.autor || 'Anónimo';
+    const text = reply.texto || '';
+    const timestamp = reply.timestamp || Date.now();
+    
+    return `
+      <div class="reply-item" data-reply-id="${reply.id}">
+        <div class="reply-avatar">👤</div>
+        <div class="reply-content">
+          <div class="reply-header">
+            <strong>${this.escapeHtml(author)}</strong>
+            <span class="reply-time">${this.formatTimeAgo(timestamp)}</span>
+          </div>
+          <p class="reply-text">${this.escapeHtml(text)}</p>
+        </div>
+      </div>
+    `;
+  }
+  
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  formatTimeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    
+    if (seconds < 60) return 'ahora';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)}d`;
+    
+    return new Date(timestamp).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+  }
 
     container.innerHTML = comments
       .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
@@ -546,3 +646,60 @@ window.submitComment = async function(drawingId) {
 // Exponer para uso externo
 export { GalleryManager as GalleryManagerV2 };
 export { DrawingModal };
+
+
+// ==================== FUNCIONES GLOBALES PARA REPLIES ====================
+
+window.showReplyBox = function(commentId) {
+  const replyBox = document.getElementById(`reply-box-${commentId}`);
+  if (replyBox) {
+    replyBox.style.display = 'block';
+    replyBox.querySelector('.reply-text').focus();
+  }
+};
+
+window.hideReplyBox = function(commentId) {
+  const replyBox = document.getElementById(`reply-box-${commentId}`);
+  if (replyBox) {
+    replyBox.style.display = 'none';
+    replyBox.querySelector('.reply-author').value = '';
+    replyBox.querySelector('.reply-text').value = '';
+  }
+};
+
+window.submitReply = async function(drawingId, parentCommentId) {
+  try {
+    const replyBox = document.getElementById(`reply-box-${parentCommentId}`);
+    if (!replyBox) return;
+    
+    const authorInput = replyBox.querySelector('.reply-author');
+    const textInput = replyBox.querySelector('.reply-text');
+    
+    const author = authorInput.value.trim() || 'Anónimo';
+    const text = textInput.value.trim();
+    
+    if (!text) {
+      alert('Por favor escribe una respuesta');
+      return;
+    }
+    
+    const replyData = {
+      autor: author,
+      texto: text,
+      timestamp: Date.now()
+    };
+    
+    await window.guestbookApp.firebase.addSubcomment(drawingId, parentCommentId, replyData);
+    
+    // Recargar el modal
+    const modal = document.querySelector('.drawing-modal');
+    if (modal) {
+      const drawingModal = new DrawingModal(drawingId);
+      await drawingModal.show();
+    }
+    
+  } catch (error) {
+    console.error('Error al enviar respuesta:', error);
+    alert('Error al enviar la respuesta');
+  }
+};

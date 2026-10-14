@@ -584,3 +584,165 @@
   align-items: flex-end;
   gap: 4px;
 }
+
+
+/* ==================== COMMENTS CON REPLIES (TWITTER-STYLE) ==================== */
+
+.comment-item {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.comment-main {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.comment-avatar,
+.reply-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  flex-shrink: 0;
+}
+
+.reply-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 1em;
+}
+
+.comment-content,
+.reply-content {
+  flex: 1;
+}
+
+.comment-header,
+.reply-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.comment-header strong,
+.reply-header strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.comment-time,
+.reply-time {
+  color: var(--text-secondary);
+  font-size: 0.85em;
+}
+
+.comment-text,
+.reply-text {
+  color: var(--text-primary);
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.btn-reply {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color 0.2s;
+}
+
+.btn-reply:hover {
+  color: var(--primary);
+}
+
+/* Reply Box */
+.reply-box {
+  margin-left: 3rem;
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+}
+
+.reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reply-author {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
+  font-size: 0.9em;
+}
+
+.reply-text {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
+  font-size: 0.9em;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Replies List */
+.replies-list {
+  margin-left: 3rem;
+  margin-top: 1rem;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  padding-left: 1rem;
+}
+
+.reply-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.reply-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .reply-box,
+  .replies-list {
+    margin-left: 1.5rem;
+  }
+  
+  .comment-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 1em;
+  }
+  
+  .reply-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9em;
+  }
+}
