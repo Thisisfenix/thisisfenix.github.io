@@ -36,10 +36,10 @@ export class SoundSystem {
   loadSounds() {
     // Cargar archivos de audio
     this.sounds = {
-      normal: this.createAudioFile('./damn.mp3'),
-      warning: this.createAudioFile('./damn.mp3', 1.5), 
-      explosion: this.createAudioFile('./explosion.mp3'),
-      special: this.createAudioFile('./yo-somebody-get-the-door.mp3')
+      normal: this.createAudioFile('./Assets/audio/damn.mp3'),
+      warning: this.createAudioFile('./Assets/audio/damn.mp3', 1.5), 
+      explosion: this.createAudioFile('./Assets/audio/explosion.mp3'),
+      special: this.createAudioFile('./Assets/audio/yo-somebody-get-the-door.mp3')
     };
   }
   
@@ -155,7 +155,7 @@ export class SoundSystem {
         this.warningCount = 1;
       }
       if (useSpecialSound) {
-        this.playCustomSpecialWarning('./yo-somebody-get-the-door.mp3', 1.5, 0.2);
+        this.playCustomSpecialWarning('./Assets/audio/yo-somebody-get-the-door.mp3', 1.5, 0.2);
         this.animateButton('special');
       } else {
         this.playSound('warning');
@@ -173,7 +173,7 @@ export class SoundSystem {
       const distortion = intensity * 0.8; // distorsión 0-0.8
       
       if (useSpecialSound) {
-        this.playCustomSpecialWarning('./yo-somebody-get-the-door.mp3', playbackRate, distortion);
+        this.playCustomSpecialWarning('./Assets/audio/yo-somebody-get-the-door.mp3', playbackRate, distortion);
         this.animateButton('special');
       } else {
         this.playCustomWarning(playbackRate, distortion);
@@ -200,7 +200,7 @@ export class SoundSystem {
   
   playCustomWarning(playbackRate, distortion) {
     try {
-      const customAudio = this.createAudioFile('./damn.mp3', playbackRate, distortion);
+      const customAudio = this.createAudioFile('./Assets/audio/damn.mp3', playbackRate, distortion);
       customAudio.play();
     } catch (e) {
       console.log('Audio not available');
@@ -307,7 +307,7 @@ export class SoundSystem {
         top: ${centerY}px;
         width: ${8 + Math.random() * 8}px;
         height: ${8 + Math.random() * 8}px;
-        background: url('./cementful.png') center/cover;
+        background: url('./Assets/images/cementful.png') center/cover;
         border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
         z-index: 10001;
         pointer-events: none;
@@ -397,7 +397,7 @@ style.textContent = `
     right: 20px;
     width: 60px;
     height: 60px;
-    background: url('./cementful.png') center/cover;
+    background: url('./Assets/images/cementful.png') center/cover;
     display: flex;
     align-items: center;
     justify-content: center;
