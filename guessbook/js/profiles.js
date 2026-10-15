@@ -258,6 +258,8 @@ export class ProfileManager {
       color: white;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
+      filter: contrast(0.9) brightness(0.95) saturate(0.85) sepia(0.15);
+      opacity: 0.92;
     `;
     
     circle.addEventListener('mouseenter', () => {

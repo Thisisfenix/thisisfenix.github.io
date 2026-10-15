@@ -8,7 +8,7 @@
   <!-- Discord/Social Media Embeds -->
   <meta property="og:title" content="🎨 Guestbook de Dibujos v2.0 - FenixLaboratory">
   <meta property="og:description" content="Galería interactiva con sistema de rankings, estadísticas en tiempo real, likes y comentarios. Más de 50 herramientas de dibujo, filtros y efectos. ¡Únete a la comunidad artística!">
-  <meta property="og:image" content="https://thisisfenix.github.io/FenixLaboratory/guessbook/Preview-GuestBook.png">
+  <meta property="og:image" content="https://thisisfenix.github.io/FenixLaboratory/guessbook/Assets/images/guestbook-v1-preview.png">
   <meta property="og:url" content="https://thisisfenix.github.io/FenixLaboratory/guessbook/guestbook.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="FenixLaboratory">
@@ -17,7 +17,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="🎨 Guestbook de Dibujos v2.0 - FenixLaboratory">
   <meta name="twitter:description" content="Galería con rankings, estadísticas en tiempo real, sistema social y más de 50 herramientas de dibujo.">
-  <meta name="twitter:image" content="https://thisisfenix.github.io/FenixLaboratory/guessbook/Preview-GuestBook.png">
+  <meta name="twitter:image" content="https://thisisfenix.github.io/FenixLaboratory/guessbook/Assets/images/guestbook-v1-preview.png">
   <meta name="twitter:creator" content="@AntiAnkush">
   
   <!-- Additional Meta -->
@@ -1241,7 +1241,6 @@
         <div style="background: var(--bg-light); border-radius: 15px; padding: 20px; border: 1px solid var(--primary);">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 style="color: var(--primary); margin: 0;">📋 Sugerencias Recientes</h4>
-            <button id="adminBtn" class="btn btn-sm btn-outline-warning" onclick="toggleAdminMode()">🔑 Admin</button>
           </div>
           
           <div class="d-flex justify-content-center gap-2 flex-wrap mb-3">
@@ -5179,206 +5178,14 @@ ${userDrawings.length > 0 ? `
       });
     };
     
-    // Sistema de autenticación de admin con Firebase Rules
+    // Sistema de admin desactivado
     let isAdminMode = false;
     
-    window.toggleAdminMode = async function() {
-      if (isAdminMode) {
-        // Salir del modo admin
-        isAdminMode = false;
-        document.getElementById('adminBtn').innerHTML = '🔑 Admin';
-        document.getElementById('adminBtn').className = 'btn btn-sm btn-outline-warning';
-        
-        // Ocultar controles de admin para sugerencias
-        document.querySelectorAll('.owner-controls').forEach(control => {
-          control.style.display = 'none';
-        });
-        
-        // Ocultar controles de admin para dibujos
-        document.querySelectorAll('.drawing-admin-controls').forEach(control => {
-          control.style.display = 'none';
-        });
-        
-        alert('🚫 Modo admin desactivado');
-      } else {
-        // Entrar al modo admin
-        const password = prompt('🔑 Ingresa la contraseña de admin:');
-        if (password === null) return;
-        
-        try {
-          // Intentar crear documento de autenticación
-          // Las reglas de Firebase validarán la contraseña
-          const authDoc = {
-            adminPassword: password,
-            timestamp: Date.now(),
-            domain: 'thisisfenix.github.io'
-          };
-          
-          await addDoc(collection(db, 'admin_auth'), authDoc);
-          
-          // Si llegamos aquí, la contraseña es correcta
-          isAdminMode = true;
-          document.getElementById('adminBtn').innerHTML = '🚫 Salir Admin';
-          document.getElementById('adminBtn').className = 'btn btn-sm btn-danger';
-          
-          // Mostrar controles de admin para sugerencias
-          document.querySelectorAll('.owner-controls').forEach(control => {
-            control.style.display = 'flex';
-          });
-          
-          // Mostrar controles de admin para dibujos
-          document.querySelectorAll('.drawing-admin-controls').forEach(control => {
-            control.style.display = 'inline-flex';
-          });
-          
-          // Asegurar que los botones se muestren después de cargar contenido
-          setTimeout(() => {
-            document.querySelectorAll('.drawing-admin-controls').forEach(control => {
-              control.style.display = 'inline-flex';
-            });
-            document.querySelectorAll('.owner-controls').forEach(control => {
-              control.style.display = 'flex';
-            });
-          }, 1000);
-          
-          alert('✓ Modo admin activado');
-          
-        } catch (error) {
-          if (error.code === 'permission-denied') {
-            alert('❌ Contraseña incorrecta');
-          } else {
-            console.error('Error de autenticación:', error);
-            alert('❌ Error de conexión');
-          }
-        }
-      }
-    };
-    
-    // Funciones de moderación (solo funcionan en modo admin)
-    window.approveSuggestion = async function(suggestionId) {
-      if (!isAdminMode) {
-        alert('❌ Necesitas estar en modo admin');
-        return;
-      }
-      
-      if (!confirm('✓ ¿Aprobar esta sugerencia?')) return;
-      
-      try {
-        await updateDoc(doc(db, 'sugerencias', suggestionId), {
-          status: 'Completado',
-          reviewedBy: 'Admin',
-          reviewedAt: Date.now()
-        });
-        
-        alert('✓ Sugerencia aprobada');
-      } catch (error) {
-        try {
-          await updateDoc(doc(db, 'dibujos', suggestionId), {
-            status: 'Completado',
-            reviewedBy: 'Admin',
-            reviewedAt: Date.now(),
-            adminAction: true
-          });
-          
-          alert('✓ Sugerencia aprobada');
-        } catch (e) {
-          alert('❌ Error al aprobar sugerencia');
-        }
-      }
-    };
-    
-    window.rejectSuggestion = async function(suggestionId) {
-      if (!isAdminMode) {
-        alert('❌ Necesitas estar en modo admin');
-        return;
-      }
-      
-      if (!confirm('✗ ¿Rechazar esta sugerencia?')) return;
-      
-      try {
-        await updateDoc(doc(db, 'sugerencias', suggestionId), {
-          status: 'Rechazado',
-          reviewedBy: 'Admin',
-          reviewedAt: Date.now()
-        });
-        
-        alert('✗ Sugerencia rechazada');
-      } catch (error) {
-        try {
-          await updateDoc(doc(db, 'dibujos', suggestionId), {
-            status: 'Rechazado',
-            reviewedBy: 'Admin',
-            reviewedAt: Date.now()
-          });
-          
-          alert('✗ Sugerencia rechazada');
-        } catch (e) {
-          alert('❌ Error al rechazar sugerencia');
-        }
-      }
-    };
-    
-    window.markInProgress = async function(suggestionId) {
-      if (!isAdminMode) {
-        alert('❌ Necesitas estar en modo admin');
-        return;
-      }
-      
-      if (!confirm('🔄 ¿Marcar como en progreso?')) return;
-      
-      try {
-        await updateDoc(doc(db, 'sugerencias', suggestionId), {
-          status: 'En Progreso',
-          reviewedBy: 'Admin',
-          reviewedAt: Date.now()
-        });
-        
-        alert('🔄 Marcado como en progreso');
-      } catch (error) {
-        try {
-          await updateDoc(doc(db, 'dibujos', suggestionId), {
-            status: 'En Progreso',
-            reviewedBy: 'Admin',
-            reviewedAt: Date.now()
-          });
-          
-          alert('🔄 Marcado como en progreso');
-        } catch (e) {
-          alert('❌ Error al actualizar estado');
-        }
-      }
-    };
-    
-    // Función para eliminar dibujos (solo admin)
-    window.deleteDrawing = async function(drawingId) {
-      if (!isAdminMode) {
-        alert('❌ Necesitas estar en modo admin');
-        return;
-      }
-      
-      if (!confirm('🗑️ ¿ELIMINAR este dibujo permanentemente?\n\n⚠️ Esta acción NO se puede deshacer')) return;
-      
-      try {
-        // Eliminar directamente (las reglas ya validan el dominio)
-        await deleteDoc(doc(db, 'dibujos', drawingId));
-        
-        // Remover elemento del DOM
-        const drawingElement = document.querySelector(`[data-id="${drawingId}"]`)?.closest('.drawing-item');
-        if (drawingElement) {
-          drawingElement.remove();
-        }
-        
-        alert('🗑️ Dibujo eliminado exitosamente');
-        
-      } catch (error) {
-        console.error('Error al eliminar:', error);
-        if (error.code === 'permission-denied') {
-          alert('❌ No tienes permisos para eliminar dibujos');
-        } else {
-          alert('❌ Error al eliminar dibujo');
-        }
-      }
-    };
+    window.toggleAdminMode = function() { alert('Sistema de admin desactivado'); };
+    window.approveSuggestion = function() { alert('Sistema de admin desactivado'); };
+    window.rejectSuggestion = function() { alert('Sistema de admin desactivado'); };
+    window.markInProgress = function() { alert('Sistema de admin desactivado'); };
+    window.deleteDrawing = function() { alert('Sistema de admin desactivado'); };
     
     // Ver comentarios de sugerencia
     window.viewSuggestionComments = function(suggestionId) {
