@@ -1394,15 +1394,25 @@
                 <i data-lucide="save" style="width: 1rem; height: 1rem;"></i>
                 Guardar Dibujo
               </button>
-              <div class="btn-group w-100" role="group">
-                <button type="button" class="btn btn-outline-success btn-sm" onclick="exportDrawing(false)" title="Descargar con fondo blanco">
+              <div class="dropdown w-100">
+                <button class="btn btn-outline-primary btn-sm w-100 dropdown-toggle" type="button" id="downloadDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                   <i data-lucide="download" style="width: 0.875rem; height: 0.875rem;"></i>
-                  PNG
+                  Descargar
                 </button>
-                <button type="button" class="btn btn-outline-info btn-sm" onclick="exportDrawing(true)" title="Descargar transparente">
-                  <i data-lucide="layers" style="width: 0.875rem; height: 0.875rem;"></i>
-                  PNG α
-                </button>
+                <ul class="dropdown-menu w-100" aria-labelledby="downloadDropdown" style="background: var(--bg-dark); border: 1px solid rgba(var(--primary-rgb), 0.3);">
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="exportDrawing(false); return false;" style="color: var(--text);">
+                      <i data-lucide="download" style="width: 0.875rem; height: 0.875rem; vertical-align: middle;"></i>
+                      PNG con fondo blanco
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="exportDrawing(true); return false;" style="color: var(--text);">
+                      <i data-lucide="layers" style="width: 0.875rem; height: 0.875rem; vertical-align: middle;"></i>
+                      PNG transparente
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
