@@ -1,6 +1,7 @@
-// Firebase y base de datos
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, updateDoc, doc, getDoc, deleteDoc, where, getDocs, setDoc, limit, arrayUnion, arrayRemove, connectFirestoreEmulator } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+// Firebase y base de datos - SDK v11.0.2 (estable)
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, updateDoc, doc, getDoc, deleteDoc, where, getDocs, setDoc, limit, arrayUnion, arrayRemove, connectFirestoreEmulator } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js';
 
 export class FirebaseManager {
   constructor() {
@@ -22,6 +23,12 @@ export class FirebaseManager {
     
     // Configurar Firestore con settings para evitar warnings
     this.db = getFirestore(this.app);
+    
+    // Inicializar Firebase Authentication
+    this.auth = getAuth(this.app);
+    
+    // Exportar auth globalmente para otros módulos
+    window.auth = this.auth;
     
     // No testear conexión inmediatamente para evitar el warning de 10s
     // this.testConnection();
@@ -691,6 +698,12 @@ export class FirebaseManager {
   
   async saveUserProfile(profileData) {
     try {
+      // Validar que profileData tenga username
+      if (!profileData || !profileData.username) {
+        console.error('❌ saveUserProfile: profileData.username es requerido', profileData);
+        throw new Error('Username es requerido para guardar perfil');
+      }
+      
       const docRef = doc(this.db, 'user_profiles', profileData.username.toLowerCase());
       
       // Filtrar campos undefined
@@ -732,6 +745,35 @@ export class FirebaseManager {
       return null;
     } catch (error) {
       console.error('Error obteniendo perfil de usuario:', error);
+      return null;
+    }
+  }
+  
+  // Obtener username desde UID (para usuarios migrados con Firebase Auth)
+  async getUsernameFromUID(uid) {
+    try {
+      // Buscar en la colección de mapeo UID → username
+      const mappingRef = doc(this.db, 'auth_usernames', uid);
+      const mappingSnap = await getDoc(mappingRef);
+      
+      if (mappingSnap.exists()) {
+        const data = mappingSnap.data();
+        return data.username;
+      }
+      
+      // Si no existe el mapeo, buscar por UID en los perfiles de usuario
+      const profilesRef = collection(this.db, 'user_profiles');
+      const q = query(profilesRef, where('uid', '==', uid));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        return doc.data().username || doc.id;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error obteniendo username desde UID:', error);
       return null;
     }
   }

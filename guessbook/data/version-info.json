@@ -1,80 +1,174 @@
 {
-  "version": "1.0.0",
-  "codename": "Rewrite",
-  "releaseDate": "2026-10-15T15:00:00-05:00",
+  "version": "1.0.1",
+  "codename": "Stability",
+  "releaseDate": "2026-10-16T10:00:00-05:00",
   "status": "stable",
-  "description": "Reescritura completa del guestbook desde cero. Mismo Firebase, misma compatibilidad, pero con mejor código y más herramientas.",
+  "description": "Parche de estabilidad con correcciones críticas de bugs y mejoras de seguridad.",
   
   "changelog": {
-    "majorFeatures": [
+    "newFeatures": [
       {
-        "title": "15 Herramientas de Dibujo",
-        "description": "Pincel, borrador, balde, spray, línea, círculo, texto, difuminar, desenfocar, cuentagotas, imagen, aclarar, oscurecer, enfocar, saturar",
-        "icon": "🎨"
+        "title": "Sistema de Autenticación Dual",
+        "description": "Nuevo sistema con Firebase Authentication Y compatibilidad con sistema legacy (Firestore). Puedes iniciar sesión con email/password O con el método antiguo.",
+        "icon": "🔐",
+        "target": "all",
+        "details": [
+          "Firebase Authentication para nuevos usuarios",
+          "Sistema legacy de Firestore sigue funcionando",
+          "Migración automática de cuentas legacy → Firebase Auth",
+          "Preserva todos los datos: dibujos, likes, comentarios, logros",
+          "Username, avatar, banner, bio se mantienen intactos"
+        ]
       },
       {
-        "title": "Modo Simple (7) y Experto (15)",
-        "description": "Modo simple para principiantes, modo experto con todas las herramientas",
-        "icon": "⚡"
+        "title": "Autenticación de Dos Factores (2FA)",
+        "description": "Sistema completo de verificación en dos pasos con códigos por email y códigos de respaldo",
+        "icon": "🛡️",
+        "target": "authenticated",
+        "details": [
+          "Códigos de verificación por email (6 dígitos, 10 min)",
+          "8 códigos de respaldo (formato XXXX-XXXX-XXXX)",
+          "Un solo uso por código de respaldo",
+          "3 intentos máximo por código",
+          "Activar/desactivar desde el perfil",
+          "Regenerar códigos cuando quieras"
+        ]
       },
       {
-        "title": "Sistema de Capas",
-        "description": "Capas con opacidad, bloqueo, visibilidad y reordenamiento",
-        "icon": "📚"
+        "title": "Sistema de Migración de Cuentas",
+        "description": "Migra tu cuenta legacy a Firebase Auth sin perder nada",
+        "icon": "🔄",
+        "target": "legacy_users",
+        "details": [
+          "Banner de migración para usuarios legacy",
+          "Migración en 4 pasos guiada",
+          "Preserva perfil completo (bio, avatar, banner)",
+          "Migra dibujos, likes, comentarios",
+          "Migra logros, configuración de privacidad, tags",
+          "Username mapeado correctamente (displayName)"
+        ]
       },
       {
-        "title": "Herramienta de Texto Mejorada",
-        "description": "Estilo Paint: toolbar con tamaño, negrita, cursiva",
-        "icon": "✍️"
+        "title": "Recuperación de Contraseña Mejorada",
+        "description": "Múltiples métodos de recuperación según el tipo de cuenta",
+        "icon": "🔑",
+        "target": "all",
+        "details": [
+          "Firebase Auth: Email de recuperación de Google",
+          "Legacy: Preguntas de seguridad + códigos de recuperación",
+          "2FA: Usar códigos de respaldo",
+          "Modal unificado con todas las opciones"
+        ]
       },
       {
-        "title": "Subir Imágenes y GIFs",
-        "description": "Arrastra, escala y rota imágenes en el canvas",
-        "icon": "🖼️"
+        "title": "Botón Admin Panel",
+        "description": "Acceso al panel de administración solo para usuarios verificados",
+        "icon": "⚙️",
+        "target": "admin",
+        "details": [
+          "Visible solo para usuarios con tag ADMIN o OWNER",
+          "Verificación por UID (Firebase Auth)",
+          "Verificación por userTags (Legacy)",
+          "Abre en nueva pestaña"
+        ]
       },
       {
-        "title": "Sistema de Perfiles",
-        "description": "Login, avatares, banners, badges",
-        "icon": "👤"
+        "title": "Historial de Versiones",
+        "description": "Visualiza changelog completo y accede a versiones anteriores",
+        "icon": "📜",
+        "target": "all",
+        "details": [
+          "Modal con versión actual y anteriores",
+          "Enlaces a versiones archivadas",
+          "Changelog detallado de cada versión",
+          "Categorías: bugfixes, nuevas funciones, mejoras"
+        ]
+      }
+    ],
+    
+    "bugfixes": [
+      {
+        "title": "Imagen duplicada al importar",
+        "description": "Arreglado bug donde al importar una imagen se dibujaba dos veces (una estática y otra movible). Ahora se guarda el canvas ANTES de dibujar la imagen.",
+        "severity": "high",
+        "icon": "🐛"
       },
       {
-        "title": "Formulario de Upload Mejorado",
-        "description": "Validación, preview, auto-guardado de borradores",
-        "icon": "📤"
+        "title": "Logout con Firebase Auth",
+        "description": "Sesión ahora se cierra correctamente con Firebase Auth (auth.signOut()). Antes permanecía activa al recargar porque no cerraba la sesión de Firebase.",
+        "severity": "high",
+        "icon": "🔐"
       },
       {
-        "title": "Descripciones en Galería",
-        "description": "Agrega descripciones a tus dibujos (500 caracteres)",
-        "icon": "🖼️"
+        "title": "Doble confirmación al cerrar sesión",
+        "description": "Eliminado confirm() duplicado causado por callback de onAuthStateChanged. Agregada bandera isLoggingOut para prevenir loop.",
+        "severity": "medium",
+        "icon": "🔄"
+      },
+      {
+        "title": "Error 403 al subir dibujos",
+        "description": "Corregido campo deviceId (antes era userId) para cumplir con reglas de Firestore. Ahora coincide con la validación esperada.",
+        "severity": "critical",
+        "icon": "⚠️"
+      },
+      {
+        "title": "DeviceId generación automática",
+        "description": "Ahora se genera automáticamente deviceId único si no existe, permitiendo subir dibujos sin estar logueado.",
+        "severity": "medium",
+        "icon": "📱"
+      },
+      {
+        "title": "Botón login móvil tapando input",
+        "description": "En móvil, el botón 'Iniciar Sesión' ahora aparece DEBAJO del input 'Tu Nombre' en lugar de al lado tapándolo.",
+        "severity": "medium",
+        "icon": "📱"
       }
     ],
     
     "improvements": [
-      "Validación de nombres (filtro de palabras prohibidas)",
-      "No permite usar nombres de usuarios registrados",
-      "Auto-guardado de borradores en localStorage",
-      "Contador de caracteres dinámico",
-      "Vista previa antes de subir",
-      "Mensajes de estado claros",
-      "Diseño responsive",
-      "8 categorías disponibles",
-      "Compatibilidad con todos los temas",
-      "Transiciones suaves"
+      "Mejor manejo de errores en subida de dibujos",
+      "Retrocompatibilidad completa con guestbook-old y guestbook-new",
+      "Validación de permisos de Firestore optimizada",
+      "Sistema de logout más robusto con manejo de callbacks",
+      "Username preservado correctamente en migración (displayName)",
+      "Estadísticas de dibujos usan GalleryManager (username correcto)",
+      "Modal de recuperación con temas CSS variables",
+      "Sidebar móvil más compacto (85% ancho en lugar de 100%)",
+      "Formulario de comentarios con botón de usuario logueado",
+      "Soporte para adjuntar GIFs en respuestas de comentarios"
     ],
     
-    "technicalSpecs": {
-      "canvasSize": "800x600",
-      "maxImageUpload": "2MB",
-      "maxAvatarSize": "1MB",
-      "maxDescriptionLength": 500,
-      "maxTitleLength": 100,
-      "maxNameLength": 20,
-      "supportedImageFormats": ["PNG", "JPG", "JPEG", "GIF", "WEBP"],
-      "themes": "Todos los temas de FenixLaboratory",
-      "frameworks": ["Bootstrap 5.3.3", "Lucide Icons", "Firebase"],
-      "browsers": "Chrome, Firefox, Safari, Edge"
-    }
+    "technicalChanges": [
+      "Firebase Auth SDK integrado (email/password)",
+      "Collection auth_usernames/{uid} para mapeo UID→Username",
+      "Collection two_factor_auth/{uid} para configuración 2FA",
+      "Collection verification_codes/{uid} para códigos temporales",
+      "Firestore Rules actualizadas para auth y 2FA",
+      "Sistema de migración modular (js/migration/)",
+      "Bandera isLoggingOut para prevenir loops de logout",
+      "canvasBeforeImage guardado ANTES de dibujar imagen",
+      "Campo deviceId en lugar de userId para Firestore Rules"
+    ]
   },
+  
+  "versionHistory": [
+    {
+      "version": "1.0.0",
+      "codename": "Rewrite",
+      "releaseDate": "2026-10-15T15:00:00-05:00",
+      "summary": "Reescritura completa. 15 herramientas, sistema de capas, perfiles integrados.",
+      "majorFeatures": [
+        "15 Herramientas de Dibujo",
+        "Modo Simple (7) y Experto (15)",
+        "Sistema de Capas",
+        "Herramienta de Texto Mejorada",
+        "Subir Imágenes y GIFs",
+        "Sistema de Perfiles",
+        "Formulario de Upload Mejorado",
+        "Descripciones en Galería"
+      ]
+    }
+  ],
   
   "compatibility": {
     "firebase": "Mismo backend que versiones anteriores",
@@ -90,15 +184,10 @@
     "status": "legacy",
     "note": "v1.0 es la versión actual. NEW pasa a legacy."
   },
-  
-  "links": {
-    "live": "/guessbook/guestbook-v1.html",
-    "github": "https://github.com/YourRepo/FenixLaboratory"
-  },
-  
+
   "launchInfo": {
-    "date": "2026-10-15",
-    "time": "15:00",
+    "date": "2026-10-16",
+    "time": "10:00",
     "timezone": "CT (UTC-5)"
   }
 }

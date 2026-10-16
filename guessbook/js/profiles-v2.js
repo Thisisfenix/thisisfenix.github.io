@@ -1,9 +1,20 @@
-// Sistema de perfiles para Guestbook v1.0 - Diseño Sidebar
+﻿// Sistema de perfiles para Guestbook v1.0 - Diseño Sidebar
 export class ProfileManagerV2 {
   constructor(firebaseManager) {
     this.firebase = firebaseManager;
+    this.auth = window.auth || null; // Firebase Authentication
+    this.useFirebaseAuth = !!this.auth; // Si existe auth, usarlo
+    
+    // Bandera para evitar doble logout
+    this.isLoggingOut = false;
+    
+    // Inicializar sistema de 2FA
+    this.twoFactorAuth = new window.TwoFactorAuth(firebaseManager, this);
+    
     this.currentProfile = {
       username: '',
+      email: '', // Nuevo: para Firebase Auth
+      uid: null, // Nuevo: UID de Firebase Auth
       avatar: '👤',
       avatarType: 'emoji',
       avatarImage: null,
@@ -11,16 +22,91 @@ export class ProfileManagerV2 {
       bio: '',
       pronouns: '',
       isLoggedIn: false,
-      sessionToken: null
+      isLegacyUser: false, // Nuevo: marca si es usuario del sistema viejo
+      sessionToken: null,
+      has2FA: false // Nuevo: marca si tiene 2FA activado
     };
     
     this.init();
   }
   
   async init() {
+    // Escuchar cambios de autenticación de Firebase
+    if (this.auth) {
+      this.auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          console.log('🔐 Usuario autenticado con Firebase:', user.email);
+          // Usuario autenticado con Firebase Auth
+          await this.handleFirebaseAuthUser(user);
+        } else if (this.currentProfile.isLoggedIn && !this.currentProfile.isLegacyUser) {
+          // Usuario deslogueado de Firebase pero no es legacy
+          console.log('🚪 Sesión de Firebase cerrada');
+          
+          // Solo llamar logout si NO estamos en proceso de logout
+          if (!this.isLoggingOut) {
+            this.isLoggingOut = true;
+            this.logout(true); // true = skip confirm porque ya se confirmó
+          }
+        }
+      });
+    }
+    
     await this.loadProfile();
     this.createSidebar();
     this.createBurgerButton();
+  }
+  
+  async handleFirebaseAuthUser(firebaseUser) {
+    // Sincronizar perfil con usuario de Firebase Auth
+    this.currentProfile.uid = firebaseUser.uid;
+    this.currentProfile.email = firebaseUser.email;
+    this.currentProfile.isLoggedIn = true;
+    this.currentProfile.isLegacyUser = false;
+    
+    // IMPORTANTE: Obtener username REAL desde displayName o mapeo en Firestore
+    try {
+      // Prioridad 1: displayName (se guarda al migrar)
+      if (firebaseUser.displayName) {
+        this.currentProfile.username = firebaseUser.displayName;
+        console.log(`✅ Username desde displayName: ${firebaseUser.displayName}`);
+      } else {
+        // Prioridad 2: Buscar mapeo UID → username en Firestore
+        const usernameDoc = await this.firebase.getUsernameFromUID(firebaseUser.uid);
+        if (usernameDoc) {
+          this.currentProfile.username = usernameDoc;
+          console.log(`✅ Username desde Firestore: ${usernameDoc}`);
+        } else {
+          // Prioridad 3: Solo como último recurso, parte del email
+          this.currentProfile.username = firebaseUser.email.split('@')[0];
+          console.warn('⚠️ Username no encontrado, usando email:', this.currentProfile.username);
+        }
+      }
+      
+      // Cargar perfil completo desde Firestore
+      const fullProfile = await this.firebase.getUserProfile(this.currentProfile.username);
+      if (fullProfile) {
+        // Copiar TODOS los datos del perfil
+        this.currentProfile.avatar = fullProfile.avatar || this.currentProfile.avatar;
+        this.currentProfile.avatarType = fullProfile.avatarType || this.currentProfile.avatarType;
+        this.currentProfile.avatarImage = fullProfile.avatarImage || this.currentProfile.avatarImage;
+        this.currentProfile.bannerImage = fullProfile.bannerImage || this.currentProfile.bannerImage;
+        this.currentProfile.bio = fullProfile.bio || this.currentProfile.bio;
+        this.currentProfile.pronouns = fullProfile.pronouns || this.currentProfile.pronouns;
+        this.currentProfile.privacy = fullProfile.privacy || this.currentProfile.privacy;
+        this.currentProfile.totalDrawings = fullProfile.totalDrawings || 0;
+        this.currentProfile.totalLikes = fullProfile.totalLikes || 0;
+        
+        console.log('✅ Perfil completo cargado:', this.currentProfile.username);
+      }
+    } catch (error) {
+      console.warn('Error obteniendo perfil completo:', error);
+    }
+    
+    // Actualizar estadísticas del perfil
+    await this.updateProfileStats();
+    
+    this.saveProfile();
+    this.refreshSidebar();
   }
   
   async loadProfile() {
@@ -31,6 +117,13 @@ export class ProfileManagerV2 {
       const profile = JSON.parse(saved);
       if (profile.sessionToken === sessionToken && profile.isLoggedIn) {
         this.currentProfile = profile;
+        
+        // Verificar si tiene UID (Firebase Auth) o no (Legacy)
+        if (!profile.uid) {
+          this.currentProfile.isLegacyUser = true;
+          console.log('⚠️ Usuario legacy detectado:', this.currentProfile.username);
+        }
+        
         console.log('✅ Sesión restaurada:', this.currentProfile.username);
         
         // Cargar datos actualizados desde Firebase
@@ -49,6 +142,9 @@ export class ProfileManagerV2 {
         } catch (error) {
           console.warn('Error sincronizando perfil desde Firebase:', error);
         }
+        
+        // Actualizar estadísticas del perfil
+        setTimeout(() => this.updateProfileStats(), 1000); // Esperar a que GalleryManager cargue
       }
     }
   }
@@ -106,9 +202,23 @@ export class ProfileManagerV2 {
             
             <!-- Login Form -->
             <div class="auth-form" id="loginForm">
+              ${this.useFirebaseAuth ? `
+                <!-- Aviso para usuarios legacy -->
+                <div style="padding: 12px; background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1)); border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span style="font-size: 1.2em;">⚠️</span>
+                    <strong style="color: #ffc107;">¿Usuario anterior?</strong>
+                  </div>
+                  <p style="margin: 0; font-size: 0.85em; color: var(--text-secondary);">
+                    Si ya tenías cuenta, puedes seguir usándola. Pero te recomendamos migrar al nuevo sistema más seguro.
+                  </p>
+                </div>
+              ` : ''}
+              
               <div class="form-group">
-                <label>👤 Usuario</label>
-                <input type="text" id="loginUsername" placeholder="Tu usuario">
+                <label>👤 Usuario ${this.useFirebaseAuth ? 'o Email' : ''}</label>
+                <input type="text" id="loginUsername" placeholder="${this.useFirebaseAuth ? 'Usuario o email' : 'Tu usuario'}">
+                ${this.useFirebaseAuth ? '<small style="color: var(--text-secondary); font-size: 0.8em;">💡 Si migraste tu cuenta, usa tu <strong>email completo</strong></small>' : ''}
               </div>
               <div class="form-group">
                 <label>🔒 Contraseña</label>
@@ -130,67 +240,139 @@ export class ProfileManagerV2 {
             
             <!-- Register Form -->
             <div class="auth-form" id="registerForm" style="display: none;">
-              <div class="form-group">
-                <label>👤 Usuario</label>
-                <input type="text" id="registerUsername" placeholder="Elige un usuario">
-              </div>
-              <div class="form-group">
-                <label>🔒 Contraseña</label>
-                <input type="password" id="registerPassword" placeholder="Mínimo 4 caracteres">
-              </div>
-              <div class="form-group">
-                <label>🔒 Confirmar</label>
-                <input type="password" id="confirmPassword" placeholder="Repite tu contraseña">
-              </div>
-              
-              <div class="recovery-method-selector">
-                <label style="font-weight: 600; margin-bottom: 10px; display: block;">🔐 Método de Recuperación:</label>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                  <button type="button" class="recovery-method-btn active" data-method="question" style="flex: 1; padding: 8px; border: 2px solid var(--primary); background: var(--primary); color: white; border-radius: 6px; cursor: pointer;">
-                    💭 Pregunta
-                  </button>
-                  <button type="button" class="recovery-method-btn" data-method="code" style="flex: 1; padding: 8px; border: 2px solid rgba(var(--primary-rgb), 0.3); background: var(--bg-dark); color: var(--text); border-radius: 6px; cursor: pointer;">
-                    🔑 Código
-                  </button>
+              ${this.useFirebaseAuth ? `
+                <!-- NUEVO SISTEMA: Firebase Authentication -->
+                <div style="padding: 12px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--primary);">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span style="font-size: 1.2em;">🔐</span>
+                    <strong style="color: var(--primary);">Sistema de Cuentas Mejorado</strong>
+                  </div>
+                  <p style="margin: 0; font-size: 0.85em; color: var(--text-secondary);">
+                    Ahora usamos autenticación segura con email y contraseña.
+                  </p>
                 </div>
-              </div>
-              
-              <!-- Pregunta de Seguridad -->
-              <div id="questionMethod">
+                
                 <div class="form-group">
-                  <label>❓ Pregunta de Seguridad</label>
-                  <select id="securityQuestion">
-                    <option value="color">¿Tu color favorito?</option>
-                    <option value="animal">¿Tu animal favorito?</option>
-                    <option value="comida">¿Tu comida favorita?</option>
-                    <option value="juego">¿Tu juego favorito?</option>
-                    <option value="personaje">¿Tu personaje favorito?</option>
-                    <option value="lugar">¿Tu lugar favorito?</option>
-                  </select>
+                  <label>📧 Email</label>
+                  <input type="email" id="registerEmail" placeholder="tu@email.com" required>
+                  <small>Necesario para recuperación de cuenta</small>
                 </div>
                 <div class="form-group">
-                  <label>💡 Respuesta</label>
-                  <input type="text" id="securityAnswer" placeholder="Tu respuesta (recuérdala bien)">
-                  <small>Esta respuesta te permitirá recuperar tu cuenta</small>
+                  <label>👤 Usuario</label>
+                  <input type="text" id="registerUsername" placeholder="Elige un usuario único" required>
+                  <small>Será visible en tus dibujos</small>
                 </div>
-              </div>
-              
-              <!-- Solo Código (se genera automático) -->
-              <div id="codeMethod" style="display: none;">
-                <div style="padding: 15px; background: rgba(var(--primary-rgb), 0.1); border-radius: 8px; border-left: 4px solid var(--primary);">
-                  <strong>🔑 Código de Recuperación</strong>
-                  <p style="margin: 10px 0 0 0; font-size: 0.9em;">Al registrarte recibirás un código único. <strong>Guárdalo en un lugar seguro</strong>, lo necesitarás para recuperar tu cuenta.</p>
+                <div class="form-group">
+                  <label>🔒 Contraseña</label>
+                  <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required>
                 </div>
-              </div>
-              
-              <button class="btn-primary btn-block" onclick="window.guestbookApp.profiles.register()">
-                Registrarse
-              </button>
+                <div class="form-group">
+                  <label>🔒 Confirmar</label>
+                  <input type="password" id="confirmPassword" placeholder="Repite tu contraseña" required>
+                </div>
+                
+                <button class="btn-primary btn-block" onclick="window.guestbookApp.profiles.register()">
+                  Crear Cuenta
+                </button>
+                
+                <div style="margin-top: 15px; padding: 10px; background: rgba(var(--primary-rgb), 0.05); border-radius: 6px; font-size: 0.85em; color: var(--text-secondary);">
+                  <strong>✨ Ventajas del nuevo sistema:</strong>
+                  <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+                    <li>Recuperación de contraseña por email</li>
+                    <li>Mayor seguridad de tu cuenta</li>
+                    <li>Sincronización automática</li>
+                  </ul>
+                </div>
+              ` : `
+                <!-- SISTEMA LEGACY: Solo para compatibilidad -->
+                <div class="form-group">
+                  <label>👤 Usuario</label>
+                  <input type="text" id="registerUsername" placeholder="Elige un usuario">
+                </div>
+                <div class="form-group">
+                  <label>🔒 Contraseña</label>
+                  <input type="password" id="registerPassword" placeholder="Mínimo 4 caracteres">
+                </div>
+                <div class="form-group">
+                  <label>🔒 Confirmar</label>
+                  <input type="password" id="confirmPassword" placeholder="Repite tu contraseña">
+                </div>
+                
+                <div class="recovery-method-selector">
+                  <label style="font-weight: 600; margin-bottom: 10px; display: block;">🔐 Método de Recuperación:</label>
+                  <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button type="button" class="recovery-method-btn active" data-method="question" style="flex: 1; padding: 8px; border: 2px solid var(--primary); background: var(--primary); color: white; border-radius: 6px; cursor: pointer;">
+                      💭 Pregunta
+                    </button>
+                    <button type="button" class="recovery-method-btn" data-method="code" style="flex: 1; padding: 8px; border: 2px solid rgba(var(--primary-rgb), 0.3); background: var(--bg-dark); color: var(--text); border-radius: 6px; cursor: pointer;">
+                      🔑 Código
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Pregunta de Seguridad -->
+                <div id="questionMethod">
+                  <div class="form-group">
+                    <label>❓ Pregunta de Seguridad</label>
+                    <select id="securityQuestion">
+                      <option value="color">¿Tu color favorito?</option>
+                      <option value="animal">¿Tu animal favorito?</option>
+                      <option value="comida">¿Tu comida favorita?</option>
+                      <option value="juego">¿Tu juego favorito?</option>
+                      <option value="personaje">¿Tu personaje favorito?</option>
+                      <option value="lugar">¿Tu lugar favorito?</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>💡 Respuesta</label>
+                    <input type="text" id="securityAnswer" placeholder="Tu respuesta (recuérdala bien)">
+                    <small>Esta respuesta te permitirá recuperar tu cuenta</small>
+                  </div>
+                </div>
+                
+                <!-- Solo Código (se genera automático) -->
+                <div id="codeMethod" style="display: none;">
+                  <div style="padding: 15px; background: rgba(var(--primary-rgb), 0.1); border-radius: 8px; border-left: 4px solid var(--primary);">
+                    <strong>🔑 Código de Recuperación</strong>
+                    <p style="margin: 10px 0 0 0; font-size: 0.9em;">Al registrarte recibirás un código único. <strong>Guárdalo en un lugar seguro</strong>, lo necesitarás para recuperar tu cuenta.</p>
+                  </div>
+                </div>
+                
+                <button class="btn-primary btn-block" onclick="window.guestbookApp.profiles.register()">
+                  Registrarse
+                </button>
+              `}
             </div>
           </div>
         ` : `
           <!-- Logged In Profile -->
           <div class="profile-section">
+            ${this.currentProfile.isLegacyUser ? `
+              <!-- Banner de Migración para usuarios legacy -->
+              <div style="padding: 12px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--primary); animation: pulse 2s ease-in-out infinite;">
+                <div style="display: flex; align-items: start; gap: 10px;">
+                  <span style="font-size: 1.5em;">🚀</span>
+                  <div style="flex: 1;">
+                    <strong style="color: var(--primary); display: block; margin-bottom: 4px;">Migra a cuentas seguras</strong>
+                    <p style="margin: 0 0 10px 0; font-size: 0.85em; color: var(--text-secondary);">
+                      Tu cuenta usa el sistema antiguo. Migra ahora para mayor seguridad y recuperación por email.
+                    </p>
+                    <button 
+                      onclick="window.guestbookApp.profiles.showLegacyMigrationModal()" 
+                      style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 0.85em; cursor: pointer; font-weight: 600;">
+                      ✨ Migrar Ahora
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <style>
+                @keyframes pulse {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0.85; }
+                }
+              </style>
+            ` : ''}
+            
             <!-- Banner y Avatar -->
             <div id="profileBanner" class="profile-banner" style="background: ${this.currentProfile.bannerImage ? `url(${this.currentProfile.bannerImage}) center/cover` : 'linear-gradient(135deg, var(--primary), var(--secondary))'};">
               ${!this.currentProfile.bannerImage ? '<div style="font-size: 3.5em; opacity: 0.25; color: rgba(255,255,255,0.5);">🎨</div>' : ''}
@@ -420,6 +602,39 @@ export class ProfileManagerV2 {
                   🔑 Recuperar Contraseña
                 </button>
               </div>
+              
+              ${!this.currentProfile.isLegacyUser ? `
+                <!-- Verificación en Dos Pasos (2FA) - Solo para Firebase Auth -->
+                <div class="profile-settings">
+                  <h5>🔐 Verificación en Dos Pasos</h5>
+                  <p style="font-size: 0.9em; color: var(--text-muted);">Agrega una capa extra de seguridad a tu cuenta.</p>
+                  
+                  <div id="twoFactorStatus">
+                    <div style="padding: 12px; background: rgba(var(--primary-rgb), 0.1); border-radius: 6px; margin-bottom: 12px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-weight: 600;">Estado:</span>
+                        <span id="2faStatusText" style="color: var(--text-muted);">Cargando...</span>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      id="toggle2FAButton" 
+                      class="btn-secondary btn-block" 
+                      onclick="window.guestbookApp.profiles.toggle2FA()"
+                      disabled>
+                      Cargando...
+                    </button>
+                    
+                    <button 
+                      id="viewBackupCodesButton" 
+                      class="btn-link btn-block" 
+                      onclick="window.guestbookApp.profiles.viewBackupCodes()"
+                      style="display: none; margin-top: 10px;">
+                      🔑 Ver códigos de respaldo
+                    </button>
+                  </div>
+                </div>
+              ` : ''}
             </div>
             
             <!-- Actions -->
@@ -484,6 +699,7 @@ export class ProfileManagerV2 {
           if (section === 'security') {
             this.loadRecoveryMethods();
             this.loadPrivacySettings();
+            this.load2FAStatus(); // Cargar estado de 2FA
           } else if (section === 'likes') {
             this.loadUserLikes();
           } else if (section === 'comments') {
@@ -729,18 +945,106 @@ export class ProfileManagerV2 {
   }
   
   async login() {
-    const username = document.getElementById('loginUsername').value.trim();
+    const usernameOrEmail = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
     const rememberMe = document.getElementById('rememberMe').checked;
     
-    if (!username || !password) {
+    if (!usernameOrEmail || !password) {
       alert('⚠️ Completa todos los campos');
       return;
     }
     
     try {
-      // Verificar credenciales en Firebase
-      const credentials = await this.firebase.getUserCredentials(username);
+      // SI EXISTE FIREBASE AUTH: Intentar login con Firebase Authentication
+      if (this.useFirebaseAuth && this.auth) {
+        // Solo intentar Firebase Auth si el input es un email válido o puede convertirse a uno
+        const looksLikeEmail = usernameOrEmail.includes('@');
+        const isValidUsername = /^[a-zA-Z0-9_-]+$/.test(usernameOrEmail); // Sin espacios ni caracteres especiales
+        
+        if (looksLikeEmail || isValidUsername) {
+          try {
+            const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js');
+            
+            // Determinar el email a usar
+            let email = usernameOrEmail;
+            if (!looksLikeEmail) {
+              // Es un username válido, agregar dominio
+              email = `${usernameOrEmail}@fenix.local`;
+            }
+            
+            // Intentar login con Firebase Auth
+            const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+            const user = userCredential.user;
+            
+            console.log('✅ Login exitoso con Firebase Auth:', user.email);
+            
+            // VERIFICAR SI TIENE 2FA ACTIVADO
+            const has2FA = await this.twoFactorAuth.is2FAEnabled(user.uid);
+            
+            if (has2FA) {
+              console.log('🔐 Usuario tiene 2FA activado, enviando código...');
+              
+              // Cerrar modal de login
+              const authModal = document.getElementById('authModal');
+              if (authModal) authModal.style.display = 'none';
+              
+              // Enviar código de verificación
+              const sendResult = await this.twoFactorAuth.sendVerificationCode(user.uid, user.email);
+              
+              if (sendResult.success) {
+                // Mostrar modal de verificación 2FA
+                this.twoFactorAuth.showVerificationModal(
+                  user.uid,
+                  user.email,
+                  async () => {
+                    // onSuccess: Código verificado correctamente
+                    await this.handleFirebaseAuthUser(user);
+                    alert('✅ Sesión iniciada correctamente');
+                  },
+                  () => {
+                    // onCancel: Usuario canceló la verificación
+                    // Hacer logout de Firebase Auth
+                    this.auth.signOut();
+                    alert('❌ Verificación cancelada');
+                  }
+                );
+              } else {
+                alert('❌ Error enviando código de verificación. Intenta nuevamente.');
+                this.auth.signOut();
+              }
+            } else {
+              // No tiene 2FA, login directo
+              const authModal = document.getElementById('authModal');
+              if (authModal) authModal.style.display = 'none';
+              
+              await this.handleFirebaseAuthUser(user);
+              alert('✅ Sesión iniciada correctamente');
+            }
+            
+            return;
+            
+          } catch (authError) {
+            // Si falla, intentar con sistema legacy
+            console.warn('Login con Firebase Auth falló, intentando sistema legacy:', authError.code);
+            
+            if (authError.code === 'auth/user-not-found') {
+              // Usuario no existe en Firebase Auth, intentar legacy
+              console.log('Usuario no encontrado en Firebase Auth, probando sistema legacy...');
+            } else if (authError.code === 'auth/wrong-password' || authError.code === 'auth/invalid-credential') {
+              alert('❌ Contraseña incorrecta\n\n💡 Si migraste tu cuenta, asegúrate de:\n1. Usar tu EMAIL (no tu username)\n2. Usar la contraseña que elegiste durante la migración');
+              throw authError;
+            } else if (authError.code === 'auth/invalid-email') {
+              // Email inválido, continuar con sistema legacy
+              console.log('Email inválido para Firebase Auth, probando sistema legacy...');
+            } else {
+              throw authError;
+            }
+          }
+        }
+      }
+      
+      // SISTEMA LEGACY: Para usuarios que NO han migrado o tienen usernames con espacios
+      const credentials = await this.firebase.getUserCredentials(usernameOrEmail);
       
       if (!credentials) {
         alert('❌ Usuario no encontrado');
@@ -754,20 +1058,21 @@ export class ProfileManagerV2 {
         return;
       }
       
-      // Login exitoso
+      // Login exitoso con sistema legacy
       this.currentProfile = {
-        username: username,
+        username: usernameOrEmail,
         avatar: '👤',
         avatarType: 'emoji',
         avatarImage: null,
         bio: '',
         isLoggedIn: true,
+        isLegacyUser: true, // IMPORTANTE: marcar como usuario legacy
         sessionToken: this.generateSessionToken(),
         lastLogin: Date.now()
       };
       
       // Cargar perfil desde Firebase
-      const firebaseProfile = await this.firebase.getUserProfile(username);
+      const firebaseProfile = await this.firebase.getUserProfile(usernameOrEmail);
       if (firebaseProfile) {
         this.currentProfile.avatar = firebaseProfile.avatar || this.currentProfile.avatar;
         this.currentProfile.avatarType = firebaseProfile.avatarType || this.currentProfile.avatarType;
@@ -777,19 +1082,30 @@ export class ProfileManagerV2 {
         this.currentProfile.pronouns = firebaseProfile.pronouns || this.currentProfile.pronouns;
       }
       
+      // IMPORTANTE: Solo guardar en localStorage, NO en Firestore
+      // (para evitar exceder límites de escritura)
       this.saveProfile();
       localStorage.setItem('rememberMe', rememberMe.toString());
       
       // Migrar likes de localStorage a Firebase (en segundo plano)
-      this.migrateLikesInBackground(username);
+      this.migrateLikesInBackground(usernameOrEmail);
+      
+      // Actualizar estadísticas del perfil
+      await this.updateProfileStats();
       
       // Recargar sidebar
       this.refreshSidebar();
-      alert('✅ Sesión iniciada correctamente');
+      
+      // Mensaje diferente para usuarios legacy
+      if (this.useFirebaseAuth) {
+        alert('✅ Sesión iniciada (Sistema Legacy)\n\n💡 Considera migrar al nuevo sistema más seguro');
+      } else {
+        alert('✅ Sesión iniciada correctamente');
+      }
       
     } catch (error) {
       console.error('Error en login:', error);
-      alert('❌ Error al iniciar sesión');
+      alert('❌ Error al iniciar sesión: ' + error.message);
     }
   }
   
@@ -798,16 +1114,8 @@ export class ProfileManagerV2 {
     const password = document.getElementById('registerPassword').value;
     const confirmPass = document.getElementById('confirmPassword').value;
     
-    // Determinar qué método de recuperación eligió
-    const selectedMethod = document.querySelector('.recovery-method-btn.active').dataset.method;
-    
     if (!username || !password || !confirmPass) {
       alert('⚠️ Completa todos los campos');
-      return;
-    }
-    
-    if (password.length < 4) {
-      alert('⚠️ La contraseña debe tener al menos 4 caracteres');
       return;
     }
     
@@ -817,6 +1125,81 @@ export class ProfileManagerV2 {
     }
     
     try {
+      // SI EXISTE FIREBASE AUTH: Registro con Firebase Authentication
+      if (this.useFirebaseAuth && this.auth) {
+        const email = document.getElementById('registerEmail')?.value.trim();
+        
+        if (!email) {
+          alert('⚠️ Ingresa tu email');
+          return;
+        }
+        
+        if (password.length < 6) {
+          alert('⚠️ La contraseña debe tener al menos 6 caracteres');
+          return;
+        }
+        
+        // Verificar si el username ya existe
+        const existingProfile = await this.firebase.getUserProfile(username);
+        if (existingProfile) {
+          alert('❌ El nombre de usuario ya está en uso');
+          return;
+        }
+        
+        try {
+          const { createUserWithEmailAndPassword, updateProfile } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js');
+          
+          // Crear cuenta en Firebase Auth
+          const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+          const user = userCredential.user;
+          
+          // Actualizar displayName con el username
+          await updateProfile(user, {
+            displayName: username
+          });
+          
+          // Guardar mapeo UID → username en Firestore
+          await this.saveUsernameMapping(username, user.uid);
+          
+          // Crear perfil inicial en Firestore
+          await this.firebase.saveUserProfile(username, {
+            username: username,
+            uid: user.uid,
+            email: email,
+            avatar: '👤',
+            avatarType: 'emoji',
+            joinDate: Date.now()
+          });
+          
+          console.log('✅ Cuenta creada con Firebase Auth:', user.uid);
+          
+          alert('✅ Cuenta creada exitosamente!\n\nYa puedes iniciar sesión con tu email y contraseña.');
+          
+          // Recargar sidebar (el login automático se maneja por onAuthStateChanged)
+          this.refreshSidebar();
+          return;
+          
+        } catch (authError) {
+          if (authError.code === 'auth/email-already-in-use') {
+            alert('❌ El email ya está registrado');
+          } else if (authError.code === 'auth/weak-password') {
+            alert('❌ Contraseña débil. Usa al menos 6 caracteres.');
+          } else {
+            alert('❌ Error al crear cuenta: ' + authError.message);
+          }
+          return;
+        }
+      }
+      
+      // SISTEMA LEGACY: Para cuando NO hay Firebase Auth disponible
+      if (password.length < 4) {
+        alert('⚠️ La contraseña debe tener al menos 4 caracteres');
+        return;
+      }
+      
+      // Determinar qué método de recuperación eligió
+      const selectedMethod = document.querySelector('.recovery-method-btn.active')?.dataset.method;
+      
       // Verificar si el usuario ya existe
       const existing = await this.firebase.getUserCredentials(username);
       if (existing) {
@@ -865,6 +1248,7 @@ export class ProfileManagerV2 {
         avatarImage: null,
         bio: '',
         isLoggedIn: true,
+        isLegacyUser: true, // Usuario del sistema legacy
         sessionToken: this.generateSessionToken(),
         lastLogin: Date.now()
       };
@@ -883,12 +1267,44 @@ export class ProfileManagerV2 {
       
     } catch (error) {
       console.error('Error en registro:', error);
-      alert('❌ Error al crear la cuenta');
+      alert('❌ Error al crear la cuenta: ' + error.message);
     }
   }
   
-  logout() {
-    if (confirm('¿Seguro que quieres cerrar sesión?')) {
+  async saveUsernameMapping(username, uid) {
+    // Guardar mapeo UID → username en Firestore
+    try {
+      const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js');
+      
+      await setDoc(doc(this.firebase.db, 'auth_usernames', uid), {
+        username: username,
+        uid: uid,
+        createdAt: Date.now()
+      });
+      
+      console.log('✅ Mapeo UID → username guardado');
+    } catch (error) {
+      console.error('Error guardando mapeo:', error);
+    }
+  }
+  
+  async logout(skipConfirm = false) {
+    // Si skipConfirm es true, no preguntar (ya se confirmó o es automático)
+    if (!skipConfirm && !confirm('¿Seguro que quieres cerrar sesión?')) {
+      return; // Usuario canceló
+    }
+    
+    try {
+      // Marcar que estamos haciendo logout
+      this.isLoggingOut = true;
+      
+      // Cerrar sesión de Firebase Auth si está activo
+      if (this.useFirebaseAuth && this.auth) {
+        await this.auth.signOut();
+        console.log('🚪 Sesión de Firebase Auth cerrada');
+      }
+      
+      // Limpiar perfil local
       this.currentProfile = {
         username: '',
         avatar: '👤',
@@ -899,24 +1315,26 @@ export class ProfileManagerV2 {
         sessionToken: null
       };
       
+      // Limpiar localStorage
       localStorage.removeItem('userProfile');
       localStorage.removeItem('sessionToken');
       
+      // Refrescar UI
       this.refreshSidebar();
-      alert('👋 Sesión cerrada');
-    }
-  }
-  
-  refreshSidebar() {
-    const sidebar = document.getElementById('profileSidebar');
-    if (sidebar) {
-      sidebar.innerHTML = this.getSidebarHTML();
-      this.attachSidebarEvents();
       
-      // Cargar métodos de recuperación si está logueado
-      if (this.currentProfile.isLoggedIn) {
-        this.loadRecoveryMethods();
+      if (!skipConfirm) {
+        alert('👋 Sesión cerrada exitosamente');
       }
+      
+      // Recargar página para limpiar completamente
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+      
+    } catch (error) {
+      console.error('❌ Error al cerrar sesión:', error);
+      alert('⚠️ Error al cerrar sesión. Intenta de nuevo.');
+      this.isLoggingOut = false; // Resetear bandera si hay error
     }
   }
   
@@ -1244,6 +1662,235 @@ export class ProfileManagerV2 {
   showRecoveryModal() {
     // Cerrar sidebar
     this.toggleSidebar();
+    
+    // SI HAY FIREBASE AUTH: Mostrar modal de recuperación por email
+    if (this.useFirebaseAuth && this.auth) {
+      this.showFirebasePasswordReset();
+      return;
+    }
+    
+    // SISTEMA LEGACY: Modal antiguo con preguntas de seguridad
+    this.showLegacyRecoveryModal();
+  }
+  
+  // ========================================
+  // RECUPERACIÓN DE CONTRASEÑA CON FIREBASE AUTH
+  // ========================================
+  
+  async showFirebasePasswordReset() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--bg-dark); border: 2px solid var(--primary);">
+          <div class="modal-header" style="border-bottom: 2px solid var(--primary);">
+            <h5 class="modal-title" style="color: var(--primary);">
+              🔑 Recuperar Contraseña
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          
+          <div class="modal-body">
+            <div id="resetForm">
+              <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 3em; margin-bottom: 10px;">📧</div>
+                <p style="color: var(--text-secondary);">
+                  Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.
+                </p>
+              </div>
+              
+              <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text);">📧 Email</label>
+                <input type="email" id="resetEmail" class="form-control" placeholder="tu@email.com" style="width: 100%; padding: 10px; background: var(--bg-light); border: 1px solid var(--primary); border-radius: 6px; color: var(--text);">
+              </div>
+              
+              <button class="btn btn-primary" style="width: 100%;" onclick="window.guestbookApp.profiles.sendPasswordReset()">
+                Enviar Email de Recuperación
+              </button>
+              
+              <div style="margin-top: 20px; padding: 15px; background: rgba(var(--primary-rgb), 0.1); border-radius: 8px; border-left: 4px solid var(--primary);">
+                <strong style="display: block; margin-bottom: 10px; color: var(--primary);">🔐 ¿Tienes 2FA activado?</strong>
+                <p style="margin: 0 0 10px 0; font-size: 0.9em; color: var(--text-secondary);">
+                  Si tienes códigos de respaldo guardados, también puedes usarlos para recuperar tu cuenta.
+                </p>
+                <button class="btn btn-secondary" style="width: 100%;" onclick="window.guestbookApp.profiles.show2FABackupRecovery(); bootstrap.Modal.getInstance(this.closest('.modal')).hide();">
+                  🔑 Usar Código de Respaldo
+                </button>
+              </div>
+              
+              <div style="margin-top: 15px; padding: 12px; background: rgba(255, 152, 0, 0.1); border-radius: 8px; font-size: 0.9em;">
+                <strong>💡 Usuario antiguo?</strong> 
+                <button class="btn-link" style="padding: 0; color: var(--primary); text-decoration: underline;" onclick="window.guestbookApp.profiles.showLegacyRecoveryModal(); bootstrap.Modal.getInstance(this.closest('.modal')).hide();">
+                  Usa el método legacy aquí
+                </button>
+              </div>
+            </div>
+            
+            <div id="resetSuccess" style="display: none; text-align: center; padding: 20px;">
+              <div style="font-size: 4em; margin-bottom: 15px;">✅</div>
+              <h4 style="color: var(--primary); margin-bottom: 10px;">Email Enviado</h4>
+              <p style="color: var(--text-secondary);">
+                Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.
+              </p>
+              <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 15px;">
+                Si no ves el email, revisa tu carpeta de spam.
+              </p>
+              <button class="btn btn-primary" data-bs-dismiss="modal" style="margin-top: 15px;">
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+    
+    modal.addEventListener('hidden.bs.modal', () => modal.remove());
+  }
+
+  // ========================================
+  // RECUPERACIÓN CON CÓDIGO DE RESPALDO 2FA
+  // ========================================
+  
+  show2FABackupRecovery() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--bg-dark); border: 2px solid var(--primary);">
+          <div class="modal-header" style="border-bottom: 2px solid var(--primary);">
+            <h5 class="modal-title" style="color: var(--primary);">
+              🔑 Recuperar con Código de Respaldo
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          
+          <div class="modal-body">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <div style="font-size: 3em; margin-bottom: 10px;">🔐</div>
+              <p style="color: var(--text-secondary);">
+                Si tienes códigos de respaldo del 2FA guardados, usa uno para recuperar tu cuenta.
+              </p>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 8px; color: var(--text);">📧 Email</label>
+              <input type="email" id="backup2FAEmail" class="form-control" placeholder="tu@email.com" style="width: 100%; padding: 10px; background: var(--bg-light); border: 1px solid var(--primary); border-radius: 6px; color: var(--text);">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 8px; color: var(--text);">🔑 Código de Respaldo</label>
+              <input 
+                type="text" 
+                id="backup2FACode" 
+                class="form-control" 
+                placeholder="XXXX-XXXX-XXXX" 
+                maxlength="14"
+                style="width: 100%; padding: 10px; background: var(--bg-light); border: 1px solid var(--primary); border-radius: 6px; color: var(--text); text-align: center; font-family: 'Courier New', monospace; font-size: 1.2em; letter-spacing: 0.1em; text-transform: uppercase;">
+            </div>
+            
+            <div id="backupError" style="display: none; padding: 10px; background: rgba(244, 67, 54, 0.1); border-radius: 6px; margin-bottom: 15px; color: #f44336; font-size: 0.9em;"></div>
+            
+            <button class="btn btn-primary" style="width: 100%;" onclick="window.guestbookApp.profiles.verify2FABackupRecovery()">
+              Verificar Código
+            </button>
+            
+            <div style="margin-top: 15px; padding: 12px; background: rgba(255, 152, 0, 0.1); border-radius: 8px; font-size: 0.9em;">
+              <strong>⚠️ Nota:</strong> El código de respaldo solo se puede usar una vez. Después se marcará como usado.
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px;">
+              <button class="btn-link" onclick="window.guestbookApp.profiles.showFirebasePasswordReset(); bootstrap.Modal.getInstance(this.closest('.modal')).hide();">
+                ← Volver a recuperación por email
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+    
+    modal.addEventListener('hidden.bs.modal', () => modal.remove());
+  }
+  
+  async verify2FABackupRecovery() {
+    const email = document.getElementById('backup2FAEmail').value.trim();
+    const code = document.getElementById('backup2FACode').value.trim().toUpperCase();
+    const errorEl = document.getElementById('backupError');
+    
+    if (!email || !code) {
+      errorEl.textContent = '❌ Completa todos los campos';
+      errorEl.style.display = 'block';
+      return;
+    }
+    
+    try {
+      // Buscar el UID del usuario por email
+      const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js');
+      
+      // NOTA: Aquí necesitaríamos la contraseña para hacer login
+      // Como no la tenemos, necesitamos otro método
+      
+      // Por ahora, mostramos un mensaje explicando que necesitan la contraseña
+      errorEl.textContent = '⚠️ Para usar un código de respaldo, primero necesitas hacer login con tu contraseña. Los códigos de respaldo son para el 2FA, no para recuperar la contraseña.';
+      errorEl.style.display = 'block';
+      
+      setTimeout(() => {
+        const modal = document.querySelector('.modal.show');
+        if (modal) bootstrap.Modal.getInstance(modal).hide();
+        this.showFirebasePasswordReset();
+      }, 3000);
+      
+    } catch (error) {
+      errorEl.textContent = '❌ Error: ' + error.message;
+      errorEl.style.display = 'block';
+    }
+  }
+
+  
+  async sendPasswordReset() {
+    const email = document.getElementById('resetEmail').value.trim();
+    
+    if (!email) {
+      alert('⚠️ Ingresa tu email');
+      return;
+    }
+    
+    try {
+      const { sendPasswordResetEmail } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js');
+      
+      await sendPasswordResetEmail(this.auth, email);
+      
+      // Mostrar pantalla de éxito
+      document.getElementById('resetForm').style.display = 'none';
+      document.getElementById('resetSuccess').style.display = 'block';
+      
+      console.log('✅ Email de recuperación enviado');
+      
+    } catch (error) {
+      console.error('Error enviando email:', error);
+      
+      if (error.code === 'auth/user-not-found') {
+        alert('❌ No existe ninguna cuenta con ese email.\n\n💡 Si eres usuario antiguo, usa el método legacy.');
+      } else if (error.code === 'auth/invalid-email') {
+        alert('❌ Email inválido');
+      } else {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+  }
+  
+  // ========================================
+  // RECUPERACIÓN LEGACY (SISTEMA ANTIGUO)
+  // ========================================
+  
+  showLegacyRecoveryModal() {
     
     // Crear modal de recuperación
     const modal = document.createElement('div');
@@ -2450,6 +3097,249 @@ export class ProfileManagerV2 {
       if (hideComments) hideComments.checked = privacy.hideComments || false;
     }, 100);
   }
+  
+  // ========================================
+  // FUNCIÓN PARA MOSTRAR MODAL DE MIGRACIÓN
+  // ========================================
+  
+  async showLegacyMigrationModal() {
+    if (!window.accountMigration) {
+      alert('⚠️ Sistema de migración no disponible. Recarga la página.');
+      return;
+    }
+    
+    // Verificar estado de migración
+    const migrationStatus = await window.accountMigration.checkMigrationStatus(this.currentProfile.username);
+    
+    if (migrationStatus.needsMigration) {
+      // Mostrar modal de migración
+      window.accountMigration.showMigrationModal(migrationStatus);
+    } else if (migrationStatus.reason === 'already_migrated') {
+      alert('✅ Tu cuenta ya ha sido migrada al nuevo sistema');
+    } else {
+      alert('⚠️ No se puede migrar esta cuenta en este momento');
+    }
+  }
+  
+  // ========================================
+  // ACTUALIZAR ESTADÍSTICAS DEL PERFIL
+  // ========================================
+  
+  async updateProfileStats() {
+    if (!this.currentProfile.isLoggedIn) return;
+    
+    try {
+      // Usar GalleryManager para obtener dibujos (tiene el username correcto)
+      const galleryManager = window.galleryManager || window.guestbookApp?.gallery;
+      
+      if (galleryManager && galleryManager.allDrawings) {
+        // Filtrar dibujos del usuario actual
+        const userDrawings = galleryManager.allDrawings.filter(d => {
+          const autor = d.autor || d.data?.autor;
+          return autor && autor.toLowerCase() === this.currentProfile.username.toLowerCase();
+        });
+        
+        this.currentProfile.totalDrawings = userDrawings.length;
+        console.log(`📊 ${userDrawings.length} dibujos encontrados para ${this.currentProfile.username}`);
+      } else {
+        // Fallback: usar Firebase directamente
+        const allDrawings = await this.firebase.getAllDrawings();
+        const userDrawings = allDrawings.filter(d => {
+          const autor = d.autor || d.data?.autor;
+          return autor && autor.toLowerCase() === this.currentProfile.username.toLowerCase();
+        });
+        
+        this.currentProfile.totalDrawings = userDrawings.length;
+        console.log(`📊 ${userDrawings.length} dibujos encontrados (fallback)`);
+      }
+      
+      // Guardar en localStorage
+      this.saveProfile();
+      
+      // Actualizar UI si el sidebar está abierto
+      const statValue = document.querySelector('.stat-value');
+      if (statValue) {
+        statValue.textContent = this.currentProfile.totalDrawings || 0;
+      }
+      
+    } catch (error) {
+      console.error('Error actualizando estadísticas:', error);
+    }
+  }
+
+  // ============================================
+  // SISTEMA DE VERIFICACIÓN EN DOS PASOS (2FA)
+  // ============================================
+
+  async load2FAStatus() {
+    if (!this.currentProfile.uid || this.currentProfile.isLegacyUser) return;
+
+    try {
+      const is2FAEnabled = await this.twoFactorAuth.is2FAEnabled(this.currentProfile.uid);
+      this.currentProfile.has2FA = is2FAEnabled;
+
+      const statusText = document.getElementById('2faStatusText');
+      const toggleButton = document.getElementById('toggle2FAButton');
+      const viewBackupButton = document.getElementById('viewBackupCodesButton');
+
+      if (statusText) {
+        statusText.textContent = is2FAEnabled ? '✅ Activada' : '❌ Desactivada';
+        statusText.style.color = is2FAEnabled ? 'var(--success)' : 'var(--error)';
+      }
+
+      if (toggleButton) {
+        toggleButton.textContent = is2FAEnabled ? '❌ Desactivar 2FA' : '✅ Activar 2FA';
+        toggleButton.disabled = false;
+      }
+
+      if (viewBackupButton && is2FAEnabled) {
+        viewBackupButton.style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Error cargando estado 2FA:', error);
+    }
+  }
+
+  async toggle2FA() {
+    if (this.currentProfile.has2FA) {
+      // Desactivar 2FA
+      if (!confirm('¿Estás seguro de desactivar la verificación en dos pasos?\n\nTu cuenta será menos segura.')) {
+        return;
+      }
+
+      const result = await this.twoFactorAuth.disable2FA(this.currentProfile.uid);
+      if (result) {
+        alert('✅ Verificación en dos pasos desactivada');
+        this.load2FAStatus();
+        this.refreshSidebar();
+      } else {
+        alert('❌ Error desactivando 2FA');
+      }
+    } else {
+      // Activar 2FA
+      const result = await this.twoFactorAuth.enable2FA(this.currentProfile.uid, this.currentProfile.email);
+      
+      if (result.success) {
+        // Mostrar códigos de respaldo
+        this.showBackupCodesModal(result.backupCodes, true);
+        this.load2FAStatus();
+        this.refreshSidebar();
+      } else {
+        alert('❌ Error activando 2FA: ' + result.error);
+      }
+    }
+  }
+
+  async viewBackupCodes() {
+    const codes = await this.twoFactorAuth.getBackupCodes(this.currentProfile.uid);
+    
+    if (!codes || codes.length === 0) {
+      alert('❌ No se pudieron cargar los códigos de respaldo');
+      return;
+    }
+
+    this.showBackupCodesModal(codes.map(c => c.code), false);
+  }
+
+  showBackupCodesModal(codes, isNewSetup) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 550px; background: var(--bg-dark); color: var(--text);">
+        <div class="modal-header" style="border-bottom: 2px solid var(--primary);">
+          <h2 style="color: var(--primary);">🔑 Códigos de Respaldo</h2>
+        </div>
+        <div class="modal-body" style="background: var(--bg-dark);">
+          ${isNewSetup ? `
+            <div style="padding: 15px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(102, 187, 106, 0.1)); border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+              <strong style="color: #4caf50; display: block; margin-bottom: 8px;">✅ 2FA Activado Correctamente</strong>
+              <p style="margin: 0; font-size: 0.9em; color: var(--text-secondary);">
+                A partir de ahora, cada vez que inicies sesión recibirás un código de verificación por email.
+              </p>
+            </div>
+          ` : ''}
+          
+          <div style="padding: 15px; background: rgba(255, 152, 0, 0.1); border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff9800;">
+            <strong style="color: #ff9800; display: block; margin-bottom: 8px;">⚠️ Importante</strong>
+            <p style="margin: 0; font-size: 0.9em; color: var(--text-secondary);">
+              Guarda estos códigos en un lugar seguro. Puedes usar cualquiera de ellos si pierdes acceso a tu email.
+            </p>
+          </div>
+
+          <div style="background: var(--bg-light); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(var(--primary-rgb), 0.2);">
+            <div id="backupCodesList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-family: 'Courier New', monospace; font-size: 0.95em;">
+              ${codes.map((code, index) => `
+                <div style="padding: 10px; background: rgba(var(--primary-rgb), 0.1); border-radius: 6px; text-align: center; border: 1px solid rgba(var(--primary-rgb), 0.3);">
+                  <strong style="color: var(--primary);">${code}</strong>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-primary" onclick="window.downloadBackupCodes()" style="flex: 1;">
+              📥 Descargar Códigos
+            </button>
+            <button class="btn-secondary" onclick="window.copyAllBackupCodes()" style="flex: 1;">
+              📋 Copiar Todo
+            </button>
+          </div>
+
+          ${!isNewSetup ? `
+            <button class="btn-secondary btn-block" onclick="window.regenerateBackupCodes()" style="margin-top: 10px;">
+              🔄 Generar Nuevos Códigos
+            </button>
+            <p style="margin-top: 10px; font-size: 0.85em; color: var(--text-muted); text-align: center;">
+              Esto invalidará todos los códigos anteriores
+            </p>
+          ` : ''}
+
+          <button class="btn-link btn-block" onclick="this.closest('.modal').remove()" style="margin-top: 15px; color: var(--text-secondary);">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Funciones para los botones
+    window.downloadBackupCodes = () => {
+      const text = codes.join('\n');
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `backup-codes-${this.currentProfile.username}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    window.copyAllBackupCodes = () => {
+      const text = codes.join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✅ Códigos copiados al portapapeles');
+      }).catch(() => {
+        alert('❌ Error copiando códigos');
+      });
+    };
+
+    window.regenerateBackupCodes = async () => {
+      if (!confirm('¿Generar nuevos códigos?\n\nLos códigos anteriores dejarán de funcionar.')) {
+        return;
+      }
+
+      const result = await this.twoFactorAuth.regenerateBackupCodes(this.currentProfile.uid);
+      
+      if (result.success) {
+        modal.remove();
+        this.showBackupCodesModal(result.backupCodes, false);
+      } else {
+        alert('❌ Error generando nuevos códigos: ' + result.error);
+      }
+    };
+  }
 }
 
 // Agregar animaciones CSS si no existen
@@ -2481,3 +3371,4 @@ if (!document.getElementById('migration-animations')) {
   `;
   document.head.appendChild(style);
 }
+

@@ -55,6 +55,25 @@
   transform: rotate(-45deg) translate(7px, -7px);
 }
 
+/* Sidebar Overlay (para cerrar al hacer clic fuera) */
+.profile-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.profile-sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
 /* Sidebar */
 .profile-sidebar {
   position: fixed;
@@ -423,19 +442,173 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .profile-sidebar {
-    width: 100vw;
-    left: -100vw;
+    width: 85vw; /* 85% del ancho en lugar de 100% */
+    max-width: 320px;
+    left: -85vw;
+  }
+  
+  .profile-sidebar.open {
+    left: 0;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.5);
   }
   
   .profile-burger-btn {
-    top: 15px;
-    left: 15px;
-    width: 45px;
-    height: 45px;
+    top: 12px;
+    left: 12px;
+    width: 42px;
+    height: 42px;
+    z-index: 10001; /* Mayor para asegurar que esté encima del sidebar */
   }
   
   .burger-lines span {
-    width: 20px;
+    width: 18px;
+    height: 2px;
+  }
+  
+  /* Ajustar header para móvil */
+  .sidebar-header {
+    padding: 15px;
+  }
+  
+  .sidebar-header h3 {
+    font-size: 1.1em;
+  }
+  
+  .sidebar-close {
+    width: 30px;
+    height: 30px;
+    font-size: 1.2em;
+  }
+  
+  /* Ajustar contenido para móvil */
+  .sidebar-content {
+    padding: 15px;
+  }
+  
+  /* Avatar más pequeño en móvil */
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .profile-avatar-emoji {
+    font-size: 2.5em;
+  }
+  
+  .profile-avatar-text {
+    font-size: 1.5em;
+  }
+  
+  /* Username más pequeño */
+  .profile-username {
+    font-size: 1.1em;
+  }
+  
+  .profile-status {
+    font-size: 0.85em;
+  }
+  
+  /* Tabs más compactos */
+  .auth-tabs {
+    gap: 6px;
+  }
+  
+  .auth-tab {
+    padding: 8px 6px;
+    font-size: 0.85em;
+  }
+  
+  /* Forms más compactos */
+  .auth-form, .profile-settings {
+    gap: 12px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 8px;
+    font-size: 0.9em;
+  }
+  
+  .form-group label {
+    font-size: 0.85em;
+  }
+  
+  /* Botones más compactos */
+  .btn-primary, .btn-secondary {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+  
+  /* Banner más bajo en móvil */
+  .profile-banner {
+    height: 150px;
+    margin-bottom: 20px !important;
+  }
+  
+  /* Grid de emojis más denso */
+  .emoji-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  
+  .emoji-btn {
+    font-size: 1.2em;
+  }
+  
+  /* Avatar selector más compacto */
+  .avatar-type-selector {
+    gap: 6px;
+  }
+  
+  .avatar-type-btn {
+    padding: 6px;
+    font-size: 0.8em;
+  }
+  
+  /* Stats en una columna en móvil */
+  .profile-stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .stat-item {
+    padding: 12px;
+  }
+  
+  .stat-value {
+    font-size: 1.3em;
+  }
+  
+  /* Tabs de navegación más compactos */
+  .profile-nav-tabs {
+    gap: 4px;
+    margin: 15px -5px 20px -5px;
+  }
+  
+  .profile-nav-tab {
+    padding: 8px 2px;
+    font-size: 0.75em;
+  }
+  
+  .profile-nav-tab svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .profile-nav-tab span {
+    font-size: 0.7em;
+  }
+  
+  /* Separación entre secciones reducida */
+  .profile-settings + .profile-settings {
+    margin-top: 15px;
+    padding-top: 12px;
+  }
+  
+  .profile-settings h5 {
+    font-size: 1em;
+    margin-bottom: 12px;
   }
 }
 
@@ -602,6 +775,65 @@
 
 .recovery-modal::-webkit-scrollbar-thumb:hover {
   background: #ff8c42;
+}
+
+/* Mobile Responsive for Recovery Modal */
+@media (max-width: 768px) {
+  .recovery-modal {
+    width: 95%;
+    max-width: none;
+    max-height: 90vh;
+    margin: 0 10px;
+  }
+  
+  .recovery-header {
+    padding: 15px;
+  }
+  
+  .recovery-header h3 {
+    font-size: 1.1em;
+  }
+  
+  .recovery-close {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .recovery-content {
+    padding: 15px;
+  }
+  
+  .recovery-tabs {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .recovery-tab {
+    padding: 12px;
+    font-size: 0.85em;
+  }
+  
+  .btn-discord {
+    padding: 12px 20px;
+    font-size: 1em;
+  }
+  
+  .add-method-btn {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .add-method-icon {
+    font-size: 1.5em;
+  }
+  
+  .add-method-info strong {
+    font-size: 0.9em;
+  }
+  
+  .add-method-info small {
+    font-size: 0.8em;
+  }
 }
 
 .activity-info {
@@ -1042,23 +1274,4 @@
   margin-bottom: 15px;
 }
 
-/* Mobile Responsive for Tabs */
-@media (max-width: 768px) {
-  .profile-nav-tab span {
-    font-size: 0.75em;
-  }
-  
-  .profile-nav-tab svg {
-    width: 18px;
-    height: 18px;
-  }
-  
-  .profile-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .profile-settings + .profile-settings {
-    margin-top: 20px;
-    padding-top: 15px;
-  }
-}
+

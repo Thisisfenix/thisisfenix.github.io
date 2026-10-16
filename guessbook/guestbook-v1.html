@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎨 Guestbook v1.0 - FenixLaboratory</title>
+  <title>🎨 Guestbook v1.0.1 - FenixLaboratory</title>
   
   <!-- Meta Tags para Embed -->
-  <meta name="description" content="Guestbook v1.0 - Reescrito desde cero con 15 herramientas de dibujo, sistema de capas, perfiles y más. Compatible con Firebase.">
+  <meta name="description" content="Guestbook v1.0.1 - Bugfixes: imagen duplicada, logout, permisos Firebase. Admin panel para verificados.">
   <meta name="author" content="FenixLaboratory">
   <meta name="keywords" content="guestbook, drawing, canvas, art, dibujo, fenixlaboratory">
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://fenixlaboratory.com/guessbook/guestbook-v1.html">
-  <meta property="og:title" content="🎨 Guestbook v1.0 - FenixLaboratory">
-  <meta property="og:description" content="Reescrito desde cero. 15 herramientas de dibujo, sistema de capas, perfiles integrados. Lanzamiento: 15 octubre 2026.">
+  <meta property="og:title" content="🎨 Guestbook v1.0.1 - FenixLaboratory">
+  <meta property="og:description" content="Bugfixes y mejoras. Admin panel para usuarios verificados. 16 octubre 2026.">
   <meta property="og:image" content="https://fenixlaboratory.com/guessbook/Assets/images/guestbook-v1-preview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -22,8 +22,8 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://fenixlaboratory.com/guessbook/guestbook-v1.html">
-  <meta name="twitter:title" content="🎨 Guestbook v1.0 - FenixLaboratory">
-  <meta name="twitter:description" content="Reescrito desde cero. 15 herramientas de dibujo, sistema de capas, perfiles integrados.">
+  <meta name="twitter:title" content="🎨 Guestbook v1.0.1 - FenixLaboratory">
+  <meta name="twitter:description" content="Bugfixes y mejoras. Admin panel para usuarios verificados.">
   <meta name="twitter:image" content="https://fenixlaboratory.com/guessbook/Assets/images/guestbook-v1-preview.png">
   
   <!-- Discord Embed -->
@@ -578,6 +578,22 @@
       font-size: 0.85rem;
       margin-top: 0.25rem;
     }
+    
+    /* Contenedor de input de autor + botón login */
+    .author-input-container {
+      display: flex;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+    
+    .author-input-container input {
+      flex: 1;
+    }
+    
+    .author-input-container button {
+      padding: 0.875rem 1rem;
+      white-space: nowrap;
+    }
 
     .field-hint i {
       width: 0.875rem;
@@ -821,6 +837,26 @@
       .btn-action {
         width: 100%;
         justify-content: center;
+      }
+      
+      /* Fix: Botón de login debajo del input en móvil */
+      .author-input-container {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .author-input-container input {
+        width: 100%;
+      }
+      
+      .author-input-container button {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      /* Mostrar texto completo del botón en móvil */
+      .login-btn-text {
+        display: inline !important;
       }
     }
     
@@ -1196,7 +1232,7 @@
     <div class="text-center mb-4">
       <h1 style="color: var(--primary);">
         <i data-lucide="palette" style="width: 2rem; height: 2rem; vertical-align: middle;"></i>
-        Guestbook v1.0
+        Guestbook
       </h1>
       <p style="color: var(--text-secondary);">Dibuja, comparte y deja tu huella artística</p>
       <div class="d-flex justify-content-center gap-2 flex-wrap">
@@ -1212,9 +1248,17 @@
           <i data-lucide="archive" style="width: 1rem; height: 1rem;"></i>
           v2 OLD
         </a>
+        <button onclick="showVersionHistory()" class="btn btn-outline-secondary btn-sm" title="Ver historial de versiones">
+          <i data-lucide="history" style="width: 1rem; height: 1rem;"></i>
+          Historial
+        </button>
         <button onclick="showVipStore()" class="btn btn-outline-primary btn-sm" title="Tienda VIP - Temas y marcos personalizados">
           <i data-lucide="shopping-bag" style="width: 1rem; height: 1rem;"></i>
           <span id="vip-points-badge">💎 0</span>
+        </button>
+        <button id="adminPanelBtn" onclick="openAdminPanel()" class="btn btn-outline-danger btn-sm" style="display: none;" title="Panel de Administración">
+          <i data-lucide="shield" style="width: 1rem; height: 1rem;"></i>
+          Admin
         </button>
       </div>
     </div>
@@ -1424,23 +1468,22 @@
                     <i data-lucide="user"></i>
                     <span>Tu Nombre</span>
                   </label>
-                  <div style="display: flex; gap: 0.5rem; align-items: stretch;">
+                  <div class="author-input-container">
                     <input 
                       type="text" 
                       id="authorNameV2" 
                       class="field-input" 
                       placeholder="Tu nombre o inicia sesión" 
-                      maxlength="20"
-                      style="flex: 1;">
+                      maxlength="20">
                     <button 
                       type="button" 
                       id="loginPromptBtn"
                       class="btn-action btn-secondary" 
                       onclick="showProfileModal()"
-                      style="padding: 0.875rem 1rem; white-space: nowrap; display: none;"
+                      style="display: none;"
                       title="Inicia sesión para usar tu perfil">
                       <i data-lucide="log-in"></i>
-                      <span class="d-none d-md-inline">Iniciar Sesión</span>
+                      <span class="login-btn-text">Iniciar Sesión</span>
                     </button>
                   </div>
                   <div id="profileBadgeV2" class="profile-badge" style="display: none;">
@@ -1790,6 +1833,85 @@
 
   <!-- Guestbook v1.0 Main Script -->
   <script type="module" src="js/guestbook-v1.js"></script>
+  
+  <!-- ========================================
+       SISTEMA DE VERIFICACIÓN EN DOS PASOS (2FA)
+       ======================================== -->
+  <script src="js/two-factor-auth.js"></script>
+  
+  <!-- ========================================
+       SISTEMA DE MIGRACIÓN DE CUENTAS
+       ======================================== -->
+  <script type="module">
+    import { AccountMigration } from './js/migration/account-migration.js';
+    import { MigrationDetector } from './js/migration/migration-detector.js';
+    
+    // Inicializar cuando todo esté listo
+    window.addEventListener('DOMContentLoaded', () => {
+      // Esperar a que Firebase y ProfileManager estén disponibles
+      const checkInit = setInterval(() => {
+        // Verificar que existan los módulos necesarios
+        const firebaseReady = window.firebaseManager || window.firebase;
+        const profileReady = window.profileManager || window.guestbookApp?.profiles;
+        
+        if (firebaseReady && profileReady) {
+          clearInterval(checkInit);
+          
+          try {
+            // Inicializar sistema de migración
+            window.accountMigration = new AccountMigration(
+              firebaseReady, 
+              profileReady
+            );
+            
+            console.log('✅ Sistema de migración de cuentas inicializado');
+            
+            // Inicializar detector de migración
+            window.migrationDetector = new MigrationDetector();
+            window.migrationDetector.init();
+            
+            console.log('✅ Detector de migración activo');
+          } catch (error) {
+            console.error('❌ Error al inicializar sistema de migración:', error);
+          }
+        }
+      }, 100);
+      
+      // Timeout de seguridad (30 segundos)
+      setTimeout(() => {
+        clearInterval(checkInit);
+        if (!window.accountMigration) {
+          console.warn('⚠️ Sistema de migración no disponible - módulos no cargados a tiempo');
+        }
+      }, 30000);
+    });
+  </script>
+  
+  <!-- ========================================
+       PANEL DE ADMINISTRACIÓN SEGURO
+       ======================================== -->
+  <script type="module">
+    import { SecureAdminPanel } from './js/admin-panel-secure.js';
+    
+    // Inicializar admin panel cuando Firebase esté listo
+    window.addEventListener('DOMContentLoaded', () => {
+      const checkInit = setInterval(() => {
+        if (window.firebase && window.auth) {
+          clearInterval(checkInit);
+          
+          // Inicializar panel de admin seguro
+          window.secureAdminPanel = new SecureAdminPanel(window.firebase);
+          
+          console.log('✅ Panel de administración seguro inicializado');
+        }
+      }, 100);
+      
+      // Timeout de seguridad
+      setTimeout(() => {
+        clearInterval(checkInit);
+      }, 30000);
+    });
+  </script>
   
   <!-- Inicialización del formulario -->
   <script>
@@ -2206,7 +2328,13 @@
         const description = document.getElementById('drawingDescriptionV2').value.trim();
         const author = document.getElementById('authorNameV2').value.trim() || 'Artista Anónimo';
         const category = document.getElementById('categorySelectV2').value;
-        const deviceId = localStorage.getItem('guestbook_deviceId');
+        
+        // Obtener o generar deviceId
+        let deviceId = localStorage.getItem('guestbook_deviceId');
+        if (!deviceId) {
+          deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+          localStorage.setItem('guestbook_deviceId', deviceId);
+        }
         
         // Capturar imagen del canvas
         const imageData = window.canvasManager.getImageData();
@@ -2219,29 +2347,17 @@
           timestamp: Date.now(),
           autor: author,
           categoria: category,
-          domain: window.location.hostname,
-          userId: deviceId || null
+          domain: window.location.hostname || 'localhost',
+          deviceId: deviceId  // ← CAMBIO: era userId, ahora es deviceId
         };
         
         // Subir a Firebase
         console.log('📤 Subiendo dibujo a Firebase...');
-        const response = await fetch(
-          'https://firestore.googleapis.com/v1/projects/fenixlaboratory-19ab0/databases/(default)/documents/dibujos',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              fields: convertToFirestoreFormat(drawingData) 
-            })
-          }
-        );
         
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+        // Usar FirebaseManager en lugar de fetch directo
+        await window.firebaseManager.saveDrawing(drawingData);
         
-        const result = await response.json();
-        console.log('✅ Dibujo subido exitosamente:', result);
+        console.log('✅ Dibujo subido exitosamente');
         
         // Mostrar mensaje de éxito
         showStatusMessage(
@@ -2326,6 +2442,259 @@
   <!-- Inicializar Lucide Icons -->
   <script>
     lucide.createIcons();
+  </script>
+  
+  <!-- ========================================
+       SISTEMA DE HISTORIAL DE VERSIONES
+       ======================================== -->
+  <script>
+    async function showVersionHistory() {
+      try {
+        const response = await fetch('data/version-info.json');
+        const versionData = await response.json();
+        
+        const modalHTML = `
+          <div class="modal fade" id="versionHistoryModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content" style="background: var(--bg-light); border: 2px solid var(--primary);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--primary);">
+                  <h5 class="modal-title" style="color: var(--primary);">
+                    <i data-lucide="history" style="width: 1.25rem; height: 1.25rem; vertical-align: middle;"></i>
+                    Changelog v${versionData.version}
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <!-- Versión Actual -->
+                  <div class="mb-3 p-3" style="background: rgba(var(--primary-rgb), 0.1); border-left: 4px solid var(--primary); border-radius: 8px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <h4 style="color: var(--primary); margin: 0;">v${versionData.version} - ${versionData.codename}</h4>
+                        <small style="color: var(--text-secondary);">${new Date(versionData.releaseDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</small>
+                      </div>
+                      <span class="badge bg-success">Actual</span>
+                    </div>
+                    <p style="color: var(--text); margin: 10px 0 0 0;">${versionData.description}</p>
+                  </div>
+                  
+                  ${versionData.changelog.newFeatures ? `
+                    <div class="mt-4">
+                      <h5 style="color: var(--primary); margin-bottom: 15px;">✨ Nuevas Funcionalidades</h5>
+                      ${versionData.changelog.newFeatures.map(feature => `
+                        <div class="mb-3 p-3" style="background: var(--bg-dark); border: 1px solid rgba(var(--primary-rgb), 0.3); border-radius: 8px;">
+                          <h6 style="color: var(--text); margin: 0 0 8px 0;">
+                            ${feature.icon} ${feature.title}
+                          </h6>
+                          <p style="color: var(--text-secondary); margin: 0 0 10px 0; font-size: 0.9em;">
+                            ${feature.description}
+                          </p>
+                          ${feature.details ? `
+                            <ul style="color: var(--text); margin: 0; font-size: 0.85em; padding-left: 20px;">
+                              ${feature.details.map(detail => `<li>${detail}</li>`).join('')}
+                            </ul>
+                          ` : ''}
+                        </div>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                  
+                  ${versionData.changelog.bugfixes ? `
+                    <div class="mt-4">
+                      <h5 style="color: var(--primary); margin-bottom: 15px;">� Correcciones de Bugs</h5>
+                      ${versionData.changelog.bugfixes.map(bug => `
+                        <div class="mb-2 p-2" style="background: var(--bg-dark); border-left: 3px solid ${bug.severity === 'critical' ? '#dc3545' : bug.severity === 'high' ? '#ff6b35' : '#ffc107'}; border-radius: 4px;">
+                          <strong style="color: var(--text);">${bug.icon} ${bug.title}</strong>
+                          <span class="badge bg-${bug.severity === 'critical' ? 'danger' : bug.severity === 'high' ? 'warning' : 'secondary'} ms-2" style="font-size: 0.7em;">${bug.severity}</span>
+                          <p style="color: var(--text-secondary); margin: 5px 0 0 0; font-size: 0.85em;">${bug.description}</p>
+                        </div>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--primary); justify-content: space-between;">
+                  <button type="button" class="btn btn-outline-secondary" onclick="showPreviousVersion()">
+                    <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i>
+                    Ver v1.0.0
+                  </button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Insertar modal
+        const existingModal = document.getElementById('versionHistoryModal');
+        if (existingModal) existingModal.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('versionHistoryModal'));
+        modal.show();
+        
+        // Reinicializar iconos
+        lucide.createIcons();
+        
+      } catch (error) {
+        console.error('Error al cargar changelog:', error);
+        alert('Error al cargar el changelog');
+      }
+    }
+    
+    // Función para mostrar la versión anterior (v1.0.0)
+    async function showPreviousVersion() {
+      try {
+        const response = await fetch('data/version-info.json');
+        const versionData = await response.json();
+        const previousVersion = versionData.versionHistory[0]; // v1.0.0
+        
+        if (!previousVersion) {
+          alert('No hay versiones anteriores disponibles');
+          return;
+        }
+        
+        const modalHTML = `
+          <div class="modal fade" id="previousVersionModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content" style="background: var(--bg-light); border: 2px solid var(--primary);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--primary);">
+                  <h5 class="modal-title" style="color: var(--primary);">
+                    <i data-lucide="archive" style="width: 1.25rem; height: 1.25rem; vertical-align: middle;"></i>
+                    Changelog v${previousVersion.version}
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <!-- Versión Anterior -->
+                  <div class="mb-3 p-3" style="background: rgba(108, 117, 125, 0.1); border-left: 4px solid #6c757d; border-radius: 8px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <h4 style="color: var(--text); margin: 0;">v${previousVersion.version} - ${previousVersion.codename}</h4>
+                        <small style="color: var(--text-secondary);">${new Date(previousVersion.releaseDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</small>
+                      </div>
+                      <span class="badge bg-secondary">${previousVersion.status}</span>
+                    </div>
+                    <p style="color: var(--text); margin: 10px 0 0 0;">${previousVersion.summary}</p>
+                  </div>
+                  
+                  <div class="mt-4">
+                    <h5 style="color: var(--primary); margin-bottom: 15px;">✨ Funcionalidades Principales</h5>
+                    <div class="row">
+                      ${previousVersion.majorFeatures.map(feature => `
+                        <div class="col-md-6 mb-2">
+                          <div class="p-2" style="background: var(--bg-dark); border: 1px solid rgba(var(--primary-rgb), 0.3); border-radius: 6px;">
+                            <small style="color: var(--text);">✓ ${feature}</small>
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                  
+                  <div class="mt-4 p-3" style="background: rgba(var(--primary-rgb), 0.05); border-radius: 8px; border: 1px dashed var(--primary);">
+                    <p style="color: var(--text-secondary); margin: 0; text-align: center;">
+                      <i data-lucide="clock" style="width: 1rem; height: 1rem; vertical-align: middle;"></i>
+                      Versión antigua - Solo para consulta histórica
+                    </p>
+                  </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--primary);">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Insertar modal
+        const existingModal = document.getElementById('previousVersionModal');
+        if (existingModal) existingModal.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('previousVersionModal'));
+        modal.show();
+        
+        // Reinicializar iconos
+        lucide.createIcons();
+        
+      } catch (error) {
+        console.error('Error al cargar versión anterior:', error);
+        alert('Error al cargar la versión anterior');
+      }
+    }
+    
+    // Función para abrir el Admin Panel (solo admins)
+    async function openAdminPanel() {
+      const isAdmin = await checkIfUserIsAdmin();
+      
+      if (isAdmin) {
+        window.open('admin-panel.html', '_blank');
+      } else {
+        alert('⛔ Acceso denegado. Solo usuarios con tag ADMIN pueden acceder.');
+      }
+    }
+    
+    // Verificar si el usuario es admin
+    async function checkIfUserIsAdmin() {
+      try {
+        // Verificar si está logueado
+        if (!window.profileManager || !window.profileManager.isLoggedIn()) {
+          return false;
+        }
+        
+        const profile = window.profileManager.currentProfile;
+        
+        // Opción 1: Verificar por UID en Firebase (si usa Firebase Auth)
+        if (profile.uid && window.auth) {
+          const adminConfig = await window.firebaseManager.db.collection('admin_config')
+            .doc('authorized_admins').get();
+          
+          if (adminConfig.exists) {
+            const admins = adminConfig.data().admins || {};
+            return admins[profile.uid] === true;
+          }
+        }
+        
+        // Opción 2: Verificar por userTags (usuarios legacy)
+        if (profile.userTags && Array.isArray(profile.userTags)) {
+          return profile.userTags.includes('ADMIN') || profile.userTags.includes('OWNER');
+        }
+        
+        return false;
+      } catch (error) {
+        console.error('Error verificando admin:', error);
+        return false;
+      }
+    }
+    
+    // Verificar y mostrar botón de admin al cargar
+    window.addEventListener('load', async () => {
+      // Esperar a que profileManager esté listo
+      setTimeout(async () => {
+        const isAdmin = await checkIfUserIsAdmin();
+        const adminBtn = document.getElementById('adminPanelBtn');
+        
+        if (isAdmin && adminBtn) {
+          adminBtn.style.display = 'inline-block';
+          lucide.createIcons();
+        }
+      }, 2000); // Esperar 2 segundos para que cargue el perfil
+    });
+    
+    // También verificar cuando el usuario se loguee
+    document.addEventListener('profileLoaded', async () => {
+      const isAdmin = await checkIfUserIsAdmin();
+      const adminBtn = document.getElementById('adminPanelBtn');
+      
+      if (isAdmin && adminBtn) {
+        adminBtn.style.display = 'inline-block';
+        lucide.createIcons();
+      } else if (adminBtn) {
+        adminBtn.style.display = 'none';
+      }
+    });
   </script>
   
   </div> <!-- Fin de #mainContent -->

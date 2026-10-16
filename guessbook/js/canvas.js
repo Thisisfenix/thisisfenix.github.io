@@ -2094,6 +2094,9 @@ export class CanvasManager {
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
+        // GUARDAR el estado del canvas ANTES de dibujar la imagen
+        this.canvasBeforeImage = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        
         // Crear objeto de imagen transformable
         const maxSize = Math.min(this.canvas.width, this.canvas.height) * 0.4;
         const scale = Math.min(maxSize / img.width, maxSize / img.height);

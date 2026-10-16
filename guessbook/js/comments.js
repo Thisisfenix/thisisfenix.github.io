@@ -447,6 +447,7 @@ window.showReplyForm = function(commentId, authorName) {
   }
   
   const isMobile = window.innerWidth <= 768;
+  const isLoggedIn = window.guestbookApp?.profiles?.isLoggedIn();
   
   formContainer.innerHTML = `
     <div style="background: var(--bg-dark); border-radius: 6px; padding: ${isMobile ? '8px' : '10px'}; border: 1px solid var(--primary);">
@@ -456,10 +457,26 @@ window.showReplyForm = function(commentId, authorName) {
       <div style="margin-bottom: 8px;">
         <textarea id="replyText_${commentId}" placeholder="Escribe tu respuesta..." style="width: 100%; min-height: ${isMobile ? '60px' : '80px'}; background: var(--bg-light); border: 1px solid var(--primary); color: var(--text-primary); border-radius: 4px; padding: 8px; resize: vertical; font-size: ${isMobile ? '14px' : '16px'};" maxlength="500"></textarea>
       </div>
-      <div style="margin-bottom: 8px;">
-        <input type="text" id="replyAuthor_${commentId}" placeholder="Tu nombre (opcional)" style="width: 100%; background: var(--bg-light); border: 1px solid var(--primary); color: var(--text-primary); border-radius: 4px; padding: 6px; font-size: ${isMobile ? '12px' : '14px'};" maxlength="50">
+      <div style="margin-bottom: 8px; position: relative;">
+        <input type="text" id="replyAuthor_${commentId}" placeholder="Tu nombre (opcional)" style="width: 100%; background: var(--bg-light); border: 1px solid var(--primary); color: var(--text-primary); border-radius: 4px; padding: 6px ${isLoggedIn ? '35px' : '6px'} 6px 6px; font-size: ${isMobile ? '12px' : '14px'};" maxlength="50">
+        ${isLoggedIn ? `
+          <button 
+            onclick="useLoggedUsername('replyAuthor_${commentId}')" 
+            style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: var(--primary); border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;"
+            title="Usar mi usuario">
+            👤
+          </button>
+        ` : ''}
       </div>
-      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+      <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
+        <button 
+          onclick="window.guestbookApp?.mediaPicker?.openPicker('reply_${commentId}')"
+          style="background: var(--secondary); border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: ${isMobile ? '11px' : '12px'}; flex-shrink: 0;">
+          🖼️ Adjuntar GIF
+        </button>
+        <div id="replyImagePreview_${commentId}" style="flex-grow: 1;"></div>
+      </div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;">
         <button onclick="hideReplyForm('${commentId}')" style="background: var(--bg-light); border: 1px solid var(--text-secondary); color: var(--text-secondary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: ${isMobile ? '12px' : '14px'};">
           Cancelar
         </button>
@@ -472,7 +489,7 @@ window.showReplyForm = function(commentId, authorName) {
   
   formContainer.style.display = 'block';
   
-  if (window.guestbookApp?.profiles?.isLoggedIn()) {
+  if (isLoggedIn) {
     const authorInput = document.getElementById(`replyAuthor_${commentId}`);
     if (authorInput) {
       authorInput.value = window.guestbookApp.profiles.currentProfile.username;
@@ -496,9 +513,11 @@ window.hideReplyForm = function(commentId) {
 window.submitReply = async function(commentId) {
   const textArea = document.getElementById(`replyText_${commentId}`);
   const authorInput = document.getElementById(`replyAuthor_${commentId}`);
+  const imagePreview = document.getElementById(`replyImagePreview_${commentId}`);
   
   const text = textArea?.value?.trim();
   const author = authorInput?.value?.trim() || 'Anónimo';
+  const attachedImage = imagePreview?.dataset?.selectedImage || null;
   
   if (!text) {
     if (window.guestbookApp?.ui) {
@@ -541,7 +560,8 @@ window.submitReply = async function(commentId) {
       profileAvatar: profileAvatar,
       isLoggedUser: isLoggedUser,
       likes: 0,
-      dislikes: 0
+      dislikes: 0,
+      attachedImage: attachedImage // Añadir imagen adjunta
     };
     
     const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);

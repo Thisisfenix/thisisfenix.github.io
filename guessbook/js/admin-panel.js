@@ -1,5 +1,16 @@
-// Admin Panel Standalone - FenixLaboratory Guestbook
-// Sistema de administración independiente
+// ========================================
+// ADMIN PANEL LEGACY - DEPRECATED
+// ========================================
+// 
+// ⚠️ ESTE ARCHIVO HA SIDO DESACTIVADO
+// 
+// Razón: Sistema de autenticación inseguro con contraseña hardcodeada
+// Reemplazo: admin-panel-secure.js con Firebase Authentication
+// 
+// Este archivo solo contiene stubs para evitar errores de compatibilidad
+// NO USAR ESTE SISTEMA - Migrar a admin-panel-secure.js
+// 
+// ========================================
 
 class AdminPanel {
   constructor(firebase) {
@@ -9,29 +20,25 @@ class AdminPanel {
     this.allDrawings = [];
     this.allUsers = [];
     this.allReports = [];
-    this.init();
+    
+    // NO inicializar - sistema desactivado
+    console.warn('⚠️ AdminPanel legacy está desactivado. Usa SecureAdminPanel en su lugar.');
   }
 
+  // Stubs para compatibilidad - NO HACEN NADA
   init() {
-    this.createAdminButton();
-    this.createAdminModal();
-    this.setupEventListeners();
+    console.warn('⚠️ admin-panel.js está desactivado. Usa admin-panel-secure.js');
   }
 
   createAdminButton() {
-    const adminBtn = document.createElement('button');
-    adminBtn.id = 'adminToggle';
-    adminBtn.className = 'btn btn-outline-danger btn-sm ms-2';
-    adminBtn.innerHTML = '🔐 Admin';
-    adminBtn.onclick = () => this.showAdminModal();
-    
-    const versionToggle = document.querySelector('.version-toggle');
-    if (versionToggle) {
-      versionToggle.appendChild(adminBtn);
-    }
+    // Stub vacío
   }
 
   createAdminModal() {
+    // Stub vacío - no crear modal
+    return;
+    
+    // Código antiguo desactivado:
     const modalHTML = `
       <div id="adminPanel" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-xl">
@@ -190,45 +197,34 @@ class AdminPanel {
   }
 
   showAdminModal() {
-    const modal = new bootstrap.Modal(document.getElementById('adminPanel'));
-    modal.show();
+    // Stub - redirigir al panel seguro
+    console.warn('⚠️ Panel de admin legacy desactivado');
+    alert('⚠️ El panel de admin antiguo ha sido desactivado por seguridad.\n\nUsa el nuevo panel seguro con Firebase Authentication.');
   }
 
   async login() {
-    const password = document.getElementById('adminPassword').value;
-    if (password === 'fenix2024admin') {
-      this.isLoggedIn = true;
-      document.getElementById('adminLogin').style.display = 'none';
-      document.getElementById('adminContent').style.display = 'block';
-      await this.loadAdminData();
-      this.showTab('stats');
-    } else {
-      alert('Contraseña incorrecta');
-    }
+    // DESACTIVADO - Contraseña hardcodeada removida por seguridad
+    console.error('❌ Login con contraseña hardcodeada desactivado');
+    alert('❌ Sistema de autenticación legacy desactivado.\n\nUsa admin-panel-secure.js con Firebase Authentication.');
+    return false;
   }
 
   showTab(tabName) {
-    document.querySelectorAll('.admin-tab').forEach(tab => tab.style.display = 'none');
-    document.getElementById('admin' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).style.display = 'block';
+    // Stub vacío
   }
 
   async loadAdminData() {
-    await this.loadDrawings();
-    await this.loadUsers();
-    await this.loadReports();
-    this.updateStats();
+    // Stub vacío
+    return [];
   }
 
   async loadDrawings() {
-    try {
-      this.allDrawings = await this.firebase.getAllDrawings();
-      this.displayDrawings(this.allDrawings);
-    } catch (error) {
-      console.error('Error loading drawings:', error);
-    }
+    // Stub vacío
+    return [];
   }
 
   displayDrawings(drawings) {
+    // Stub vacío
     const container = document.getElementById('adminDrawingsList');
     container.innerHTML = drawings.map((d, index) => `
       <div class="card mb-2">
@@ -258,36 +254,12 @@ class AdminPanel {
   }
 
   async loadUsers() {
-    try {
-      const drawings = this.allDrawings || await this.firebase.getAllDrawings();
-      const userMap = new Map();
-      
-      drawings.forEach(d => {
-        if (!userMap.has(d.autor)) {
-          userMap.set(d.autor, {
-            name: d.autor,
-            drawings: 0,
-            totalLikes: 0,
-            lastActivity: d.timestamp,
-            isBlocked: false
-          });
-        }
-        const user = userMap.get(d.autor);
-        user.drawings++;
-        user.totalLikes += d.likes || 0;
-        if (d.timestamp > user.lastActivity) {
-          user.lastActivity = d.timestamp;
-        }
-      });
-      
-      this.allUsers = Array.from(userMap.values());
-      this.displayUsers(this.allUsers);
-    } catch (error) {
-      console.error('Error loading users:', error);
-    }
+    // Stub vacío
+    return [];
   }
 
   displayUsers(users) {
+    // Stub vacío
     const container = document.getElementById('adminUsersList');
     container.innerHTML = users.map(u => `
       <div class="card mb-2">
@@ -314,16 +286,12 @@ class AdminPanel {
   }
 
   async loadReports() {
-    try {
-      this.allReports = await this.firebase.getReports() || [];
-      this.displayReports(this.allReports);
-    } catch (error) {
-      console.error('Error loading reports:', error);
-      this.allReports = [];
-    }
+    // Stub vacío
+    return [];
   }
 
   displayReports(reports) {
+    // Stub vacío
     const container = document.getElementById('adminReportsList');
     if (!reports || reports.length === 0) {
       container.innerHTML = '<p class="text-center text-muted">No hay reportes</p>';
@@ -357,15 +325,11 @@ class AdminPanel {
   }
 
   updateStats() {
-    document.getElementById('totalDrawings').textContent = this.allDrawings.length;
-    document.getElementById('totalUsers').textContent = this.allUsers.length;
-    document.getElementById('totalReports').textContent = this.allReports.length;
-    
-    const totalComments = this.allDrawings.reduce((sum, d) => sum + (d.comments?.length || 0), 0);
-    document.getElementById('totalComments').textContent = totalComments;
+    // Stub vacío
   }
 
   filterDrawings() {
+    // Stub vacío
     const search = document.getElementById('drawingSearch').value.toLowerCase();
     const filter = document.getElementById('drawingFilter').value;
     
@@ -383,19 +347,13 @@ class AdminPanel {
   }
 
   async deleteDrawing(drawingId) {
-    if (confirm('¿Eliminar este dibujo permanentemente?')) {
-      try {
-        await this.firebase.deleteDrawing(drawingId);
-        await this.loadDrawings();
-        this.updateStats();
-        alert('Dibujo eliminado');
-      } catch (error) {
-        alert('Error al eliminar: ' + error.message);
-      }
-    }
+    console.warn('⚠️ Función desactivada - usa admin-panel-secure.js');
+    return false;
   }
 
   async bulkDeleteDrawings() {
+    console.warn('⚠️ Función desactivada - usa admin-panel-secure.js');
+    return false;
     const checkboxes = document.querySelectorAll('input[data-drawing-id]:checked');
     if (checkboxes.length === 0) {
       alert('Selecciona al menos un dibujo');
@@ -417,6 +375,9 @@ class AdminPanel {
   }
 
   viewDrawing(drawingId) {
+    console.warn('⚠️ Función desactivada');
+    return;
+    // Código antiguo desactivado:
     const drawing = this.allDrawings.find(d => d.id === drawingId);
     if (drawing) {
       const modal = document.createElement('div');
@@ -445,6 +406,8 @@ class AdminPanel {
   }
 
   async toggleBlockUser(username) {
+    console.warn('⚠️ Función desactivada');
+    return false;
     const user = this.allUsers.find(u => u.name === username);
     if (user) {
       user.isBlocked = !user.isBlocked;
@@ -455,6 +418,8 @@ class AdminPanel {
   }
 
   warnUser(username) {
+    console.warn('⚠️ Función desactivada');
+    return;
     const reason = prompt('Razón de la advertencia:');
     if (reason) {
       alert(`Advertencia enviada a ${username}: ${reason}`);
@@ -463,6 +428,9 @@ class AdminPanel {
   }
 
   viewUserHistory(username) {
+    console.warn('⚠️ Función desactivada');
+    return;
+    // Código antiguo desactivado:
     const userDrawings = this.allDrawings.filter(d => d.autor === username);
     const modal = document.createElement('div');
     modal.innerHTML = `
@@ -499,6 +467,8 @@ class AdminPanel {
   }
 
   async resolveReport(reportId) {
+    console.warn('⚠️ Función desactivada');
+    return false;
     const report = this.allReports.find(r => r.id === reportId);
     if (report) {
       report.status = 'resolved';
@@ -509,6 +479,8 @@ class AdminPanel {
   }
 
   async rejectReport(reportId) {
+    console.warn('⚠️ Función desactivada');
+    return false;
     const report = this.allReports.find(r => r.id === reportId);
     if (report) {
       report.status = 'rejected';
@@ -519,11 +491,15 @@ class AdminPanel {
   }
 
   filterReports(status) {
+    console.warn('⚠️ Función desactivada');
+    return;
     const filtered = this.allReports.filter(r => r.status === status);
     this.displayReports(filtered);
   }
 
   saveConfig() {
+    console.warn('⚠️ Función desactivada');
+    return;
     const config = {
       maxDrawingsPerDay: document.getElementById('maxDrawingsPerDay').value,
       maxImageSize: document.getElementById('maxImageSize').value,
@@ -535,6 +511,8 @@ class AdminPanel {
   }
 
   saveFilters() {
+    console.warn('⚠️ Función desactivada');
+    return;
     const filters = {
       bannedWords: document.getElementById('bannedWords').value.split(',').map(w => w.trim()),
       blockedIPs: document.getElementById('blockedIPs').value.split('\n').map(ip => ip.trim())
@@ -545,6 +523,8 @@ class AdminPanel {
   }
 
   exportData() {
+    console.warn('⚠️ Función desactivada - usa admin-panel-secure.js');
+    return;
     const data = {
       drawings: this.allDrawings,
       users: this.allUsers,
@@ -562,27 +542,31 @@ class AdminPanel {
   }
 
   setupEventListeners() {
-    // Filtros en tiempo real
-    document.addEventListener('input', (e) => {
-      if (e.target.id === 'drawingSearch') {
-        this.filterDrawings();
-      }
-    });
-    
-    document.addEventListener('change', (e) => {
-      if (e.target.id === 'drawingFilter') {
-        this.filterDrawings();
-      }
-    });
+    // Stub vacío - no configurar listeners
   }
 }
 
-// Inicializar cuando esté disponible Firebase
+// ========================================
+// INICIALIZACIÓN DESACTIVADA
+// ========================================
+
 window.adminPanel = null;
 
-// Función global para inicializar admin panel
+// Función global para inicializar admin panel - DESACTIVADA
 window.initAdminPanel = function(firebase) {
-  if (!window.adminPanel) {
-    window.adminPanel = new AdminPanel(firebase);
-  }
+  console.warn('⚠️ AdminPanel legacy desactivado. Usa SecureAdminPanel:');
+  console.warn('   import { SecureAdminPanel } from "./js/admin-panel-secure.js";');
+  console.warn('   window.secureAdminPanel = new SecureAdminPanel(firebase);');
+  
+  // NO crear instancia del panel antiguo
+  // if (!window.adminPanel) {
+  //   window.adminPanel = new AdminPanel(firebase);
+  // }
+  
+  return null;
 };
+
+// Exportar clase para compatibilidad pero con advertencia
+console.warn('⚠️ admin-panel.js está DESACTIVADO');
+console.warn('   Razón: Contraseña hardcodeada y sistema inseguro');
+console.warn('   Usa: admin-panel-secure.js con Firebase Authentication');

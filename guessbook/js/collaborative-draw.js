@@ -1,5 +1,5 @@
-// Sistema de Dibujo Colaborativo
-import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, getDoc, deleteDoc, query, where, getDocs, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+// Sistema de Dibujo Colaborativo - SDK v11.0.2
+import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, getDoc, deleteDoc, query, where, getDocs, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
 
 export class CollaborativeDrawing {
   constructor(firebaseManager) {

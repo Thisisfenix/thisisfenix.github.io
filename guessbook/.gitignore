@@ -1,0 +1,21 @@
+# Variables de entorno sensibles
+.env
+
+# Configuraciones locales
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Archivos de configuración de admins (NO SUBIR)
+setup-admins.html
+create-admin.html
+
+# Carpeta de administración privada
+admin/
+private/
+
+# Archivos temporales
+*.log
+*.tmp
+.DS_Store

@@ -40,3 +40,5 @@ backups/
 .css-backup/
 .vscode/settings.json
 guessbook/js/main.js
+guessbook/ADMIN_SETUP.md
+guessbook/MIGRATION_GUIDE.md
