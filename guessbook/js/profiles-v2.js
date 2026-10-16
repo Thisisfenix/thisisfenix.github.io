@@ -8,11 +8,8 @@ export class ProfileManagerV2 {
     // Bandera para evitar doble logout
     this.isLoggingOut = false;
     
-    // Bandera para evitar logout durante proceso de 2FA
-    this.is2FAInProgress = false;
-    
-    // Inicializar sistema de 2FA
-    this.twoFactorAuth = new window.TwoFactorAuth(firebaseManager, this);
+    // Bandera para evitar procesamiento duplicado en onAuthStateChanged
+    this.manualLoginInProgress = false;
     
     this.currentProfile = {
       username: '',
@@ -27,7 +24,6 @@ export class ProfileManagerV2 {
       isLoggedIn: false,
       isLegacyUser: false, // Nuevo: marca si es usuario del sistema viejo
       sessionToken: null,
-      has2FA: false, // Nuevo: marca si tiene 2FA activado
       isAdmin: false // Nuevo: marca si es administrador
     };
     
@@ -38,19 +34,18 @@ export class ProfileManagerV2 {
     // Escuchar cambios de autenticación de Firebase
     if (this.auth) {
       this.auth.onAuthStateChanged(async (user) => {
-        if (user && !this.is2FAInProgress) {
-          // Solo procesar si NO estamos en proceso de 2FA
+        if (user) {
           console.log('🔐 Usuario autenticado con Firebase:', user.email);
-          // Usuario autenticado con Firebase Auth
-          await this.handleFirebaseAuthUser(user);
-        } else if (user && this.is2FAInProgress) {
-          // Estamos en proceso de 2FA, ignorar este evento
-          console.log('🔐 Auth detectado pero esperando 2FA...');
-        } else if (!user && this.currentProfile.isLoggedIn && !this.currentProfile.isLegacyUser && !this.is2FAInProgress) {
-          // Usuario deslogueado de Firebase pero no es legacy y NO está en proceso de 2FA
+          // Usuario autenticado con Firebase Auth - NO ejecutar si ya se manejó en login()
+          // Solo ejecutar si no viene de un login manual
+          if (!this.manualLoginInProgress) {
+            await this.handleFirebaseAuthUser(user);
+          }
+        } else if (this.currentProfile.isLoggedIn && !this.currentProfile.isLegacyUser) {
+          // Usuario deslogueado de Firebase pero no es legacy
           console.log('🚪 Sesión de Firebase cerrada');
           
-          // Solo llamar logout si NO estamos en proceso de logout ni de 2FA
+          // Solo llamar logout si NO estamos en proceso de logout
           if (!this.isLoggingOut) {
             this.isLoggingOut = true;
             this.logout(true); // true = skip confirm porque ya se confirmó
@@ -627,39 +622,6 @@ export class ProfileManagerV2 {
                   🔑 Recuperar Contraseña
                 </button>
               </div>
-              
-              ${!this.currentProfile.isLegacyUser ? `
-                <!-- Verificación en Dos Pasos (2FA) - Solo para Firebase Auth -->
-                <div class="profile-settings">
-                  <h5>🔐 Verificación en Dos Pasos</h5>
-                  <p style="font-size: 0.9em; color: var(--text-muted);">Agrega una capa extra de seguridad a tu cuenta.</p>
-                  
-                  <div id="twoFactorStatus">
-                    <div style="padding: 12px; background: rgba(var(--primary-rgb), 0.1); border-radius: 6px; margin-bottom: 12px;">
-                      <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <span style="font-weight: 600;">Estado:</span>
-                        <span id="2faStatusText" style="color: var(--text-muted);">Cargando...</span>
-                      </div>
-                    </div>
-                    
-                    <button 
-                      id="toggle2FAButton" 
-                      class="btn-secondary btn-block" 
-                      onclick="window.guestbookApp.profiles.toggle2FA()"
-                      disabled>
-                      Cargando...
-                    </button>
-                    
-                    <button 
-                      id="viewBackupCodesButton" 
-                      class="btn-link btn-block" 
-                      onclick="window.guestbookApp.profiles.viewBackupCodes()"
-                      style="display: none; margin-top: 10px;">
-                      🔑 Ver códigos de respaldo
-                    </button>
-                  </div>
-                </div>
-              ` : ''}
             </div>
             
             <!-- Actions -->
@@ -731,7 +693,6 @@ export class ProfileManagerV2 {
           if (section === 'security') {
             this.loadRecoveryMethods();
             this.loadPrivacySettings();
-            this.load2FAStatus(); // Cargar estado de 2FA
           } else if (section === 'likes') {
             this.loadUserLikes();
           } else if (section === 'comments') {
@@ -1022,107 +983,35 @@ export class ProfileManagerV2 {
               email = `${usernameOrEmail}@fenix.local`;
             }
             
-            // PRIMERO: Verificar si tiene 2FA SIN hacer login completo
-            // Hacemos un login temporal solo para verificar 2FA
-            this.is2FAInProgress = true; // Marcar ANTES de signIn
+            // Marcar que estamos haciendo login manual
+            this.manualLoginInProgress = true;
             
-            // Intentar login con Firebase Auth
+            // Intentar login con Firebase Auth (SIN 2FA por ahora)
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
             const user = userCredential.user;
             
-            console.log('✅ Credenciales correctas:', user.email);
+            console.log('✅ Login exitoso con Firebase Auth:', user.email);
             
-            // VERIFICAR SI TIENE 2FA ACTIVADO (ANTES de completar el login)
-            const has2FA = await this.twoFactorAuth.is2FAEnabled(user.uid);
+            // Cerrar modal de login
+            const authModal = document.getElementById('authModal');
+            if (authModal) authModal.style.display = 'none';
             
-            if (has2FA) {
-              console.log('🔐 Usuario tiene 2FA activado, solicitando verificación...');
-              
-              // Restaurar botón
-              if (loginBtn) {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = originalText;
-              }
-              
-              // Guardar credenciales para usar después de 2FA
-              const savedEmail = email;
-              const savedPassword = password;
-              
-              // Cerrar sesión temporal de Firebase (no completar login aún)
-              await this.auth.signOut();
-              
-              // Esperar un momento para que se complete el signOut
-              await new Promise(resolve => setTimeout(resolve, 100));
-              
-              // Mantener flag activo hasta que se complete o cancele 2FA
-              // NO resetear aquí: this.is2FAInProgress = false;
-              
-              // Cerrar modal de login
-              const authModal = document.getElementById('authModal');
-              if (authModal) authModal.style.display = 'none';
-              
-              // Enviar código de verificación
-              const sendResult = await this.twoFactorAuth.sendVerificationCode(user.uid, user.email);
-              
-              if (sendResult.success) {
-                // Mostrar panel de 2FA ANTES de completar el login
-                this.show2FAVerificationInSidebar(
-                  user.uid,
-                  user.email,
-                  async () => {
-                    // onSuccess: Código verificado, AHORA SÍ hacer login completo
-                    try {
-                      const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js');
-                      
-                      // Resetear flag ANTES del login final
-                      this.is2FAInProgress = false;
-                      
-                      const finalCredential = await signInWithEmailAndPassword(this.auth, savedEmail, savedPassword);
-                      
-                      await this.handleFirebaseAuthUser(finalCredential.user);
-                      
-                      // Verificar si es admin
-                      this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
-                      this.saveProfile();
-                      
-                      alert('✅ Sesión iniciada correctamente');
-                    } catch (error) {
-                      this.is2FAInProgress = false;
-                      console.error('Error en login final:', error);
-                      alert('❌ Error completando login después de 2FA');
-                    }
-                  },
-                  () => {
-                    // onCancel: Usuario canceló la verificación
-                    this.is2FAInProgress = false;
-                    alert('❌ Verificación 2FA cancelada. No se inició sesión.');
-                  }
-                );
-              } else {
-                this.is2FAInProgress = false;
-                alert('❌ Error enviando código de verificación. Intenta nuevamente.');
-              }
-            } else {
-              // No tiene 2FA, login directo
-              this.is2FAInProgress = false; // Resetear flag
-              
-              const authModal = document.getElementById('authModal');
-              if (authModal) authModal.style.display = 'none';
-              
-              await this.handleFirebaseAuthUser(user);
-              
-              // Verificar si es admin
-              this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
-              this.saveProfile();
-              
-              // Restaurar botón
-              if (loginBtn) {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = originalText;
-              }
-              
-              alert('✅ Sesión iniciada correctamente');
+            await this.handleFirebaseAuthUser(user);
+            
+            // Verificar si es admin
+            this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
+            this.saveProfile();
+            
+            // Restaurar botón
+            if (loginBtn) {
+              loginBtn.disabled = false;
+              loginBtn.innerHTML = originalText;
             }
+            
+            // Resetear bandera
+            this.manualLoginInProgress = false;
+            
+            alert('✅ Sesión iniciada correctamente');
             
             return;
             
@@ -1518,261 +1407,9 @@ export class ProfileManagerV2 {
   }
   
   // ========================================
-  // 2FA VERIFICATION IN SIDEBAR
+  // HELPER FUNCTIONS ELIMINADAS
+  // (2FA removido porque no funciona sin servicio de email)
   // ========================================
-  
-  show2FAVerificationInSidebar(uid, email, onSuccess, onCancel) {
-    // Guardar callbacks en el objeto
-    this.pending2FA = {
-      uid: uid,
-      email: email,
-      onSuccess: onSuccess || null,
-      onCancel: onCancel || null
-    };
-    
-    // Agregar panel de verificación
-    const verificationPanel = document.createElement('div');
-    verificationPanel.id = 'sidebar2FAPanel';
-    verificationPanel.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    `;
-    
-    verificationPanel.innerHTML = `
-      <div style="background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 16px; padding: 2rem; max-width: 450px; width: 100%;">
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-          <div style="font-size: 3em; margin-bottom: 10px;">🔐</div>
-          <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Verificación en Dos Pasos</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9em;">
-            Ingresa el código enviado a: <strong style="color: var(--primary);">${email}</strong>
-          </p>
-        </div>
-        
-        <div style="margin-bottom: 1.5rem;">
-          <label style="display: block; margin-bottom: 8px; color: var(--text); font-weight: 600;">
-            📧 Código de Verificación
-          </label>
-          <input 
-            type="text" 
-            id="sidebar2FACode" 
-            placeholder="123456"
-            maxlength="6"
-            autocomplete="off"
-            style="width: 100%; padding: 12px; text-align: center; font-size: 1.5em; letter-spacing: 0.3em; background: var(--bg-light); border: 2px solid var(--primary); border-radius: 8px; color: var(--text);"
-          >
-          <small id="sidebar2FAError" style="color: #ff4444; display: none; margin-top: 8px; display: block;"></small>
-        </div>
-        
-        <button 
-          onclick="window.guestbookApp.profiles.verifySidebar2FACode()" 
-          class="btn-primary btn-block"
-          style="margin-bottom: 1rem;">
-          Verificar Código
-        </button>
-        
-        <div style="text-align: center; margin-bottom: 1rem;">
-          <button 
-            class="btn-link" 
-            onclick="window.guestbookApp.profiles.showSidebar2FABackupOption()"
-            style="color: var(--text-secondary); text-decoration: underline; background: none; border: none; cursor: pointer; font-size: 0.9em;">
-            🔑 Usar código de respaldo
-          </button>
-        </div>
-        
-        <div style="text-align: center; margin-bottom: 1rem;">
-          <button 
-            class="btn-link" 
-            onclick="window.guestbookApp.profiles.cancelSidebar2FA()"
-            style="color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.85em;">
-            Cancelar
-          </button>
-        </div>
-        
-        <div style="padding: 12px; background: rgba(var(--primary-rgb), 0.1); border-radius: 6px; font-size: 0.85em; color: var(--text-secondary);">
-          <strong>💡 Consejo:</strong> El código expira en 10 minutos
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(verificationPanel);
-    
-    // Auto-focus en el input
-    setTimeout(() => {
-      const input = document.getElementById('sidebar2FACode');
-      if (input) {
-        input.focus();
-        // Enter para enviar
-        input.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') this.verifySidebar2FACode();
-        });
-      }
-    }, 100);
-  }
-  
-  async verifySidebar2FACode() {
-    if (!this.pending2FA) return;
-    
-    const code = document.getElementById('sidebar2FACode').value.trim();
-    const errorEl = document.getElementById('sidebar2FAError');
-    
-    if (!code || code.length !== 6) {
-      errorEl.textContent = 'Ingresa un código de 6 dígitos';
-      errorEl.style.display = 'block';
-      return;
-    }
-    
-    const result = await this.twoFactorAuth.verifyCode(this.pending2FA.uid, code);
-    
-    if (result.success) {
-      // Código correcto, cerrar panel
-      const panel = document.getElementById('sidebar2FAPanel');
-      if (panel) panel.remove();
-      
-      // Ejecutar callback de éxito
-      if (this.pending2FA.onSuccess) {
-        await this.pending2FA.onSuccess();
-      }
-      
-      this.pending2FA = null;
-    } else {
-      errorEl.textContent = result.error;
-      if (result.attemptsLeft !== undefined) {
-        errorEl.textContent += ` (${result.attemptsLeft} intentos restantes)`;
-      }
-      errorEl.style.display = 'block';
-    }
-  }
-  
-  showSidebar2FABackupOption() {
-    if (!this.pending2FA) return;
-    
-    const panel = document.getElementById('sidebar2FAPanel');
-    if (!panel) return;
-    
-    panel.innerHTML = `
-      <div style="background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 16px; padding: 2rem; max-width: 450px; width: 100%;">
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-          <div style="font-size: 3em; margin-bottom: 10px;">🔑</div>
-          <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Código de Respaldo</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9em;">
-            Ingresa uno de tus códigos de respaldo
-          </p>
-        </div>
-        
-        <div style="margin-bottom: 1.5rem;">
-          <label style="display: block; margin-bottom: 8px; color: var(--text); font-weight: 600;">
-            🔑 Código de Respaldo
-          </label>
-          <input 
-            type="text" 
-            id="sidebar2FABackup" 
-            placeholder="XXXX-XXXX-XXXX"
-            maxlength="14"
-            autocomplete="off"
-            style="width: 100%; padding: 12px; text-align: center; font-size: 1.2em; letter-spacing: 0.2em; text-transform: uppercase; background: var(--bg-light); border: 2px solid var(--primary); border-radius: 8px; color: var(--text);"
-          >
-          <small id="sidebarBackupError" style="color: #ff4444; display: none; margin-top: 8px; display: block;"></small>
-        </div>
-        
-        <button 
-          onclick="window.guestbookApp.profiles.verifySidebar2FABackup()" 
-          class="btn-primary btn-block"
-          style="margin-bottom: 1rem;">
-          Verificar Código de Respaldo
-        </button>
-        
-        <div style="text-align: center; margin-bottom: 1rem;">
-          <button 
-            class="btn-link" 
-            onclick="window.guestbookApp.profiles.show2FAVerificationInSidebar('${this.pending2FA.uid}', '${this.pending2FA.email}', null, null)"
-            style="color: var(--text-secondary); background: none; border: none; cursor: pointer; font-size: 0.9em;">
-            ← Volver a código por email
-          </button>
-        </div>
-        
-        <div style="text-align: center;">
-          <button 
-            class="btn-link" 
-            onclick="window.guestbookApp.profiles.cancelSidebar2FA()"
-            style="color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.85em;">
-            Cancelar
-          </button>
-        </div>
-      </div>
-    `;
-    
-    setTimeout(() => {
-      const input = document.getElementById('sidebar2FABackup');
-      if (input) {
-        input.focus();
-        input.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') this.verifySidebar2FABackup();
-        });
-      }
-    }, 100);
-  }
-  
-  async verifySidebar2FABackup() {
-    if (!this.pending2FA) return;
-    
-    const code = document.getElementById('sidebar2FABackup').value.trim().toUpperCase();
-    const errorEl = document.getElementById('sidebarBackupError');
-    
-    if (!code) {
-      errorEl.textContent = 'Ingresa un código de respaldo';
-      errorEl.style.display = 'block';
-      return;
-    }
-    
-    const result = await this.twoFactorAuth.verifyBackupCode(this.pending2FA.uid, code);
-    
-    if (result.success) {
-      // Código correcto, cerrar panel
-      const panel = document.getElementById('sidebar2FAPanel');
-      if (panel) panel.remove();
-      
-      // Ejecutar callback de éxito
-      if (this.pending2FA.onSuccess) {
-        await this.pending2FA.onSuccess();
-      }
-      
-      this.pending2FA = null;
-      
-      if (result.codesRemaining === 0) {
-        setTimeout(() => {
-          alert('⚠️ Has usado tu último código de respaldo. Genera nuevos códigos en tu perfil.');
-        }, 500);
-      } else if (result.codesRemaining <= 2) {
-        setTimeout(() => {
-          alert(`⚠️ Solo te quedan ${result.codesRemaining} códigos de respaldo. Considera generar nuevos.`);
-        }, 500);
-      }
-    } else {
-      errorEl.textContent = result.error;
-      errorEl.style.display = 'block';
-    }
-  }
-  
-  cancelSidebar2FA() {
-    const panel = document.getElementById('sidebar2FAPanel');
-    if (panel) panel.remove();
-    
-    // Ejecutar callback de cancelación
-    if (this.pending2FA && this.pending2FA.onCancel) {
-      this.pending2FA.onCancel();
-    }
-    
-    this.pending2FA = null;
-  }
   
   async loadRecoveryMethods() {
     const container = document.getElementById('recoveryMethodsDisplay');
@@ -2144,16 +1781,6 @@ export class ProfileManagerV2 {
                 Enviar Email de Recuperación
               </button>
               
-              <div style="margin-top: 20px; padding: 15px; background: rgba(var(--primary-rgb), 0.1); border-radius: 8px; border-left: 4px solid var(--primary);">
-                <strong style="display: block; margin-bottom: 10px; color: var(--primary);">🔐 ¿Tienes 2FA activado?</strong>
-                <p style="margin: 0 0 10px 0; font-size: 0.9em; color: var(--text-secondary);">
-                  Si tienes códigos de respaldo guardados, también puedes usarlos para recuperar tu cuenta.
-                </p>
-                <button class="btn btn-secondary" style="width: 100%;" onclick="window.guestbookApp.profiles.show2FABackupRecovery(); bootstrap.Modal.getInstance(this.closest('.modal')).hide();">
-                  🔑 Usar Código de Respaldo
-                </button>
-              </div>
-              
               <div style="margin-top: 15px; padding: 12px; background: rgba(255, 152, 0, 0.1); border-radius: 8px; font-size: 0.9em;">
                 <strong>💡 Usuario antiguo?</strong> 
                 <button class="btn-link" style="padding: 0; color: var(--primary); text-decoration: underline;" onclick="window.guestbookApp.profiles.showLegacyRecoveryModal(); bootstrap.Modal.getInstance(this.closest('.modal')).hide();">
@@ -2189,105 +1816,8 @@ export class ProfileManagerV2 {
 
   // ========================================
   // RECUPERACIÓN CON CÓDIGO DE RESPALDO 2FA
+  // (ELIMINADO - 2FA removido porque no funciona sin servicio de email)
   // ========================================
-  
-  show2FABackupRecovery() {
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.innerHTML = `
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background: var(--bg-dark); border: 2px solid var(--primary);">
-          <div class="modal-header" style="border-bottom: 2px solid var(--primary);">
-            <h5 class="modal-title" style="color: var(--primary);">
-              🔑 Recuperar con Código de Respaldo
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          
-          <div class="modal-body">
-            <div style="text-align: center; margin-bottom: 20px;">
-              <div style="font-size: 3em; margin-bottom: 10px;">🔐</div>
-              <p style="color: var(--text-secondary);">
-                Si tienes códigos de respaldo del 2FA guardados, usa uno para recuperar tu cuenta.
-              </p>
-            </div>
-            
-            <div class="form-group" style="margin-bottom: 15px;">
-              <label style="display: block; margin-bottom: 8px; color: var(--text);">📧 Email</label>
-              <input type="email" id="backup2FAEmail" class="form-control" placeholder="tu@email.com" style="width: 100%; padding: 10px; background: var(--bg-light); border: 1px solid var(--primary); border-radius: 6px; color: var(--text);">
-            </div>
-            
-            <div class="form-group" style="margin-bottom: 15px;">
-              <label style="display: block; margin-bottom: 8px; color: var(--text);">🔑 Código de Respaldo</label>
-              <input 
-                type="text" 
-                id="backup2FACode" 
-                class="form-control" 
-                placeholder="XXXX-XXXX-XXXX" 
-                maxlength="14"
-                style="width: 100%; padding: 10px; background: var(--bg-light); border: 1px solid var(--primary); border-radius: 6px; color: var(--text); text-align: center; font-family: 'Courier New', monospace; font-size: 1.2em; letter-spacing: 0.1em; text-transform: uppercase;">
-            </div>
-            
-            <div id="backupError" style="display: none; padding: 10px; background: rgba(244, 67, 54, 0.1); border-radius: 6px; margin-bottom: 15px; color: #f44336; font-size: 0.9em;"></div>
-            
-            <button class="btn btn-primary" style="width: 100%;" onclick="window.guestbookApp.profiles.verify2FABackupRecovery()">
-              Verificar Código
-            </button>
-            
-            <div style="margin-top: 15px; padding: 12px; background: rgba(255, 152, 0, 0.1); border-radius: 8px; font-size: 0.9em;">
-              <strong>⚠️ Nota:</strong> El código de respaldo solo se puede usar una vez. Después se marcará como usado.
-            </div>
-            
-            <div style="text-align: center; margin-top: 15px;">
-              <button class="btn-link" onclick="window.guestbookApp.profiles.showFirebasePasswordReset(); bootstrap.Modal.getInstance(this.closest('.modal')).hide();">
-                ← Volver a recuperación por email
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(modal);
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-    
-    modal.addEventListener('hidden.bs.modal', () => modal.remove());
-  }
-  
-  async verify2FABackupRecovery() {
-    const email = document.getElementById('backup2FAEmail').value.trim();
-    const code = document.getElementById('backup2FACode').value.trim().toUpperCase();
-    const errorEl = document.getElementById('backupError');
-    
-    if (!email || !code) {
-      errorEl.textContent = '❌ Completa todos los campos';
-      errorEl.style.display = 'block';
-      return;
-    }
-    
-    try {
-      // Buscar el UID del usuario por email
-      const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js');
-      
-      // NOTA: Aquí necesitaríamos la contraseña para hacer login
-      // Como no la tenemos, necesitamos otro método
-      
-      // Por ahora, mostramos un mensaje explicando que necesitan la contraseña
-      errorEl.textContent = '⚠️ Para usar un código de respaldo, primero necesitas hacer login con tu contraseña. Los códigos de respaldo son para el 2FA, no para recuperar la contraseña.';
-      errorEl.style.display = 'block';
-      
-      setTimeout(() => {
-        const modal = document.querySelector('.modal.show');
-        if (modal) bootstrap.Modal.getInstance(modal).hide();
-        this.showFirebasePasswordReset();
-      }, 3000);
-      
-    } catch (error) {
-      errorEl.textContent = '❌ Error: ' + error.message;
-      errorEl.style.display = 'block';
-    }
-  }
 
   
   async sendPasswordReset() {
@@ -3605,177 +3135,8 @@ export class ProfileManagerV2 {
 
   // ============================================
   // SISTEMA DE VERIFICACIÓN EN DOS PASOS (2FA)
-  // ============================================
-
-  async load2FAStatus() {
-    if (!this.currentProfile.uid || this.currentProfile.isLegacyUser) return;
-
-    try {
-      const is2FAEnabled = await this.twoFactorAuth.is2FAEnabled(this.currentProfile.uid);
-      this.currentProfile.has2FA = is2FAEnabled;
-
-      const statusText = document.getElementById('2faStatusText');
-      const toggleButton = document.getElementById('toggle2FAButton');
-      const viewBackupButton = document.getElementById('viewBackupCodesButton');
-
-      if (statusText) {
-        statusText.textContent = is2FAEnabled ? '✅ Activada' : '❌ Desactivada';
-        statusText.style.color = is2FAEnabled ? 'var(--success)' : 'var(--error)';
-      }
-
-      if (toggleButton) {
-        toggleButton.textContent = is2FAEnabled ? '❌ Desactivar 2FA' : '✅ Activar 2FA';
-        toggleButton.disabled = false;
-      }
-
-      if (viewBackupButton && is2FAEnabled) {
-        viewBackupButton.style.display = 'block';
-      }
-    } catch (error) {
-      console.error('Error cargando estado 2FA:', error);
-    }
-  }
-
-  async toggle2FA() {
-    if (this.currentProfile.has2FA) {
-      // Desactivar 2FA
-      if (!confirm('¿Estás seguro de desactivar la verificación en dos pasos?\n\nTu cuenta será menos segura.')) {
-        return;
-      }
-
-      const result = await this.twoFactorAuth.disable2FA(this.currentProfile.uid);
-      if (result) {
-        alert('✅ Verificación en dos pasos desactivada');
-        this.load2FAStatus();
-        this.refreshSidebar();
-      } else {
-        alert('❌ Error desactivando 2FA');
-      }
-    } else {
-      // Activar 2FA
-      const result = await this.twoFactorAuth.enable2FA(this.currentProfile.uid, this.currentProfile.email);
-      
-      if (result.success) {
-        // Mostrar códigos de respaldo
-        this.showBackupCodesModal(result.backupCodes, true);
-        this.load2FAStatus();
-        this.refreshSidebar();
-      } else {
-        alert('❌ Error activando 2FA: ' + result.error);
-      }
-    }
-  }
-
-  async viewBackupCodes() {
-    const codes = await this.twoFactorAuth.getBackupCodes(this.currentProfile.uid);
-    
-    if (!codes || codes.length === 0) {
-      alert('❌ No se pudieron cargar los códigos de respaldo');
-      return;
-    }
-
-    this.showBackupCodesModal(codes.map(c => c.code), false);
-  }
-
-  showBackupCodesModal(codes, isNewSetup) {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.style.display = 'flex';
-    modal.innerHTML = `
-      <div class="modal-content" style="max-width: 550px; background: var(--bg-dark); color: var(--text);">
-        <div class="modal-header" style="border-bottom: 2px solid var(--primary);">
-          <h2 style="color: var(--primary);">🔑 Códigos de Respaldo</h2>
-        </div>
-        <div class="modal-body" style="background: var(--bg-dark);">
-          ${isNewSetup ? `
-            <div style="padding: 15px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(102, 187, 106, 0.1)); border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
-              <strong style="color: #4caf50; display: block; margin-bottom: 8px;">✅ 2FA Activado Correctamente</strong>
-              <p style="margin: 0; font-size: 0.9em; color: var(--text-secondary);">
-                A partir de ahora, cada vez que inicies sesión recibirás un código de verificación por email.
-              </p>
-            </div>
-          ` : ''}
-          
-          <div style="padding: 15px; background: rgba(255, 152, 0, 0.1); border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff9800;">
-            <strong style="color: #ff9800; display: block; margin-bottom: 8px;">⚠️ Importante</strong>
-            <p style="margin: 0; font-size: 0.9em; color: var(--text-secondary);">
-              Guarda estos códigos en un lugar seguro. Puedes usar cualquiera de ellos si pierdes acceso a tu email.
-            </p>
-          </div>
-
-          <div style="background: var(--bg-light); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(var(--primary-rgb), 0.2);">
-            <div id="backupCodesList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-family: 'Courier New', monospace; font-size: 0.95em;">
-              ${codes.map((code, index) => `
-                <div style="padding: 10px; background: rgba(var(--primary-rgb), 0.1); border-radius: 6px; text-align: center; border: 1px solid rgba(var(--primary-rgb), 0.3);">
-                  <strong style="color: var(--primary);">${code}</strong>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 10px;">
-            <button class="btn-primary" onclick="window.downloadBackupCodes()" style="flex: 1;">
-              📥 Descargar Códigos
-            </button>
-            <button class="btn-secondary" onclick="window.copyAllBackupCodes()" style="flex: 1;">
-              📋 Copiar Todo
-            </button>
-          </div>
-
-          ${!isNewSetup ? `
-            <button class="btn-secondary btn-block" onclick="window.regenerateBackupCodes()" style="margin-top: 10px;">
-              🔄 Generar Nuevos Códigos
-            </button>
-            <p style="margin-top: 10px; font-size: 0.85em; color: var(--text-muted); text-align: center;">
-              Esto invalidará todos los códigos anteriores
-            </p>
-          ` : ''}
-
-          <button class="btn-link btn-block" onclick="this.closest('.modal').remove()" style="margin-top: 15px; color: var(--text-secondary);">
-            Cerrar
-          </button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    // Funciones para los botones
-    window.downloadBackupCodes = () => {
-      const text = codes.join('\n');
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `backup-codes-${this.currentProfile.username}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    window.copyAllBackupCodes = () => {
-      const text = codes.join('\n');
-      navigator.clipboard.writeText(text).then(() => {
-        alert('✅ Códigos copiados al portapapeles');
-      }).catch(() => {
-        alert('❌ Error copiando códigos');
-      });
-    };
-
-    window.regenerateBackupCodes = async () => {
-      if (!confirm('¿Generar nuevos códigos?\n\nLos códigos anteriores dejarán de funcionar.')) {
-        return;
-      }
-
-      const result = await this.twoFactorAuth.regenerateBackupCodes(this.currentProfile.uid);
-      
-      if (result.success) {
-        modal.remove();
-        this.showBackupCodesModal(result.backupCodes, false);
-      } else {
-        alert('❌ Error generando nuevos códigos: ' + result.error);
-      }
-    };
-  }
+  // (ELIMINADO COMPLETAMENTE - no funciona sin servicio de email)
+  // ========================================
 }
 
 // Agregar animaciones CSS si no existen
