@@ -8,6 +8,9 @@ export class ProfileManagerV2 {
     // Bandera para evitar doble logout
     this.isLoggingOut = false;
     
+    // Bandera para evitar logout durante proceso de 2FA
+    this.is2FAInProgress = false;
+    
     // Inicializar sistema de 2FA
     this.twoFactorAuth = new window.TwoFactorAuth(firebaseManager, this);
     
@@ -35,15 +38,19 @@ export class ProfileManagerV2 {
     // Escuchar cambios de autenticación de Firebase
     if (this.auth) {
       this.auth.onAuthStateChanged(async (user) => {
-        if (user) {
+        if (user && !this.is2FAInProgress) {
+          // Solo procesar si NO estamos en proceso de 2FA
           console.log('🔐 Usuario autenticado con Firebase:', user.email);
           // Usuario autenticado con Firebase Auth
           await this.handleFirebaseAuthUser(user);
-        } else if (this.currentProfile.isLoggedIn && !this.currentProfile.isLegacyUser) {
-          // Usuario deslogueado de Firebase pero no es legacy
+        } else if (user && this.is2FAInProgress) {
+          // Estamos en proceso de 2FA, ignorar este evento
+          console.log('🔐 Auth detectado pero esperando 2FA...');
+        } else if (!user && this.currentProfile.isLoggedIn && !this.currentProfile.isLegacyUser && !this.is2FAInProgress) {
+          // Usuario deslogueado de Firebase pero no es legacy y NO está en proceso de 2FA
           console.log('🚪 Sesión de Firebase cerrada');
           
-          // Solo llamar logout si NO estamos en proceso de logout
+          // Solo llamar logout si NO estamos en proceso de logout ni de 2FA
           if (!this.isLoggingOut) {
             this.isLoggingOut = true;
             this.logout(true); // true = skip confirm porque ya se confirmó
@@ -245,7 +252,7 @@ export class ProfileManagerV2 {
                   <span>Recordar por 30 días</span>
                 </label>
               </div>
-              <button class="btn-primary btn-block" onclick="window.guestbookApp.profiles.login()">
+              <button id="loginBtn" class="btn-primary btn-block" onclick="window.guestbookApp.profiles.login()">
                 Iniciar Sesión
               </button>
               <button class="btn-link btn-block" onclick="window.guestbookApp.profiles.showRecoveryModal()" style="margin-top: 10px;">
@@ -974,7 +981,25 @@ export class ProfileManagerV2 {
     const password = document.getElementById('loginPassword').value;
     const rememberMe = document.getElementById('rememberMe').checked;
     
+    // Mostrar estado de carga en el botón
+    const loginBtn = document.getElementById('loginBtn');
+    const originalText = loginBtn?.innerHTML || 'Iniciar Sesión';
+    
+    if (loginBtn) {
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = `
+        <span style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+          <div style="width: 16px; height: 16px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite;"></div>
+          Verificando...
+        </span>
+      `;
+    }
+    
     if (!usernameOrEmail || !password) {
+      if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = originalText;
+      }
       alert('⚠️ Completa todos los campos');
       return;
     }
@@ -997,17 +1022,40 @@ export class ProfileManagerV2 {
               email = `${usernameOrEmail}@fenix.local`;
             }
             
+            // PRIMERO: Verificar si tiene 2FA SIN hacer login completo
+            // Hacemos un login temporal solo para verificar 2FA
+            this.is2FAInProgress = true; // Marcar ANTES de signIn
+            
             // Intentar login con Firebase Auth
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
             const user = userCredential.user;
             
-            console.log('✅ Login exitoso con Firebase Auth:', user.email);
+            console.log('✅ Credenciales correctas:', user.email);
             
-            // VERIFICAR SI TIENE 2FA ACTIVADO
+            // VERIFICAR SI TIENE 2FA ACTIVADO (ANTES de completar el login)
             const has2FA = await this.twoFactorAuth.is2FAEnabled(user.uid);
             
             if (has2FA) {
-              console.log('🔐 Usuario tiene 2FA activado, enviando código...');
+              console.log('🔐 Usuario tiene 2FA activado, solicitando verificación...');
+              
+              // Restaurar botón
+              if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+              }
+              
+              // Guardar credenciales para usar después de 2FA
+              const savedEmail = email;
+              const savedPassword = password;
+              
+              // Cerrar sesión temporal de Firebase (no completar login aún)
+              await this.auth.signOut();
+              
+              // Esperar un momento para que se complete el signOut
+              await new Promise(resolve => setTimeout(resolve, 100));
+              
+              // Mantener flag activo hasta que se complete o cancele 2FA
+              // NO resetear aquí: this.is2FAInProgress = false;
               
               // Cerrar modal de login
               const authModal = document.getElementById('authModal');
@@ -1017,33 +1065,47 @@ export class ProfileManagerV2 {
               const sendResult = await this.twoFactorAuth.sendVerificationCode(user.uid, user.email);
               
               if (sendResult.success) {
-                // Mostrar modal de verificación 2FA
-                this.twoFactorAuth.showVerificationModal(
+                // Mostrar panel de 2FA ANTES de completar el login
+                this.show2FAVerificationInSidebar(
                   user.uid,
                   user.email,
                   async () => {
-                    // onSuccess: Código verificado correctamente
-                    await this.handleFirebaseAuthUser(user);
-                    
-                    // Verificar si es admin
-                    this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
-                    this.saveProfile();
-                    
-                    alert('✅ Sesión iniciada correctamente');
+                    // onSuccess: Código verificado, AHORA SÍ hacer login completo
+                    try {
+                      const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js');
+                      
+                      // Resetear flag ANTES del login final
+                      this.is2FAInProgress = false;
+                      
+                      const finalCredential = await signInWithEmailAndPassword(this.auth, savedEmail, savedPassword);
+                      
+                      await this.handleFirebaseAuthUser(finalCredential.user);
+                      
+                      // Verificar si es admin
+                      this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
+                      this.saveProfile();
+                      
+                      alert('✅ Sesión iniciada correctamente');
+                    } catch (error) {
+                      this.is2FAInProgress = false;
+                      console.error('Error en login final:', error);
+                      alert('❌ Error completando login después de 2FA');
+                    }
                   },
                   () => {
                     // onCancel: Usuario canceló la verificación
-                    // Hacer logout de Firebase Auth
-                    this.auth.signOut();
-                    alert('❌ Verificación cancelada');
+                    this.is2FAInProgress = false;
+                    alert('❌ Verificación 2FA cancelada. No se inició sesión.');
                   }
                 );
               } else {
+                this.is2FAInProgress = false;
                 alert('❌ Error enviando código de verificación. Intenta nuevamente.');
-                this.auth.signOut();
               }
             } else {
               // No tiene 2FA, login directo
+              this.is2FAInProgress = false; // Resetear flag
+              
               const authModal = document.getElementById('authModal');
               if (authModal) authModal.style.display = 'none';
               
@@ -1052,6 +1114,12 @@ export class ProfileManagerV2 {
               // Verificar si es admin
               this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
               this.saveProfile();
+              
+              // Restaurar botón
+              if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+              }
               
               alert('✅ Sesión iniciada correctamente');
             }
@@ -1144,6 +1212,14 @@ export class ProfileManagerV2 {
       
     } catch (error) {
       console.error('Error en login:', error);
+      
+      // Restaurar botón
+      const loginBtn = document.getElementById('loginBtn');
+      if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Iniciar Sesión';
+      }
+      
       alert('❌ Error al iniciar sesión: ' + error.message);
     }
   }
@@ -1399,7 +1475,7 @@ export class ProfileManagerV2 {
   async checkIfUserIsAdmin() {
     try {
       // Verificar si está logueado
-      if (!this.isLoggedIn()) {
+      if (!this.currentProfile.isLoggedIn) {
         return false;
       }
       
@@ -1431,6 +1507,271 @@ export class ProfileManagerV2 {
       console.error('Error verificando admin:', error);
       return false;
     }
+  }
+  
+  // ========================================
+  // HELPER FUNCTIONS
+  // ========================================
+  
+  isLoggedIn() {
+    return this.currentProfile.isLoggedIn === true;
+  }
+  
+  // ========================================
+  // 2FA VERIFICATION IN SIDEBAR
+  // ========================================
+  
+  show2FAVerificationInSidebar(uid, email, onSuccess, onCancel) {
+    // Guardar callbacks en el objeto
+    this.pending2FA = {
+      uid: uid,
+      email: email,
+      onSuccess: onSuccess || null,
+      onCancel: onCancel || null
+    };
+    
+    // Agregar panel de verificación
+    const verificationPanel = document.createElement('div');
+    verificationPanel.id = 'sidebar2FAPanel';
+    verificationPanel.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    `;
+    
+    verificationPanel.innerHTML = `
+      <div style="background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 16px; padding: 2rem; max-width: 450px; width: 100%;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 3em; margin-bottom: 10px;">🔐</div>
+          <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Verificación en Dos Pasos</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9em;">
+            Ingresa el código enviado a: <strong style="color: var(--primary);">${email}</strong>
+          </p>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; margin-bottom: 8px; color: var(--text); font-weight: 600;">
+            📧 Código de Verificación
+          </label>
+          <input 
+            type="text" 
+            id="sidebar2FACode" 
+            placeholder="123456"
+            maxlength="6"
+            autocomplete="off"
+            style="width: 100%; padding: 12px; text-align: center; font-size: 1.5em; letter-spacing: 0.3em; background: var(--bg-light); border: 2px solid var(--primary); border-radius: 8px; color: var(--text);"
+          >
+          <small id="sidebar2FAError" style="color: #ff4444; display: none; margin-top: 8px; display: block;"></small>
+        </div>
+        
+        <button 
+          onclick="window.guestbookApp.profiles.verifySidebar2FACode()" 
+          class="btn-primary btn-block"
+          style="margin-bottom: 1rem;">
+          Verificar Código
+        </button>
+        
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <button 
+            class="btn-link" 
+            onclick="window.guestbookApp.profiles.showSidebar2FABackupOption()"
+            style="color: var(--text-secondary); text-decoration: underline; background: none; border: none; cursor: pointer; font-size: 0.9em;">
+            🔑 Usar código de respaldo
+          </button>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <button 
+            class="btn-link" 
+            onclick="window.guestbookApp.profiles.cancelSidebar2FA()"
+            style="color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.85em;">
+            Cancelar
+          </button>
+        </div>
+        
+        <div style="padding: 12px; background: rgba(var(--primary-rgb), 0.1); border-radius: 6px; font-size: 0.85em; color: var(--text-secondary);">
+          <strong>💡 Consejo:</strong> El código expira en 10 minutos
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(verificationPanel);
+    
+    // Auto-focus en el input
+    setTimeout(() => {
+      const input = document.getElementById('sidebar2FACode');
+      if (input) {
+        input.focus();
+        // Enter para enviar
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.verifySidebar2FACode();
+        });
+      }
+    }, 100);
+  }
+  
+  async verifySidebar2FACode() {
+    if (!this.pending2FA) return;
+    
+    const code = document.getElementById('sidebar2FACode').value.trim();
+    const errorEl = document.getElementById('sidebar2FAError');
+    
+    if (!code || code.length !== 6) {
+      errorEl.textContent = 'Ingresa un código de 6 dígitos';
+      errorEl.style.display = 'block';
+      return;
+    }
+    
+    const result = await this.twoFactorAuth.verifyCode(this.pending2FA.uid, code);
+    
+    if (result.success) {
+      // Código correcto, cerrar panel
+      const panel = document.getElementById('sidebar2FAPanel');
+      if (panel) panel.remove();
+      
+      // Ejecutar callback de éxito
+      if (this.pending2FA.onSuccess) {
+        await this.pending2FA.onSuccess();
+      }
+      
+      this.pending2FA = null;
+    } else {
+      errorEl.textContent = result.error;
+      if (result.attemptsLeft !== undefined) {
+        errorEl.textContent += ` (${result.attemptsLeft} intentos restantes)`;
+      }
+      errorEl.style.display = 'block';
+    }
+  }
+  
+  showSidebar2FABackupOption() {
+    if (!this.pending2FA) return;
+    
+    const panel = document.getElementById('sidebar2FAPanel');
+    if (!panel) return;
+    
+    panel.innerHTML = `
+      <div style="background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 16px; padding: 2rem; max-width: 450px; width: 100%;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 3em; margin-bottom: 10px;">🔑</div>
+          <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Código de Respaldo</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9em;">
+            Ingresa uno de tus códigos de respaldo
+          </p>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; margin-bottom: 8px; color: var(--text); font-weight: 600;">
+            🔑 Código de Respaldo
+          </label>
+          <input 
+            type="text" 
+            id="sidebar2FABackup" 
+            placeholder="XXXX-XXXX-XXXX"
+            maxlength="14"
+            autocomplete="off"
+            style="width: 100%; padding: 12px; text-align: center; font-size: 1.2em; letter-spacing: 0.2em; text-transform: uppercase; background: var(--bg-light); border: 2px solid var(--primary); border-radius: 8px; color: var(--text);"
+          >
+          <small id="sidebarBackupError" style="color: #ff4444; display: none; margin-top: 8px; display: block;"></small>
+        </div>
+        
+        <button 
+          onclick="window.guestbookApp.profiles.verifySidebar2FABackup()" 
+          class="btn-primary btn-block"
+          style="margin-bottom: 1rem;">
+          Verificar Código de Respaldo
+        </button>
+        
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <button 
+            class="btn-link" 
+            onclick="window.guestbookApp.profiles.show2FAVerificationInSidebar('${this.pending2FA.uid}', '${this.pending2FA.email}', null, null)"
+            style="color: var(--text-secondary); background: none; border: none; cursor: pointer; font-size: 0.9em;">
+            ← Volver a código por email
+          </button>
+        </div>
+        
+        <div style="text-align: center;">
+          <button 
+            class="btn-link" 
+            onclick="window.guestbookApp.profiles.cancelSidebar2FA()"
+            style="color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.85em;">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    `;
+    
+    setTimeout(() => {
+      const input = document.getElementById('sidebar2FABackup');
+      if (input) {
+        input.focus();
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.verifySidebar2FABackup();
+        });
+      }
+    }, 100);
+  }
+  
+  async verifySidebar2FABackup() {
+    if (!this.pending2FA) return;
+    
+    const code = document.getElementById('sidebar2FABackup').value.trim().toUpperCase();
+    const errorEl = document.getElementById('sidebarBackupError');
+    
+    if (!code) {
+      errorEl.textContent = 'Ingresa un código de respaldo';
+      errorEl.style.display = 'block';
+      return;
+    }
+    
+    const result = await this.twoFactorAuth.verifyBackupCode(this.pending2FA.uid, code);
+    
+    if (result.success) {
+      // Código correcto, cerrar panel
+      const panel = document.getElementById('sidebar2FAPanel');
+      if (panel) panel.remove();
+      
+      // Ejecutar callback de éxito
+      if (this.pending2FA.onSuccess) {
+        await this.pending2FA.onSuccess();
+      }
+      
+      this.pending2FA = null;
+      
+      if (result.codesRemaining === 0) {
+        setTimeout(() => {
+          alert('⚠️ Has usado tu último código de respaldo. Genera nuevos códigos en tu perfil.');
+        }, 500);
+      } else if (result.codesRemaining <= 2) {
+        setTimeout(() => {
+          alert(`⚠️ Solo te quedan ${result.codesRemaining} códigos de respaldo. Considera generar nuevos.`);
+        }, 500);
+      }
+    } else {
+      errorEl.textContent = result.error;
+      errorEl.style.display = 'block';
+    }
+  }
+  
+  cancelSidebar2FA() {
+    const panel = document.getElementById('sidebar2FAPanel');
+    if (panel) panel.remove();
+    
+    // Ejecutar callback de cancelación
+    if (this.pending2FA && this.pending2FA.onCancel) {
+      this.pending2FA.onCancel();
+    }
+    
+    this.pending2FA = null;
   }
   
   async loadRecoveryMethods() {
