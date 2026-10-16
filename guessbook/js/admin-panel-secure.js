@@ -23,7 +23,6 @@ export class SecureAdminPanel {
     // Cargar lista de admins desde Firestore
     await this.loadAuthorizedAdmins();
     
-    this.createAdminButton();
     this.createAdminModal();
     this.setupFirebaseAuthListener();
   }
@@ -34,25 +33,22 @@ export class SecureAdminPanel {
   
   async loadAuthorizedAdmins() {
     try {
-      // Intentar cargar desde Firestore
-      const response = await fetch(
-        `https://firestore.googleapis.com/v1/projects/${this.firebase.firebaseConfig.projectId}/databases/(default)/documents/admin_config/authorized_admins`
-      );
+      const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js');
+      const adminConfigRef = doc(this.firebase.db, 'admin_config', 'authorized_admins');
+      const adminConfig = await getDoc(adminConfigRef);
       
-      if (response.ok) {
-        const data = await response.json();
-        const uids = data.fields?.uids?.arrayValue?.values || [];
-        this.authorizedAdmins = uids.map(uid => uid.stringValue);
+      if (adminConfig.exists()) {
+        this.authorizedAdmins = adminConfig.data().uids || [];
         this.adminsLoaded = true;
         
         console.log(`✅ ${this.authorizedAdmins.length} admin(s) autorizados cargados desde Firestore`);
-      } else if (response.status === 404) {
+      } else {
         // Documento no existe - crear uno vacío para referencia
         console.warn('⚠️ Lista de admins no encontrada en Firestore');
         console.warn('   Crea el documento: admin_config/authorized_admins');
         console.warn('   Con campo: uids (array de strings)');
         
-        // Fallback a lista hardcodeada temporal
+        // Fallback a lista vacía
         this.authorizedAdmins = [];
         this.adminsLoaded = true;
       }

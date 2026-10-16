@@ -24,7 +24,8 @@ export class ProfileManagerV2 {
       isLoggedIn: false,
       isLegacyUser: false, // Nuevo: marca si es usuario del sistema viejo
       sessionToken: null,
-      has2FA: false // Nuevo: marca si tiene 2FA activado
+      has2FA: false, // Nuevo: marca si tiene 2FA activado
+      isAdmin: false // Nuevo: marca si es administrador
     };
     
     this.init();
@@ -95,11 +96,18 @@ export class ProfileManagerV2 {
         this.currentProfile.privacy = fullProfile.privacy || this.currentProfile.privacy;
         this.currentProfile.totalDrawings = fullProfile.totalDrawings || 0;
         this.currentProfile.totalLikes = fullProfile.totalLikes || 0;
+        this.currentProfile.userTags = fullProfile.userTags || [];
         
         console.log('✅ Perfil completo cargado:', this.currentProfile.username);
       }
     } catch (error) {
       console.warn('Error obteniendo perfil completo:', error);
+    }
+    
+    // Verificar si es admin
+    this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
+    if (this.currentProfile.isAdmin) {
+      console.log('⚡ Usuario es administrador');
     }
     
     // Actualizar estadísticas del perfil
@@ -137,10 +145,17 @@ export class ProfileManagerV2 {
             if (firebaseProfile.bio) this.currentProfile.bio = firebaseProfile.bio;
             if (firebaseProfile.pronouns) this.currentProfile.pronouns = firebaseProfile.pronouns;
             if (firebaseProfile.privacy) this.currentProfile.privacy = firebaseProfile.privacy;
+            if (firebaseProfile.userTags) this.currentProfile.userTags = firebaseProfile.userTags;
             console.log('🔄 Perfil sincronizado desde Firebase');
           }
         } catch (error) {
           console.warn('Error sincronizando perfil desde Firebase:', error);
+        }
+        
+        // Verificar si es admin
+        this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
+        if (this.currentProfile.isAdmin) {
+          console.log('⚡ Usuario es administrador');
         }
         
         // Actualizar estadísticas del perfil
@@ -382,7 +397,10 @@ export class ProfileManagerV2 {
               ${avatarContent}
             </div>
             
-            <h4 class="profile-username">${this.currentProfile.username}</h4>
+            <h4 class="profile-username">
+              ${this.currentProfile.username}
+              ${this.currentProfile.isAdmin ? '<span style="background: linear-gradient(135deg, #ff6b35, #f7931e); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7em; margin-left: 8px; vertical-align: middle; font-weight: 600;">⚡ ADMIN</span>' : ''}
+            </h4>
             <p class="profile-status">🟢 Conectado</p>
             
             <!-- Navigation Tabs -->
@@ -642,6 +660,13 @@ export class ProfileManagerV2 {
               <button class="btn-secondary btn-block" onclick="window.guestbookApp.profiles.logout()">
                 🚪 Cerrar Sesión
               </button>
+              
+              ${this.currentProfile.isAdmin ? `
+              <button class="btn-danger btn-block" onclick="window.guestbookApp.profiles.openAdminPanel()" style="margin-top: 10px; background: linear-gradient(135deg, #ff6b35, #f7931e); border: none;">
+                <i data-lucide="shield" style="width: 1rem; height: 1rem; vertical-align: middle;"></i>
+                Panel de Administración
+              </button>
+              ` : ''}
             </div>
           </div>
         `}
@@ -999,6 +1024,11 @@ export class ProfileManagerV2 {
                   async () => {
                     // onSuccess: Código verificado correctamente
                     await this.handleFirebaseAuthUser(user);
+                    
+                    // Verificar si es admin
+                    this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
+                    this.saveProfile();
+                    
                     alert('✅ Sesión iniciada correctamente');
                   },
                   () => {
@@ -1018,6 +1048,11 @@ export class ProfileManagerV2 {
               if (authModal) authModal.style.display = 'none';
               
               await this.handleFirebaseAuthUser(user);
+              
+              // Verificar si es admin
+              this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
+              this.saveProfile();
+              
               alert('✅ Sesión iniciada correctamente');
             }
             
@@ -1080,7 +1115,11 @@ export class ProfileManagerV2 {
         this.currentProfile.bannerImage = firebaseProfile.bannerImage || this.currentProfile.bannerImage;
         this.currentProfile.bio = firebaseProfile.bio || this.currentProfile.bio;
         this.currentProfile.pronouns = firebaseProfile.pronouns || this.currentProfile.pronouns;
+        this.currentProfile.userTags = firebaseProfile.userTags || []; // Cargar tags para verificar admin
       }
+      
+      // Verificar si es admin
+      this.currentProfile.isAdmin = await this.checkIfUserIsAdmin();
       
       // IMPORTANTE: Solo guardar en localStorage, NO en Firestore
       // (para evitar exceder límites de escritura)
@@ -1335,6 +1374,62 @@ export class ProfileManagerV2 {
       console.error('❌ Error al cerrar sesión:', error);
       alert('⚠️ Error al cerrar sesión. Intenta de nuevo.');
       this.isLoggingOut = false; // Resetear bandera si hay error
+    }
+  }
+  
+  // ========================================
+  // ADMIN PANEL
+  // ========================================
+  
+  openAdminPanel() {
+    if (!this.currentProfile.isAdmin) {
+      alert('⛔ Acceso denegado. Solo administradores pueden acceder.');
+      return;
+    }
+    
+    // Inicializar el panel de admin seguro si no existe
+    if (!window.secureAdminPanel) {
+      window.initSecureAdmin(this.firebase);
+    }
+    
+    // Mostrar el modal del admin panel
+    window.secureAdminPanel.showAdminModal();
+  }
+  
+  async checkIfUserIsAdmin() {
+    try {
+      // Verificar si está logueado
+      if (!this.isLoggedIn()) {
+        return false;
+      }
+      
+      // Opción 1: Verificar por UID en Firebase (usuarios con Firebase Auth)
+      if (this.currentProfile.uid && !this.currentProfile.isLegacyUser) {
+        const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js');
+        const adminConfigRef = doc(this.firebase.db, 'admin_config', 'authorized_admins');
+        const adminConfig = await getDoc(adminConfigRef);
+        
+        if (adminConfig.exists()) {
+          const uids = adminConfig.data().uids || [];
+          if (uids.includes(this.currentProfile.uid)) {
+            console.log('✅ Usuario es admin (verificado por UID)');
+            return true;
+          }
+        }
+      }
+      
+      // Opción 2: Verificar por userTags (usuarios legacy o con tags asignados)
+      if (this.currentProfile.userTags && Array.isArray(this.currentProfile.userTags)) {
+        if (this.currentProfile.userTags.includes('ADMIN') || this.currentProfile.userTags.includes('OWNER')) {
+          console.log('✅ Usuario es admin (verificado por userTags)');
+          return true;
+        }
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error verificando admin:', error);
+      return false;
     }
   }
   
