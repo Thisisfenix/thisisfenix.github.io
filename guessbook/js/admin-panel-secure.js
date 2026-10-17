@@ -184,6 +184,9 @@ export class SecureAdminPanel {
                     <button class="btn btn-outline-danger btn-sm" data-tab="users" onclick="secureAdminPanel.showTab('users')">
                       <i data-lucide="users"></i> Usuarios
                     </button>
+                    <button class="btn btn-outline-danger btn-sm" data-tab="suggestions" onclick="secureAdminPanel.showTab('suggestions')">
+                      <i data-lucide="lightbulb"></i> Sugerencias
+                    </button>
                     <button class="btn btn-outline-danger btn-sm" data-tab="reports" onclick="secureAdminPanel.showTab('reports')">
                       <i data-lucide="flag"></i> Reportes
                     </button>
@@ -255,6 +258,21 @@ export class SecureAdminPanel {
                 
                 <div id="adminTabUsers" class="admin-tab-content" style="display: none;">
                   <div id="usersList" style="max-height: 500px; overflow-y: auto;"></div>
+                </div>
+                
+                <div id="adminTabSuggestions" class="admin-tab-content" style="display: none;">
+                  <div class="d-flex gap-2 mb-3">
+                    <select id="suggestionStatusFilter" class="form-select" style="max-width: 200px;">
+                      <option value="">Todas</option>
+                      <option value="pending">Pendientes</option>
+                      <option value="approved">Aprobadas</option>
+                      <option value="rejected">Rechazadas</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="secureAdminPanel.filterSuggestions()">
+                      <i data-lucide="filter"></i> Filtrar
+                    </button>
+                  </div>
+                  <div id="suggestionsList" style="max-height: 500px; overflow-y: auto;"></div>
                 </div>
                 
                 <div id="adminTabReports" class="admin-tab-content" style="display: none;">
@@ -404,6 +422,7 @@ export class SecureAdminPanel {
       await Promise.all([
         this.loadDrawings(),
         this.loadUsers(),
+        this.loadSuggestions(),
         this.loadReports()
       ]);
       
@@ -432,63 +451,95 @@ export class SecureAdminPanel {
       return;
     }
     
-    container.innerHTML = drawings.map(d => `
-      <div class="card mb-2" style="background: var(--bg-light);">
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-md-2">
-              <img src="${d.imagenData || ''}" class="img-thumbnail" style="width: 80px; height: 60px; object-fit: cover;">
-            </div>
-            <div class="col-md-7">
-              <h6 class="mb-1">${d.titulo || 'Sin título'}</h6>
-              <p class="mb-1 small">
-                <strong>Autor:</strong> ${d.autor || 'Anónimo'} | 
-                <strong>Categoría:</strong> ${d.categoria || 'N/A'}
-              </p>
-              <p class="mb-0 small text-muted">
-                ${new Date(d.timestamp).toLocaleString()} | 
-                ❤️ ${d.likes || 0} | 
-                💬 ${d.comments?.length || 0}
-              </p>
-            </div>
-            <div class="col-md-3 text-end">
-              <button class="btn btn-sm btn-outline-danger" onclick="secureAdminPanel.confirmDelete('${d.id}')">
-                <i data-lucide="trash-2"></i> Eliminar
-              </button>
+    container.innerHTML = drawings.map(d => {
+      const drawingDate = d.timestamp ? new Date(d.timestamp) : new Date();
+      const formattedDate = drawingDate.toLocaleDateString('es-ES', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      return `
+        <div class="card mb-3" style="background: var(--bg-light); border: 1px solid rgba(var(--primary-rgb), 0.2);">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-2">
+                ${d.imagenData ? `
+                  <img src="${d.imagenData}" 
+                       class="img-thumbnail" 
+                       style="width: 100px; height: 80px; object-fit: cover; cursor: pointer;" 
+                       onclick="window.open('${d.imagenData}', '_blank')"
+                       title="Click para ver en tamaño completo">
+                ` : '<div style="width: 100px; height: 80px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 4px;"><small>Sin imagen</small></div>'}
+              </div>
+              <div class="col-md-7">
+                <h6 class="mb-1" style="color: var(--primary);">
+                  ${d.titulo || 'Sin título'}
+                </h6>
+                <p class="mb-1 small">
+                  <strong>👤 Autor:</strong> ${d.autor || 'Anónimo'} | 
+                  <strong>📁 Categoría:</strong> ${d.categoria || 'N/A'}
+                </p>
+                <p class="mb-0 small text-muted">
+                  📅 ${formattedDate} | 
+                  ❤️ ${d.likes || 0} | 
+                  💬 ${d.comments?.length || 0} | 
+                  🆔 ${d.id ? d.id.substring(0, 8) + '...' : 'N/A'}
+                </p>
+              </div>
+              <div class="col-md-3 text-end">
+                <button class="btn btn-sm btn-outline-danger" onclick="secureAdminPanel.confirmDelete('${d.id}')" title="Eliminar dibujo">
+                  <i data-lucide="trash-2"></i> Eliminar
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
     
     if (window.lucide) lucide.createIcons();
   }
 
   async loadUsers() {
     try {
-      const userMap = new Map();
+      // Obtener usuarios Legacy de Firestore (system_data/registered_users)
+      const legacyUsers = await this.firebase.getAllUsers() || [];
       
-      this.allDrawings.forEach(d => {
-        if (!userMap.has(d.autor)) {
-          userMap.set(d.autor, {
-            name: d.autor,
-            drawings: 0,
-            totalLikes: 0,
-            lastActivity: d.timestamp
-          });
-        }
-        const user = userMap.get(d.autor);
-        user.drawings++;
-        user.totalLikes += d.likes || 0;
-        if (d.timestamp > user.lastActivity) {
-          user.lastActivity = d.timestamp;
-        }
+      // Obtener usuarios Auth desde auth_usernames
+      const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js');
+      const authUsersSnapshot = await getDocs(collection(this.firebase.db, 'auth_usernames'));
+      const authUsers = [];
+      authUsersSnapshot.forEach(doc => {
+        authUsers.push({ 
+          uid: doc.id,
+          ...doc.data()
+        });
       });
       
-      this.allUsers = Array.from(userMap.values());
+      // Combinar y etiquetar usuarios
+      this.allUsers = [
+        ...legacyUsers.map(u => ({ 
+          ...u, 
+          type: 'legacy',
+          displayName: u.username || u.name || 'Anónimo',
+          hasUID: false
+        })),
+        ...authUsers.map(u => ({ 
+          ...u, 
+          type: 'auth',
+          displayName: u.username || u.displayName || 'Usuario Auth',
+          hasUID: true
+        }))
+      ];
+      
+      console.log(`✅ Cargados ${legacyUsers.length} usuarios Legacy y ${authUsers.length} usuarios Auth`);
       this.displayUsers(this.allUsers);
     } catch (error) {
       console.error('Error cargando usuarios:', error);
+      this.allUsers = [];
     }
   }
 
@@ -501,34 +552,81 @@ export class SecureAdminPanel {
       return;
     }
     
-    container.innerHTML = users.map(u => `
-      <div class="card mb-2" style="background: var(--bg-light);">
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-md-8">
-              <h6 class="mb-1">${u.name}</h6>
-              <p class="mb-0 small">
-                🎨 ${u.drawings} dibujos | 
-                ❤️ ${u.totalLikes} likes totales | 
-                🕐 ${new Date(u.lastActivity).toLocaleDateString()}
-              </p>
+    // Agrupar por tipo
+    const legacyUsers = users.filter(u => u.type === 'legacy');
+    const authUsers = users.filter(u => u.type === 'auth');
+    
+    container.innerHTML = `
+      <div class="mb-4">
+        <h5 class="text-success mb-3">
+          <i data-lucide="shield-check"></i> Usuarios Auth (${authUsers.length})
+        </h5>
+        ${authUsers.length === 0 ? '<p class="text-muted">No hay usuarios Auth</p>' : 
+          authUsers.map(u => `
+            <div class="card mb-2" style="background: var(--bg-light); border-left: 3px solid #00ff00;">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-md-9">
+                    <h6 class="mb-1">
+                      ${u.displayName}
+                      <span class="badge bg-success ms-2">Firebase Auth</span>
+                    </h6>
+                    <p class="mb-0 small text-muted">
+                      📧 ${u.email || 'Sin email'} | 
+                      🆔 UID: ${u.uid ? u.uid.substring(0, 8) + '...' : 'N/A'} |
+                      🕐 ${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
+                    </p>
+                  </div>
+                  <div class="col-md-3 text-end">
+                    <button class="btn btn-sm btn-outline-info" onclick="secureAdminPanel.viewUserProfile('${u.displayName}')">
+                      <i data-lucide="eye"></i> Ver perfil
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="col-md-4 text-end">
-              <button class="btn btn-sm btn-outline-info" onclick="secureAdminPanel.viewUserDrawings('${u.name}')">
-                <i data-lucide="eye"></i> Ver dibujos
-              </button>
-            </div>
-          </div>
-        </div>
+          `).join('')
+        }
       </div>
-    `).join('');
+      
+      <div>
+        <h5 class="text-warning mb-3">
+          <i data-lucide="user"></i> Usuarios Legacy (${legacyUsers.length})
+        </h5>
+        ${legacyUsers.length === 0 ? '<p class="text-muted">No hay usuarios Legacy</p>' : 
+          legacyUsers.map(u => `
+            <div class="card mb-2" style="background: var(--bg-light); border-left: 3px solid #ffa500;">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-md-9">
+                    <h6 class="mb-1">
+                      ${u.displayName}
+                      <span class="badge bg-warning text-dark ms-2">Legacy</span>
+                    </h6>
+                    <p class="mb-0 small text-muted">
+                      🔑 ${u.email || u.username || 'Sin email'} |
+                      🕐 ${u.registeredAt ? new Date(u.registeredAt).toLocaleDateString() : 'N/A'}
+                    </p>
+                  </div>
+                  <div class="col-md-3 text-end">
+                    <button class="btn btn-sm btn-outline-info" onclick="secureAdminPanel.viewUserProfile('${u.displayName}')">
+                      <i data-lucide="eye"></i> Ver perfil
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('')
+        }
+      </div>
+    `;
     
     if (window.lucide) lucide.createIcons();
   }
 
   async loadReports() {
     try {
-      this.allReports = await this.firebase.getReports() || [];
+      this.allReports = await this.firebase.getAllReports() || [];
       this.displayReports(this.allReports);
     } catch (error) {
       console.error('Error cargando reportes:', error);
@@ -550,8 +648,8 @@ export class SecureAdminPanel {
         <div class="card-body">
           <h6>${r.type || 'Reporte'}</h6>
           <p class="mb-1 small">
-            <strong>De:</strong> ${r.reporter || 'Anónimo'} | 
-            <strong>Sobre:</strong> ${r.reportedUser || 'N/A'}
+            <strong>De:</strong> ${r.reportedBy || 'Anónimo'} | 
+            <strong>Sobre:</strong> ${r.drawingAuthor || 'N/A'}
           </p>
           <p class="mb-2 small">${r.reason || 'Sin razón'}</p>
           <div class="d-flex justify-content-between align-items-center">
@@ -565,6 +663,111 @@ export class SecureAdminPanel {
     `).join('');
   }
 
+  async loadSuggestions() {
+    try {
+      this.allSuggestions = await this.firebase.getAllSuggestions() || [];
+      this.displaySuggestions(this.allSuggestions);
+    } catch (error) {
+      console.error('Error cargando sugerencias:', error);
+      this.allSuggestions = [];
+    }
+  }
+
+  displaySuggestions(suggestions) {
+    const container = document.getElementById('suggestionsList');
+    if (!container) return;
+    
+    if (suggestions.length === 0) {
+      container.innerHTML = '<p class="text-center text-muted">No hay sugerencias</p>';
+      return;
+    }
+    
+    container.innerHTML = suggestions.map(s => `
+      <div class="card mb-3" style="background: var(--bg-light); border-left: 4px solid ${
+        s.status === 'approved' ? '#28a745' : 
+        s.status === 'rejected' ? '#dc3545' : 
+        '#ffc107'
+      };">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="flex-grow-1">
+              <h6 class="mb-1">
+                💡 ${s.tipo || 'General'}
+                <span class="badge ms-2 ${
+                  s.status === 'approved' ? 'bg-success' : 
+                  s.status === 'rejected' ? 'bg-danger' : 
+                  'bg-warning text-dark'
+                }">
+                  ${
+                    s.status === 'approved' ? 'Aprobada' : 
+                    s.status === 'rejected' ? 'Rechazada' : 
+                    'Pendiente'
+                  }
+                </span>
+              </h6>
+              <p class="mb-2">${s.texto}</p>
+              <p class="mb-0 small text-muted">
+                👤 ${s.autor || 'Anónimo'} • 
+                📅 ${new Date(s.timestamp).toLocaleString()}
+              </p>
+            </div>
+          </div>
+          
+          ${!s.status || s.status === 'pending' ? `
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-sm btn-success" onclick="secureAdminPanel.approveSuggestion('${s.id}')">
+                <i data-lucide="check"></i> Aprobar
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="secureAdminPanel.rejectSuggestion('${s.id}')">
+                <i data-lucide="x"></i> Rechazar
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+    
+    if (window.lucide) lucide.createIcons();
+  }
+
+  async approveSuggestion(suggestionId) {
+    if (!confirm('¿Aprobar esta sugerencia?')) return;
+    
+    try {
+      await this.firebase.updateSuggestionStatus(suggestionId, 'approved');
+      await this.loadSuggestions();
+      alert('✅ Sugerencia aprobada');
+    } catch (error) {
+      console.error('Error aprobando sugerencia:', error);
+      alert('❌ Error al aprobar sugerencia');
+    }
+  }
+
+  async rejectSuggestion(suggestionId) {
+    if (!confirm('¿Rechazar esta sugerencia?')) return;
+    
+    try {
+      await this.firebase.updateSuggestionStatus(suggestionId, 'rejected');
+      await this.loadSuggestions();
+      alert('✅ Sugerencia rechazada');
+    } catch (error) {
+      console.error('Error rechazando sugerencia:', error);
+      alert('❌ Error al rechazar sugerencia');
+    }
+  }
+
+  filterSuggestions() {
+    const statusFilter = document.getElementById('suggestionStatusFilter').value;
+    
+    let filtered = this.allSuggestions;
+    
+    if (statusFilter) {
+      filtered = filtered.filter(s => (s.status || 'pending') === statusFilter);
+    }
+    
+    this.displaySuggestions(filtered);
+  }
+
   updateStats() {
     document.getElementById('statDrawings').textContent = this.allDrawings.length;
     document.getElementById('statUsers').textContent = this.allUsers.length;
@@ -572,6 +775,17 @@ export class SecureAdminPanel {
     
     const totalComments = this.allDrawings.reduce((sum, d) => sum + (d.comments?.length || 0), 0);
     document.getElementById('statComments').textContent = totalComments;
+    
+    // Actualizar badge de sugerencias pendientes si existe
+    const pendingSuggestions = (this.allSuggestions || []).filter(s => !s.status || s.status === 'pending').length;
+    const suggestionsBtn = document.querySelector('[data-tab="suggestions"]');
+    if (suggestionsBtn && pendingSuggestions > 0) {
+      suggestionsBtn.innerHTML = `
+        <i data-lucide="lightbulb"></i> Sugerencias
+        <span class="badge bg-warning text-dark ms-1">${pendingSuggestions}</span>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
   }
 
   showTab(tabName) {
@@ -660,6 +874,16 @@ export class SecureAdminPanel {
     const bsModal = new bootstrap.Modal(modal);
     bsModal.show();
     modal.addEventListener('hidden.bs.modal', () => modal.remove());
+  }
+
+  viewUserProfile(username) {
+    // Buscar dibujos del usuario
+    const userDrawings = this.allDrawings.filter(d => d.autor === username);
+    
+    alert(`📊 Perfil de ${username}\n\n` +
+          `🎨 Dibujos: ${userDrawings.length}\n` +
+          `❤️ Total de likes: ${userDrawings.reduce((sum, d) => sum + (d.likes || 0), 0)}\n` +
+          `💬 Total de comentarios: ${userDrawings.reduce((sum, d) => sum + (d.comments?.length || 0), 0)}`);
   }
 
   exportData() {

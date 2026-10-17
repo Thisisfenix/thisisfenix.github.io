@@ -2639,16 +2639,8 @@
       }
     }
     
-    // Función para abrir el Admin Panel (solo admins)
-    async function openAdminPanel() {
-      const isAdmin = await checkIfUserIsAdmin();
-      
-      if (isAdmin) {
-        window.open('admin-panel.html', '_blank');
-      } else {
-        alert('⛔ Acceso denegado. Solo usuarios con tag ADMIN pueden acceder.');
-      }
-    }
+    // NOTA: openAdminPanel() ya no se usa - el admin panel ahora es un modal
+    // que se abre automáticamente desde profiles-v2.js cuando el usuario es admin
     
     // Función para mostrar el UID del usuario actual
     async function showMyUid() {
@@ -2711,65 +2703,8 @@
       }
     }
     
-    // Verificar si el usuario es admin
-    async function checkIfUserIsAdmin() {
-      try {
-        // Verificar si está logueado
-        if (!window.profileManager || !window.profileManager.isLoggedIn()) {
-          return false;
-        }
-        
-        const profile = window.profileManager.currentProfile;
-        
-        // Opción 1: Verificar por UID en Firebase (si usa Firebase Auth)
-        if (profile.uid && window.auth) {
-          const adminConfig = await window.firebaseManager.db.collection('admin_config')
-            .doc('authorized_admins').get();
-          
-          if (adminConfig.exists) {
-            const admins = adminConfig.data().admins || {};
-            return admins[profile.uid] === true;
-          }
-        }
-        
-        // Opción 2: Verificar por userTags (usuarios legacy)
-        if (profile.userTags && Array.isArray(profile.userTags)) {
-          return profile.userTags.includes('ADMIN') || profile.userTags.includes('OWNER');
-        }
-        
-        return false;
-      } catch (error) {
-        console.error('Error verificando admin:', error);
-        return false;
-      }
-    }
-    
-    // Verificar y mostrar botón de admin al cargar
-    window.addEventListener('load', async () => {
-      // Esperar a que profileManager esté listo
-      setTimeout(async () => {
-        const isAdmin = await checkIfUserIsAdmin();
-        const adminBtn = document.getElementById('adminPanelBtn');
-        
-        if (isAdmin && adminBtn) {
-          adminBtn.style.display = 'inline-block';
-          lucide.createIcons();
-        }
-      }, 2000); // Esperar 2 segundos para que cargue el perfil
-    });
-    
-    // También verificar cuando el usuario se loguee
-    document.addEventListener('profileLoaded', async () => {
-      const isAdmin = await checkIfUserIsAdmin();
-      const adminBtn = document.getElementById('adminPanelBtn');
-      
-      if (isAdmin && adminBtn) {
-        adminBtn.style.display = 'inline-block';
-        lucide.createIcons();
-      } else if (adminBtn) {
-        adminBtn.style.display = 'none';
-      }
-    });
+    // NOTA: La verificación de admin ahora se maneja en profiles-v2.js
+    // El botón de admin se muestra automáticamente cuando el usuario es admin
   </script>
   
   </div> <!-- Fin de #mainContent -->
