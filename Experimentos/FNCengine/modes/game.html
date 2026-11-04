@@ -288,8 +288,8 @@
         .toggle-btn {
             position: fixed;
             bottom: 110px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: calc(50% - 250px); /* Movido hacia la izquierda */
+            transform: none; /* Sin transform para posición fija */
             background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
             border: none;
             border-radius: 50%;
@@ -308,12 +308,12 @@
         }
 
         .toggle-btn:hover {
-            transform: translateX(-50%) translateY(-5px) scale(1.12);
+            transform: translateY(-5px) scale(1.12);
             box-shadow: 0 8px 28px rgba(255, 107, 53, 0.7);
         }
 
         .toggle-btn:active {
-            transform: translateX(-50%) translateY(-2px) scale(1.05);
+            transform: translateY(-2px) scale(1.05);
         }
 
         .ui-toggle-btn {
