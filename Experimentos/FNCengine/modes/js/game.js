@@ -124,9 +124,14 @@
                 // Optimizaciones PC
                 targetFPS = 60;
                 fpsInterval = 1000 / targetFPS;
-                document.getElementById('particleCountSlider').value = 20;
-                document.getElementById('targetFPS').value = '60';
-                document.getElementById('graphicsQuality').value = 'medium';
+                
+                const particleSlider = document.getElementById('particleCountSlider');
+                const targetFPSSelect = document.getElementById('targetFPS');
+                const graphicsSelect = document.getElementById('graphicsQuality');
+                
+                if (particleSlider) particleSlider.value = 20;
+                if (targetFPSSelect) targetFPSSelect.value = '60';
+                if (graphicsSelect) graphicsSelect.value = 'medium';
 
                 console.log('Optimizaciones PC aplicadas');
             }
@@ -723,32 +728,38 @@
             }
         }
 
+        // Helper function to safely update element text
+        function safeUpdateElement(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+                return true;
+            }
+            return false;
+        }
+
         function updateUI() {
-            document.getElementById('coins').textContent = formatNumber(coins);
-            document.getElementById('diamonds').textContent = formatNumber(diamonds);
-            document.getElementById('experience').textContent = formatNumber(experience);
-            document.getElementById('bounces').textContent = formatNumber(bounces);
-            document.getElementById('level').textContent = gameData.infiniteLevels ? level + '∞' : level;
-            document.getElementById('prestige').textContent = gameData.prestige;
-            document.getElementById('combo').textContent = combo.toFixed(1) + 'x';
-            document.getElementById('prestigePoints').textContent = gameData.prestigePoints;
+            safeUpdateElement('coins', formatNumber(coins));
+            safeUpdateElement('diamonds', formatNumber(diamonds));
+            safeUpdateElement('experience', formatNumber(experience));
+            safeUpdateElement('bounces', formatNumber(bounces));
+            safeUpdateElement('level', gameData.infiniteLevels ? level + '∞' : level);
+            safeUpdateElement('prestige', gameData.prestige);
+            safeUpdateElement('combo', combo.toFixed(1) + 'x');
+            safeUpdateElement('prestigePoints', gameData.prestigePoints);
             
             // Actualizar displays de prestigio
-            const prestigeCountEl = document.getElementById('prestigeCount');
-            const prestigeBonusEl = document.getElementById('prestigeBonus');
-            if (prestigeCountEl) prestigeCountEl.textContent = gameData.prestige;
-            if (prestigeBonusEl) prestigeBonusEl.textContent = (gameData.prestige * 10).toFixed(1);
-            if (document.getElementById('ascensionPoints')) document.getElementById('ascensionPoints').textContent = gameData.ascensionPoints;
-            if (document.getElementById('ascensionPointsDisplay')) document.getElementById('ascensionPointsDisplay').textContent = gameData.ascensionPoints;
-            if (document.getElementById('achievementCount')) document.getElementById('achievementCount').textContent = (gameData.achievements || []).length;
-            if (document.getElementById('cardCount')) document.getElementById('cardCount').textContent = (gameData.cards || []).length;
-            if (document.getElementById('reputation')) document.getElementById('reputation').textContent = restaurantData.reputation;
-            if (document.getElementById('customerCount')) document.getElementById('customerCount').textContent = restaurantData.customers.length;
+            safeUpdateElement('prestigeCount', gameData.prestige);
+            safeUpdateElement('prestigeBonus', (gameData.prestige * 10).toFixed(1));
+            safeUpdateElement('ascensionPoints', gameData.ascensionPoints);
+            safeUpdateElement('ascensionPointsDisplay', gameData.ascensionPoints);
+            safeUpdateElement('achievementCount', (gameData.achievements || []).length);
+            safeUpdateElement('cardCount', (gameData.cards || []).length);
+            safeUpdateElement('reputation', restaurantData.reputation);
+            safeUpdateElement('customerCount', restaurantData.customers.length);
 
             // Actualizar contador de orbes
-            if (document.getElementById('orbCount')) {
-                document.getElementById('orbCount').textContent = orbs.length;
-            }
+            safeUpdateElement('orbCount', orbs.length);
 
             // Actualizar efectos de orbes activos
             const orbEffectsDisplay = document.getElementById('activeOrbEffectsDisplay');
@@ -764,19 +775,22 @@
             }
 
             // Actualizar displays del HUD
-            if (document.getElementById('eventStatus')) {
+            const eventStatusEl = document.getElementById('eventStatus');
+            if (eventStatusEl) {
                 const eventText = dateEvent ? dateEvent.name : (currentEvent ? currentEvent.name : 'Ninguno');
-                document.getElementById('eventStatus').textContent = eventText;
+                eventStatusEl.textContent = eventText;
             }
 
-            if (document.getElementById('afkTimer')) {
+            const afkTimerEl = document.getElementById('afkTimer');
+            if (afkTimerEl) {
                 const afkMinutes = Math.floor(afkTime / 60);
                 const afkSeconds = afkTime % 60;
-                document.getElementById('afkTimer').textContent = afkMinutes > 0 ? `${afkMinutes}m${afkSeconds}s` : `${afkSeconds}s`;
+                afkTimerEl.textContent = afkMinutes > 0 ? `${afkMinutes}m${afkSeconds}s` : `${afkSeconds}s`;
             }
 
-            if (document.getElementById('streakDisplay')) {
-                document.getElementById('streakDisplay').textContent = streak > 0 ? `${streak}x` : '0x';
+            const streakDisplayEl = document.getElementById('streakDisplay');
+            if (streakDisplayEl) {
+                streakDisplayEl.textContent = streak > 0 ? `${streak}x` : '0x';
             }
 
             updateShopUI();
@@ -1369,7 +1383,10 @@
 
         function togglePause() {
             gamePaused = !gamePaused;
-            document.getElementById('pauseBtn').textContent = gamePaused ? '▶️ Reanudar' : '⏸️ Pausa';
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (pauseBtn) {
+                pauseBtn.textContent = gamePaused ? '▶️' : '⏸️';
+            }
         }
 
 
@@ -2843,10 +2860,8 @@
             }
 
             const premiumCost = 5000 + (gameData.prestige * 2000) + (gameData.ascension * 10000);
-            document.getElementById('premiumProgress').textContent = coins;
-            if (document.getElementById('premiumCost')) {
-                document.getElementById('premiumCost').textContent = premiumCost;
-            }
+            safeUpdateElement('premiumProgress', coins);
+            safeUpdateElement('premiumCost', premiumCost);
         }, 1000);
 
         // CSS adicional
@@ -3126,17 +3141,19 @@
             const descEl = document.getElementById('eventDesc');
             const timerEl = document.getElementById('eventTimer');
 
-            if (currentEvent) {
-                nameEl.textContent = `🎪 ${currentEvent.name}`;
-                descEl.textContent = currentEvent.desc;
-                const minutes = Math.floor(eventTimeLeft / 60);
-                const seconds = eventTimeLeft % 60;
-                timerEl.textContent = `Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-                timerEl.style.color = '#4CAF50';
-            } else {
-                nameEl.textContent = 'Sin evento activo';
-                descEl.textContent = 'Los eventos aparecen aleatoriamente cada ~100 segundos';
-                timerEl.textContent = '';
+            if (nameEl && descEl && timerEl) {
+                if (currentEvent) {
+                    nameEl.textContent = `🎪 ${currentEvent.name}`;
+                    descEl.textContent = currentEvent.desc;
+                    const minutes = Math.floor(eventTimeLeft / 60);
+                    const seconds = eventTimeLeft % 60;
+                    timerEl.textContent = `Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    timerEl.style.color = '#4CAF50';
+                } else {
+                    nameEl.textContent = 'Sin evento activo';
+                    descEl.textContent = 'Los eventos aparecen aleatoriamente cada ~100 segundos';
+                    timerEl.textContent = '';
+                }
             }
         }
 
@@ -3436,7 +3453,8 @@
             if (audioSource) {
                 audioSource.pause();
                 audioSource.currentTime = 0;
-                document.getElementById('playPauseBtn').textContent = '▶️ Play';
+                const playPauseBtn = document.getElementById('playPauseBtn');
+                if (playPauseBtn) playPauseBtn.textContent = '▶️ Play';
             }
         }
 
