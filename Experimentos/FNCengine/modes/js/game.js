@@ -1073,6 +1073,10 @@
             }
         }
 
+        // Inicializar generadores automáticos DESPUÉS de definir las funciones
+        setInterval(generateResources, 1000);
+        setInterval(generateEvent, 1000);
+
         function generateResources() {
             if (gameData.upgrades.diamondGen && gameData.upgrades.diamondGen.level > 0) {
                 diamonds += gameData.upgrades.diamondGen.level * 0.1;
@@ -2777,25 +2781,7 @@
             }
         }
 
-        function updateStats() {
-            const playTime = Math.floor((Date.now() - playTimeStart) / 60000);
-            const sessionTime = Math.floor((Date.now() - betaStats.sessionStart) / 60000);
-
-            // Estadísticas básicas
-            if (document.getElementById('fpsCounter')) document.getElementById('fpsCounter').textContent = currentFPS;
-            if (document.getElementById('particleCounter')) document.getElementById('particleCounter').textContent = particles.length;
-            if (document.getElementById('totalBounces')) document.getElementById('totalBounces').textContent = formatNumber(totalBounces);
-            if (document.getElementById('totalCoins')) document.getElementById('totalCoins').textContent = formatNumber(totalCoins);
-            if (document.getElementById('playTime')) document.getElementById('playTime').textContent = playTime + 'm';
-            if (document.getElementById('bestCombo')) document.getElementById('bestCombo').textContent = bestCombo.toFixed(1) + 'x';
-
-            // Estadísticas beta
-            if (document.getElementById('sessionTime')) document.getElementById('sessionTime').textContent = sessionTime + 'm';
-            if (document.getElementById('totalOrbs')) document.getElementById('totalOrbs').textContent = betaStats.orbsCollected;
-            if (document.getElementById('codesRedeemed')) document.getElementById('codesRedeemed').textContent = betaStats.codesRedeemed;
-            if (document.getElementById('eventsTriggered')) document.getElementById('eventsTriggered').textContent = betaStats.eventsTriggered;
-            if (document.getElementById('crashCount')) document.getElementById('crashCount').textContent = betaStats.crashes;
-        }
+        // updateStats implementada más adelante (versión completa línea ~4749)
 
         function generateMissions() {
             const missionTypes = [
@@ -2824,60 +2810,9 @@
             renderMissions();
         }
 
-        function renderMissions() {
-            const list = document.getElementById('missionList');
-            list.innerHTML = '';
-            Object.keys(missions).forEach(key => {
-                const mission = missions[key];
-                const div = document.createElement('div');
-                div.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.1); margin: 5px 0; border-radius: 5px;';
-                div.innerHTML = `
-                    <h4>${mission.name}</h4>
-                    <div>Progreso: <span id="${key}Progress">${mission.progress}</span>/${mission.target}</div>
-                    <div style="background: #333; height: 5px; border-radius: 3px; margin: 5px 0;">
-                        <div id="${key}Bar" style="background: var(--success); height: 100%; width: ${(mission.progress / mission.target) * 100}%; border-radius: 3px;"></div>
-                    </div>
-                    <div style="color: var(--success); font-size: 12px;">Recompensa: ${mission.reward} ${mission.rewardType}</div>
-                `;
-                list.appendChild(div);
-            });
-            document.getElementById('missionSetNumber').textContent = missionSet;
-        }
+        // renderMissions implementada más adelante
 
-        function updateMissions() {
-            if (!missions.bounces.completed) missions.bounces.progress = Math.min(bounces, missions.bounces.target);
-            if (!missions.coins.completed) missions.coins.progress = Math.min(coins, missions.coins.target);
-            if (!missions.diamonds.completed) missions.diamonds.progress = Math.min(diamonds, missions.diamonds.target);
-            if (!missions.level.completed) missions.level.progress = Math.min(level, missions.level.target);
-            if (!missions.combo.completed) missions.combo.progress = Math.min(Math.floor(combo), missions.combo.target);
-
-            Object.keys(missions).forEach(key => {
-                const mission = missions[key];
-                const progressEl = document.getElementById(key + 'Progress');
-                const barEl = document.getElementById(key + 'Bar');
-                if (progressEl) progressEl.textContent = mission.progress;
-                if (barEl) barEl.style.width = (mission.progress / mission.target) * 100 + '%';
-
-                if (mission.progress >= mission.target && !mission.completed && !mission.claimed) {
-                    mission.completed = true;
-                    mission.claimed = true;
-                    completedMissions++;
-                    if (mission.rewardType === 'coins') {
-                        coins += mission.reward;
-                    } else if (mission.rewardType === 'diamonds') {
-                        diamonds += mission.reward;
-                    }
-                    showNotification(`¡Misión completada! +${mission.reward} ${mission.rewardType}`);
-
-                    if (completedMissions >= 2) {
-                        completedMissions = 0;
-                        missionSet++;
-                        generateMissions();
-                        // Sin notificación de nuevas misiones
-                    }
-                }
-            });
-        }
+        // updateMissions implementada más adelante (versión completa)
 
         // Funciones del sistema AFK
         function resetAfkTimer() {
@@ -3091,8 +3026,7 @@
                     currentDailyChallenge = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
                     currentDailyChallenge.progress = 0;
                     currentDailyChallenge.completed = false;
-                    showNotification(`🎯 Nuevo desafío: ${currentDailyChallenge.name}`);
-                    updateDailyChallengesDisplay();
+        // Los setInterval se inicializan más adelante en window.addEventListener('load')
                 } else {
                     showNotification('¡Todos los desafíos completados!');
                 }
