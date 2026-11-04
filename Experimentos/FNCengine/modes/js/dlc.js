@@ -816,19 +816,31 @@ function addDLCButtons() {
     }
     
     const buttons = [
-        { text: '📜', title: 'Recetas', onclick: 'document.getElementById("recipeBook").style.display="block"; if(window.DLC) window.DLC.RecipeSystem.updateRecipeList();' },
-        { text: '⭐', title: 'Chef Estrella', onclick: 'if(window.DLC) { window.DLC.StarChefMode.start(); document.getElementById("starChefDisplay").style.display="block"; }' },
-        { text: '🎨', title: 'Decoración', onclick: 'document.getElementById("decorationShop").style.display="block"; if(window.DLC) window.DLC.DecorationSystem.updateUI();' },
-        { text: '🏪', title: 'Mercado Negro', onclick: 'alert("🏪 Mercado Negro: Sistema disponible próximamente");' }
+        { emoji: '📜', text: 'Recetas', onclick: 'document.getElementById("recipeBook").style.display="block"; if(window.DLC) window.DLC.RecipeSystem.updateRecipeList();' },
+        { emoji: '⭐', text: 'Chef Estrella', onclick: 'if(window.DLC) { window.DLC.StarChefMode.start(); document.getElementById("starChefDisplay").style.display="block"; }' },
+        { emoji: '🎨', text: 'Decoración', onclick: 'document.getElementById("decorationShop").style.display="block"; if(window.DLC) window.DLC.DecorationSystem.updateUI();' },
+        { emoji: '🏪', text: 'Mercado Negro', onclick: 'alert("🏪 Mercado Negro: Sistema disponible próximamente");' }
     ];
     
     buttons.forEach(btn => {
         const button = document.createElement('button');
-        button.innerHTML = btn.text;
-        button.title = btn.title;
+        button.className = 'control-btn';
+        button.title = btn.text;
         button.setAttribute('onclick', btn.onclick);
-        button.className = 'control-btn'; // Usar la clase del nuevo HUD
         button.style.background = 'linear-gradient(135deg, #9b59b6, #8e44ad)';
+        button.style.display = 'flex';
+        button.style.flexDirection = 'column';
+        button.style.alignItems = 'center';
+        button.style.justifyContent = 'center';
+        button.style.gap = '2px';
+        button.style.fontSize = '20px';
+        button.style.padding = '8px 6px';
+        
+        button.innerHTML = `
+            <div style="font-size: 24px; line-height: 1;">${btn.emoji}</div>
+            <div style="font-size: 9px; line-height: 1; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">${btn.text}</div>
+        `;
+        
         controls.appendChild(button);
     });
     
@@ -836,6 +848,12 @@ function addDLCButtons() {
 }
 
 function showDLCWelcome() {
+    // Verificar si ya se mostró antes
+    if (localStorage.getItem('dlcWelcomeShown')) {
+        console.log("ℹ️ Mensaje de bienvenida DLC ya fue mostrado anteriormente");
+        return;
+    }
+    
     const welcome = document.createElement('div');
     welcome.style.cssText = `
         position: fixed;
@@ -865,7 +883,7 @@ function showDLCWelcome() {
             <p>✅ 30 Nuevos Logros</p>
             <p>✅ Sistema de Temporadas</p>
         </div>
-        <button onclick="this.parentElement.remove()" style="
+        <button onclick="this.parentElement.remove(); localStorage.setItem('dlcWelcomeShown', 'true');" style="
             background: white;
             color: #9b59b6;
             border: none;
