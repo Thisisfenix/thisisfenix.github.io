@@ -7,7 +7,358 @@
     <title>Chef's Kitchen Frenzy - Cooking Challenge</title>
     <link href="css/game.css" rel="stylesheet" type="text/css">
     <style>
+        /* ======================
+           HUD MODERNO V2.0
+           ====================== */
+        
+        /* HUD Principal */
+        .modern-hud {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 40, 0.9));
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
 
+        .hud-row {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+        }
+
+        /* Stats Principales - Cards */
+        .primary-stats .stat-card {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 107, 53, 0.05));
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+            border-color: rgba(255, 107, 53, 0.6);
+        }
+
+        .stat-card.combo-card {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.2), rgba(255, 140, 0, 0.1));
+            border-color: rgba(255, 140, 0, 0.4);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 140, 0, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 140, 0, 0.6); }
+        }
+
+        .stat-icon-large {
+            font-size: 32px;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-name {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Stats Secundarias - Mini */
+        .secondary-stats {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .stat-mini {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s ease;
+        }
+
+        .stat-mini:hover {
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .mini-icon {
+            font-size: 16px;
+        }
+
+        /* Controles Modernos */
+        .modern-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            flex: 1;
+            min-width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 8px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(56, 142, 60, 0.2));
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        .control-btn.primary:hover {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.3));
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .control-btn.pause {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(245, 124, 0, 0.2));
+            border-color: rgba(255, 152, 0, 0.5);
+        }
+
+        .control-btn.prestige {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 193, 7, 0.2));
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-icon {
+            font-size: 20px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .btn-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Panel de Recursos Moderno */
+        .modern-currency {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(30, 30, 50, 0.9));
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+        }
+
+        .currency-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(255, 107, 53, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .currency-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .minimize-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .minimize-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .currency-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .currency-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .currency-group.secondary,
+        .currency-group.tertiary {
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .currency-item:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(3px);
+        }
+
+        .currency-item.diamond {
+            background: linear-gradient(135deg, rgba(0, 191, 255, 0.15), rgba(0, 191, 255, 0.05));
+            border-color: rgba(0, 191, 255, 0.3);
+        }
+
+        .currency-icon {
+            font-size: 28px;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .currency-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .currency-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .currency-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .currency-item-small {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .currency-item-small:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .currency-item-small .label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+        }
+
+        .active-effects {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            font-size: 11px;
+            color: #00ffff;
+            min-height: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .modern-hud {
+                padding: 10px;
+            }
+
+            .stat-card {
+                padding: 8px;
+            }
+
+            .stat-icon-large {
+                font-size: 24px;
+            }
+
+            .stat-value {
+                font-size: 16px;
+            }
+
+            .control-btn {
+                min-width: 70px;
+                padding: 8px 6px;
+            }
+
+            .btn-icon {
+                font-size: 18px;
+            }
+
+            .btn-label {
+                font-size: 9px;
+            }
+        }
     </style>
 </head>
 
@@ -29,37 +380,110 @@
     <canvas id="gameCanvas"></canvas>
 
     <div id="ui-container">
-        <div id="ui">
-            <div class="stat-item"><span class="stat-icon">🍳</span><span class="stat-label">Platos:</span> <span
-                    id="bounces">0</span></div>
-            <div class="stat-item"><span class="stat-icon">🔥</span><span class="stat-label">Combo:</span> <span
-                    id="combo">1x</span></div>
-            <div class="stat-item"><span class="stat-icon">👨🍳</span><span class="stat-label">Chef Lv:</span> <span
-                    id="level">1</span></div>
-            <div class="stat-item"><span class="stat-icon">⭐</span><span class="stat-label">Michelin:</span> <span
-                    id="prestige">0</span></div>
-            <div class="stat-item"><span class="stat-icon">🥘</span><span class="stat-label">Recetas:</span> <span
-                    id="orbCount">0</span></div>
-            <div class="stat-item"><span class="stat-icon">⏰</span><span class="stat-label">AFK:</span> <span
-                    id="afkTimer">0s</span></div>
-            <div class="stat-item"><span class="stat-icon">⚡</span><span class="stat-label">Racha:</span> <span
-                    id="streakDisplay">0x</span></div>
+        <!-- HUD Principal Modernizado -->
+        <div id="ui" class="modern-hud">
+            <!-- Fila Superior: Stats Principales -->
+            <div class="hud-row primary-stats">
+                <div class="stat-card" title="Total de platos preparados">
+                    <span class="stat-icon-large">🍳</span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="bounces">0</span>
+                        <span class="stat-name">Platos</span>
+                    </div>
+                </div>
+                <div class="stat-card combo-card" title="Multiplicador de combo actual">
+                    <span class="stat-icon-large">🔥</span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="combo">1x</span>
+                        <span class="stat-name">Combo</span>
+                    </div>
+                </div>
+                <div class="stat-card" title="Nivel de chef actual">
+                    <span class="stat-icon-large">👨🍳</span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="level">1</span>
+                        <span class="stat-name">Chef Lv</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fila Inferior: Stats Secundarias -->
+            <div class="hud-row secondary-stats">
+                <div class="stat-mini" title="Estrellas Michelin obtenidas">
+                    <span class="mini-icon">⭐</span>
+                    <span id="prestige">0</span>
+                </div>
+                <div class="stat-mini" title="Recetas especiales desbloqueadas">
+                    <span class="mini-icon">🥘</span>
+                    <span id="orbCount">0</span>
+                </div>
+                <div class="stat-mini" title="Tiempo inactivo acumulado">
+                    <span class="mini-icon">⏰</span>
+                    <span id="afkTimer">0s</span>
+                </div>
+                <div class="stat-mini" title="Racha de platos perfectos">
+                    <span class="mini-icon">⚡</span>
+                    <span id="streakDisplay">0x</span>
+                </div>
+            </div>
         </div>
 
-        <div id="controls">
-
-            <button id="shopBtn" title="Abrir tienda de mejoras">🛒 Mercado</button>
-            <button id="achievementsBtn" title="Ver logros y eventos activos">🏆 Logros & Eventos</button>
-            <button id="dailyChallengesBtn" title="Retos culinarios diarios">🎯 Retos</button>
-            <button id="missionsBtn" title="Misiones del juego">📋 Órdenes</button>
-            <button id="statsBtn" title="Estadísticas del juego">📈 Stats</button>
-            <button id="configBtn" title="Configuración del juego">⚙️ Config</button>
-            <button id="pauseBtn" title="Pausar/Reanudar juego">⏸️ Pausa</button>
-            <button id="importExportBtn" title="Guardar/Cargar datos">📁 Datos</button>
-            <button id="codesBtn" title="Canjear códigos especiales">🎁 Códigos</button>
-            <button id="feedbackBtn" title="Enviar feedback de beta">📝 Feedback</button>
-            <button id="musicBtn" title="Panel de música">🎵 Música</button>
-            <button id="prestigeBtn" title="Reiniciar con bonificadores">⭐ Estrella</button>
+        <!-- Controles Modernizados -->
+        <div id="controls" class="modern-controls">
+            <div class="control-group">
+                <button class="control-btn primary" id="shopBtn" title="Abrir tienda de mejoras">
+                    <span class="btn-icon">🛒</span>
+                    <span class="btn-label">Mercado</span>
+                </button>
+                <button class="control-btn" id="achievementsBtn" title="Ver logros y eventos activos">
+                    <span class="btn-icon">🏆</span>
+                    <span class="btn-label">Logros</span>
+                </button>
+                <button class="control-btn" id="dailyChallengesBtn" title="Retos culinarios diarios">
+                    <span class="btn-icon">🎯</span>
+                    <span class="btn-label">Retos</span>
+                </button>
+                <button class="control-btn" id="missionsBtn" title="Misiones del juego">
+                    <span class="btn-icon">📋</span>
+                    <span class="btn-label">Órdenes</span>
+                </button>
+            </div>
+            <div class="control-group">
+                <button class="control-btn" id="statsBtn" title="Estadísticas del juego">
+                    <span class="btn-icon">📈</span>
+                    <span class="btn-label">Stats</span>
+                </button>
+                <button class="control-btn" id="configBtn" title="Configuración del juego">
+                    <span class="btn-icon">⚙️</span>
+                    <span class="btn-label">Config</span>
+                </button>
+                <button class="control-btn pause" id="pauseBtn" title="Pausar/Reanudar juego">
+                    <span class="btn-icon">⏸️</span>
+                    <span class="btn-label">Pausa</span>
+                </button>
+                <button class="control-btn" id="importExportBtn" title="Guardar/Cargar datos">
+                    <span class="btn-icon">📁</span>
+                    <span class="btn-label">Datos</span>
+                </button>
+            </div>
+            <div class="control-group">
+                <button class="control-btn" id="codesBtn" title="Canjear códigos especiales">
+                    <span class="btn-icon">🎁</span>
+                    <span class="btn-label">Códigos</span>
+                </button>
+                <button class="control-btn" id="feedbackBtn" title="Enviar feedback de beta">
+                    <span class="btn-icon">📝</span>
+                    <span class="btn-label">Feedback</span>
+                </button>
+                <button class="control-btn" id="musicBtn" title="Panel de música">
+                    <span class="btn-icon">🎵</span>
+                    <span class="btn-label">Música</span>
+                </button>
+                <button class="control-btn prestige" id="prestigeBtn" title="Reiniciar con bonificadores">
+                    <span class="btn-icon">⭐</span>
+                    <span class="btn-label">Estrella</span>
+                </button>
+            </div>
         </div>
 
         <div id="controlsArrow"
@@ -77,17 +501,72 @@
         </div>
     </div>
 
-    <div id="currency-display">
-        <div>🥕 Ingredientes: <span id="coins">0</span></div>
-        <div class="diamond-text">🧂 Especias: <span id="diamonds">0</span></div>
-        <div>👨🍳 Experiencia: <span id="experience">0</span></div>
-        <div style="color: #ff6b35;">🔥 Maestría: <span id="ascensionPoints">0</span></div>
-        <div style="color: #ffd700;">🏆 Logros: <span id="achievementCount">0</span></div>
-        <div style="color: #00ff00;">📜 Recetas: <span id="cardCount">0</span></div>
-        <div style="color: #ff69b4;">🎪 Evento: <span id="eventStatus">Ninguno</span></div>
-        <div style="color: #ffd700;">🏬 Reputación: <span id="reputation">0</span></div>
-        <div style="color: #87ceeb;">👥 Clientes: <span id="customerCount">0</span></div>
-        <div id="activeOrbEffectsDisplay" style="color: #00ffff; font-size: 10px; margin-top: 5px;"></div>
+    <!-- Panel de Recursos Modernizado -->
+    <div id="currency-display" class="modern-currency">
+        <div class="currency-header">
+            <h4>📊 Recursos</h4>
+            <button class="minimize-btn" onclick="toggleCurrencyPanel()">−</button>
+        </div>
+        <div class="currency-content">
+            <div class="currency-group primary">
+                <div class="currency-item">
+                    <span class="currency-icon">🥕</span>
+                    <div class="currency-details">
+                        <span class="currency-label">Ingredientes</span>
+                        <span class="currency-value" id="coins">0</span>
+                    </div>
+                </div>
+                <div class="currency-item diamond">
+                    <span class="currency-icon">🧂</span>
+                    <div class="currency-details">
+                        <span class="currency-label">Especias</span>
+                        <span class="currency-value" id="diamonds">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="currency-group secondary">
+                <div class="currency-item-small">
+                    <span class="mini-icon">👨🍳</span>
+                    <span class="label">Exp:</span>
+                    <span id="experience">0</span>
+                </div>
+                <div class="currency-item-small">
+                    <span class="mini-icon">🔥</span>
+                    <span class="label">Maestría:</span>
+                    <span id="ascensionPoints">0</span>
+                </div>
+            </div>
+            <div class="currency-group secondary">
+                <div class="currency-item-small">
+                    <span class="mini-icon">🏆</span>
+                    <span class="label">Logros:</span>
+                    <span id="achievementCount">0</span>
+                </div>
+                <div class="currency-item-small">
+                    <span class="mini-icon">📜</span>
+                    <span class="label">Recetas:</span>
+                    <span id="cardCount">0</span>
+                </div>
+            </div>
+            <div class="currency-group tertiary">
+                <div class="currency-item-small">
+                    <span class="mini-icon">🎪</span>
+                    <span class="label">Evento:</span>
+                    <span id="eventStatus">Ninguno</span>
+                </div>
+                <div class="currency-item-small">
+                    <span class="mini-icon">🏬</span>
+                    <span class="label">Reputación:</span>
+                    <span id="reputation">0</span>
+                </div>
+                <div class="currency-item-small">
+                    <span class="mini-icon">👥</span>
+                    <span class="label">Clientes:</span>
+                    <span id="customerCount">0</span>
+                </div>
+            </div>
+            <div id="activeOrbEffectsDisplay" class="active-effects"></div>
+        </div>
     </div>
 
 
@@ -1242,6 +1721,22 @@
             <button onclick="togglePanel('importExport')">Cerrar</button>
         </div>
     </div>
+
+    <!-- HUD Helper Functions -->
+    <script>
+        // Toggle Currency Panel
+        function toggleCurrencyPanel() {
+            const content = document.querySelector('#currency-display .currency-content');
+            const btn = document.querySelector('#currency-display .minimize-btn');
+            if (content.style.display === 'none') {
+                content.style.display = 'flex';
+                btn.textContent = '−';
+            } else {
+                content.style.display = 'none';
+                btn.textContent = '+';
+            }
+        }
+    </script>
 
     <!-- Core Game Engine -->
     <script src="js/game.js"></script>
