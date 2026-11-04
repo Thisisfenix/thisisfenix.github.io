@@ -199,6 +199,8 @@
             document.getElementById('codesBtn').onclick = () => togglePanel('codes');
             document.getElementById('feedbackBtn').onclick = () => togglePanel('feedback');
             document.getElementById('musicBtn').onclick = () => togglePanel('musicPanel');
+            document.getElementById('toggleControls').onclick = toggleControlsVisibility;
+            document.getElementById('toggleUI').onclick = toggleUIVisibility;
 
             // Detectar actividad del usuario para sistema anti-AFK
             document.addEventListener('mousemove', resetAfkTimer);
