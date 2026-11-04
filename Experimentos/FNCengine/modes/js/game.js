@@ -1830,61 +1830,6 @@
             }
         }
 
-        function setupMusicEventListeners() {
-            setTimeout(() => {
-                const sensitivitySlider = document.getElementById('musicSensitivity');
-                const themeSelect = document.getElementById('musicTheme');
-                const manualBpmInput = document.getElementById('manualBpm');
-                const bpmModeSelect = document.getElementById('bpmMode');
-                const musicFileInput = document.getElementById('musicFile');
-                const playPauseBtn = document.getElementById('playPauseBtn');
-                const stopBtn = document.getElementById('stopBtn');
-
-                if (sensitivitySlider) {
-                    sensitivitySlider.addEventListener('input', (e) => {
-                        musicSensitivity = parseFloat(e.target.value);
-                    });
-                }
-
-                if (themeSelect) {
-                    themeSelect.addEventListener('change', (e) => {
-                        musicTheme = e.target.value;
-                        applyMusicTheme();
-                    });
-                }
-
-                if (manualBpmInput) {
-                    manualBpmInput.addEventListener('input', (e) => {
-                        if (bpmMode === 'manual') {
-                            manualBPM = parseInt(e.target.value) || 120;
-                            musicBPM = manualBPM;
-                            document.getElementById('musicBPM').textContent = manualBPM + ' BPM (Manual)';
-                            adaptSensitivityToBPM();
-                        }
-                    });
-                }
-
-                if (bpmModeSelect) {
-                    bpmModeSelect.addEventListener('change', toggleBpmMode);
-                }
-
-                if (musicFileInput) {
-                    musicFileInput.addEventListener('change', (e) => {
-                        if (e.target.files[0]) {
-                            loadMusicFile(e.target.files[0]);
-                        }
-                    });
-                }
-                
-                if (playPauseBtn) {
-                    playPauseBtn.addEventListener('click', toggleMusic);
-                }
-                
-                if (stopBtn) {
-                    stopBtn.addEventListener('click', stopMusic);
-                }
-            }, 100);
-        }
 
         function toggleBpmMode() {
             const bpmModeSelect = document.getElementById('bpmMode');
@@ -2604,37 +2549,7 @@
 
         // updateMissions implementada más adelante (versión completa)
 
-        // Funciones del sistema AFK
-        function resetAfkTimer() {
-            lastActivity = Date.now();
-            afkTime = 0;
-        }
-
-        function handleVisibilityChange() {
-            const pauseBackground = document.getElementById('pauseBackground')?.checked ?? true;
-
-            if (document.hidden) {
-                lastActivity = Date.now() - 60000; // Marca como inactivo hace 1 minuto
-                if (pauseBackground && !gamePaused) {
-                    gamePaused = true;
-                    console.log('Juego pausado automáticamente (segundo plano)');
-                }
-            } else {
-                resetAfkTimer();
-                if (pauseBackground && gamePaused) {
-                    gamePaused = false;
-                    console.log('Juego reanudado automáticamente');
-                }
-            }
-        }
-
-        function handleWindowBlur() {
-            lastActivity = Date.now() - 30000; // Marca como inactivo hace 30s
-        }
-
-        function handleWindowFocus() {
-            resetAfkTimer();
-        }
+        // Funciones del sistema AFK (handleVisibilityChange, handleWindowBlur, handleWindowFocus implementadas más adelante)
 
         function checkGitHubPages() {
             // Sistema antipiracy eliminado
@@ -2814,86 +2729,6 @@
             }
         }
 
-        function redeemCode() {
-            const code = document.getElementById('codeInput').value.toUpperCase().trim();
-            if (!code) return;
-
-            if (redeemedCodes.includes(code)) {
-                // Sin notificación para códigos repetidos
-                return;
-            }
-
-            const codes = {
-                'WELCOME2': { coins: 5000, diamonds: 15, speedBoost: 120, desc: 'Pack bienvenida beta' },
-                'BETA2024': { coins: 1000, diamonds: 5, desc: '1K coins + 5 diamantes' },
-                'FENIX2024': { coins: 500, diamonds: 3, desc: '500 coins + 3 diamantes' },
-                'BETATEST2': { coins: 2000, diamonds: 10, desc: '2K coins + 10 diamantes' },
-                'FEEDBACK': { coins: 1000, orb: 'mythic', desc: 'Orbe mítico + 1K coins' },
-                'GITHUB': { diamonds: 5, comboBoost: 60, desc: '5 diamantes + combo boost' },
-                'ORBES': { coins: 300, orb: 'rare', desc: '300 coins + orbe raro' },
-                'SPEED': { speedBoost: 60, desc: 'Velocidad x1.5 por 1 min' },
-                'COMBO': { comboBoost: 30, desc: 'Combo x2 por 30 seg' }
-            };
-
-            if (codes[code]) {
-                const reward = codes[code];
-                redeemedCodes.push(code);
-
-                if (reward.coins) {
-                    coins += reward.coins;
-                    gameData.coins = coins;
-                }
-                if (reward.diamonds) {
-                    diamonds += reward.diamonds;
-                    gameData.diamonds = diamonds;
-                }
-                if (reward.orb === 'rare') {
-                    const rareOrb = orbTypes.find(o => o.rarity === 'raro');
-                    if (rareOrb) {
-                        orbs.push({
-                            x: width / 2, y: height / 2, radius: 18, type: rareOrb,
-                            alpha: 1, life: 15000, maxLife: 15000, pulsePhase: 0
-                        });
-                    }
-                } else if (reward.orb === 'mythic') {
-                    const mythicOrb = orbTypes.find(o => o.rarity === 'mítico');
-                    if (mythicOrb) {
-                        orbs.push({
-                            x: width / 2, y: height / 2, radius: 25, type: mythicOrb,
-                            alpha: 1, life: 25000, maxLife: 25000, pulsePhase: 0
-                        });
-                    }
-                }
-                if (reward.speedBoost) {
-                    // Aplicar boost temporal menor
-                    const currentSpeedX = Math.abs(ball.dx);
-                    const currentSpeedY = Math.abs(ball.dy);
-                    const directionX = ball.dx > 0 ? 1 : -1;
-                    const directionY = ball.dy > 0 ? 1 : -1;
-
-                    ball.dx = (currentSpeedX * 1.5) * directionX;
-                    ball.dy = (currentSpeedY * 1.5) * directionY;
-
-                    setTimeout(() => {
-                        ball.dx = currentSpeedX * directionX;
-                        ball.dy = currentSpeedY * directionY;
-                    }, reward.speedBoost * 1000);
-                }
-                if (reward.comboBoost) {
-                    combo *= 2;
-                    setTimeout(() => {
-                        combo = Math.max(1, combo / 2);
-                    }, reward.comboBoost * 1000);
-                }
-
-                showNotification(`✅ Código canjeado: ${reward.desc}`);
-                document.getElementById('codeInput').value = '';
-                betaStats.codesRedeemed++;
-                updateUI();
-            } else {
-                // Sin notificación para códigos inválidos
-            }
-        }
 
         function buyAutoClicker(level) {
             const costs = { 1: 100, 2: 300, 3: 1000 };
@@ -3458,60 +3293,6 @@
             });
         }
 
-        function checkOrbCollisions() {
-            for (let i = orbs.length - 1; i >= 0; i--) {
-                const orb = orbs[i];
-                const distance = Math.sqrt(Math.pow(ball.x - orb.x, 2) + Math.pow(ball.y - orb.y, 2));
-                if (distance < ball.radius + orb.radius) {
-                    collectOrb(orb);
-                    orbs.splice(i, 1);
-                }
-            }
-        }
-
-        function collectOrb(orb) {
-            activeOrbEffects.push({
-                type: orb.type.effect, name: orb.type.name,
-                power: orb.type.power, timeLeft: orb.type.duration,
-                color: orb.type.color
-            });
-
-            for (let i = 0; i < 15; i++) {
-                particles.push({
-                    x: orb.x + (Math.random() - 0.5) * 30,
-                    y: orb.y + (Math.random() - 0.5) * 30,
-                    dx: (Math.random() - 0.5) * 15,
-                    dy: (Math.random() - 0.5) * 15,
-                    life: 2000, maxLife: 2000, alpha: 1,
-                    color: orb.type.color
-                });
-            }
-
-            switch (orb.type.effect) {
-                case 'speed':
-                    ball.dx *= orb.type.power;
-                    ball.dy *= orb.type.power;
-                    break;
-                case 'coins':
-                    coins += Math.floor(level * orb.type.power * 2);
-                    gameData.coins = coins;
-                    break;
-                case 'diamonds':
-                    diamonds += Math.floor(orb.type.power * 0.5);
-                    gameData.diamonds = diamonds;
-                    break;
-                case 'combo':
-                    combo += orb.type.power;
-                    break;
-                case 'experience':
-                    experience += Math.floor(level * orb.type.power * 3);
-                    gameData.experience = experience;
-                    break;
-            }
-
-            betaStats.orbsCollected++;
-            updateUI();
-        }
 
         // updateOrbEffects implementada más adelante (versión completa)
 
