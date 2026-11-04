@@ -1,1621 +1,638 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chef's Kitchen Frenzy - Cooking Challenge</title>
+    <title>Chef's Kitchen Frenzy</title>
     <link href="css/game.css" rel="stylesheet" type="text/css">
     <style>
-        /* ============================================
-           CHEF'S KITCHEN FRENZY - HUD V5.0 PREMIUM
-           Design: Ultra Modern Gaming UI
-           ============================================ */
+        /* ═══════════════════════════════════════════════════════
+           CHEF'S KITCHEN FRENZY - HUD V6.0 COMPLETE REDESIGN
+           Ultra Clean & Modern Gaming Interface
+           ═══════════════════════════════════════════════════════ */
 
-        /* === GLOBAL HUD VARIABLES === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --primary-orange: #ff6b35;
-            --primary-cyan: #00e5ff;
-            --dark-bg: rgba(10, 10, 15, 0.92);
-            --panel-bg: linear-gradient(145deg, rgba(20, 20, 30, 0.95), rgba(10, 10, 20, 0.95));
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.75);
-            --text-tertiary: rgba(255, 255, 255, 0.55);
+            /* Colores principales */
+            --orange: #ff6b35;
+            --orange-light: #ff8c5a;
+            --orange-dark: #ff4520;
+            --cyan: #00e5ff;
+            --cyan-light: #5ff5ff;
+            --cyan-dark: #00a8cc;
+            
+            /* Backgrounds */
+            --bg-dark: #0a0a0f;
+            --glass-bg: rgba(15, 15, 25, 0.92);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Texto */
+            --text-white: #ffffff;
+            --text-gray: rgba(255, 255, 255, 0.7);
+            --text-dim: rgba(255, 255, 255, 0.5);
+            
+            /* Sombras */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-glow-orange: 0 0 20px rgba(255, 107, 53, 0.4);
+            --shadow-glow-cyan: 0 0 20px rgba(0, 229, 255, 0.4);
         }
 
-        /* === STATS PANEL (TOP LEFT) === */
-        .hud-simple {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+            background: var(--bg-dark);
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           CANVAS
+           ═══════════════════════════════════════════════════════ */
+        
+        #gameCanvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           LOADING SCREEN
+           ═══════════════════════════════════════════════════════ */
+        
+        #loadingScreen {
             position: fixed;
-            top: 20px;
-            left: 20px;
-            background: var(--panel-bg);
-            border: 1px solid rgba(255, 107, 53, 0.25);
-            border-radius: 20px;
-            padding: 18px 24px;
-            z-index: 100;
-            min-width: 260px;
-            backdrop-filter: blur(16px) saturate(180%);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                0 2px 8px rgba(255, 107, 53, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a0a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
         }
 
-        .hud-simple::before {
+        #loadingScreen h1 {
+            font-size: 48px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .spinner {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 30px;
+        }
+
+        .spinner::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 8px solid rgba(255, 107, 53, 0.2);
+            border-top-color: var(--orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           HUD COMPONENTS - SHARED STYLES
+           ═══════════════════════════════════════════════════════ */
+        
+        .hud-panel {
+            position: fixed;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hud-panel::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
+            left: 10%;
+            right: 10%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-orange), transparent);
-            border-radius: 20px 20px 0 0;
+            border-radius: 16px 16px 0 0;
         }
 
-        .stat-row {
+        /* ═══════════════════════════════════════════════════════
+           STATS PANEL (TOP LEFT)
+           ═══════════════════════════════════════════════════════ */
+        
+        #stats-panel {
+            top: 20px;
+            left: 20px;
+            padding: 20px 26px;
+            min-width: 280px;
+            z-index: 100;
+        }
+
+        #stats-panel::before {
+            background: linear-gradient(90deg, transparent, var(--orange), transparent);
+        }
+
+        .stats-primary {
             display: flex;
-            gap: 20px;
-            margin-bottom: 12px;
-            align-items: center;
+            gap: 22px;
+            margin-bottom: 16px;
         }
 
-        .stat {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            letter-spacing: 0.3px;
+        .stat-item {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-white);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
         }
 
-        .stat-row-mini {
+        .stat-icon {
+            font-size: 22px;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .stats-secondary {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px 14px;
-            padding-top: 12px;
-            margin-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .stat-small {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
-            color: var(--text-secondary);
+            color: var(--text-gray);
             display: flex;
             align-items: center;
-            gap: 5px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            gap: 6px;
         }
 
-        /* === CONTROLS BAR (BOTTOM CENTER) === */
-        .controls-simple {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--panel-bg);
-            border: 1px solid rgba(255, 107, 53, 0.25);
-            border-radius: 24px;
-            padding: 14px 18px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            max-width: 90vw;
-            justify-content: center;
-            z-index: 100;
-            backdrop-filter: blur(16px) saturate(180%);
-            box-shadow: 
-                0 12px 40px rgba(0, 0, 0, 0.5),
-                0 4px 12px rgba(255, 107, 53, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: all 0.4s ease;
-        }
-
-        .controls-simple::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 20%;
-            right: 20%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-orange), transparent);
-            border-radius: 24px 24px 0 0;
-        }
-
-        .controls-simple.hidden {
-            opacity: 0;
-            transform: translateX(-50%) translateY(120px);
-            pointer-events: none;
-        }
-
-        .controls-simple button {
-            position: relative;
-            background: linear-gradient(135deg, #ff6b35 0%, #ff4520 100%);
-            border: none;
-            border-radius: 14px;
-            color: white;
-            font-size: 24px;
-            width: 58px;
-            height: 58px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                0 4px 12px rgba(255, 107, 53, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-
-        .controls-simple button::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 50%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), transparent);
-            border-radius: 14px 14px 0 0;
-        }
-
-        .controls-simple button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 
-                0 6px 20px rgba(255, 107, 53, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .controls-simple button:active {
-            transform: translateY(-1px) scale(1.02);
-        }
-
-        /* === RESOURCES PANEL (TOP RIGHT) === */
-        .resources-simple {
-            position: fixed;
+        /* ═══════════════════════════════════════════════════════
+           RESOURCES PANEL (TOP RIGHT)
+           ═══════════════════════════════════════════════════════ */
+        
+        #resources-panel {
             top: 20px;
             right: 20px;
-            background: var(--panel-bg);
-            border: 1px solid rgba(0, 229, 255, 0.25);
-            border-radius: 20px;
-            padding: 18px 24px;
-            min-width: 220px;
+            padding: 20px 26px;
+            min-width: 240px;
             z-index: 100;
-            backdrop-filter: blur(16px) saturate(180%);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                0 2px 8px rgba(0, 229, 255, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
         }
 
-        .resources-simple::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-cyan), transparent);
-            border-radius: 20px 20px 0 0;
+        #resources-panel::before {
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
         }
 
-        .resource {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 10px;
+        .resource-item {
             display: flex;
             align-items: center;
             gap: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-white);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
         }
 
-        .resource.diamond {
-            color: #00e5ff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        .resource-icon {
+            font-size: 20px;
         }
 
-        .resource-small {
+        .resource-value {
+            font-weight: 700;
+        }
+
+        .resource-diamond {
+            color: var(--cyan);
+            text-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
+        }
+
+        .resources-extras {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .resource-extra {
             font-size: 13px;
             font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 7px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 7px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .active-effects {
             margin-top: 12px;
             padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 12px;
-            font-weight: 500;
-            color: #00ffff;
+            font-weight: 600;
+            color: var(--cyan-light);
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
             min-height: 20px;
-            text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
         }
 
-        /* === TOGGLE BUTTONS === */
-        .toggle-btn {
-            position: fixed;
-            bottom: 100px;
+        /* ═══════════════════════════════════════════════════════
+           CONTROLS BAR (BOTTOM CENTER)
+           ═══════════════════════════════════════════════════════ */
+        
+        #controls-bar {
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #ff6b35, #ff4520);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 18px;
-            width: 48px;
-            height: 48px;
-            cursor: pointer;
-            z-index: 101;
-            backdrop-filter: blur(8px);
-            box-shadow: 
-                0 4px 16px rgba(255, 107, 53, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            transition: all 0.2s ease;
+            padding: 16px 20px;
             display: flex;
-            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            max-width: 90vw;
+            flex-wrap: wrap;
             justify-content: center;
         }
 
-        .toggle-btn:hover {
-            transform: translateX(-50%) translateY(-4px) scale(1.1);
-            box-shadow: 0 6px 24px rgba(255, 107, 53, 0.7);
+        #controls-bar::before {
+            background: linear-gradient(90deg, transparent 10%, var(--orange) 50%, transparent 90%);
         }
 
-        .toggle-btn:active {
-            transform: translateX(-50%) translateY(-2px) scale(1.05);
+        #controls-bar.hidden {
+            opacity: 0;
+            transform: translateX(-50%) translateY(150px);
+            pointer-events: none;
         }
 
-        .ui-toggle-btn {
-            position: fixed;
-            top: 25px;
-            right: 260px;
-            background: linear-gradient(135deg, #00e5ff, #00a8cc);
+        .control-btn {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
             border: none;
-            border-radius: 50%;
+            border-radius: 16px;
             color: white;
-            font-size: 18px;
-            width: 48px;
-            height: 48px;
+            font-size: 26px;
             cursor: pointer;
-            z-index: 101;
-            backdrop-filter: blur(8px);
-            box-shadow: 
-                0 4px 16px rgba(0, 229, 255, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 
+                0 4px 12px rgba(255, 107, 53, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.2);
         }
 
-        .ui-toggle-btn:hover {
-            transform: translateY(-4px) scale(1.1);
-            box-shadow: 0 6px 24px rgba(0, 229, 255, 0.7);
+        .control-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), transparent);
+            border-radius: 16px 16px 0 0;
+            pointer-events: none;
         }
 
-        .ui-toggle-btn:active {
-            transform: translateY(-2px) scale(1.05);
+        .control-btn:hover {
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 
+                0 8px 24px rgba(255, 107, 53, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
-        /* === VERSION TAG === */
-        .version-tag {
+        .control-btn:active {
+            transform: translateY(-2px) scale(1.04);
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           TOGGLE BUTTONS
+           ═══════════════════════════════════════════════════════ */
+        
+        .toggle-btn {
             position: fixed;
-            bottom: 10px;
-            left: 10px;
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        #toggle-controls {
+            bottom: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+        }
+
+        #toggle-controls:hover {
+            transform: translateX(-50%) translateY(-5px) scale(1.12);
+            box-shadow: 0 8px 28px rgba(255, 107, 53, 0.7);
+        }
+
+        #toggle-ui {
+            top: 28px;
+            right: 280px;
+            background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+        }
+
+        #toggle-ui:hover {
+            transform: translateY(-5px) scale(1.12);
+            box-shadow: 0 8px 28px rgba(0, 229, 255, 0.7);
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           VERSION TAG
+           ═══════════════════════════════════════════════════════ */
+        
+        #version-tag {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            padding: 8px 16px;
             background: linear-gradient(135deg, rgba(255, 107, 53, 0.9), rgba(255, 69, 32, 0.9));
             color: white;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
             z-index: 1000;
             pointer-events: none;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-            letter-spacing: 0.5px;
         }
 
-        /* === UTILITY CLASSES === */
+        /* ═══════════════════════════════════════════════════════
+           UTILITY CLASSES
+           ═══════════════════════════════════════════════════════ */
+        
         .hidden {
             display: none !important;
         }
 
-        /* === RESPONSIVE DESIGN === */
+        /* ═══════════════════════════════════════════════════════
+           RESPONSIVE DESIGN
+           ═══════════════════════════════════════════════════════ */
+        
         @media (max-width: 768px) {
-            .hud-simple, .resources-simple {
-                padding: 14px 18px;
-                min-width: 200px;
+            #stats-panel, #resources-panel {
+                padding: 16px 20px;
+                min-width: 220px;
             }
 
-            .stat {
-                font-size: 16px;
+            .stat-item {
+                font-size: 17px;
             }
 
-            .stat-small, .resource-small {
-                font-size: 12px;
+            .control-btn {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
             }
 
-            .controls-simple {
-                padding: 12px 14px;
-                gap: 6px;
+            #toggle-controls, #toggle-ui {
+                width: 46px;
+                height: 46px;
+                font-size: 18px;
             }
 
-            .controls-simple button {
-                width: 54px;
-                height: 54px;
-                font-size: 22px;
-            }
-
-            .toggle-btn, .ui-toggle-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 16px;
-            }
-
-            .ui-toggle-btn {
-                right: 15px;
+            #toggle-ui {
+                right: 16px;
             }
         }
 
         @media (max-width: 480px) {
-            .hud-simple, .resources-simple {
+            #stats-panel, #resources-panel {
+                padding: 14px 18px;
+                min-width: 200px;
+            }
+
+            .stats-primary {
+                gap: 16px;
+            }
+
+            .control-btn {
+                width: 52px;
+                height: 52px;
+                font-size: 22px;
+            }
+
+            #controls-bar {
                 padding: 12px 16px;
-                min-width: 180px;
-            }
-
-            .stat-row {
-                gap: 14px;
-            }
-
-            .controls-simple button {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
+                gap: 8px;
             }
         }
     </style>
 </head>
-
 <body>
-    <div id="loadingScreen"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; color: white;">
-        <h1>Chef's Kitchen Frenzy - Cooking Challenge</h1>
-        <div style="width: 200px; height: 200px; position: relative; margin: 20px;">
-            <div
-                style="width: 100%; height: 100%; border: 10px solid #333; border-top-color: var(--hud-color); border-radius: 50%; animation: spin 1s linear infinite;">
-            </div>
-            <div
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 30px; font-weight: bold;">
-                100%</div>
+    <!-- ═══════════════════════════════════════════════════════
+         LOADING SCREEN
+         ═══════════════════════════════════════════════════════ -->
+    
+    <div id="loadingScreen">
+        <h1>Chef's Kitchen Frenzy</h1>
+        <div class="spinner">
+            <div class="spinner-text">100%</div>
         </div>
-        <p>Preparando la cocina...</p>
+        <p style="font-size: 18px; color: rgba(255, 255, 255, 0.7);">Preparando la cocina...</p>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════════
+         GAME CANVAS
+         ═══════════════════════════════════════════════════════ -->
+    
     <canvas id="gameCanvas"></canvas>
 
-    <!-- HUD Container -->
-    <div id="ui-container">
-        <!-- Stats Display - Simplificado y Funcional -->
-        <div id="ui" class="hud-simple">
-            <div class="stat-row">
-                <div class="stat">🍳 <span id="bounces">0</span></div>
-                <div class="stat">🔥 <span id="combo">1x</span></div>
-                <div class="stat">👨🍳 Lv.<span id="level">1</span></div>
-            </div>
-            <div class="stat-row-mini">
-                <div class="stat-small">⭐<span id="prestige">0</span></div>
-                <div class="stat-small">🥘<span id="orbCount">0</span></div>
-                <div class="stat-small">⏰<span id="afkTimer">0s</span></div>
-                <div class="stat-small">⚡<span id="streakDisplay">0x</span></div>
-            </div>
-        </div>
-
-        <!-- Controls Panel -->
-        <div id="controls" class="controls-simple">
-            <button id="shopBtn">🛒</button>
-            <button id="achievementsBtn">🏆</button>
-            <button id="dailyChallengesBtn">🎯</button>
-            <button id="missionsBtn">📋</button>
-            <button id="statsBtn">📈</button>
-            <button id="configBtn">⚙️</button>
-            <button id="pauseBtn">⏸️</button>
-            <button id="importExportBtn">📁</button>
-            <button id="codesBtn">🎁</button>
-            <button id="feedbackBtn">📝</button>
-            <button id="musicBtn">🎵</button>
-            <button id="prestigeBtn">⭐</button>
-        </div>
-
-        <!-- Toggle Button -->
-        <button id="toggleControls" class="toggle-btn">▲</button>
-
-        <!-- UI Toggle Button -->
-        <button id="toggleUI" class="ui-toggle-btn">◀</button>
-
-        <!-- Version Indicator -->
-        <div id="versionIndicator" class="version-tag">v2.0 🆕 DLC</div>
-    </div>
-
-    <!-- Resources Panel - Simplificado -->
-    <div id="currency-display" class="resources-simple">
-        <div class="resource">🥕 <span id="coins">0</span></div>
-        <div class="resource diamond">🧂 <span id="diamonds">0</span></div>
-        <div class="resource-small">👨🍳 <span id="experience">0</span></div>
-        <div class="resource-small">🔥 <span id="ascensionPoints">0</span></div>
-        <div class="resource-small">🏆 <span id="achievementCount">0</span></div>
-        <div class="resource-small">📜 <span id="cardCount">0</span></div>
-        <div class="resource-small">🎪 <span id="eventStatus">Ninguno</span></div>
-        <div class="resource-small">🏬 <span id="reputation">0</span></div>
-        <div class="resource-small">👥 <span id="customerCount">0</span></div>
-        <div id="activeOrbEffectsDisplay" class="active-effects"></div>
-    </div>
-
-    <!-- Config Panel -->
-    <div id="config">
-        <h3>⚙️ Configuración</h3>
-
-        <!-- Apartado: Apariencia -->
-        <div class="config-section">
-            <h4>🎨 Apariencia</h4>
-            <div class="config-item">
-                <label>Tema:</label>
-                <button id="themeToggle" onclick="toggleTheme()">Modo Claro</button>
-            </div>
-            <div class="config-item">
-                <label>Tamaño de UI:</label>
-                <input type="range" id="uiScale" min="0.8" max="1.5" step="0.1" value="1" oninput="updateUIScale()">
-                <span id="uiScaleValue">100%</span>
-            </div>
-            <div class="config-item premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <label>Color de la bola:</label>
-                <input type="color" id="ballColor" value="#ff0000" disabled>
-            </div>
-            <div class="config-item premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <label>Efectos de aura:</label>
-                <input type="checkbox" id="auraEffects" disabled>
-            </div>
-            <div class="config-item premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <label>Celebraciones épicas:</label>
-                <input type="checkbox" id="epicCelebrations" disabled>
-            </div>
-            <div class="config-item">
-                <label>Fondo del juego:</label>
-                <select id="backgroundType"
-                    style="background: var(--glass); color: white; border: 1px solid var(--glass-border); padding: 5px;">
-                    <option value="gradient">Degradado</option>
-                    <option value="solid">Sólido</option>
-                    <option value="stars">Estrellas</option>
-                    <option value="minimal">Minimalista</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Apartado: Rendimiento -->
-        <div class="config-section">
-            <h4>⚡ Rendimiento</h4>
-            <div class="config-item">
-                <label>Calidad gráfica:</label>
-                <select id="graphicsQuality"
-                    style="background: var(--glass); color: white; border: 1px solid var(--glass-border); padding: 5px;">
-                    <option value="low">Baja (móvil)</option>
-                    <option value="medium" selected>Media</option>
-                    <option value="high">Alta (PC)</option>
-                    <option value="ultra">Ultra (PC potente)</option>
-                </select>
-            </div>
-            <div class="config-item">
-                <label>FPS objetivo:</label>
-                <select id="targetFPS"
-                    style="background: var(--glass); color: white; border: 1px solid var(--glass-border); padding: 5px;">
-                    <option value="30">30 FPS (móvil)</option>
-                    <option value="60" selected>60 FPS</option>
-                    <option value="120">120 FPS (PC)</option>
-                    <option value="144">144 FPS (PC gaming)</option>
-                </select>
-            </div>
-            <div class="config-item">
-                <label>Partículas:</label>
-                <input type="range" id="particleCountSlider" min="0" max="100" value="10"
-                    oninput="updateParticleValue()">
-                <span id="particleValue">10</span>
-            </div>
-            <div class="config-item">
-                <label>Modo rendimiento:</label>
-                <input type="checkbox" id="performanceMode">
-            </div>
-            <div class="config-item">
-                <label>Ahorro de batería:</label>
-                <input type="checkbox" id="batterySaver">
-            </div>
-            <div class="config-item">
-                <label>Reducir animaciones:</label>
-                <input type="checkbox" id="reduceAnimations">
-            </div>
-        </div>
-
-        <!-- Apartado: Juego -->
-        <div class="config-section">
-            <h4>🎮 Juego</h4>
-            <div class="config-item">
-                <label>Velocidad de juego:</label>
-                <input type="range" id="gameSpeedSlider" min="0.5" max="3" step="0.1" value="1"
-                    oninput="updateSpeedValue()">
-                <span id="speedValue">1.0x</span>
-            </div>
-            <div class="config-item">
-                <label>Auto-pausa en segundo plano:</label>
-                <input type="checkbox" id="pauseBackground" checked>
-            </div>
-            <div class="config-item">
-                <label>Auto-guardado:</label>
-                <select id="autoSaveInterval"
-                    style="background: var(--glass); color: white; border: 1px solid var(--glass-border); padding: 5px;">
-                    <option value="5">Cada 5 segundos</option>
-                    <option value="10" selected>Cada 10 segundos</option>
-                    <option value="30">Cada 30 segundos</option>
-                    <option value="60">Cada minuto</option>
-                </select>
-            </div>
-            <div class="config-item">
-                <label>Confirmación de prestigio:</label>
-                <input type="checkbox" id="confirmPrestige" checked>
-            </div>
-        </div>
-
-        <!-- Apartado: Audio y Notificaciones -->
-        <div class="config-section">
-            <h4>🔊 Audio & Notificaciones</h4>
-            <div class="config-item">
-                <label>Sonidos:</label>
-                <input type="checkbox" id="soundToggle" checked>
-            </div>
-            <div class="config-item">
-                <label>Volumen:</label>
-                <input type="range" id="volumeSlider" min="0" max="100" value="50" oninput="updateVolumeValue()">
-                <span id="volumeValue">50%</span>
-            </div>
-            <div class="config-item">
-                <label>Notificaciones:</label>
-                <input type="checkbox" id="notificationsToggle" checked>
-            </div>
-            <div class="config-item">
-                <label>Vibración (móvil):</label>
-                <input type="checkbox" id="vibrationToggle" checked>
-            </div>
-            <div class="config-item">
-                <label>Sonidos de logros:</label>
-                <input type="checkbox" id="achievementSounds" checked>
-            </div>
-
-            <div class="config-item premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <label>🎵 Temas musicales extra:</label>
-                <select id="premiumMusicThemes" disabled>
-                    <option>Synthwave</option>
-                    <option>Dubstep</option>
-                    <option>Jazz</option>
-                    <option>Classical</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Apartado: Guardado -->
-        <div class="config-section">
-            <h4>💾 Guardado</h4>
-            <div class="config-item">
-                <label>Slot de guardado:</label>
-                <select id="saveSlot"
-                    style="background: var(--glass); color: white; border: 1px solid var(--glass-border); padding: 5px;">
-                    <option value="1">Slot 1</option>
-                    <option value="2">Slot 2</option>
-                    <option value="3">Slot 3</option>
-                </select>
-            </div>
-            <div class="config-buttons">
-                <button onclick="saveToSlot()">💾 Guardar Slot</button>
-                <button onclick="loadFromSlot()">📁 Cargar Slot</button>
-            </div>
-            <div class="config-item premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <label>☁️ Guardado en la nube:</label>
-                <button onclick="showPremiumRequired('Guardado en la nube')" disabled>Sincronizar</button>
-            </div>
-            <div class="config-item premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <label>🔄 Auto-backup:</label>
-                <input type="checkbox" id="autoBackup" disabled>
-            </div>
-        </div>
-
-        <!-- Apartado: Avanzado -->
-        <div class="config-section">
-            <h4>🔧 Avanzado</h4>
-            <div class="config-item">
-                <label>Modo desarrollador:</label>
-                <input type="checkbox" id="devMode">
-            </div>
-            <div class="config-item">
-                <label>Mostrar FPS:</label>
-                <input type="checkbox" id="showFPS">
-            </div>
-            <div class="config-item">
-                <label>Debug de colisiones:</label>
-                <input type="checkbox" id="debugCollisions">
-            </div>
-            <div class="config-buttons">
-                <button onclick="exportSettings()">📤 Exportar Config</button>
-                <button onclick="importSettings()">📥 Importar Config</button>
-            </div>
-        </div>
-
-        <!-- Botones principales -->
-        <div class="config-main-buttons">
-            <button onclick="applyConfig()" style="background: var(--success);">✓ Aplicar Todo</button>
-            <button onclick="resetSettings()" style="background: var(--warning); color: black;">🔄 Restaurar</button>
-            <button onclick="resetGame()" style="background: var(--danger);">⚠️ Reset Total</button>
-            <button onclick="closeConfig()">❌ Cerrar</button>
-        </div>
-    </div>
-
-    <!-- Stats Panel -->
-    <div id="stats">
-        <h3>Estadísticas</h3>
-        <div>FPS: <span id="fpsCounter">60</span></div>
-        <div>Partículas: <span id="particleCounter">0</span></div>
-        <div>Total rebotes: <span id="totalBounces">0</span></div>
-        <div>Total coins: <span id="totalCoins">0</span></div>
-        <div>Tiempo jugado: <span id="playTime">0m</span></div>
-        <div>Mejor combo: <span id="bestCombo">1x</span></div>
-        <div style="border-top: 1px solid #555; margin: 15px 0; padding-top: 15px;">
-            <h4>Estadísticas Beta 2</h4>
-            <div>Sesión actual: <span id="sessionTime">0m</span></div>
-            <div>Orbes recogidos: <span id="totalOrbs">0</span></div>
-            <div>Códigos canjeados: <span id="codesRedeemed">0</span></div>
-            <div>Eventos activados: <span id="eventsTriggered">0</span></div>
-            <div>Crashes detectados: <span id="crashCount">0</span></div>
-        </div>
-
-        <div class="premium-feature"
-            style="opacity: 0.5; border-top: 1px solid #555; margin-top: 15px; padding-top: 15px;">
-            <div class="premium-badge">PREMIUM</div>
-            <h4>📊 Estadísticas Avanzadas</h4>
-            <button onclick="showPremiumRequired('Estadísticas avanzadas')" disabled>📈 Gráficos Detallados</button>
-            <button onclick="showPremiumRequired('Exportar datos')" disabled>📄 Exportar PDF</button>
-            <button onclick="showPremiumRequired('Predictor de metas')" disabled>🎯 Predictor IA</button>
-        </div>
-
-        <button onclick="closeStats()">Cerrar</button>
-    </div>
-
-    <!-- Missions Panel -->
-    <div id="missions" style="max-height: 80vh; overflow-y: auto;">
-        <h3>Misiones Diarias</h3>
-        <div>Set de Misiones: <span id="missionSetNumber">1</span></div>
-        <div id="missionList"></div>
-        <button onclick="closeMissions()">Cerrar</button>
-    </div>
-
-    <!-- Unified Achievements & Events Panel -->
-    <div id="achievements">
-        <div class="tab">
-            <button class="tablinks active" onclick="openAchievementTab(event, 'achievementsList')">🏆 Logros</button>
-            <button class="tablinks" onclick="openAchievementTab(event, 'eventsList')">🎪 Eventos</button>
-        </div>
-
-        <div id="achievementsList" class="tabcontent" style="display: block;">
-            <h3>🏆 Sistema de Logros</h3>
-            <div id="achievementsContainer">
-                <div class="upgrade">
-                    <h4>Primer Centenar</h4>
-                    <p>Alcanza 100 rebotes - Recompensa: 500 coins</p>
-                    <div id="achievement-first100">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade">
-                    <h4>Mil Rebotes</h4>
-                    <p>Alcanza 1000 rebotes - Recompensa: 2000 coins</p>
-                    <div id="achievement-first1000">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Maestro Rebotador</h4>
-                    <p>Alcanza 10K rebotes - Recompensa: 10K coins</p>
-                    <div id="achievement-first10k">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade">
-                    <h4>Millonario</h4>
-                    <p>Consigue 1M coins - Recompensa: 1000 coins</p>
-                    <div id="achievement-millionaire">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Billonario</h4>
-                    <p>Consigue 1B coins - Recompensa: 50K coins</p>
-                    <div id="achievement-billionaire">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade">
-                    <h4>Coleccionista</h4>
-                    <p>Obtén 10 diamantes - Recompensa: 5 diamantes</p>
-                    <div id="achievement-diamond10">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade">
-                    <h4>Cazador de Gemas</h4>
-                    <p>Obtén 100 diamantes - Recompensa: 25 diamantes</p>
-                    <div id="achievement-diamond100">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade">
-                    <h4>Renacimiento</h4>
-                    <p>Haz tu primer prestigio - Recompensa: 2000 coins</p>
-                    <div id="achievement-prestige1">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Veterano</h4>
-                    <p>Haz 10 prestigios - Recompensa: 20K coins</p>
-                    <div id="achievement-prestige10">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade">
-                    <h4>Medio Siglo</h4>
-                    <p>Alcanza nivel 50 - Recompensa: 5K coins</p>
-                    <div id="achievement-level50">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Centurión</h4>
-                    <p>Alcanza nivel 100 - Recompensa: 15K coins</p>
-                    <div id="achievement-level100">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade mythic-upgrade">
-                    <h4>Combo Master</h4>
-                    <p>Alcanza combo 20x - Recompensa: 8K coins</p>
-                    <div id="achievement-combo20">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade">
-                    <h4>Velocista</h4>
-                    <p>Alcanza velocidad 15+ - Recompensa: 3K coins</p>
-                    <div id="achievement-speed15">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade">
-                    <h4>Gigante</h4>
-                    <p>Tamaño de bola 40+ - Recompensa: 4K coins</p>
-                    <div id="achievement-size40">❌ Bloqueado</div>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Ascendido</h4>
-                    <p>Haz tu primera ascensión - Recompensa: 100K coins</p>
-                    <div id="achievement-ascension1">❌ Bloqueado</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="eventsList" class="tabcontent">
-            <h3>🎪 Eventos Temporales</h3>
-            <div id="currentEventDisplay">
-                <div class="upgrade">
-                    <h4 id="eventName">Sin evento activo</h4>
-                    <p id="eventDesc">Los eventos aparecen aleatoriamente cada ~100 segundos</p>
-                    <div id="eventTimer"></div>
-                </div>
-            </div>
-            <h3>📅 Eventos Especiales</h3>
-            <div id="specialEventsContainer">
-                <div class="upgrade">
-                    <h4>🌟 Fin de Semana Dorado</h4>
-                    <p>x2 coins los fines de semana</p>
-                    <div id="weekend-event">⏰ Próximo evento</div>
-                </div>
-                <div class="upgrade">
-                    <h4>🎃 Evento de Halloween</h4>
-                    <p>Orbes especiales y bonificaciones</p>
-                    <div id="halloween-event">🗓️ Octubre</div>
-                </div>
-                <div class="upgrade">
-                    <h4>🎄 Navidad Especial</h4>
-                    <p>Regalos diarios y multiplicadores</p>
-                    <div id="christmas-event">🗓️ Diciembre</div>
-                </div>
-                <div class="upgrade">
-                    <h4>🎆 Año Nuevo</h4>
-                    <p>Reset de desafíos y bonos</p>
-                    <div id="newyear-event">🗓️ Enero</div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <button onclick="closeAchievements()">Cerrar</button>
-    </div>
-
-    <!-- Daily Challenges Panel -->
-    <div id="dailyChallenges">
-        <h3>🎯 Desafíos Diarios</h3>
-        <div>Próximo reset: <span id="resetTimer">--:--:--</span></div>
-        <div id="dailyChallengesContainer"></div>
-        <button onclick="selectRandomDailyChallenge()">🎲 Nuevo Desafío Aleatorio</button>
-        <button id="resetDailyChallengesBtn" onclick="resetDailyChallenges()" style="display:none;">🔄 Reset Desafíos
-            (24h)</button>
-        <button onclick="claimAfkRewards()">💤 Reclamar Recompensas AFK</button>
-        <button onclick="closeDailyChallenges()">Cerrar</button>
-    </div>
-
-    <!-- Premium Shop -->
-    <div id="premiumShop" style="text-align: center;">
-        <h2 style="color: gold;">🌟 Premium Unlock 🌟</h2>
-        <p>Desbloquea características exclusivas:</p>
-        <ul style="text-align: left; margin: 15px 0;">
-            <li>🎨 Skins premium exclusivas</li>
-            <li>✨ Efectos visuales avanzados</li>
-            <li>🎯 Personalización completa</li>
-            <li>📊 Estadísticas detalladas</li>
-            <li>🚀 Multiplicadores especiales</li>
-            <li>🎪 Eventos únicos</li>
-        </ul>
-        <div
-            style="background: linear-gradient(45deg, gold, orange); padding: 15px; border-radius: 10px; margin: 15px 0;">
-            <h3 style="margin: 0; color: black;">Solo 5000 coins</h3>
-            <p style="margin: 5px 0; color: black;">¡Oferta limitada!</p>
-        </div>
-        <button onclick="buyPremium()"
-            style="background: gold; color: black; font-weight: bold; padding: 10px 20px; font-size: 14px;">Comprar
-            Premium</button>
-        <button onclick="closePremiumShop()">Más tarde</button>
-    </div>
-    </div>
-    </div>
-
-    <div id="shop">
-        <div class="tab">
-            <button class="tablinks active" onclick="openTab(event, 'basic')">Básico</button>
-            <button class="tablinks" onclick="openTab(event, 'advanced')">Avanzado</button>
-            <button class="tablinks" onclick="openTab(event, 'legendary')">Legendario</button>
-            <button class="tablinks" onclick="openTab(event, 'mythic')">Mítico</button>
-            <button class="tablinks" onclick="openTab(event, 'prestige')">Prestigio</button>
-            <button class="tablinks" onclick="openTab(event, 'ascension')">Ascensión</button>
-            <button class="tablinks" onclick="openTab(event, 'collection')">Colección</button>
-            <button class="tablinks" onclick="openTab(event, 'research')">Investigación</button>
-            <button class="tablinks" onclick="openTab(event, 'particles')">Partículas</button>
-            <button class="tablinks" onclick="openTab(event, 'skins')">Skins</button>
-            <button class="tablinks" onclick="openTab(event, 'premium')">Premium</button>
-            <button class="tablinks" onclick="openTab(event, 'generators')">Generadores</button>
-            <button class="tablinks" onclick="closeShop()">Cerrar</button>
-        </div>
-
-        <div id="basic" class="tabcontent" style="display: block;">
-            <div class="upgrade">
-                <h4>Multiplicador de Ingredientes <span id="coinMultLevel">(Nivel 0)</span></h4>
-                <p>Aumenta ingredientes por plato</p>
-                <p>Costo: <span id="coinMultCost">100</span> ingredientes</p>
-                <button onclick="buyUpgrade('coinMult')">Comprar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Velocidad de Cocina <span id="speedLevel">(Nivel 0)</span></h4>
-                <p>Aumenta velocidad de preparación</p>
-                <p>Costo: <span id="speedCost">150</span> ingredientes</p>
-                <button onclick="buyUpgrade('speed')">Comprar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Tamaño de Sartén <span id="sizeLevel">(Nivel 0)</span></h4>
-                <p>Aumenta tamaño de la sartén</p>
-                <p>Costo: <span id="sizeCost">200</span> ingredientes</p>
-                <button onclick="buyUpgrade('size')">Comprar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Combo Culinario <span id="comboLevel">(Nivel 0)</span></h4>
-                <p>Aumenta duración del combo de sabores</p>
-                <p>Costo: <span id="comboCost">250</span> ingredientes</p>
-                <button onclick="buyUpgrade('combo')">Comprar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Plato Perfecto <span id="critLevel">(Nivel 0)</span></h4>
-                <p>Aumenta chance de plato perfecto</p>
-                <p>Costo: <span id="criticalCost">300</span> ingredientes</p>
-                <button onclick="buyUpgrade('critical')">Comprar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Generador de Especias <span id="diamondGenLevel">(Nivel 0)</span></h4>
-                <p>Genera especias automáticamente</p>
-                <p>Costo: <span id="diamondGenCost">500</span> ingredientes</p>
-                <button onclick="buyUpgrade('diamondGen')">Comprar</button>
-            </div>
-        </div>
-
-        <div id="advanced" class="tabcontent">
-            <div class="upgrade premium-feature">
-                <div class="diamond-badge">DIAMANTE</div>
-                <h4>Multiplicador de Experiencia Culinaria <span id="expMultLevel">(Nivel 0)</span></h4>
-                <p>Aumenta ganancia de experiencia culinaria</p>
-                <p>Costo: <span id="expMultCost">10</span> 🧂</p>
-                <button onclick="buyUpgrade('expMult')">Comprar</button>
-            </div>
-            <div class="upgrade premium-feature">
-                <div class="diamond-badge">DIAMANTE</div>
-                <h4>Auto-Cocina <span id="autoLevel">(Nivel 0)</span></h4>
-                <p>Cocina platos automáticamente</p>
-                <p>Costo: <span id="autoCost">25</span> 🧂</p>
-                <button onclick="buyUpgrade('auto')">Comprar</button>
-            </div>
-        </div>
-
-        <div id="legendary" class="tabcontent">
-            <div class="upgrade legendary-upgrade">
-                <div class="legendary-badge">LEGENDARIO</div>
-                <h4>Cocción Lenta <span id="timeAscLevel">(Nivel 0)</span></h4>
-                <p>Ralentiza el tiempo de cocción</p>
-                <p>Costo: <span id="timeAscCost">100</span> 🧂</p>
-                <button onclick="buyUpgrade('timeAsc')">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <div class="legendary-badge">LEGENDARIO</div>
-                <h4>Cocina Paralela <span id="dimensionLevel">(Nivel 0)</span></h4>
-                <p>Duplica todas las ganancias culinarias</p>
-                <p>Costo: <span id="dimensionCost">200</span> 🧂</p>
-                <button onclick="buyUpgrade('dimension')">Comprar</button>
-            </div>
-        </div>
-
-        <div id="mythic" class="tabcontent">
-            <div class="upgrade mythic-upgrade">
-                <div class="mythic-badge">MÍTICO</div>
-                <h4>Chef Supremo <span id="omniLevel">(Nivel 0)</span></h4>
-                <p>Multiplica TODAS las ganancias x10</p>
-                <p>Costo: <span id="omnipotenceCost">1000</span> 🧂</p>
-                <button onclick="buyUpgrade('omnipotence')">Comprar</button>
-            </div>
-            <div class="upgrade mythic-upgrade">
-                <div class="mythic-badge">MÍTICO</div>
-                <h4>Maestro Infinito <span id="infiniteLevel">(Nivel 0)</span></h4>
-                <p>Rompe los límites culinarios</p>
-                <p>Costo: <span id="infiniteCost">5000</span> 🧂</p>
-                <button onclick="buyUpgrade('infinite')">Comprar</button>
-            </div>
-        </div>
-
-        <div id="prestige" class="tabcontent">
-            <div class="prestige-section">
-                <h3>⭐ Sistema de Estrellas Michelin ⭐</h3>
-                <p>Reinicia tu progreso pero ganas bonificadores permanentes</p>
-                <p>Estrellas Michelin: <span id="prestigePoints">0</span> | Prestigios: <span id="prestigeCount">0</span></p>
-                <p>Requiere nivel chef 25+ y 500K+ ingredientes</p>
-                <p>Bonus actual: +<span id="prestigeBonus">0</span>% coins por prestigio</p>
-                <button onclick="doPrestige()">⭐ Obtener Estrella Michelin</button>
-            </div>
-            <div class="upgrade">
-                <h4>Multiplicador de Ingredientes</h4>
-                <p>+10% ingredientes permanentemente</p>
-                <p>Costo: 1 Estrella Michelin</p>
-                <button onclick="buyPrestigeUpgrade('coinBonus')">Comprar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Multiplicador de Experiencia</h4>
-                <p>+15% experiencia permanentemente</p>
-                <p>Costo: 2 Estrellas Michelin</p>
-                <button onclick="buyPrestigeUpgrade('expBonus')">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <h4>Multiplicador de Especias</h4>
-                <p>+20% especias permanentemente</p>
-                <p>Costo: 3 Estrellas Michelin</p>
-                <button onclick="buyPrestigeUpgrade('diamondBonus')">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <h4>Chef Experimentado</h4>
-                <p>Empezar con 1000 ingredientes y nivel 5</p>
-                <p>Costo: 5 Estrellas Michelin</p>
-                <button onclick="buyPrestigeUpgrade('startBonus')">Comprar</button>
-            </div>
-            <div class="upgrade mythic-upgrade">
-                <h4>Recolector Automático</h4>
-                <p>Auto-recolectar ingredientes especiales cada 10s</p>
-                <p>Costo: 8 Estrellas Michelin</p>
-                <button onclick="buyPrestigeUpgrade('autoCollect')">Comprar</button>
-            </div>
-            <div class="upgrade mythic-upgrade">
-                <h4>Maestro Supremo</h4>
-                <p>x2 a TODAS las ganancias permanentemente</p>
-                <p>Costo: 15 Estrellas Michelin</p>
-                <button onclick="buyPrestigeUpgrade('megaBonus')">Comprar</button>
-            </div>
-        </div>
-
-        <div id="ascension" class="tabcontent">
-            <div class="prestige-section" style="background: linear-gradient(45deg, #ff6b35, #ff9500);">
-                <h3>🔥 Sistema de Maestría Culinaria 🔥</h3>
-                <p>Reinicia TODO incluyendo estrellas, pero desbloquea poder supremo</p>
-                <p>Puntos de Maestría: <span id="ascensionPointsDisplay">0</span></p>
-                <p>Requiere 10+ Estrellas y 1B+ ingredientes</p>
-                <button onclick="doAscension()">Alcanzar Maestría</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <div class="legendary-badge">ASCENSIÓN</div>
-                <h4>Multiplicador de Maestro</h4>
-                <p>x2 a TODAS las ganancias por punto de maestría</p>
-                <p>Costo: 1 Punto de Maestría</p>
-                <button onclick="buyAscensionUpgrade('cosmicMult')">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <div class="legendary-badge">ASCENSIÓN</div>
-                <h4>Generador de Estrellas</h4>
-                <p>Genera estrellas Michelin automáticamente</p>
-                <p>Costo: 2 Puntos de Maestría</p>
-                <button onclick="buyAscensionUpgrade('prestigeGen')">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <div class="legendary-badge">ASCENSIÓN</div>
-                <h4>Acelerador Culinario</h4>
-                <p>La cocina funciona 2x más rápido permanentemente</p>
-                <p>Costo: 3 Puntos de Maestría</p>
-                <button onclick="buyAscensionUpgrade('timeAccel')">Comprar</button>
-            </div>
-        </div>
-
-        <div id="research" class="tabcontent">
-            <h3>Árbol de Investigación</h3>
-            <p>Usa experiencia para desbloquear tecnologías</p>
-            <div class="upgrade">
-                <h4>Eficiencia I</h4>
-                <p>+25% coins por rebote</p>
-                <p>Costo: 1000 ⭐</p>
-                <button onclick="buyResearch('efficiency1')">Investigar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Eficiencia II</h4>
-                <p>+50% coins por rebote</p>
-                <p>Costo: 5000 ⭐</p>
-                <button onclick="buyResearch('efficiency2')">Investigar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Automatización I</h4>
-                <p>Genera recursos pasivamente</p>
-                <p>Costo: 2500 ⭐</p>
-                <button onclick="buyResearch('automation1')">Investigar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Automatización II</h4>
-                <p>x2 generación pasiva</p>
-                <p>Costo: 10000 ⭐</p>
-                <button onclick="buyResearch('automation2')">Investigar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <h4>Multiplicación Cósmica</h4>
-                <p>x5 a todas las ganancias</p>
-                <p>Costo: 50000 ⭐</p>
-                <button onclick="buyResearch('cosmic')">Investigar</button>
-            </div>
-            <div class="upgrade mythic-upgrade">
-                <h4>Trascendencia</h4>
-                <p>Desbloquea la siguiente dimensión</p>
-                <p>Costo: 1000000 ⭐</p>
-                <button onclick="buyResearch('transcend')">Investigar</button>
-            </div>
-            <div class="upgrade premium-feature mythic-upgrade">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>Mecánica Cuántica</h4>
-                <p>+500% a todas las ganancias</p>
-                <p>Costo: 5000000 ⭐</p>
-                <button onclick="buyResearch('quantum')">Investigar</button>
-            </div>
-            <div class="upgrade premium-feature mythic-upgrade">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>Infinito</h4>
-                <p>Remueve todos los límites</p>
-                <p>Costo: 50000000 ⭐</p>
-                <button onclick="buyResearch('infinity')">Investigar</button>
-            </div>
-        </div>
-
-        <div id="particles" class="tabcontent">
-            <h3>Efectos de Partículas</h3>
-            <div class="upgrade">
-                <h4>Tipo de Partículas</h4>
-                <div style="margin: 5px 0;">
-                    <input type="radio" id="particle1" name="particle" value="circles" checked>
-                    <label for="particle1">Círculos</label>
-                </div>
-                <div style="margin: 5px 0;">
-                    <input type="radio" id="particle2" name="particle" value="squares">
-                    <label for="particle2">Cuadrados</label>
-                </div>
-                <div style="margin: 5px 0;">
-                    <input type="radio" id="particle3" name="particle" value="stars">
-                    <label for="particle3">Estrellas</label>
-                </div>
-            </div>
-            <div class="upgrade">
-                <h4>Efectos Básicos</h4>
-                <div style="margin: 5px 0;">
-                    <input type="checkbox" id="trailEffect" checked>
-                    <label for="trailEffect">Estela de partículas</label>
-                </div>
-                <div style="margin: 5px 0;">
-                    <input type="checkbox" id="burstEffect" checked>
-                    <label for="burstEffect">Explosión al rebotar</label>
-                </div>
-            </div>
-            <div class="upgrade premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>Efectos Premium</h4>
-                <div style="margin: 5px 0;">
-                    <input type="checkbox" id="glowEffect" disabled>
-                    <label for="glowEffect">Resplandor de la bola</label>
-                </div>
-                <div style="margin: 5px 0;">
-                    <input type="checkbox" id="rainbowTrail" disabled>
-                    <label for="rainbowTrail">Estela arcoíris</label>
-                </div>
-                <div style="margin: 5px 0;">
-                    <input type="checkbox" id="epicBurst" disabled>
-                    <label for="epicBurst">Explosiones épicas</label>
-                </div>
-                <div style="margin: 5px 0;">
-                    <input type="checkbox" id="customShapes" disabled>
-                    <label for="customShapes">Formas personalizadas</label>
-                </div>
-                <button onclick="showPremiumShop()">Desbloquear Premium</button>
-            </div>
-        </div>
-
-        <div id="skins" class="tabcontent">
-            <h3>Selecciona Apariencia de Sartén</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px;">
-                <div class="skin-option selected" onclick="selectSkin('default')"
-                    style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid var(--hud-color); border-radius: 10px;">
-                    <div
-                        style="width: 40px; height: 40px; background: radial-gradient(circle, #ff0000, #aa0000); border-radius: 50%; margin: 0 auto 5px;">
-                    </div>
-                    <div style="font-size: 10px;">Clásica</div>
-                    <div style="font-size: 8px; color: #aaa;">Común</div>
-                </div>
-                <div class="skin-option" onclick="selectSkin('fire')"
-                    style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid transparent; border-radius: 10px;">
-                    <div
-                        style="width: 40px; height: 40px; background: radial-gradient(circle, #ff9900, #ff3300); border-radius: 50%; margin: 0 auto 5px;">
-                    </div>
-                    <div style="font-size: 10px;">Flambeada</div>
-                    <div style="font-size: 8px; color: #aaa;">Común</div>
-                </div>
-                <div class="skin-option" onclick="selectSkin('ice')"
-                    style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid transparent; border-radius: 10px;">
-                    <div
-                        style="width: 40px; height: 40px; background: radial-gradient(circle, #00ccff, #0066ff); border-radius: 50%; margin: 0 auto 5px;">
-                    </div>
-                    <div style="font-size: 10px;">Congelada</div>
-                    <div style="font-size: 8px; color: var(--hud-color);">Rara</div>
-                </div>
-                <div class="skin-option premium-feature" onclick="selectSkin('rainbow')"
-                    style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid transparent; border-radius: 10px; opacity: 0.5; position: relative;">
-                    <div class="premium-badge">PREMIUM</div>
-                    <div
-                        style="width: 40px; height: 40px; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); border-radius: 50%; margin: 0 auto 5px;">
-                    </div>
-                    <div style="font-size: 10px;">Arcoíris</div>
-                    <div style="font-size: 8px; color: gold;">Premium</div>
-                </div>
-                <div class="skin-option premium-feature" onclick="selectSkin('galaxy')"
-                    style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid transparent; border-radius: 10px; opacity: 0.5; position: relative;">
-                    <div class="premium-badge">PREMIUM</div>
-                    <div
-                        style="width: 40px; height: 40px; background: radial-gradient(circle, #9900ff, #330066); border-radius: 50%; margin: 0 auto 5px;">
-                    </div>
-                    <div style="font-size: 10px;">Galaxia</div>
-                    <div style="font-size: 8px; color: gold;">Premium</div>
-                </div>
-                <div class="skin-option premium-feature" onclick="selectSkin('cosmic')"
-                    style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid transparent; border-radius: 10px; opacity: 0.5; position: relative;">
-                    <div class="premium-badge">PREMIUM</div>
-                    <div
-                        style="width: 40px; height: 40px; background: radial-gradient(circle, #00ffff, #00008b); border-radius: 50%; margin: 0 auto 5px;">
-                    </div>
-                    <div style="font-size: 10px;">Cósmica</div>
-                    <div style="font-size: 8px; color: #ff00ff;">Exclusiva</div>
-                </div>
-                <div class="skin-option premium-feature" onclick="selectSkin('neon')"
-                    style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid transparent; border-radius: 10px; opacity: 0.5; position: relative;">
-                    <div class="premium-badge">PREMIUM</div>
-                    <div
-                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #ff0080, #00ff80); border-radius: 50%; margin: 0 auto 5px;">
-                    </div>
-                    <div style="font-size: 10px;">Neón</div>
-                    <div style="font-size: 8px; color: gold;">Premium</div>
-                </div>
-                <div class="skin-option premium-feature" onclick="selectSkin('diamond')"
-                    style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid transparent; border-radius: 10px; opacity: 0.5; position: relative;">
-                    <div class="premium-badge">PREMIUM</div>
-                    <div
-                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #b9f2ff, #0099cc); border-radius: 50%; margin: 0 auto 5px; box-shadow: 0 0 10px rgba(185, 242, 255, 0.8);">
-                    </div>
-                    <div style="font-size: 10px;">Diamante</div>
-                    <div style="font-size: 8px; color: gold;">Premium</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="premium" class="tabcontent">
-            <div class="upgrade premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>🎮 Editor de Skins Personalizado</h4>
-                <p>Crea tus propias skins con herramientas avanzadas</p>
-                <button onclick="showPremiumRequired('Editor de skins')" disabled>🎨 Abrir Editor</button>
-            </div>
-            <div class="upgrade premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>🎬 Grabador de Replays</h4>
-                <p>Graba y comparte tus mejores jugadas</p>
-                <button onclick="showPremiumRequired('Grabador de replays')" disabled>📹 Iniciar Grabación</button>
-            </div>
-            <div class="upgrade premium-feature" style="opacity: 0.5;">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>🏆 Títulos y Badges</h4>
-                <p>Desbloquea títulos exclusivos y badges únicos</p>
-                <button onclick="showPremiumRequired('Títulos y badges')" disabled>🎖️ Ver Colección</button>
-            </div>
-            <div class="upgrade">
-                <h4>🌟 Desbloquear Premium 🌟</h4>
-                <p>Accede a todas las características premium:</p>
-                <ul style="font-size: 11px; margin: 10px 0;">
-                    <li>🎨 Skins exclusivas y efectos especiales</li>
-                    <li>✨ Partículas premium y resplandores</li>
-                    <li>🎯 Personalización completa de colores</li>
-                    <li>📊 Estadísticas detalladas y avanzadas</li>
-                    <li>🚀 Multiplicadores y bonificadores únicos</li>
-                    <li>🎪 Eventos especiales y contenido exclusivo</li>
-                </ul>
-                <div
-                    style="background: linear-gradient(45deg, gold, orange); padding: 10px; border-radius: 5px; margin: 10px 0; text-align: center;">
-                    <div style="color: black; font-weight: bold;">Precio: 5000 coins</div>
-                    <div style="color: black; font-size: 10px;">Progreso: <span id="premiumProgress">0</span>/<span
-                            id="premiumCost">5000</span></div>
-                </div>
-                <button id="buyPremiumBtn" onclick="buyPremium()"
-                    style="background: gold; color: black; font-weight: bold;">Comprar Premium</button>
-            </div>
-        </div>
-
-        <div id="generators" class="tabcontent">
-            <h3>🏭 Generadores Automáticos</h3>
-            <div class="upgrade">
-                <h4>Generador de Coins Nivel 1</h4>
-                <p>Genera 10 coins/seg</p>
-                <p>Costo: 1000 coins</p>
-                <button onclick="buyGenerator('coin1')">Comprar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Generador de Coins Nivel 2</h4>
-                <p>Genera 100 coins/seg</p>
-                <p>Costo: 25000 coins</p>
-                <button onclick="buyGenerator('coin2')">Comprar</button>
-            </div>
-            <div class="upgrade">
-                <h4>Generador de Diamantes</h4>
-                <p>Genera 1 diamante/min</p>
-                <p>Costo: 100000 coins</p>
-                <button onclick="buyGenerator('diamond1')">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <h4>Generador de Experiencia</h4>
-                <p>Genera 50 exp/seg</p>
-                <p>Costo: 50 💎</p>
-                <button onclick="buyGenerator('exp1')">Comprar</button>
-            </div>
-            <div class="upgrade mythic-upgrade">
-                <h4>Generador Universal</h4>
-                <p>Genera TODO automáticamente</p>
-                <p>Costo: 500 💎</p>
-                <button onclick="buyGenerator('universal')">Comprar</button>
-            </div>
-            <div class="upgrade premium-feature legendary-upgrade">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>Generador Cuántico</h4>
-                <p>Genera recursos basado en experiencia</p>
-                <p>Costo: 1000 💎</p>
-                <button onclick="buyGenerator('quantum')">Comprar</button>
-            </div>
-            <div class="upgrade premium-feature mythic-upgrade">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>Reactor de Fusión</h4>
-                <p>Convierte experiencia en diamantes</p>
-                <p>Costo: 2000 💎</p>
-                <button onclick="buyGenerator('fusion')">Comprar</button>
-            </div>
-            <div class="upgrade premium-feature mythic-upgrade">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>Acelerador Temporal</h4>
-                <p>Acelera el juego basado en experiencia</p>
-                <p>Costo: 5000 💎</p>
-                <button onclick="buyGenerator('temporal')">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <h4>Multiplicador de Rebotes</h4>
-                <p>Cada rebote cuenta como múltiples</p>
-                <p>Costo: 10000 coins</p>
-                <button onclick="buyGenerator('bounceMulti')">Comprar</button>
-            </div>
-            <div class="upgrade mythic-upgrade">
-                <h4>Generador de Niveles</h4>
-                <p>Sube de nivel automáticamente</p>
-                <p>Costo: 1500 💎</p>
-                <button onclick="buyGenerator('levelGen')">Comprar</button>
-            </div>
-            <div class="upgrade premium-feature legendary-upgrade">
-                <div class="premium-badge">PREMIUM</div>
-                <h4>Recolector de Orbes</h4>
-                <p>Recoge orbes automáticamente</p>
-                <p>Costo: 3000 💎</p>
-                <button onclick="buyGenerator('orbCollector')">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <h4>Auto-Clicker Nivel 1</h4>
-                <p>Clicks automáticos cada 5 segundos</p>
-                <p>Costo: 100 💎</p>
-                <button onclick="buyAutoClicker(1)">Comprar</button>
-            </div>
-            <div class="upgrade legendary-upgrade">
-                <h4>Auto-Clicker Nivel 2</h4>
-                <p>Clicks automáticos cada 2 segundos</p>
-                <p>Costo: 300 💎</p>
-                <button onclick="buyAutoClicker(2)">Comprar</button>
-            </div>
-            <div class="upgrade mythic-upgrade">
-                <h4>Auto-Clicker Supremo</h4>
-                <p>Clicks automáticos cada segundo</p>
-                <p>Costo: 1000 💎</p>
-                <button onclick="buyAutoClicker(3)">Comprar</button>
-            </div>
-        </div>
-
-        <div id="collection" class="tabcontent">
-            <h3>🃏 Cartas Coleccionables</h3>
-            <div id="cardsList">
-                <div class="upgrade">
-                    <h4>Carta de Velocidad</h4>
-                    <p>+10% velocidad - Común</p><button onclick="buyCard('speed')">25 💎</button>
-                </div>
-                <div class="upgrade">
-                    <h4>Carta de Fortuna</h4>
-                    <p>+25% coins - Rara</p><button onclick="buyCard('coins')">25 💎</button>
-                </div>
-                <div class="upgrade">
-                    <h4>Carta Crítica</h4>
-                    <p>+5% crítico - Épica</p><button onclick="buyCard('critical')">50 💎</button>
-                </div>
-                <div class="upgrade">
-                    <h4>Carta de Sabiduría</h4>
-                    <p>+30% experiencia - Rara</p><button onclick="buyCard('experience')">35 💎</button>
-                </div>
-                <div class="upgrade">
-                    <h4>Carta de Combo</h4>
-                    <p>+2 duración combo - Épica</p><button onclick="buyCard('combo')">60 💎</button>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Carta de Gemas</h4>
-                    <p>+15% diamantes - Legendaria</p><button onclick="buyCard('diamond')">100 💎</button>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Carta de Poder</h4>
-                    <p>+50% puntos prestigio - Legendaria</p><button onclick="buyCard('prestige')">150 💎</button>
-                </div>
-                <div class="upgrade mythic-upgrade">
-                    <h4>Carta Suprema</h4>
-                    <p>x2 a TODO - Mítica</p><button onclick="buyCard('ultimate')">500 💎</button>
-                </div>
-            </div>
-            <h3>🐾 Mascotas</h3>
-            <div id="petsList">
-                <div class="upgrade">
-                    <h4>Gato Cósmico</h4>
-                    <p>+15% experiencia</p><button onclick="buyPet('cat')">50 💎</button>
-                </div>
-                <div class="upgrade">
-                    <h4>Dragón Dorado</h4>
-                    <p>+30% coins</p><button onclick="buyPet('dragon')">200 💎</button>
-                </div>
-                <div class="upgrade">
-                    <h4>Fénix de Fuego</h4>
-                    <p>+20% velocidad</p><button onclick="buyPet('phoenix')">150 💎</button>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Unicornio Mágico</h4>
-                    <p>+25% diamantes</p><button onclick="buyPet('unicorn')">300 💎</button>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Kraken Abismal</h4>
-                    <p>+40% combo</p><button onclick="buyPet('kraken')">400 💎</button>
-                </div>
-                <div class="upgrade mythic-upgrade">
-                    <h4>Ser Celestial</h4>
-                    <p>+100% todo por 1min cada hora</p><button onclick="buyPet('celestial')">1000 💎</button>
-                </div>
-                <div class="upgrade premium-feature legendary-upgrade">
-                    <div class="premium-badge">PREMIUM</div>
-                    <h4>Robot Recolector</h4>
-                    <p>Recoge orbes automáticamente</p><button onclick="buyPet('robot')">2000 💎</button>
-                </div>
-                <div class="upgrade premium-feature mythic-upgrade">
-                    <div class="premium-badge">PREMIUM</div>
-                    <h4>Dragón Ancestral</h4>
-                    <p>x5 a todas las ganancias</p><button onclick="buyPet('ancientDragon')">5000 💎</button>
-                </div>
-            </div>
-            <h3>⚡ Artefactos</h3>
-            <div id="artifactsList">
-                <div class="upgrade">
-                    <h4>Orbe del Tiempo</h4>
-                    <p>Ralentiza el tiempo 10%</p><button onclick="buyArtifact('orb')">100 💎</button>
-                </div>
-                <div class="upgrade">
-                    <h4>Anillo de Poder</h4>
-                    <p>x3 puntos de prestigio</p><button onclick="buyArtifact('ring')">250 💎</button>
-                </div>
-                <div class="upgrade">
-                    <h4>Amuleto de la Suerte</h4>
-                    <p>+50% críticos</p><button onclick="buyArtifact('amulet')">300 💎</button>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Corona Infinita</h4>
-                    <p>Niveles infinitos</p><button onclick="buyArtifact('crown')">500 💎</button>
-                </div>
-                <div class="upgrade legendary-upgrade">
-                    <h4>Bastón Arcano</h4>
-                    <p>Auto-prestigio cada 10min</p><button onclick="buyArtifact('staff')">800 💎</button>
-                </div>
-                <div class="upgrade mythic-upgrade">
-                    <h4>Reliquia Ancestral</h4>
-                    <p>Genera recursos offline</p><button onclick="buyArtifact('relic')">1200 💎</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="feedback">
-        <h3>📝 Feedback Beta 2</h3>
-        <p>Ayuda a mejorar el juego reportando bugs o sugerencias:</p>
-        <div style="margin: 10px 0;">
-            <label>Tipo de feedback:</label>
-            <select id="feedbackType"
-                style="width: 100%; padding: 5px; margin: 5px 0; background: #333; color: white; border: 1px solid #555;">
-                <option value="bug">Bug/Error</option>
-                <option value="balance">Balance del juego</option>
-                <option value="feature">Nueva característica</option>
-                <option value="ui">Interfaz/Diseño</option>
-                <option value="mobile">Problema móvil</option>
-                <option value="other">Otro</option>
-            </select>
-        </div>
-        <textarea id="feedbackText" placeholder="Describe tu feedback aquí..."
-            style="width: 100%; height: 100px; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #555; background: #333; color: white; resize: vertical;"></textarea>
-        <div style="margin: 10px 0;">
-            <button onclick="submitFeedback()">🚀 Enviar Feedback</button>
-            <button onclick="closeFeedback()">Cerrar</button>
-        </div>
-        <div style="font-size: 11px; opacity: 0.7; margin-top: 10px;">
-            <p>🚀 <strong>Cómo funciona:</strong></p>
-            <p>1. Escribe tu feedback y haz clic en "Enviar"</p>
-            <p>2. Elige: GitHub Issue (recomendado) o copiar al portapapeles</p>
-            <p>3. Si eliges portapapeles, envíamelo por Discord/email</p>
-            <p>Versión: 1.0 | Build: <span id="buildNumber">2024.12</span></p>
-        </div>
-    </div>
-
-    <!-- Music Panel -->
-    <div id="musicPanel">
-        <h3>🎵 Panel de Música</h3>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" id="musicMode" onchange="toggleMusicMode()">
-                <span>Activar Efectos Reactivos</span>
-            </label>
-        </div>
-
-        <div style="padding: 15px; background: rgba(0,0,0,0.8); border-radius: 10px; border: 1px solid #4CAF50;">
-            <input type="file" id="musicFile" accept="audio/*" style="width: 100%; margin-bottom: 10px; padding: 5px;">
-
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <button id="playPauseBtn">▶️ Play</button>
-                <button id="stopBtn">⏹️ Stop</button>
-            </div>
-
-            <div style="margin-bottom: 10px;">
-                <label style="color: #aaa; font-size: 12px;">Sensibilidad:</label>
-                <input type="range" id="musicSensitivity" min="0.5" max="2" step="0.1" value="1" style="width: 100%;">
-            </div>
-
-            <div style="margin-bottom: 10px;">
-                <label style="color: #aaa; font-size: 12px;">Tema Visual:</label>
-                <select id="musicTheme"
-                    style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555;">
-                    <option value="disco">🕺 Disco</option>
-                    <option value="rock">🎸 Rock</option>
-                    <option value="electronic">🎛️ Electronic</option>
-                    <option value="chill">😌 Chill</option>
-                </select>
-            </div>
-
-            <div style="margin-bottom: 10px;">
-                <label style="color: #aaa; font-size: 12px;">Modo BPM:</label>
-                <select id="bpmMode" onchange="toggleBpmMode()"
-                    style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555;">
-                    <option value="auto">🤖 Automático</option>
-                    <option value="manual">✋ Manual</option>
-                </select>
-            </div>
-
-            <div style="margin-bottom: 10px;">
-                <label style="color: #aaa; font-size: 12px;">BPM Manual:</label>
-                <input type="number" id="manualBpm" min="60" max="200" value="120" disabled
-                    style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555;">
-            </div>
-
-            <div style="margin-bottom: 10px;">
-                <div id="musicProgress" style="width: 100%; height: 4px; background: #333; border-radius: 2px; position: relative;">
-                    <div id="musicProgressBar" style="height: 100%; background: #4CAF50; border-radius: 2px; width: 0%; transition: width 0.1s;"></div>
-                </div>
-                <div id="musicTime" style="color: #4CAF50; font-size: 10px; text-align: center; margin-top: 5px;">0:00 / 0:00</div>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 9px;">
-                <span style="color: #4CAF50;">🎵 <span id="musicBPM">-- BPM</span></span>
-                <span style="color: #FF6B35;">🔊 <span id="musicIntensity">--</span>%</span>
-                <span style="color: #FFD700;">🎯 <span id="musicBeatMultiplier">x1.0</span></span>
-            </div>
-            
-            <div id="musicInfo" style="font-size: 10px; color: #666; text-align: center;">
-                Carga un archivo de audio para comenzar
-            </div>
-        </div>
-
-        <button onclick="closeMusicPanel()" style="margin-top: 15px;">Cerrar</button>
-    </div>
-
-    <div id="codes">
-        <h3>🎁 Códigos Especiales</h3>
-        <p>Ingresa códigos para obtener recompensas:</p>
-        <input type="text" id="codeInput" placeholder="Ingresa tu código aquí..."
-            style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #555; background: #333; color: white;">
-        <div style="margin: 10px 0;">
-            <button onclick="redeemCode()">Canjear Código</button>
-            <button onclick="closeCodes()">Cerrar</button>
-        </div>
-        <div style="margin-top: 15px; font-size: 12px; opacity: 0.8;">
-            <h4>Códigos Activos:</h4>
-            <p>• WELCOME2 - Pack de bienvenida beta</p>
-            <p>• BETA2024 - 1K coins + 5 diamantes</p>
-            <p>• FENIX2024 - 500 coins + 3 diamantes</p>
-            <p>• BETATEST2 - 2K coins + 10 diamantes</p>
-            <p>• FEEDBACK - Orbe mítico + 1K coins</p>
-            <p>• GITHUB - 5 diamantes + boost combo</p>
-            <p>• ORBES - 300 coins + orbe raro</p>
-            <p>• SPEED - Velocidad x1.5 por 1 min</p>
-            <p>• COMBO - Combo x2 por 30 seg</p>
-        </div>
-    </div>
-
-    <div id="importExport">
-        <h3>Importar/Exportar Datos</h3>
-        <p>Copia tu código de guardado:</p>
-        <textarea id="saveData" placeholder="Pega aquí tu código de guardado..."></textarea>
-        <div style="margin-top: 10px;">
-            <button onclick="exportSave()">Exportar</button>
-            <button onclick="importSave()">Importar</button>
-            <button onclick="downloadSave()">Descargar</button>
-            <button onclick="togglePanel('importExport')">Cerrar</button>
-        </div>
-    </div>
-
-    <!-- Core Game Engine -->
-    <script src="js/game.js"></script>
+    <!-- ═══════════════════════════════════════════════════════
+         HUD - STATS PANEL (TOP LEFT)
+         ═══════════════════════════════════════════════════════ -->
     
-    <!-- DLC Expansion Pack - Free Content Update -->
+    <div id="stats-panel" class="hud-panel">
+        <div class="stats-primary">
+            <div class="stat-item">
+                <span class="stat-icon">🍳</span>
+                <span class="stat-value" id="bounces">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🔥</span>
+                <span class="stat-value" id="combo">1x</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">👨‍🍳</span>
+                <span class="stat-value">Lv.<span id="level">1</span></span>
+            </div>
+        </div>
+        <div class="stats-secondary">
+            <div class="stat-small">
+                <span>⭐</span>
+                <span id="prestige">0</span>
+            </div>
+            <div class="stat-small">
+                <span>🥘</span>
+                <span id="orbCount">0</span>
+            </div>
+            <div class="stat-small">
+                <span>⏰</span>
+                <span id="afkTimer">0s</span>
+            </div>
+            <div class="stat-small">
+                <span>⚡</span>
+                <span id="streakDisplay">0x</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         HUD - RESOURCES PANEL (TOP RIGHT)
+         ═══════════════════════════════════════════════════════ -->
+    
+    <div id="resources-panel" class="hud-panel">
+        <div class="resource-item">
+            <span class="resource-icon">🥕</span>
+            <span class="resource-value" id="coins">0</span>
+        </div>
+        <div class="resource-item resource-diamond">
+            <span class="resource-icon">🧂</span>
+            <span class="resource-value" id="diamonds">0</span>
+        </div>
+        <div class="resources-extras">
+            <div class="resource-extra">
+                <span>👨‍🍳</span>
+                <span id="experience">0</span>
+            </div>
+            <div class="resource-extra">
+                <span>🔥</span>
+                <span id="ascensionPoints">0</span>
+            </div>
+            <div class="resource-extra">
+                <span>🏆</span>
+                <span id="achievementCount">0</span>
+            </div>
+            <div class="resource-extra">
+                <span>📜</span>
+                <span id="cardCount">0</span>
+            </div>
+            <div class="resource-extra">
+                <span>🎪</span>
+                <span id="eventStatus">Ninguno</span>
+            </div>
+            <div class="resource-extra">
+                <span>🏬</span>
+                <span id="reputation">0</span>
+            </div>
+            <div class="resource-extra">
+                <span>👥</span>
+                <span id="customerCount">0</span>
+            </div>
+        </div>
+        <div class="active-effects" id="activeOrbEffectsDisplay"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         HUD - CONTROLS BAR (BOTTOM CENTER)
+         ═══════════════════════════════════════════════════════ -->
+    
+    <div id="controls-bar" class="hud-panel">
+        <button id="shopBtn" class="control-btn" title="Tienda">🛒</button>
+        <button id="achievementsBtn" class="control-btn" title="Logros">🏆</button>
+        <button id="dailyChallengesBtn" class="control-btn" title="Desafíos">🎯</button>
+        <button id="missionsBtn" class="control-btn" title="Misiones">📋</button>
+        <button id="statsBtn" class="control-btn" title="Estadísticas">📈</button>
+        <button id="configBtn" class="control-btn" title="Configuración">⚙️</button>
+        <button id="pauseBtn" class="control-btn" title="Pausa">⏸️</button>
+        <button id="importExportBtn" class="control-btn" title="Guardar/Cargar">📁</button>
+        <button id="codesBtn" class="control-btn" title="Códigos">🎁</button>
+        <button id="feedbackBtn" class="control-btn" title="Feedback">📝</button>
+        <button id="musicBtn" class="control-btn" title="Música">🎵</button>
+        <button id="prestigeBtn" class="control-btn" title="Prestigio">⭐</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         HUD - TOGGLE BUTTONS
+         ═══════════════════════════════════════════════════════ -->
+    
+    <button id="toggle-controls" class="toggle-btn" title="Mostrar/Ocultar Controles">▲</button>
+    <button id="toggle-ui" class="toggle-btn" title="Mostrar/Ocultar HUD">◀</button>
+
+    <!-- ═══════════════════════════════════════════════════════
+         VERSION TAG
+         ═══════════════════════════════════════════════════════ -->
+    
+    <div id="version-tag">v2.0 🆕 DLC</div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         GAME PANELS (Hidden by default)
+         These remain with their original IDs for game.js compatibility
+         ═══════════════════════════════════════════════════════ -->
+    
+    <!-- UI Container (for backward compatibility) -->
+    <div id="ui-container" style="display: none;"></div>
+    <div id="ui" style="display: none;"></div>
+    <div id="controls" style="display: none;"></div>
+    <div id="currency-display" style="display: none;"></div>
+    <div id="toggleControls" style="display: none;"></div>
+    <div id="toggleUI" style="display: none;"></div>
+    <div id="versionIndicator" style="display: none;"></div>
+
+    <!-- Original game panels will load from game.css -->
+    <div id="config"></div>
+    <div id="shop"></div>
+    <div id="stats"></div>
+    <div id="missions"></div>
+    <div id="achievements"></div>
+    <div id="dailyChallenges"></div>
+    <div id="codes"></div>
+    <div id="feedback"></div>
+    <div id="importExport"></div>
+    <div id="musicPanel"></div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SCRIPTS
+         ═══════════════════════════════════════════════════════ -->
+    
+    <script src="js/game.js"></script>
     <script src="js/dlc.js"></script>
 </body>
-
 </html>

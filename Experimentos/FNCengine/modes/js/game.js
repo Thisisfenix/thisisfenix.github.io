@@ -199,8 +199,13 @@
             document.getElementById('codesBtn').onclick = () => togglePanel('codes');
             document.getElementById('feedbackBtn').onclick = () => togglePanel('feedback');
             document.getElementById('musicBtn').onclick = () => togglePanel('musicPanel');
-            document.getElementById('toggleControls').onclick = toggleControlsVisibility;
-            document.getElementById('toggleUI').onclick = toggleUIVisibility;
+            
+            // Support both old and new toggle button IDs
+            const toggleControlsBtn = document.getElementById('toggle-controls') || document.getElementById('toggleControls');
+            const toggleUIBtn = document.getElementById('toggle-ui') || document.getElementById('toggleUI');
+            
+            if (toggleControlsBtn) toggleControlsBtn.onclick = toggleControlsVisibility;
+            if (toggleUIBtn) toggleUIBtn.onclick = toggleUIVisibility;
 
             // Detectar actividad del usuario para sistema anti-AFK
             document.addEventListener('mousemove', resetAfkTimer);
@@ -1693,39 +1698,37 @@
         let uiVisible = true;
 
         function toggleControlsVisibility() {
-            const controls = document.getElementById('controls');
-            const toggleBtn = document.getElementById('toggleControls');
+            const controls = document.getElementById('controls-bar') || document.getElementById('controls');
+            const toggleBtn = document.getElementById('toggle-controls') || document.getElementById('toggleControls');
 
             controlsVisible = !controlsVisible;
 
-            // Añadir animación de rotación
-            toggleBtn.style.transform = 'rotate(180deg)';
-            setTimeout(() => toggleBtn.style.transform = '', 300);
-
-            if (controlsVisible) {
-                controls.classList.remove('hidden');
-                toggleBtn.textContent = '▲';
-            } else {
-                controls.classList.add('hidden');
-                toggleBtn.textContent = '▼';
+            if (controls && toggleBtn) {
+                if (controlsVisible) {
+                    controls.classList.remove('hidden');
+                    toggleBtn.textContent = '▲';
+                } else {
+                    controls.classList.add('hidden');
+                    toggleBtn.textContent = '▼';
+                }
             }
         }
 
         function toggleUIVisibility() {
-            const ui = document.getElementById('ui');
-            const currencyDisplay = document.getElementById('currency-display');
-            const toggleBtn = document.getElementById('toggleUI');
+            const statsPanel = document.getElementById('stats-panel') || document.getElementById('ui');
+            const resourcesPanel = document.getElementById('resources-panel') || document.getElementById('currency-display');
+            const toggleBtn = document.getElementById('toggle-ui') || document.getElementById('toggleUI');
 
             uiVisible = !uiVisible;
 
             if (uiVisible) {
-                ui.style.display = 'flex';
-                currencyDisplay.style.display = 'block';
-                toggleBtn.textContent = '◀';
+                if (statsPanel) statsPanel.style.display = 'block';
+                if (resourcesPanel) resourcesPanel.style.display = 'block';
+                if (toggleBtn) toggleBtn.textContent = '◀';
             } else {
-                ui.style.display = 'none';
-                currencyDisplay.style.display = 'none';
-                toggleBtn.textContent = '▶';
+                if (statsPanel) statsPanel.style.display = 'none';
+                if (resourcesPanel) resourcesPanel.style.display = 'none';
+                if (toggleBtn) toggleBtn.textContent = '▶';
             }
         }
 
