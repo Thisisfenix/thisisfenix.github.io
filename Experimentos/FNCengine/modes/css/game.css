@@ -116,6 +116,32 @@ canvas {
             z-index: 100;
         }
 
+        /* DLC Panels - Same styling as main panels */
+        #recipeBook,
+        #starChefDisplay,
+        #decorationShop,
+        #blackMarket,
+        #staffPanel,
+        #seasonInfo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(95%, 600px);
+            max-height: 90vh;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(155, 89, 182, 0.5); /* Purple border for DLC */
+            color: white;
+            padding: 25px;
+            border-radius: 25px;
+            display: none;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(155, 89, 182, 0.3);
+            pointer-events: auto;
+            z-index: 100;
+        }
+
         /* Tab System */
         .tab {
             overflow: hidden;
