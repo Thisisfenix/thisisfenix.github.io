@@ -364,6 +364,15 @@
         .hidden {
             display: none !important;
         }
+
+        /* Toggle Buttons Styling */
+        #toggleControls, #toggleUI {
+            transition: transform 0.3s ease, background 0.2s ease;
+        }
+
+        #toggleControls:hover, #toggleUI:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
     </style>
 </head>
 
@@ -1752,14 +1761,61 @@
                 btn.textContent = '+';
             }
         };
+
+        // Toggle Controls Visibility (bottom panel)
+        window.toggleControlsVisibility = function() {
+            const controls = document.getElementById('controls');
+            const toggleBtn = document.getElementById('toggleControls');
+            
+            if (!controls || !toggleBtn) {
+                console.warn('Controls or toggle button not found');
+                return;
+            }
+
+            const isHidden = controls.classList.contains('hidden');
+
+            if (isHidden) {
+                controls.classList.remove('hidden');
+                toggleBtn.textContent = '▲';
+                toggleBtn.style.transform = 'rotate(0deg)';
+            } else {
+                controls.classList.add('hidden');
+                toggleBtn.textContent = '▼';
+                toggleBtn.style.transform = 'rotate(180deg)';
+            }
+        };
+
+        // Toggle UI Visibility (right panel)
+        window.toggleUIVisibility = function() {
+            const ui = document.getElementById('ui');
+            const currencyDisplay = document.getElementById('currency-display');
+            const toggleBtn = document.getElementById('toggleUI');
+
+            if (!ui || !currencyDisplay || !toggleBtn) {
+                console.warn('UI elements not found');
+                return;
+            }
+
+            const isVisible = ui.style.display !== 'none';
+
+            if (isVisible) {
+                ui.style.display = 'none';
+                currencyDisplay.style.display = 'none';
+                toggleBtn.textContent = '▶';
+            } else {
+                ui.style.display = 'flex';
+                currencyDisplay.style.display = 'block';
+                toggleBtn.textContent = '◀';
+            }
+        };
         
         // Initialize when DOM is loaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
-                console.log('✅ HUD helpers initialized');
+                console.log('✅ HUD helpers initialized (3 functions)');
             });
         } else {
-            console.log('✅ HUD helpers initialized');
+            console.log('✅ HUD helpers initialized (3 functions)');
         }
     </script>
 </body>
