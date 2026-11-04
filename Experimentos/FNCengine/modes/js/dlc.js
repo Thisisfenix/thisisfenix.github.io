@@ -809,23 +809,30 @@ function initDLC() {
 }
 
 function addDLCButtons() {
-    const controls = document.getElementById('controls');
-    if (!controls) return;
+    const controls = document.getElementById('controls-bar') || document.getElementById('controls');
+    if (!controls) {
+        console.warn("⚠️ No se encontró el panel de controles para agregar botones DLC");
+        return;
+    }
     
     const buttons = [
-        { text: '📜 Recetas', onclick: 'document.getElementById("recipeBook").style.display="block"; RecipeSystem.updateRecipeList();' },
-        { text: '⭐ Chef Estrella', onclick: 'StarChefMode.start(); document.getElementById("starChefDisplay").style.display="block";' },
-        { text: '🎨 Decoración', onclick: 'document.getElementById("decorationShop").style.display="block"; DecorationSystem.updateUI();' },
-        { text: '🏪 Mercado Negro', onclick: 'alert("Sistema de Mercado Negro disponible próximamente");' }
+        { text: '📜', title: 'Recetas', onclick: 'document.getElementById("recipeBook").style.display="block"; if(window.DLC) window.DLC.RecipeSystem.updateRecipeList();' },
+        { text: '⭐', title: 'Chef Estrella', onclick: 'if(window.DLC) { window.DLC.StarChefMode.start(); document.getElementById("starChefDisplay").style.display="block"; }' },
+        { text: '🎨', title: 'Decoración', onclick: 'document.getElementById("decorationShop").style.display="block"; if(window.DLC) window.DLC.DecorationSystem.updateUI();' },
+        { text: '🏪', title: 'Mercado Negro', onclick: 'alert("🏪 Mercado Negro: Sistema disponible próximamente");' }
     ];
     
     buttons.forEach(btn => {
         const button = document.createElement('button');
         button.innerHTML = btn.text;
+        button.title = btn.title;
         button.setAttribute('onclick', btn.onclick);
+        button.className = 'control-btn'; // Usar la clase del nuevo HUD
         button.style.background = 'linear-gradient(135deg, #9b59b6, #8e44ad)';
         controls.appendChild(button);
     });
+    
+    console.log("✅ Botones DLC agregados al panel de controles");
 }
 
 function showDLCWelcome() {

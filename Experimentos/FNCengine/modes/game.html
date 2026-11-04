@@ -1663,6 +1663,58 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════════
+         DLC PANELS - Expansion Pack Content
+         ═══════════════════════════════════════════════════════ -->
+
+    <!-- Recipe Book Panel -->
+    <div id="recipeBook" style="display: none;">
+        <h3>📜 Libro de Recetas</h3>
+        <p>Descubre nuevas recetas combinando ingredientes</p>
+        <div id="recipeList"></div>
+        <button onclick="document.getElementById('recipeBook').style.display='none'">Cerrar</button>
+    </div>
+
+    <!-- Star Chef Mode Display -->
+    <div id="starChefDisplay" style="display: none;">
+        <h3>⭐ Modo Chef Estrella</h3>
+        <div id="starChefTimer">Tiempo: 0s</div>
+        <div id="starChefScore">Puntuación: 0</div>
+        <button onclick="document.getElementById('starChefDisplay').style.display='none'">Cerrar</button>
+    </div>
+
+    <!-- Decoration Shop Panel -->
+    <div id="decorationShop" style="display: none;">
+        <h3>🎨 Tienda de Decoración</h3>
+        <p>Personaliza tu cocina</p>
+        <div id="decorationList"></div>
+        <button onclick="document.getElementById('decorationShop').style.display='none'">Cerrar</button>
+    </div>
+
+    <!-- Black Market Panel -->
+    <div id="blackMarket" style="display: none;">
+        <h3>🏪 Mercado Negro</h3>
+        <p>Artículos especiales y ofertas únicas</p>
+        <div id="blackMarketItems"></div>
+        <button onclick="document.getElementById('blackMarket').style.display='none'">Cerrar</button>
+    </div>
+
+    <!-- Staff Management Panel -->
+    <div id="staffPanel" style="display: none;">
+        <h3>👨‍🍳 Gestión de Personal</h3>
+        <p>Contrata y gestiona tu equipo</p>
+        <div id="staffList"></div>
+        <button onclick="document.getElementById('staffPanel').style.display='none'">Cerrar</button>
+    </div>
+
+    <!-- Season Info Panel -->
+    <div id="seasonInfo" style="display: none;">
+        <h3>📅 Información de Temporada</h3>
+        <div id="currentSeason"></div>
+        <div id="seasonRewards"></div>
+        <button onclick="document.getElementById('seasonInfo').style.display='none'">Cerrar</button>
+    </div>
+
     <!-- Core Game Engine -->
     <script src="js/game.js"></script>
     
