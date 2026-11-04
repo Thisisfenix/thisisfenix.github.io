@@ -7,213 +7,338 @@
     <title>Chef's Kitchen Frenzy - Cooking Challenge</title>
     <link href="css/game.css" rel="stylesheet" type="text/css">
     <style>
-        /* HUD SIMPLE Y FUNCIONAL V3.0 */
-        
-        /* Stats Display */
+        /* ============================================
+           CHEF'S KITCHEN FRENZY - HUD V4.0 MODERN
+           Design: Sleek Gaming Interface
+           ============================================ */
+
+        /* === GLOBAL HUD STYLES === */
+        :root {
+            --hud-primary: #ff6b35;
+            --hud-secondary: #00d4ff;
+            --hud-bg: rgba(15, 15, 25, 0.95);
+            --hud-border: rgba(255, 107, 53, 0.3);
+            --hud-glow: 0 0 20px rgba(255, 107, 53, 0.4);
+            --hud-text: #ffffff;
+            --hud-text-dim: rgba(255, 255, 255, 0.7);
+        }
+
+        /* === STATS BAR (TOP LEFT) === */
         .hud-simple {
             position: fixed;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.85);
-            border: 2px solid rgba(255, 107, 53, 0.5);
-            border-radius: 12px;
-            padding: 12px;
+            top: 15px;
+            left: 15px;
+            background: linear-gradient(135deg, var(--hud-bg), rgba(25, 25, 40, 0.95));
+            border: 1px solid var(--hud-border);
+            border-radius: 16px;
+            padding: 16px 20px;
             z-index: 100;
-            min-width: 200px;
+            min-width: 240px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--hud-glow), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hud-simple:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
 
         .stat-row {
             display: flex;
-            gap: 15px;
-            margin-bottom: 8px;
+            gap: 18px;
+            margin-bottom: 10px;
+            align-items: center;
         }
 
         .stat {
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--hud-text);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .stat-row-mini {
-            display: flex;
-            gap: 12px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 12px;
+            padding-top: 10px;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 107, 53, 0.3);
         }
 
         .stat-small {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            color: var(--hud-text-dim);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        /* Controls Panel */
+        /* === CONTROLS BAR (BOTTOM) === */
         .controls-simple {
             position: fixed;
-            bottom: 10px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid rgba(255, 107, 53, 0.5);
-            border-radius: 12px;
-            padding: 10px;
+            background: linear-gradient(135deg, var(--hud-bg), rgba(25, 25, 40, 0.95));
+            border: 1px solid var(--hud-border);
+            border-radius: 20px;
+            padding: 12px 16px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
-            max-width: 90vw;
+            max-width: 92vw;
             justify-content: center;
             z-index: 100;
-            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--hud-glow), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .controls-simple.hidden {
-            transform: translateX(-50%) translateY(100px);
-            opacity: 0;
-            pointer-events: none;
+            display: none;
         }
 
         .controls-simple button {
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.8), rgba(255, 69, 0, 0.8));
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
+            position: relative;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.9), rgba(255, 69, 0, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
             color: white;
-            font-size: 20px;
-            width: 50px;
-            height: 50px;
+            font-size: 22px;
+            width: 56px;
+            height: 56px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .controls-simple button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .controls-simple button:hover::before {
+            left: 100%;
         }
 
         .controls-simple button:hover {
             background: linear-gradient(135deg, rgba(255, 140, 0, 1), rgba(255, 69, 0, 1));
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.6);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.7);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
         .controls-simple button:active {
-            transform: translateY(-1px);
+            transform: translateY(-2px) scale(1.02);
         }
 
-        /* Resources Panel */
+        /* === RESOURCES PANEL (TOP RIGHT) === */
         .resources-simple {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.85);
-            border: 2px solid rgba(0, 191, 255, 0.5);
-            border-radius: 12px;
-            padding: 12px;
-            min-width: 180px;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--hud-bg), rgba(25, 25, 40, 0.95));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 16px;
+            padding: 16px 20px;
+            min-width: 200px;
             z-index: 100;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .resources-simple:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
 
         .resource {
-            font-size: 15px;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--hud-text);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
         }
 
         .resource.diamond {
-            color: #00bfff;
+            color: #00d4ff;
+            text-shadow: 0 2px 8px rgba(0, 212, 255, 0.6);
         }
 
         .resource-small {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--hud-text-dim);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .active-effects {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 11px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 212, 255, 0.3);
+            font-size: 12px;
+            font-weight: 600;
             color: #00ffff;
-            min-height: 15px;
+            min-height: 18px;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
         }
 
-        /* Toggle Buttons */
+        /* === TOGGLE BUTTONS === */
         .toggle-btn {
             position: fixed;
-            bottom: 80px;
+            bottom: 90px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid rgba(255, 107, 53, 0.5);
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.95), rgba(255, 69, 0, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
             color: white;
-            font-size: 18px;
-            width: 40px;
-            height: 40px;
+            font-size: 20px;
+            width: 44px;
+            height: 44px;
             cursor: pointer;
             z-index: 101;
-            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .toggle-btn:hover {
-            background: rgba(255, 107, 53, 0.8);
-            transform: translateX(-50%) translateY(-2px);
+            background: linear-gradient(135deg, rgba(255, 140, 0, 1), rgba(255, 69, 0, 1));
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 6px 18px rgba(255, 107, 53, 0.7);
+        }
+
+        .toggle-btn:active {
+            transform: translateX(-50%) translateY(-1px);
         }
 
         .ui-toggle-btn {
             position: fixed;
-            top: 10px;
-            right: 210px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid rgba(0, 191, 255, 0.5);
-            border-radius: 8px;
+            top: 20px;
+            right: 230px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.95), rgba(0, 150, 200, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
             color: white;
-            font-size: 18px;
-            width: 40px;
-            height: 40px;
+            font-size: 20px;
+            width: 44px;
+            height: 44px;
             cursor: pointer;
             z-index: 101;
-            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .ui-toggle-btn:hover {
-            background: rgba(0, 191, 255, 0.8);
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(0, 255, 255, 1), rgba(0, 150, 200, 1));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 212, 255, 0.7);
         }
 
-        /* Version Tag */
+        .ui-toggle-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* === VERSION TAG === */
         .version-tag {
             position: fixed;
-            bottom: 5px;
-            left: 5px;
-            background: rgba(0, 0, 0, 0.7);
+            bottom: 8px;
+            left: 8px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.9), rgba(255, 69, 0, 0.9));
             color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 10px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
             z-index: 1000;
             pointer-events: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
-        /* Hide class */
+        /* === UTILITY CLASSES === */
         .hidden {
             display: none !important;
         }
 
-        /* Responsive */
+        /* === RESPONSIVE DESIGN === */
         @media (max-width: 768px) {
             .hud-simple, .resources-simple {
-                font-size: 12px;
-                padding: 8px;
-                min-width: 150px;
+                font-size: 11px;
+                padding: 10px 14px;
+                min-width: 180px;
             }
 
             .stat {
-                font-size: 14px;
+                font-size: 15px;
+            }
+
+            .stat-small, .resource-small {
+                font-size: 12px;
+            }
+
+            .controls-simple {
+                padding: 10px 12px;
+                gap: 8px;
             }
 
             .controls-simple button {
-                width: 45px;
-                height: 45px;
+                width: 52px;
+                height: 52px;
+                font-size: 20px;
+            }
+
+            .toggle-btn, .ui-toggle-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .ui-toggle-btn {
+                right: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hud-simple, .resources-simple {
+                padding: 8px 12px;
+                min-width: 160px;
+            }
+
+            .stat-row {
+                gap: 12px;
+            }
+
+            .controls-simple button {
+                width: 48px;
+                height: 48px;
                 font-size: 18px;
             }
         }
