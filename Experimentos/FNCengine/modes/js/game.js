@@ -274,6 +274,52 @@
             }
         }
 
+        // Sistema AFK
+        function updateAfkSystem() {
+            const now = Date.now();
+            const timeSinceActivity = now - lastActivity;
+            
+            if (timeSinceActivity > 30000) {
+                afkTime = Math.floor(timeSinceActivity / 1000);
+                
+                if (afkTime > 0 && afkTime % 60 === 0) {
+                    const afkMinutes = Math.floor(afkTime / 60);
+                    afkRewards.coins += Math.floor(level * 10 * afkMinutes);
+                    afkRewards.experience += Math.floor(level * 5 * afkMinutes);
+                    
+                    if (afkMinutes % 5 === 0) {
+                        afkRewards.diamonds += Math.floor(afkMinutes / 5);
+                    }
+                }
+            } else {
+                afkTime = 0;
+            }
+        }
+
+        function claimAfkRewards() {
+            if (afkRewards.coins > 0 || afkRewards.diamonds > 0 || afkRewards.experience > 0) {
+                coins += afkRewards.coins;
+                diamonds += afkRewards.diamonds;
+                experience += afkRewards.experience;
+                
+                gameData.coins = coins;
+                gameData.diamonds = diamonds;
+                gameData.experience = experience;
+                
+                showNotification(`💤 Recompensas AFK: +${afkRewards.coins} coins, +${afkRewards.diamonds} diamantes, +${afkRewards.experience} exp`);
+                
+                afkRewards = { coins: 0, diamonds: 0, experience: 0 };
+                updateUI();
+            } else {
+                showNotification('💤 No hay recompensas AFK disponibles');
+            }
+        }
+
+        function resetAfkTimer() {
+            lastActivity = Date.now();
+            afkTime = 0;
+        }
+
         function update() {
             try {
                 // Resource management - limit objects
@@ -1784,25 +1830,6 @@
             }
         }
 
-        function resetMusicEffects() {
-            if (canvas) {
-                canvas.style.transform = 'scale(1)';
-                canvas.style.filter = '';
-            }
-
-            const ui = document.getElementById('ui');
-            const currency = document.getElementById('currency-display');
-            const controls = document.getElementById('controls');
-
-            [ui, currency, controls].forEach(el => {
-                if (el) {
-                    el.style.background = '';
-                    el.style.borderColor = '';
-                    el.style.boxShadow = '';
-                }
-            });
-        }
-
         function setupMusicEventListeners() {
             setTimeout(() => {
                 const sensitivitySlider = document.getElementById('musicSensitivity');
@@ -1923,209 +1950,8 @@
             musicBeatMultiplier = 1.0;
         }
 
-        function applyMusicTheme() {
-            const themes = {
-                disco: { hueShift: 0, saturation: 1.5, brightness: 1.2 },
-                rock: { hueShift: 30, saturation: 1.8, brightness: 0.9 },
-                electronic: { hueShift: 180, saturation: 2.0, brightness: 1.4 },
-                chill: { hueShift: 240, saturation: 0.8, brightness: 0.7 }
-            };
 
-            const theme = themes[musicTheme] || themes.disco;
-            document.documentElement.style.setProperty('--music-hue-shift', theme.hueShift);
-            document.documentElement.style.setProperty('--music-saturation', theme.saturation);
-            document.documentElement.style.setProperty('--music-brightness', theme.brightness);
-        }
-
-        function initAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-                analyser.fftSize = 512; // Mayor resolución
-                analyser.smoothingTimeConstant = 0.8;
-                frequencyData = new Uint8Array(analyser.frequencyBinCount);
-                initMusicVisualizer();
-            }
-        }
-
-        function initMusicVisualizer() {
-            const visualizer = document.getElementById('musicVisualizer');
-            visualizer.innerHTML = '';
-            visualizerBars = [];
-
-            for (let i = 0; i < 32; i++) {
-                const bar = document.createElement('div');
-                bar.style.cssText = `
-                    width: 3px;
-                    background: linear-gradient(to top, #FF6B35, #4CAF50, #FFD700);
-                    border-radius: 1px;
-                    height: 2px;
-                    transition: height 0.1s ease;
-                `;
-                visualizer.appendChild(bar);
-                visualizerBars.push(bar);
-            }
-        }
-
-        function toggleMusic() {
-            const fileInput = document.getElementById('musicFile');
-            const playBtn = document.getElementById('playPauseBtn');
-
-            if (!fileInput.files[0]) {
-                showNotification('⚠️ Selecciona un archivo de música primero');
-                return;
-            }
-
-            if (audioSource && !audioSource.paused) {
-                audioSource.pause();
-                playBtn.textContent = '▶️ Play';
-            } else {
-                playMusic(fileInput.files[0]);
-                playBtn.textContent = '⏸️ Pause';
-            }
-        }
-
-        function playMusic(file) {
-            loadMusicFile(file);
-            
-            if (!audioContext) {
-                try {
-                    initAudioContext();
-                } catch (error) {
-                    console.warn('Error inicializando AudioContext:', error);
-                    showNotification('⚠️ Audio no disponible - Activando MODO FIESTA 🎉');
-                    activatePartyMode();
-                    return;
-                }
-            }
-            
-            audioSource.addEventListener('canplay', () => {
-                try {
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                    
-                    const source = audioContext.createMediaElementSource(audioSource);
-                    source.connect(analyser);
-                    analyser.connect(audioContext.destination);
-                    audioSource.play();
-                } catch (error) {
-                    console.warn('Error conectando audio:', error);
-                    // Reproducir sin análisis si falla la conexión
-                    audioSource.play().catch(() => {
-                        showNotification('❌ Error reproduciendo - Activando MODO FIESTA 🎉');
-                        activatePartyMode();
-                    });
-                }
-            }, { once: true });
-        }
-
-        function updateMusicProgress() {
-            if (!audioSource || !audioSource.duration || isNaN(audioSource.duration)) return;
-            
-            const current = audioSource.currentTime || 0;
-            const duration = audioSource.duration || 0;
-            const progress = duration > 0 ? (current / duration) * 100 : 0;
-            
-            const progressBar = document.getElementById('musicProgressBar');
-            if (progressBar) progressBar.style.width = progress + '%';
-            
-            const currentMin = Math.floor(current / 60);
-            const currentSec = Math.floor(current % 60);
-            const totalMin = Math.floor(duration / 60);
-            const totalSec = Math.floor(duration % 60);
-            
-            const timeEl = document.getElementById('musicTime');
-            if (timeEl && duration > 0) {
-                timeEl.textContent = `${currentMin}:${currentSec.toString().padStart(2, '0')} / ${totalMin}:${totalSec.toString().padStart(2, '0')}`;
-            }
-        }
-
-        function stopMusic() {
-            if (audioSource) {
-                audioSource.pause();
-                audioSource.currentTime = 0;
-                document.getElementById('playPauseBtn').textContent = '▶️';
-                URL.revokeObjectURL(audioSource.src);
-            }
-            resetMusicEffects();
-        }
-
-        function updateMusicEffects() {
-            if (!musicMode || !analyser || !audioSource || audioSource.paused) {
-                resetMusicEffects();
-                return;
-            }
-
-            analyser.getByteFrequencyData(frequencyData);
-
-            // Análisis avanzado de frecuencias
-            const bass = frequencyData.slice(0, 32).reduce((sum, v) => sum + v, 0) / 32 / 255;
-            const mid = frequencyData.slice(32, 128).reduce((sum, v) => sum + v, 0) / 96 / 255;
-            const high = frequencyData.slice(128, 256).reduce((sum, v) => sum + v, 0) / 128 / 255;
-            const average = (bass + mid + high) / 3;
-            const intensity = average * musicSensitivity;
-
-            // Actualizar visualizador
-            updateVisualizer();
-
-            // Detectar BPM y beats
-            detectBeatAndBPM(intensity);
-
-            // Efectos de zoom y rotación épicos
-            const isBeat = intensity > 0.6;
-            if (isBeat) {
-                // Zoom explosivo
-                const zoomIntensity = 1 + (intensity * 0.15);
-                canvas.style.transform = `scale(${zoomIntensity}) rotate(${intensity * 2}deg)`;
-                canvas.style.transition = 'transform 0.08s ease-out';
-
-                // Efecto estroboscópico
-                if (musicTheme === 'electronic' && intensity > 0.8) {
-                    document.body.style.filter = `brightness(${1 + intensity}) contrast(${1 + intensity * 0.5})`;
-                    setTimeout(() => document.body.style.filter = '', 50);
-                }
-
-                // Reset suave
-                setTimeout(() => {
-                    canvas.style.transform = 'scale(1) rotate(0deg)';
-                    canvas.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                }, 120);
-
-                // Multiplicador de beat
-                musicBeatMultiplier = 1 + (intensity * 0.5);
-                musicComboStreak++;
-            } else {
-                musicBeatMultiplier = Math.max(1, musicBeatMultiplier * 0.98);
-                if (intensity < 0.2) musicComboStreak = Math.max(0, musicComboStreak - 1);
-            }
-
-            // HUD reactiva con temas
-            updateMusicHUD(bass, mid, high, intensity);
-
-            // Pelota con estela musical
-            updateMusicBall(bass, mid, high, intensity);
-
-            // Partículas explosivas
-            if (isBeat) {
-                createMusicParticles(intensity, bass, mid, high);
-            }
-
-            // Ondas de fondo
-            updateBackgroundWaves(intensity);
-
-            // Orbes musicales especiales
-            if (Math.random() < intensity * 0.02) {
-                spawnMusicOrb(intensity);
-            }
-
-            // Velocidad adaptativa
-            gameSpeed = 1 + (intensity * 0.4 * musicSensitivity);
-
-            // Actualizar displays
-            document.getElementById('musicIntensity').textContent = Math.round(intensity * 100);
-            document.getElementById('musicBeatMultiplier').textContent = 'x' + musicBeatMultiplier.toFixed(1);
-        }
+        // updateMusicEffects implementada más adelante (MODO MÚSICA LOCURA - versión completa)
 
         function updateVisualizer() {
             visualizerBars.forEach((bar, i) => {
@@ -2308,42 +2134,6 @@
                 pulsePhase: 0,
                 musical: true
             });
-        }
-
-        function resetMusicEffects() {
-            // Resetear estilos de HUD
-            const ui = document.getElementById('ui');
-            const currencyDisplay = document.getElementById('currency-display');
-            const controls = document.getElementById('controls');
-
-            if (ui) {
-                ui.style.background = '';
-                ui.style.borderColor = '';
-                ui.style.boxShadow = '';
-            }
-
-            if (currencyDisplay) {
-                currencyDisplay.style.background = '';
-                currencyDisplay.style.borderColor = '';
-                currencyDisplay.style.boxShadow = '';
-            }
-
-            if (controls) {
-                controls.style.background = '';
-                controls.style.borderColor = '';
-                controls.style.boxShadow = '';
-            }
-
-            // Resetear canvas
-            if (canvas) {
-                canvas.style.transform = 'scale(1)';
-                canvas.style.transition = '';
-            }
-
-            // Resetear pelota
-            ball.radius = 20 + gameData.upgrades.size.level * 2;
-            ball.color = '#ff6b35';
-            gameSpeed = 1;
         }
 
         // Sistema Premium Integrado
@@ -2848,42 +2638,6 @@
 
         function checkGitHubPages() {
             // Sistema antipiracy eliminado
-        }
-
-        function updateAfkSystem() {
-            const now = Date.now();
-            const timeSinceActivity = Math.floor((now - lastActivity) / 1000);
-
-            if (timeSinceActivity > 30) {
-                afkTime = timeSinceActivity - 30;
-
-                if (afkTime > 0 && afkTime % 10 === 0) {
-                    const afkMultiplier = Math.min(afkTime / 3600, 2);
-                    afkRewards.coins += Math.floor(level * afkMultiplier * 0.1);
-                    afkRewards.diamonds += Math.floor(afkMultiplier * 0.01);
-                    afkRewards.experience += Math.floor(level * afkMultiplier * 0.05);
-                }
-
-                idleBonus = 1 + (afkTime / 7200);
-            } else {
-                afkTime = 0;
-                idleBonus = 1;
-            }
-        }
-
-        function claimAfkRewards() {
-            if (afkRewards.coins > 0 || afkRewards.diamonds > 0 || afkRewards.experience > 0) {
-                coins += Math.floor(afkRewards.coins);
-                diamonds += Math.floor(afkRewards.diamonds);
-                experience += Math.floor(afkRewards.experience);
-
-                showNotification(`💤 Recompensas AFK: +${Math.floor(afkRewards.coins)} coins, +${Math.floor(afkRewards.diamonds)} diamantes, +${Math.floor(afkRewards.experience)} exp`);
-
-                afkRewards = { coins: 0, diamonds: 0, experience: 0 };
-                updateUI();
-            } else {
-                // Sin notificación para AFK vacío
-            }
         }
 
         function updateDailyChallenges() {
@@ -3425,35 +3179,6 @@
                 showNotification('¡Acelerador temporal activado! Juego 2x más rápido');
             }
         }
-
-        function checkAchievements() {
-            if (!gameData.achievements) gameData.achievements = [];
-
-            achievements.forEach(achievement => {
-                if (!achievement.unlocked) {
-                    let progress = 0;
-                    switch (achievement.type) {
-                        case 'bounces': progress = bounces; break;
-                        case 'coins': progress = coins; break;
-                        case 'diamonds': progress = diamonds; break;
-                        case 'prestige': progress = gameData.prestige; break;
-                        case 'level': progress = level; break;
-                        case 'combo': progress = Math.floor(combo); break;
-                        case 'speed': progress = Math.abs(ball.dx) + Math.abs(ball.dy); break;
-                        case 'size': progress = ball.radius; break;
-                        case 'ascension': progress = gameData.ascension; break;
-                    }
-                    if (progress >= achievement.target) {
-                        achievement.unlocked = true;
-                        gameData.achievements.push(achievement.id);
-                        coins += achievement.reward;
-                        gameData.coins = coins;
-                        // updateAchievementsDisplay(); // Fixed: function will be added
-                    }
-                }
-            });
-        }
-
         function generateAdvancedMissions() {
             const missionTypes = [
                 { type: 'marathon', name: 'Maratón de {target} rebotes', reward: 'coins', base: 5000, scale: 2.0, difficulty: 'hard' },
@@ -3720,9 +3445,6 @@
             return { coinMultiplier, expMultiplier, speedMultiplier };
         }
 
-        // Funciones faltantes
-        function checkAchievements() { }
-        
         // updateOrbs implementada más adelante con mejor lógica
 
         function spawnRandomOrb() {
@@ -3791,20 +3513,7 @@
             updateUI();
         }
 
-        function updateOrbEffects() {
-            activeOrbEffects.forEach((effect, index) => {
-                effect.timeLeft -= 16;
-                if (effect.timeLeft <= 0) {
-                    if (effect.type === 'speed') {
-                        ball.dx /= effect.power;
-                        ball.dy /= effect.power;
-                    } else if (effect.type === 'time') {
-                        gameSpeed = 1;
-                    }
-                    activeOrbEffects.splice(index, 1);
-                }
-            });
-        }
+        // updateOrbEffects implementada más adelante (versión completa)
 
         function checkDateEvents() {
             const now = new Date();
@@ -3946,21 +3655,6 @@
                     });
                 }
             }, 100);
-        }
-
-        function loadMusicFile(file) {
-            if (audioSource) {
-                audioSource.pause();
-                URL.revokeObjectURL(audioSource.src);
-            }
-
-            const url = URL.createObjectURL(file);
-            audioSource = new Audio(url);
-            audioSource.loop = true;
-
-            audioSource.addEventListener('loadedmetadata', () => {
-                showNotification(`🎵 Cargado: ${file.name}`);
-            });
         }
 
         function toggleMusic() {
@@ -4340,143 +4034,6 @@
             });
         }
         
-        // Función para cargar música con procesamiento y modo fiesta
-        function loadMusicFile(file) {
-            if (audioSource) {
-                audioSource.pause();
-                if (audioSource.src && audioSource.src.startsWith('blob:')) {
-                    URL.revokeObjectURL(audioSource.src);
-                }
-            }
-            
-            showNotification('🎵 Procesando canción...');
-            
-            try {
-                const url = URL.createObjectURL(file);
-                audioSource = new Audio();
-                audioSource.crossOrigin = 'anonymous';
-                audioSource.loop = true;
-                audioSource.src = url;
-                
-                audioSource.addEventListener('loadedmetadata', () => {
-                    const duration = audioSource.duration;
-                    const fileName = file.name.replace(/\.[^/.]+$/, "");
-                    
-                    if (duration && !isNaN(duration)) {
-                        const minutes = Math.floor(duration / 60);
-                        const seconds = Math.floor(duration % 60);
-                        showNotification(`✅ ${fileName} - ${minutes}:${seconds.toString().padStart(2, '0')} procesada`);
-                        updateMusicProgress();
-                    } else {
-                        showNotification(`⚠️ No se pudo procesar ${fileName} - Activando MODO FIESTA 🎉`);
-                        activatePartyMode();
-                    }
-                });
-                
-                audioSource.addEventListener('error', (e) => {
-                    console.warn('Error de audio:', e);
-                    showNotification(`❌ Error procesando ${file.name} - Activando MODO FIESTA 🎉`);
-                    activatePartyMode();
-                });
-                
-                audioSource.addEventListener('play', () => {
-                    startMusicProgress();
-                });
-                
-                audioSource.addEventListener('pause', () => {
-                    if (window.musicProgressInterval) {
-                        clearInterval(window.musicProgressInterval);
-                        window.musicProgressInterval = null;
-                    }
-                });
-                
-                // Precargar metadatos
-                audioSource.load();
-                
-            } catch (error) {
-                console.warn('Error creando blob URL:', error);
-                showNotification(`❌ Error de seguridad - Activando MODO FIESTA 🎉`);
-                activatePartyMode();
-            }
-        }
-        
-        function activatePartyMode() {
-            musicMode = true;
-            document.getElementById('musicMode').checked = true;
-            
-            window.partyModeInterval = setInterval(() => {
-                if (!musicMode) {
-                    clearInterval(window.partyModeInterval);
-                    return;
-                }
-                
-                const fakeIntensity = 0.7 + Math.random() * 0.3;
-                const fakeBPM = 120 + Math.random() * 60;
-                
-                const partyZoom = 1 + fakeIntensity * 0.4;
-                const partyRotation = fakeIntensity * 20;
-                canvas.style.transform = `scale(${partyZoom}) rotate(${partyRotation}deg)`;
-                canvas.style.filter = `hue-rotate(${fakeIntensity * 360}deg) saturate(${1.5 + fakeIntensity})`;
-                
-                document.body.style.background = `linear-gradient(${fakeIntensity * 180}deg, hsl(${fakeIntensity * 360}, 90%, ${40 + fakeIntensity * 30}%), hsl(${(fakeIntensity * 360 + 120) % 360}, 90%, ${30 + fakeIntensity * 20}%))`;
-                
-                ['ui', 'currency-display', 'controls'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        el.style.boxShadow = `0 0 ${15 + fakeIntensity * 25}px hsl(${fakeIntensity * 360}, 100%, 60%)`;
-                        el.style.borderColor = `hsl(${fakeIntensity * 360}, 100%, 70%)`;
-                    }
-                });
-                
-                ball.color = `hsl(${fakeIntensity * 360}, 100%, ${50 + fakeIntensity * 30}%)`;
-                ball.radius = (20 + gameData.upgrades.size.level * 2) * (1 + fakeIntensity * 0.3);
-                
-                for (let i = 0; i < 5; i++) {
-                    particles.push({
-                        x: ball.x + (Math.random() - 0.5) * 80,
-                        y: ball.y + (Math.random() - 0.5) * 80,
-                        dx: (Math.random() - 0.5) * 30,
-                        dy: (Math.random() - 0.5) * 30,
-                        life: 800,
-                        maxLife: 800,
-                        alpha: 1,
-                        color: `hsl(${Math.random() * 360}, 100%, ${60 + Math.random() * 40}%)`,
-                        size: 4 + Math.random() * 6,
-                        musical: true,
-                        party: true
-                    });
-                }
-                
-                musicBeatMultiplier = 1 + (fakeIntensity * 1.2);
-                const intensityEl = document.getElementById('musicIntensity');
-                const beatMultEl = document.getElementById('musicBeatMultiplier');
-                const bpmEl = document.getElementById('musicBPM');
-                const timeEl = document.getElementById('musicTime');
-                
-                if (intensityEl) intensityEl.textContent = Math.round(fakeIntensity * 100);
-                if (beatMultEl) beatMultEl.textContent = 'x' + musicBeatMultiplier.toFixed(1);
-                if (bpmEl) bpmEl.textContent = Math.round(fakeBPM) + ' BPM (FIESTA)';
-                if (timeEl) timeEl.textContent = '🎉 MODO FIESTA 🎉';
-                
-                setTimeout(() => {
-                    canvas.style.transform = 'scale(1) rotate(0deg)';
-                    canvas.style.filter = '';
-                    document.body.style.background = '';
-                    
-                    ['ui', 'currency-display', 'controls'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) {
-                            el.style.boxShadow = '';
-                            el.style.borderColor = '';
-                        }
-                    });
-                }, 200);
-                
-            }, 300 + Math.random() * 200);
-            
-            showNotification('🎉 MODO FIESTA ACTIVADO - Efectos sin audio!');
-        }
-        
         // ORBS SYSTEM FIXES
         function updateOrbs() {
             for (let i = orbs.length - 1; i >= 0; i--) {
@@ -4740,121 +4297,6 @@
 
         function renderMissions() {
             updateMissions();
-        }
-
-        function updateDailyChallenges() {
-            if (!currentDailyChallenge) return;
-            
-            switch (currentDailyChallenge.id) {
-                case 'bounces':
-                    currentDailyChallenge.progress = bounces;
-                    break;
-                case 'coins':
-                    currentDailyChallenge.progress = coins;
-                    break;
-                case 'diamonds':
-                    currentDailyChallenge.progress = diamonds;
-                    break;
-                case 'combo':
-                    currentDailyChallenge.progress = Math.max(currentDailyChallenge.progress || 0, combo);
-                    break;
-                case 'levels':
-                    currentDailyChallenge.progress = level;
-                    break;
-                case 'speed':
-                    const currentSpeed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
-                    currentDailyChallenge.progress = Math.max(currentDailyChallenge.progress || 0, currentSpeed);
-                    break;
-                case 'orbs':
-                    currentDailyChallenge.progress = betaStats.orbsCollected;
-                    break;
-                case 'prestige':
-                    currentDailyChallenge.progress = gameData.prestige;
-                    break;
-                case 'experience':
-                    currentDailyChallenge.progress = experience;
-                    break;
-            }
-            
-            if (currentDailyChallenge.progress >= currentDailyChallenge.target && !currentDailyChallenge.completed) {
-                currentDailyChallenge.completed = true;
-                showNotification(`🎯 Desafío completado: ${currentDailyChallenge.name}!`);
-            }
-        }
-
-        function updateDailyChallengesDisplay() {
-            const container = document.getElementById('dailyChallengesContainer');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            dailyChallenges.forEach(challenge => {
-                const div = document.createElement('div');
-                div.className = 'upgrade';
-                if (challenge.completed) div.classList.add('legendary-upgrade');
-                
-                div.innerHTML = `
-                    <h4>${challenge.name}</h4>
-                    <p>${challenge.desc}</p>
-                    <p>Progreso: ${challenge.progress || 0}/${challenge.target}</p>
-                    <p>Recompensa: ${challenge.reward} ${challenge.type === 'diamonds' ? 'diamantes' : 'coins'}</p>
-                    <div>${challenge.completed ? '✅ Completado' : '⏳ En progreso'}</div>
-                `;
-                
-                container.appendChild(div);
-            });
-        }
-
-        function selectRandomDailyChallenge() {
-            const availableChallenges = dailyChallenges.filter(c => !c.completed);
-            if (availableChallenges.length === 0) {
-                showNotification('🎯 Todos los desafíos completados!');
-                return;
-            }
-            
-            currentDailyChallenge = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
-            showNotification(`🎯 Nuevo desafío: ${currentDailyChallenge.name}`);
-            updateDailyChallengesDisplay();
-        }
-
-        function claimAfkRewards() {
-            if (afkRewards.coins > 0 || afkRewards.diamonds > 0 || afkRewards.experience > 0) {
-                coins += afkRewards.coins;
-                diamonds += afkRewards.diamonds;
-                experience += afkRewards.experience;
-                
-                gameData.coins = coins;
-                gameData.diamonds = diamonds;
-                gameData.experience = experience;
-                
-                showNotification(`💤 Recompensas AFK: +${afkRewards.coins} coins, +${afkRewards.diamonds} diamantes, +${afkRewards.experience} exp`);
-                
-                afkRewards = { coins: 0, diamonds: 0, experience: 0 };
-                updateUI();
-            } else {
-                showNotification('💤 No hay recompensas AFK disponibles');
-            }
-        }
-
-        function updateAfkSystem() {
-            const now = Date.now();
-            const timeSinceActivity = now - lastActivity;
-            
-            if (timeSinceActivity > 30000) {
-                afkTime = Math.floor(timeSinceActivity / 1000);
-                
-                if (afkTime > 0 && afkTime % 60 === 0) {
-                    const afkMinutes = Math.floor(afkTime / 60);
-                    afkRewards.coins += Math.floor(level * 10 * afkMinutes);
-                    afkRewards.experience += Math.floor(level * 5 * afkMinutes);
-                    
-                    if (afkMinutes % 5 === 0) {
-                        afkRewards.diamonds += Math.floor(afkMinutes / 5);
-                    }
-                }
-            } else {
-                afkTime = 0;
-            }
         }
 
         function resetAfkTimer() {
