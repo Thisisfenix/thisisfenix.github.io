@@ -1721,13 +1721,24 @@
             <button onclick="togglePanel('importExport')">Cerrar</button>
         </div>
     </div>
+    
+    <!-- Core Game Engine -->
+    <script src="js/game.js"></script>
+    
+    <!-- DLC Expansion Pack - Free Content Update -->
+    <script src="js/dlc.js"></script>
 
-    <!-- HUD Helper Functions -->
+    <!-- HUD Helper Functions - Must load after DOM -->
     <script>
         // Toggle Currency Panel
-        function toggleCurrencyPanel() {
+        window.toggleCurrencyPanel = function() {
             const content = document.querySelector('#currency-display .currency-content');
             const btn = document.querySelector('#currency-display .minimize-btn');
+            if (!content || !btn) {
+                console.warn('Currency panel elements not found');
+                return;
+            }
+            
             if (content.style.display === 'none') {
                 content.style.display = 'flex';
                 btn.textContent = '−';
@@ -1735,14 +1746,17 @@
                 content.style.display = 'none';
                 btn.textContent = '+';
             }
+        };
+        
+        // Initialize when DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('✅ HUD helpers initialized');
+            });
+        } else {
+            console.log('✅ HUD helpers initialized');
         }
     </script>
-
-    <!-- Core Game Engine -->
-    <script src="js/game.js"></script>
-    
-    <!-- DLC Expansion Pack - Free Content Update -->
-    <script src="js/dlc.js"></script>
 </body>
 
 </html>
