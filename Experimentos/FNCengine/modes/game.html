@@ -287,8 +287,9 @@
         
         .toggle-btn {
             position: fixed;
-            bottom: 110px;
-            left: 20px; /* Movido a la izquierda, fuera del centro */
+            bottom: 116px; /* Justo encima del panel */
+            left: 50%;
+            transform: translateX(-50%);
             background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
             border: none;
             border-radius: 50%;
@@ -302,17 +303,17 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(10px);
-            transition: all 0.2s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Misma animación que el panel */
             box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
         .toggle-btn:hover {
-            transform: translateY(-5px) scale(1.12);
+            transform: translateX(-50%) translateY(-5px) scale(1.12);
             box-shadow: 0 8px 28px rgba(255, 107, 53, 0.7);
         }
 
         .toggle-btn:active {
-            transform: translateY(-2px) scale(1.05);
+            transform: translateX(-50%) translateY(-2px) scale(1.05);
         }
 
         .ui-toggle-btn {

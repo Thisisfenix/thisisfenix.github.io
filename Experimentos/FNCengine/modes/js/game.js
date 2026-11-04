@@ -1724,9 +1724,11 @@
                 if (controlsVisible) {
                     controls.classList.remove('hidden');
                     toggleBtn.textContent = '▲';
+                    toggleBtn.style.transform = 'translateX(-50%)';
                 } else {
                     controls.classList.add('hidden');
                     toggleBtn.textContent = '▼';
+                    toggleBtn.style.transform = 'translateX(-50%) translateY(150px)';
                 }
             }
         }
