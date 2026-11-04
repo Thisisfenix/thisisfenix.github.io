@@ -3317,37 +3317,6 @@
         // Nota: Funciones implementadas más adelante en el código
         // updateAfkSystem, updateDailyChallenges, updateOrbs tienen implementaciones completas
 
-        function saveToSlot() {
-            const slot = document.getElementById('saveSlot').value;
-            const saveData = {
-                coins, diamonds, experience, bounces, level,
-                prestige: gameData.prestige, prestigePoints: gameData.prestigePoints,
-                achievements: gameData.achievements, upgrades: gameData.upgrades,
-                timestamp: Date.now()
-            };
-            localStorage.setItem(`circleBounceUltimate_slot${slot}`, JSON.stringify(saveData));
-            showNotification(`Guardado en Slot ${slot}`);
-        }
-
-        function loadFromSlot() {
-            const slot = document.getElementById('saveSlot').value;
-            const saved = localStorage.getItem(`circleBounceUltimate_slot${slot}`);
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    coins = data.coins || 0;
-                    diamonds = data.diamonds || 0;
-                    experience = data.experience || 0;
-                    bounces = data.bounces || 0;
-                    level = data.level || 1;
-                    gameData = { ...gameData, ...data };
-                    updateUI();
-                    showNotification(`Cargado desde Slot ${slot}`);
-                } catch (error) {
-                    showNotification('Error al cargar slot');
-                }
-            }
-        }
 
         // Inicializar generadores automáticos
         setInterval(generateResources, 1000);
