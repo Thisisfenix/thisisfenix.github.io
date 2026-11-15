@@ -237,6 +237,22 @@
       text-decoration: none;
     }
 
+    .dl-btn.secondary {
+      background: var(--box-2);
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .dl-btn.secondary:hover {
+      background: #282836;
+      border-color: #3a3a4d;
+    }
+
+    .dl-btn.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
     .small-note {
       margin-top: 0.65rem;
       font-size: 0.85rem;
@@ -451,6 +467,16 @@
             Ir al APK
           </a>
         </div>
+
+        <div class="dl-row">
+          <div class="dl-info">
+            <strong>Legacy (Updater viejo)</strong>
+            <span id="meta-legacy">_latest.zip · Para versiones viejas sin el updater nuevo</span>
+          </div>
+          <a id="download-legacy" class="dl-btn secondary" href="https://github.com/Thisisfenix/thisisfenix.github.io/releases">
+            Buscando...
+          </a>
+        </div>
       </div>
 
       <p class="small-note">
@@ -549,12 +575,89 @@
       const repo = 'Thisisfenix/thisisfenix.github.io';
       const verEl = document.getElementById('release-version');
 
+      const bind = (btnId, metaId, asset, label, extra) => {
+        if (!asset) return;
+        const btn = document.getElementById(btnId);
+        const meta = document.getElementById(metaId);
+        if (btn) {
+          btn.href = asset.browser_download_url;
+          btn.classList.remove('disabled');
+          if (label) btn.textContent = label;
+        }
+        if (meta) {
+          const mb = typeof asset.size === 'number'
+            ? `${(asset.size / (1024 * 1024)).toFixed(1)} MB`
+            : '';
+          meta.textContent = [asset.name, mb, extra].filter(Boolean).join(' · ');
+        }
+      };
+
+      const setLegacyUnavailable = (reason, fallbackUrl) => {
+        const btn = document.getElementById('download-legacy');
+        const meta = document.getElementById('meta-legacy');
+        if (btn) {
+          if (fallbackUrl) {
+            btn.href = fallbackUrl;
+            btn.classList.remove('disabled');
+            btn.textContent = 'Ver releases';
+          } else {
+            btn.href = '#';
+            btn.classList.add('disabled');
+            btn.textContent = 'No disponible';
+          }
+        }
+        if (meta && reason) meta.textContent = reason;
+      };
+
+      async function findLegacyInEarlyReleases() {
+        try {
+          const response = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=100`, {
+            headers: { Accept: 'application/vnd.github+json' }
+          });
+          if (!response.ok) {
+            setLegacyUnavailable(
+              '_latest.zip · Revisa los releases anteriores en GitHub',
+              `https://github.com/${repo}/releases`
+            );
+            return;
+          }
+
+          const releases = await response.json();
+          if (!Array.isArray(releases)) {
+            setLegacyUnavailable(
+              '_latest.zip · Revisa los releases anteriores en GitHub',
+              `https://github.com/${repo}/releases`
+            );
+            return;
+          }
+
+          for (const release of releases) {
+            const legacy = release.assets?.find((a) => a.name.toLowerCase().includes('_latest'));
+            if (legacy) {
+              const tag = release.tag_name || release.name || '';
+              bind('download-legacy', 'meta-legacy', legacy, 'Descargar .zip', tag);
+              return;
+            }
+          }
+
+          setLegacyUnavailable('No se encontró _latest.zip en los releases');
+        } catch (e) {
+          setLegacyUnavailable(
+            '_latest.zip · Revisa los releases anteriores en GitHub',
+            `https://github.com/${repo}/releases`
+          );
+        }
+      }
+
       fetch(`https://api.github.com/repos/${repo}/releases/latest`, {
         headers: { Accept: 'application/vnd.github+json' }
       })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
-          if (!data || !Array.isArray(data.assets) || !data.assets.length) return;
+          if (!data || !Array.isArray(data.assets) || !data.assets.length) {
+            findLegacyInEarlyReleases();
+            return;
+          }
 
           const tag = data.tag_name || data.name || '';
           if (verEl && tag) {
@@ -565,23 +668,21 @@
           const win = findAsset((n) => n.includes('_win') && n.endsWith('.zip'));
           const linux = findAsset((n) => n.includes('_linux') && n.endsWith('.zip'));
           const android = findAsset((n) => n.endsWith('.apk'));
-
-          const bind = (btnId, metaId, asset, label) => {
-            if (!asset) return;
-            const btn = document.getElementById(btnId);
-            const meta = document.getElementById(metaId);
-            if (btn) {
-              btn.href = asset.browser_download_url;
-              if (label) btn.textContent = label;
-            }
-            if (meta) meta.textContent = `${asset.name} · ${(asset.size / (1024 * 1024)).toFixed(1)} MB`;
-          };
+          const legacy = findAsset((n) => n.includes('_latest'));
 
           bind('download-win', 'meta-win', win, 'Descargar .zip');
           bind('download-linux', 'meta-linux', linux, 'Descargar .zip');
           bind('download-android', 'meta-android', android, 'Descargar .apk');
+
+          if (legacy) {
+            bind('download-legacy', 'meta-legacy', legacy, 'Descargar .zip');
+          } else {
+            findLegacyInEarlyReleases();
+          }
         })
-        .catch(() => {});
+        .catch(() => {
+          findLegacyInEarlyReleases();
+        });
     })();
   </script>
 </body>
