@@ -1,24 +1,45 @@
 {
   "proyecto": "FenixLaboratory",
-  "version": "3.0.0",
-  "lastUpdate": "2026-08-02",
+  "version": "3.0.1",
+  "lastUpdate": "2026-11-16",
   "autor": "ThisIsFenix",
   "repositorio": "https://github.com/thisisfenix/FenixLaboratory",
   "sitio_web": "https://thisisfenix.github.io/",
   "info_version_actual": {
-    "numero": "3.0.0",
-    "fecha": "2026-08-02",
-    "tipo": "major",
+    "numero": "3.0.1",
+    "fecha": "2026-11-16",
+    "tipo": "patch",
     "estado": "estable",
     "cambios_principales": [
-      "Reescribí toda la página desde cero",
-      "Sistema de créditos y updates completamente nuevo",
-      "Arreglé un chingo de bugs acumulados",
-      "Mejoras visuales en todos los temas",
-      "Código limpio y organizado"
+      "Rediseño minimalista y más humano de la página principal",
+      "Nuevo hero editorial y tarjetas unificadas",
+      "Extracción de scripts inline a Assets/js/page-views.js",
+      "Corrección de navegación entre Ranking, Créditos, Updates y secciones principales",
+      "Ajuste de tamaño automático en tarjetas (eliminado min-height fijo)"
     ]
   },
   "updates": [
+    {
+      "version": "3.0.1",
+      "date": "2026-11-16",
+      "title": "Rediseño minimalista y limpieza",
+      "type": "patch",
+      "features": [
+        "Nueva estética minimalista y editorial en Assets/css/redesign.css, manteniendo compatibilidad con el sistema de temas",
+        "Hero principal reescrito con tono más directo y humano",
+        "Navbar simplificado con el nombre FenixLaboratory visible y accesos limpios",
+        "Botón de Volver agregado en Créditos, Updates y Ranking Global"
+      ],
+      "mejoras": [
+        "Se extrajo todo el JavaScript inline de index.html a Assets/js/page-views.js",
+        "Tarjetas de Destacados, Experimentos, Repositorios y Guestbook unificadas y más compactas"
+      ],
+      "fixes": [
+        "Corregido el tamaño excesivo de las tarjetas causado por min-height: 350px en styles.css",
+        "Corregida la dirección flex en Destacados y Guestbook para alinear contenido horizontalmente",
+        "Arreglada la navegación al volver desde #leaderboard hacia las secciones principales"
+      ]
+    },
     {
       "version": "3.0.0",
       "date": "2026-08-02",

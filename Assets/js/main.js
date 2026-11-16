@@ -231,22 +231,24 @@
       const link = e.target.closest('a[href^="#"]');
       if (link) {
         const targetId = link.getAttribute('href').substring(1);
+        e.preventDefault();
+
+        // Mostrar todas las secciones normales (ocultar Credits/Updates/Leaderboard)
+        document.querySelectorAll('.main-content > section').forEach(section => {
+          if (section.id === 'credits' || section.id === 'updates' || section.id === 'leaderboard') {
+            section.style.display = 'none';
+          } else {
+            section.style.display = 'block';
+          }
+        });
+
         if (targetId && targetId.length > 0) {
-          e.preventDefault();
-          
-          // Mostrar todas las secciones normales (ocultar Credits/Updates)
-          document.querySelectorAll('.main-content > section').forEach(section => {
-            if (section.id === 'credits' || section.id === 'updates') {
-              section.style.display = 'none';
-            } else {
-              section.style.display = 'block';
-            }
-          });
-          
           const targetElement = document.getElementById(targetId);
           if (targetElement) {
             targetElement.scrollIntoView({ behavior: 'smooth' });
           }
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
     });

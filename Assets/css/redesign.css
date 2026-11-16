@@ -1,0 +1,609 @@
+/* ==========================================================================
+   FenixLaboratory — Redesign Minimalista & Editorial
+   Se carga después de styles.css para preservar compatibilidad con temas.
+   ========================================================================== */
+
+:root {
+  --primary: #ff6b35;
+  --primary-rgb: 255, 107, 53;
+  --secondary: #e58e26;
+  --secondary-rgb: 229, 142, 38;
+  --bg-dark: #111214;
+  --bg-light: #181a1d;
+  --surface-hover: #1f2226;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --text-primary: #ededed;
+  --text: #ededed;
+  --text-secondary: #9ca3af;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+/* Base */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) var(--bg-dark);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  border: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Tipografía y encabezados de sección */
+.main-content {
+  flex: 1;
+}
+
+.main-content > section {
+  padding: 3.5rem 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.section-header h2,
+.main-content > section > h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: left;
+}
+
+.section-header h2::after,
+.main-content > section > h2::after {
+  display: none !important;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+/* Navbar limpia */
+.navbar.navbar-expand-lg {
+  background-color: rgba(17, 18, 20, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle) !important;
+  box-shadow: none !important;
+  padding: 0.75rem 0 !important;
+}
+
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  color: var(--text-primary) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  width: auto !important;
+  height: auto !important;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.navbar-brand i {
+  color: var(--primary);
+  font-size: 1.15rem;
+}
+
+.navbar-brand:hover {
+  color: var(--primary) !important;
+  transform: none !important;
+}
+
+.navbar-nav {
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.navbar-nav .nav-link {
+  color: var(--text-secondary) !important;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.45rem 0.75rem !important;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--text-primary) !important;
+  background-color: rgba(255, 255, 255, 0.05);
+  text-shadow: none !important;
+}
+
+.navbar-nav .nav-link i {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.navbar-nav .nav-pill-btn {
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-light);
+  color: var(--text-primary) !important;
+  margin-left: 0.25rem;
+}
+
+.navbar-nav .nav-pill-btn:hover {
+  border-color: var(--primary);
+  background-color: var(--surface-hover);
+}
+
+/* Hero editorial */
+.lab-hero {
+  padding: 4.5rem 0 3rem !important;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.lab-hero-inner {
+  max-width: 720px;
+}
+
+.lab-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.lab-kicker-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  display: inline-block;
+}
+
+.lab-hero h1 {
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.lab-hero-lead {
+  font-size: 1.08rem;
+  color: var(--text-secondary);
+  margin: 0 0 1.75rem 0;
+  max-width: 58ch;
+  line-height: 1.65;
+}
+
+.lab-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Botones sobrios (compatibles con .btn-neon / .btn-outline-neon de repos.js) */
+.btn-lab-primary,
+.btn-neon {
+  background: var(--primary) !important;
+  color: #111214 !important;
+  border: 1px solid var(--primary) !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-sm);
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-lab-primary:hover,
+.btn-neon:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: none !important;
+  color: #111214 !important;
+}
+
+.btn-lab-secondary,
+.btn-outline-neon {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-strong) !important;
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-sm);
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-lab-secondary:hover,
+.btn-outline-neon:hover {
+  border-color: var(--primary) !important;
+  background-color: rgba(var(--primary-rgb), 0.08) !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+/* Cards unificadas y limpias */
+.card {
+  background-color: var(--bg-light) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+  color: var(--text-primary);
+  min-height: 0 !important;
+  height: auto;
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--border-strong) !important;
+  background-color: var(--surface-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: none !important;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: 0.45rem;
+}
+
+.card-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  flex-grow: 0;
+  margin-bottom: 0.85rem;
+}
+
+/* Destacados */
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.featured-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.featured-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-dark);
+}
+
+.featured-thumb-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+
+.featured-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+/* Controles de búsqueda y filtro */
+.filters {
+  margin-bottom: 1.5rem;
+}
+
+.search-box,
+.form-control.search-box,
+.form-select.search-box {
+  background-color: var(--bg-light) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  box-shadow: none !important;
+}
+
+.search-box::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.search-box:focus {
+  border-color: var(--primary) !important;
+  background-color: var(--bg-light) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Grid de repositorios (controlado por repos.js) */
+#repos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+#repos-container .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#repos-container .card-img-top {
+  height: 145px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-dark);
+}
+
+#repos-container .card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#repos-container .card-text {
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+#repos-container .btn-group {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.card-timeline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.65rem;
+}
+
+.commit-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--primary);
+}
+
+/* Tags limpios en experimentos */
+.lab-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0 1.15rem;
+}
+
+.lab-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+}
+
+.experiment-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.experiment-card .card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.experiment-card .card-text {
+  flex: 1;
+}
+
+/* Guestbook / Comentarios */
+.guestbook-box {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.comments-box {
+  background: var(--bg-light);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+}
+
+/* Sub-vistas (Créditos, Updates, Leaderboard) */
+.subview-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Footer minimalista */
+.footer {
+  background: var(--bg-dark) !important;
+  border-top: 1px solid var(--border-subtle) !important;
+  padding: 2rem 0 !important;
+  margin-top: 3rem;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.footer-links a,
+.footer-links button {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.footer-links a:hover,
+.footer-links button:hover {
+  color: var(--primary);
+}
+
+.footer-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Paginación */
+.pagination {
+  margin-top: 1.75rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+/* Botón volver arriba */
+#btn-top {
+  background: var(--bg-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  box-shadow: none;
+}
+
+#btn-top:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content > section {
+    padding: 2.5rem 0;
+  }
+
+  .lab-hero {
+    padding: 3rem 0 2.25rem !important;
+  }
+
+  .navbar-nav {
+    padding-top: 0.75rem;
+    align-items: stretch;
+  }
+
+  .navbar-nav .nav-pill-btn {
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+}
